@@ -1,5 +1,5 @@
 name: Gradle wrapper automatic build
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Deploy to ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   push:
