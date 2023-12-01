@@ -26,7 +26,7 @@ jobs:
       - name: Run PMD
         uses: pmd/pmd-github-action@v1
         with:
-          rulesets: 'basic.xml'
+          rulesets: '.pmd/java-rules.xml'
           sourcePath: 'src'
           analyzeModifiedFilesOnly: false
       - name: Upload SARIF file
