@@ -2,10 +2,14 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.0'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "com.diffplug.spotless" version "6.23.3"
 }
 
 group = 'com.qxam'
 version = '0.0.1-SNAPSHOT'
+
+ext.isCi = System.getProperty('CI_JOB_ID') != null
+println "isCI: $isCi"
 
 java {
 	sourceCompatibility = '17'
@@ -29,4 +33,17 @@ if (hasProperty('buildScan')) {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		removeUnusedImports()
+		googleJavaFormat()
+	}
+}
+
+if (!isCi) {
+	project.afterEvaluate {
+		compileJava.dependsOn('spotlessApply')
+	}
 }
