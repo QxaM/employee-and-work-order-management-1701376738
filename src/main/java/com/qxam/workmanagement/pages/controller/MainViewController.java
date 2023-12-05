@@ -8,6 +8,6 @@ public class MainViewController {
 
   @GetMapping("/")
   public String mainPage() {
-    return "header";
+    return "index";
   }
 }
