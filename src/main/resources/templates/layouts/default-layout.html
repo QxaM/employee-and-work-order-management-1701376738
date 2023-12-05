@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>MaxQ Work Manager</title>
+    </head>
+    <body>
+        <div th:replace="fragments/header :: header">Replaced by header</div>
+        <!--/*@thymesVar id="view" type="java.lang.String"*/-->
+        <div th:replace="${view} :: content">Replaced by content</div>
+        <div th:replace="fragments/footer :: footer">Replaced by footer</div>
+    </body>
+</html>
