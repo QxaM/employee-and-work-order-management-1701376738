@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.qxam'
-version = '0.13.0-SNAPSHOT'
+version = '0.14.0-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
 println "isCI: $isCi"
