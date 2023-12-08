@@ -2,9 +2,22 @@
 2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
 
 FONT SIZE SYSTEM (px)
-10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62/ 74 / 86 / 98 */
+10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62/ 74 / 86 / 98
+
+COLORS:
+light gray: #ced4da
+
+*/
 
 body {
     color: #444;
     font-family: "Roboto", sans-serif;
+}
+
+.copyright {
+    font-size: 12px;
+    color: #ced4da;
+    font-weight: 500;
+
+    border-top: 4px double #dee2e6;
 }
