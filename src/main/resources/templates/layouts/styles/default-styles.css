@@ -5,7 +5,9 @@ FONT SIZE SYSTEM (px)
 10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62/ 74 / 86 / 98
 
 COLORS:
-light gray: #ced4da
+main color: #bfb1e7 #8f77d6 #5f3dc4 #432b89 #26184e
+secondary color: #feffaf #fdff5e #fcff36 #cacc2b #656616
+gray: #aeb6bf #71808e #34495e #243342 #151d26
 
 */
 
@@ -16,8 +18,28 @@ body {
 
 .copyright {
     font-size: 12px;
-    color: #ced4da;
+    color: #71808e;
     font-weight: 500;
 
-    border-top: 4px double #dee2e6;
+    border-top: 4px double #aeb6bf;
+}
+
+.navbar {
+    background-color: #bfb1e7;
+}
+
+.navbar-brand {
+    color: #26184e;
+}
+
+.active {
+    color: #26184e;
+}
+
+.nav-link {
+    color: #5f3dc4;
+}
+
+.disabled {
+    color: #8f77d6;
 }
