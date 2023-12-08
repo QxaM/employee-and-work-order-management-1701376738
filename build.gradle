@@ -2,11 +2,12 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.0'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id "com.diffplug.spotless" version "6.23.3"
+	id 'com.diffplug.spotless' version '6.23.3'
+	id 'com.github.node-gradle.node' version '7.0.1'
 }
 
 group = 'com.qxam'
-version = '0.0.1-SNAPSHOT'
+version = '0.16.1-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
 println "isCI: $isCi"
@@ -21,6 +22,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -37,15 +40,55 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-spotless {
-	java {
-		removeUnusedImports()
-		googleJavaFormat()
-	}
-}
+def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'
+def nodeExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/node.exe' : '/bin/node'
 
 if (!isCi) {
+	spotless {
+		java {
+			target 'src/*/java/**'
+			removeUnusedImports()
+			googleJavaFormat()
+		}
+		format 'html', {
+			target 'src/main/resources/templates/**/*.html'
+			prettier('3.1.0')
+					.npmExecutable("${tasks.named('npmSetup').get().npmDir.get()}${npmExec}")
+					.nodeExecutable("${tasks.named('nodeSetup').get().nodeDir.get()}${nodeExec}")
+					.config(['parser'         : 'html',
+							 'tabWidth'       : 4,
+							 'bracketSpacing' : false,
+							 'bracketSameLine': true])
+		}
+		format 'styles', {
+			target 'src/main/resources/templates/**/styles/*.css'
+			prettier('3.1.0')
+					.npmExecutable("${tasks.named('npmSetup').get().npmDir.get()}${npmExec}")
+					.nodeExecutable("${tasks.named('nodeSetup').get().nodeDir.get()}${nodeExec}")
+					.config(['parser'         : 'css',
+							 'printWidth'     : 100,
+							 'tabWidth'       : 4,
+							 'bracketSpacing' : false,
+							 'bracketSameLine': true])
+		}
+	}
+
 	project.afterEvaluate {
 		compileJava.dependsOn('spotlessApply')
+	}
+
+	node {
+		download = true
+		version = '18.16.1'
+		npmVersion = '9.5.1'
+		workDir = file("${buildDir}/nodejs")
+		npmWorkDir = file("${buildDir}/npm")
+	}
+
+	tasks.named('spotlessHtml').configure {
+		it.dependsOn('nodeSetup', 'npmSetup')
+	}
+	tasks.named('spotlessStyles').configure {
+		it.dependsOn('nodeSetup', 'npmSetup')
 	}
 }
