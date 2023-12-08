@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.qxam'
-version = '0.15.0-SNAPSHOT'
+version = '0.15.1-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
 println "isCI: $isCi"
@@ -46,15 +46,27 @@ def nodeExec = System.getProperty('os.name').toLowerCase().contains('windows') ?
 if (!isCi) {
 	spotless {
 		java {
+			target 'src/*/java/**'
 			removeUnusedImports()
 			googleJavaFormat()
 		}
 		format 'html', {
-			target 'src/main/resources/templates/**'
+			target 'src/main/resources/templates/**/*.html'
 			prettier('3.1.0')
 					.npmExecutable("${tasks.named('npmSetup').get().npmDir.get()}${npmExec}")
 					.nodeExecutable("${tasks.named('nodeSetup').get().nodeDir.get()}${nodeExec}")
 					.config(['parser'         : 'html',
+							 'tabWidth'       : 4,
+							 'bracketSpacing' : false,
+							 'bracketSameLine': true])
+		}
+		format 'styles', {
+			target 'src/main/resources/templates/**/styles/*.css'
+			prettier('3.1.0')
+					.npmExecutable("${tasks.named('npmSetup').get().npmDir.get()}${npmExec}")
+					.nodeExecutable("${tasks.named('nodeSetup').get().nodeDir.get()}${nodeExec}")
+					.config(['parser'         : 'css',
+							 'printWidth'     : 100,
 							 'tabWidth'       : 4,
 							 'bracketSpacing' : false,
 							 'bracketSameLine': true])
@@ -74,6 +86,9 @@ if (!isCi) {
 	}
 
 	tasks.named('spotlessHtml').configure {
+		it.dependsOn('nodeSetup', 'npmSetup')
+	}
+	tasks.named('spotlessStyles').configure {
 		it.dependsOn('nodeSetup', 'npmSetup')
 	}
 }
