@@ -13,7 +13,12 @@ gray: #aeb6bf #71808e #34495e #243342 #151d26
 
 body {
     color: #444;
-    font-family: "Roboto", sans-serif;
+    font-family:
+        "Roboto",
+        ui-sans-serif,
+        -apple-system,
+        system-ui,
+        sans-serif;
 }
 
 .copyright {
