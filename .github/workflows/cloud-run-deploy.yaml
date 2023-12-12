@@ -8,6 +8,7 @@ env:
   PROJECT_ID: evident-minutia-404818
   GAR_LOCATION: europe-central2
   SERVICE: maxq-manager
+  IMAGE: work-manager
   REGION: europe-central2
 
 jobs:
@@ -38,8 +39,9 @@ jobs:
 
       - name: Build and Push Container
         run: |-
-          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}" --platform linux/x86_64 ./
-          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env
+          .SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}" --platform linux/x86_64 ./
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ github.sha }}"
 
       # END - Docker auth and build
 
