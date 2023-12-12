@@ -30,7 +30,7 @@ jobs:
 
       - name: Docker Auth
         id: docker-auth
-        uses: 'docker/login-action@v1'
+        uses: 'docker/login-action@v3.0.0'
         with:
           username: '${{ env.DOCKER_LOGIN }}'
           password: '${{ env.DOCKER_PASS }}'
