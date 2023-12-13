@@ -20,7 +20,7 @@ jobs:
     needs: [deploy]
     steps:
       - name: Trigger Chrome UI Testing
-      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
         with:
           owner: QxaM
           repo: employee-and-work-order-management-ui-tests
