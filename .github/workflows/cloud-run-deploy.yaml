@@ -14,9 +14,9 @@ env:
 
 jobs:
   gradle-build:
-    uses: ./.github/workflows/gradle-build.yaml
+    uses: ./.github/workflows/gradle-build.yaml@pushfails
   pmd-check:
-    uses: ./.github/workflows/pmd-check.yaml
+    uses: ./.github/workflows/pmd-check.yaml@pushfails
 
   deploy:
     permissions:
