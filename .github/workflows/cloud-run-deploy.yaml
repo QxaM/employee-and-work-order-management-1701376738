@@ -34,13 +34,8 @@ jobs:
 
       - name: Set version
         run: |
-          # Run the gradle command to print the version and capture the output
           VERSION=$(./gradlew -q printVersion | tail -n 1)
-  
-          # Set the captured version as an environment variable
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-  
-          # Print the version
           echo "Version: $VERSION"
 
       - name: Google Auth
