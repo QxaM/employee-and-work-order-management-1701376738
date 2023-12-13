@@ -17,6 +17,10 @@ jobs:
     uses: ./.github/workflows/gradle-build.yaml
   pmd-check:
     uses: ./.github/workflows/pmd-check.yaml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     
   deploy:
     permissions:
