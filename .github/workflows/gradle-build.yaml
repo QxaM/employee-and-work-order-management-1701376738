@@ -5,6 +5,7 @@ on:
   push:
   pull_request:
     branches: [ "main" ]
+  workflow_call:
 
 jobs:
   build:
@@ -20,6 +21,10 @@ jobs:
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       - name: Execute Gradle build
         run: ./gradlew build -DCI_JOB_ID=${{ github.run_id }} --scan
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         if: always()

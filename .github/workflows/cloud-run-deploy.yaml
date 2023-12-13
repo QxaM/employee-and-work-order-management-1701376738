@@ -1,0 +1,86 @@
+#europe-central2-docker.pkg.dev/evident-minutia-404818/maxq-manager/work-manager@sha256:ccf27ad3a464e04234dbe4d716fa3bf033a8960b211dfdc945fa73b6a0471776
+name: Build and Deploy to Cloud Run
+
+on:
+  workflow_call:
+    secrets:
+      GCPToken:
+        required: true
+
+env:
+  PROJECT_ID: evident-minutia-404818
+  GAR_LOCATION: europe-central2
+  SERVICE: maxq-manager
+  IMAGE: work-manager
+  REGION: europe-central2
+
+jobs:
+  gradle-build:
+    uses: ./.github/workflows/gradle-build.yaml
+  pmd-check:
+    uses: ./.github/workflows/pmd-check.yaml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    
+  deploy:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    needs: [gradle-build, pmd-check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+
+      - name: Set version
+        run: |
+          VERSION=$(./gradlew -q printVersion | tail -n 1)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "Version: $VERSION"
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2.0.0'
+        with:
+          credentials_json: '${{ secrets.GCPToken }}'
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v3.0.0'
+        with:
+          username: '_json_key'
+          password: '${{ secrets.GCPToken }}'
+          registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env
+          .SERVICE }}/${{ env.IMAGE }}:${{ env.VERSION }}" --platform linux/x86_64 ./
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env
+          .SERVICE }}/${{ env.IMAGE }}:${{ env.VERSION }}"
+
+      # END - Docker auth and build
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2.0.0
+        with:
+          service: ${{ env.IMAGE }}
+          region: ${{ env.REGION }}
+          # NOTE: If using a pre-built image, update the image name here
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE }}:${{ env.VERSION }}
+          flags: '--allow-unauthenticated'
+
+      # If required, use the Cloud Run url output in later steps
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }}
