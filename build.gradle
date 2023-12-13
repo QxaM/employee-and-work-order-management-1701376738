@@ -4,11 +4,11 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'com.diffplug.spotless' version '6.23.3'
 	id 'com.github.node-gradle.node' version '7.0.1'
-	id 'jacoco'
+  id 'jacoco'
 }
 
 group = 'com.qxam'
-version = '0.16.2-SNAPSHOT'
+version = '0.17.0-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
 if(project.gradle.startParameter.taskNames != ['printVersion']) {
