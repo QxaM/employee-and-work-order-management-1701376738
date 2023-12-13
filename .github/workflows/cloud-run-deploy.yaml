@@ -11,6 +11,7 @@ env:
   SERVICE: maxq-manager
   IMAGE: work-manager
   REGION: europe-central2
+  VERSION:
 
 jobs:
   deploy:
@@ -23,6 +24,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Set version
+        run: |
+          echo "VERSION=./gradlew printVersion >> $GITHUB_ENV"
+      - name: Print version
+        run: |
+          printf ${{ env.VERSION }}
 
       - name: Google Auth
         id: auth
