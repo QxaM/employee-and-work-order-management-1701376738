@@ -1,0 +1,33 @@
+name: Trigger application UI testing
+
+on:
+  push:
+    branches: [ "main" ]
+
+job:
+  deploy:
+    uses: ./.github/workflows/cloud-run-deploy.yaml
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+      id-token: write
+
+  trigger-ui-jobs:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    steps:
+      - name: Trigger test chrome
+      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+          owner: QxaM
+          repo: employee-and-work-order-management-ui-tests
+          github_token: ${{ secrets.REPOSITORY_TOKEN }}
+          github_user: github-user
+          workflow_file_name: chrome-test.yaml
+          ref: main
+          wait_interval: 10
+          client_payload: '{}'
+          propagate_failure: false
+          trigger_workflow: true
+          wait_workflow: false
