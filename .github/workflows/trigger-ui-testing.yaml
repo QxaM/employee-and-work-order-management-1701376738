@@ -22,16 +22,8 @@ jobs:
     needs: [deploy]
     steps:
       - name: Trigger Chrome UI Testing
-        uses: convictional/trigger-workflow-and-wait@v1.6.1
-        with:
-          owner: QxaM
-          repo: employee-and-work-order-management-ui-tests
-          github_token: ${{ secrets.REPOSITORY_TOKEN }}
-          github_user: github-user
-          workflow_file_name: chrome-test.yaml
-          ref: main
-          wait_interval: 10
-          client_payload: '{}'
-          propagate_failure: false
-          trigger_workflow: true
-          wait_workflow: false
+        run: |
+          curl -H "Accept: application/vnd.github.everest-preview+json" \
+              -H "Authorization: token ${{ secrets.REPOSITORY_TOKEN }}" \
+              --request POST \
+              https://api.github.com/repos/QxaM/employee-and-work-order-management-ui-tests/dispatches
