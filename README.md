@@ -1,14 +1,22 @@
-# GenericTemplate
+# MaxQ Work Manager
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/QxaM/employee-and-work-order-management-1701376738/gradle-build.yaml)
+
 
 **[Insert a brief description of your application here. Describe its purpose, functionality, etc.]**
 
 ## 🌐 Demo
 
-[Your Demo Link Here](http://replace-with-your-link.com)
+[MaxQ Work Manager Demo](https://work-manager-jp4bempx6a-lm.a.run.app)
+
+Application is hosted serverless using Google Cloud Platform and Cloud Run. 
+Deployed automatically with GitHub Actions.
 
 **Demo Credentials (If applicable):**
 - **Username:** ReplaceThisWithUsername
 - **Password:** ReplaceThisWithPassword
+
+## ✔️ UI Tests
+UI tests are performed in separate repository under link: [UI Tests](https://github.com/QxaM/employee-and-work-order-management-ui-tests).
 
 ## 📖 About this Software
 
