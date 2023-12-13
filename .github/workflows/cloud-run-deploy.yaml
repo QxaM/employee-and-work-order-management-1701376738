@@ -19,7 +19,14 @@ jobs:
       contents: 'read'
       id-token: 'write'
 
+  job1:
+    uses: ./.github/workflows/gradle-build.yaml
+  job2:
+    uses: ./.github/workflows/pmd-check.yaml
+
+  job3:
     runs-on: ubuntu-latest
+    needs: [job1, job2]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,13 +41,8 @@ jobs:
 
       - name: Set version
         run: |
-          # Run the gradle command to print the version and capture the output
           VERSION=$(./gradlew -q printVersion | tail -n 1)
-  
-          # Set the captured version as an environment variable
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-  
-          # Print the version
           echo "Version: $VERSION"
 
       - name: Google Auth
