@@ -30,7 +30,7 @@ jobs:
           echo "VERSION=./gradlew printVersion >> $GITHUB_ENV"
       - name: Print version
         run: |
-          printf ${{ env.VERSION }}
+          printf '%s\n' "${{ env.VERSION }}"
 
       - name: Google Auth
         id: auth
