@@ -14,10 +14,10 @@ env:
 
 jobs:
   gradle-build:
-    uses: ./.github/workflows/gradle-build.yaml@main
+    uses: ./.github/workflows/gradle-build.yaml@pushfails
   pmd-check:
-    uses: ./.github/workflows/pmd-check.yaml@main
-
+    uses: ./.github/workflows/pmd-check.yaml@pushfails
+    
   deploy:
     permissions:
       contents: 'read'
