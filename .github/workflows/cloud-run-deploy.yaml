@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/gradle-build.yaml@pushfails
   pmd-check:
     uses: ./.github/workflows/pmd-check.yaml@pushfails
-
+    
   deploy:
     permissions:
       contents: 'read'
