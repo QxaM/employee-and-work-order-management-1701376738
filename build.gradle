@@ -10,7 +10,9 @@ group = 'com.qxam'
 version = '0.16.1-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
-println "isCI: $isCi"
+if(project.gradle.startParameter.taskNames != ['printVersion']) {
+	println "isCI: $isCi"
+}
 
 java {
 	sourceCompatibility = '17'
@@ -107,4 +109,8 @@ bootJar {
 	from {
 		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 	}
+}
+
+task printVersion {
+	println version
 }
