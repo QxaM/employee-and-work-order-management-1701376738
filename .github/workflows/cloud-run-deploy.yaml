@@ -2,8 +2,7 @@
 name: Build and Deploy to Cloud Run
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_call:
 
 env:
   PROJECT_ID: evident-minutia-404818
