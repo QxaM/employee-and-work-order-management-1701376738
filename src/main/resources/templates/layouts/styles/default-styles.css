@@ -48,3 +48,7 @@ body {
 .disabled {
     color: #8f77d6;
 }
+
+.btn-primary {
+    background-color: #26184e;
+}
