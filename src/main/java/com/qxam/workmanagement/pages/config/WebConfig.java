@@ -13,7 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
     registry
         .addResourceHandler("/templates/layouts/styles/**")
         .addResourceLocations("classpath:/templates/layouts/styles/");
-    registry.addResourceHandler("/node_modules/**").addResourceLocations("file:./node_modules/");
   }
 
   @Override
