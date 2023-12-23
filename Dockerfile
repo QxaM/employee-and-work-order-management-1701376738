@@ -1,6 +1,11 @@
 FROM eclipse-temurin:17-jdk-alpine as build
 WORKDIR /workspace/app
 
+ARG mongoUser
+ARG mongoPassword
+ENV MONGO_USER $mongoUser
+ENV MONGO_USER_PASSWORD $mongoPassword
+
 COPY gradlew .
 COPY gradlew.bat .
 COPY gradle ./gradle
