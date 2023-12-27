@@ -2,6 +2,7 @@ package com.qxam.workmanagement.pages.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -12,9 +13,9 @@ public class LayoutInterceptor implements HandlerInterceptor {
 
   @Override
   public void postHandle(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      Object handler,
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull Object handler,
       ModelAndView modelAndView) {
     if (modelAndView != null && modelAndView.hasView()) {
       String viewName = modelAndView.getViewName();
