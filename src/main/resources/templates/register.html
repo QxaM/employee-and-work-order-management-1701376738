@@ -28,6 +28,10 @@
                                     placeholder="name@example.com"
                                     th:field="*{email}" />
                                 <label for="floatingInput">Email address</label>
+                                <p
+                                    class="text-danger"
+                                    th:errors="*{email}"
+                                    th:if="${#fields.hasErrors('email')}"></p>
                             </div>
                             <div class="form-floating mb-2">
                                 <input
