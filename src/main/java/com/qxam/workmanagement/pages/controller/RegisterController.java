@@ -6,6 +6,7 @@ import com.qxam.workmanagement.domain.exception.DuplicateDocuments;
 import com.qxam.workmanagement.mapper.UserMapper;
 import com.qxam.workmanagement.service.UserDbService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -33,24 +34,30 @@ public class RegisterController {
 
   @PostMapping("/save")
   public String registration(
-      @ModelAttribute("user") UserDto userDto,
+      @Valid @ModelAttribute("user") UserDto userDto,
       BindingResult bindingResult,
       Model model,
       HttpServletResponse response) {
     User user = mapper.mapToUser(userDto);
 
+    if (bindingResult.hasErrors()) {
+      return returnConflictUserDtoAndView(userDto, model, response);
+    }
+
     try {
       service.saveUser(user);
     } catch (DuplicateDocuments duplicateDocuments) {
       bindingResult.rejectValue("email", StringUtils.EMPTY, "User already exists");
-    }
-
-    if (bindingResult.hasErrors()) {
-      model.addAttribute("user", userDto);
-      response.setStatus(HttpServletResponse.SC_CONFLICT);
-      return "register";
+      return returnConflictUserDtoAndView(userDto, model, response);
     }
 
     return "index";
+  }
+
+  private String returnConflictUserDtoAndView(
+      UserDto user, Model model, HttpServletResponse response) {
+    model.addAttribute("user", user);
+    response.setStatus(HttpServletResponse.SC_CONFLICT);
+    return "register";
   }
 }

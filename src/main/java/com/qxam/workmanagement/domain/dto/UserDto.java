@@ -1,5 +1,7 @@
 package com.qxam.workmanagement.domain.dto;
 
+import com.qxam.workmanagement.domain.validator.ValidPassword;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.bson.types.ObjectId;
 
@@ -11,6 +13,9 @@ import org.bson.types.ObjectId;
 public class UserDto {
 
   private ObjectId id;
+
+  @Email(message = "Enter correct email!")
   private String email;
-  private String password;
+
+  @ValidPassword private String password;
 }

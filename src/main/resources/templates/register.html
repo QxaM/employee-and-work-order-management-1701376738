@@ -41,6 +41,11 @@
                                     placeholder="Password"
                                     th:field="*{password}" />
                                 <label for="floatingPassword">Password</label>
+                                <p
+                                    class="text-danger"
+                                    style="white-space: pre-wrap"
+                                    th:errors="*{password}"
+                                    th:if="${#fields.hasErrors('password')}"></p>
                             </div>
                             <div class="text-center lh-1 fw-light fs-14">
                                 <p>
