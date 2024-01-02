@@ -23,6 +23,7 @@ public class LoginControllerTests {
         .andExpect(status().isOk())
         .andExpect(view().name("layouts/default-layout"))
         .andExpect(model().attributeExists("view"))
-        .andExpect(model().attribute("view", "login"));
+        .andExpect(model().attribute("view", "login"))
+        .andExpect(model().attributeExists("user"));
   }
 }

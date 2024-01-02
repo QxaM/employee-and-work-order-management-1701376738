@@ -23,6 +23,7 @@ public class RegisterControllerTests {
         .andExpect(status().isOk())
         .andExpect(view().name("layouts/default-layout"))
         .andExpect(model().attributeExists("view"))
-        .andExpect(model().attribute("view", "register"));
+        .andExpect(model().attribute("view", "register"))
+        .andExpect(model().attributeExists("user"));
   }
 }
