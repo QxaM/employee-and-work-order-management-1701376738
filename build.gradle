@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'com.qxam'
-version = '0.2.6.1-SNAPSHOT'
+version = '0.2.7.0-SNAPSHOT'
 
 ext.isCi = System.getProperty('CI_JOB_ID') != null
 if(project.gradle.startParameter.taskNames != ['printVersion']) {
