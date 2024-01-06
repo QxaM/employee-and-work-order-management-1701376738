@@ -44,8 +44,8 @@ public class RegisterControllerTests {
   @Test
   void shouldSaveUser() throws Exception {
     // Given
-    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "12345");
-    User user = new User(new ObjectId(), "example@example.com", "12345");
+    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "aTest30@");
+    User user = new User(new ObjectId(), "example@example.com", "aTest30@");
 
     when(mapper.mapToUser(userDto)).thenReturn(user);
 
@@ -63,8 +63,8 @@ public class RegisterControllerTests {
   @Test
   void shouldThrowUserAlreadyExists() throws Exception {
     // Given
-    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "12345");
-    User user = new User(new ObjectId(), "example@example.com", "12345");
+    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "aTest30@");
+    User user = new User(new ObjectId(), "example@example.com", "aTest30@");
 
     when(mapper.mapToUser(userDto)).thenReturn(user);
     doThrow(DuplicateDocuments.class).when(service).saveUser(user);
