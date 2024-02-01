@@ -24,10 +24,11 @@
                                 <input
                                     type="email"
                                     class="form-control"
-                                    id="floatingInput"
+                                    id="email"
                                     placeholder="name@example.com"
+                                    name="username"
                                     th:field="*{email}" />
-                                <label for="floatingInput">Email address</label>
+                                <label for="email">Email address</label>
                                 <p
                                     class="text-danger"
                                     th:errors="*{email}"
@@ -37,10 +38,11 @@
                                 <input
                                     type="password"
                                     class="form-control"
-                                    id="floatingPassword"
+                                    id="password"
                                     placeholder="Password"
+                                    name="password"
                                     th:field="*{password}" />
-                                <label for="floatingPassword">Password</label>
+                                <label for="password">Password</label>
                                 <p
                                     class="text-danger"
                                     style="white-space: pre-wrap"

@@ -10,11 +10,7 @@
     </head>
     <body>
         <div class="container" th:fragment="content">
-            <form
-                method="post"
-                role="form"
-                th:action="@{/register/save}"
-                th:object="${user}">
+            <form method="post" role="form" th:action="@{/login}">
                 <div class="row justify-content-center">
                     <div class="register-panel row justify-content-center">
                         <div
@@ -24,7 +20,7 @@
                                     type="email"
                                     class="form-control"
                                     id="floatingInput"
-                                    th:field="*{email}"
+                                    name="username"
                                     placeholder="name@example.com" />
                                 <label for="floatingInput">Email address</label>
                             </div>
@@ -33,6 +29,7 @@
                                     type="password"
                                     class="form-control"
                                     id="floatingPassword"
+                                    name="password"
                                     placeholder="Password" />
                                 <label for="floatingPassword">Password</label>
                             </div>

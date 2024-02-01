@@ -1,5 +1,8 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head>
         <meta charset="UTF-8" />
         <meta
@@ -49,7 +52,9 @@
                             <a class="nav-link disabled">Disabled</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav ms-auto">
+                    <ul
+                        sec:authorize="isAnonymous()"
+                        class="navbar-nav ms-auto">
                         <li class="mx-1 mb-1 nav-item">
                             <a
                                 class="btn btn-primary"
@@ -64,6 +69,24 @@
                                 href="/register"
                                 role="button">
                                 Register
+                            </a>
+                        </li>
+                    </ul>
+                    <ul
+                        sec:authorize="isAuthenticated()"
+                        class="navbar-nav ms-auto">
+                        <li
+                            class="mx-1 nav-item d-flex justify-content-center align-items-center">
+                            <span class="align-middle">
+                                Hello, <span sec:authentication="name"></span>!
+                            </span>
+                        </li>
+                        <li class="ms-1 me-3 nav-item">
+                            <a
+                                class="btn btn-secondary"
+                                href="/logout"
+                                role="button">
+                                Logout
                             </a>
                         </li>
                     </ul>

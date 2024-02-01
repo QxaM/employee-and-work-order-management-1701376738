@@ -32,7 +32,7 @@ public class RegisterController {
     return "register";
   }
 
-  @PostMapping("/save")
+  @PostMapping("save")
   public String registration(
       @Valid @ModelAttribute("user") UserDto userDto,
       BindingResult bindingResult,
