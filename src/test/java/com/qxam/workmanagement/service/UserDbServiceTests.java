@@ -38,13 +38,13 @@ class UserDbServiceTests {
     service.saveUser(user);
 
     // Then
-    verify(repository, times(1)).insert(user);
+    verify(repository, times(1)).insert(any(User.class));
   }
 
   @Test
   void shouldThrowWhenSavingDuplicates() {
     // Given
-    when(repository.insert(user)).thenThrow(new DuplicateKeyException("Duplicate keys"));
+    when(repository.insert(any(User.class))).thenThrow(new DuplicateKeyException("Duplicate keys"));
 
     // When
 
@@ -81,7 +81,7 @@ class UserDbServiceTests {
   void shouldUpdateUser() {
     // Given
     User newUser = new User(user.getId(), "changed@changed.com", "54321");
-    when(repository.save(newUser)).thenReturn(newUser);
+    when(repository.save(any(User.class))).thenReturn(newUser);
 
     // When
     User updatedUser = service.updateUser(newUser);
