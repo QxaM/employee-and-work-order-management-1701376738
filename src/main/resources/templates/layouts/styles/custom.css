@@ -12184,6 +12184,14 @@ fieldset:disabled .btn {
         display: none !important;
     }
 }
+.text-content {
+    color: #ffffff;
+}
+
+.text-content-secondary {
+    color: #010200;
+}
+
 .navbar-brand {
     color: #ffffff;
 }
