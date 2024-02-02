@@ -7,6 +7,7 @@ import com.qxam.workmanagement.repository.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,12 +16,21 @@ public class UserDbService {
 
   private final UserRepository repository;
 
+  private final PasswordEncoder passwordEncoder;
+
   public void saveUser(User user) throws DuplicateDocuments {
+    User userToSave =
+        User.builder()
+            .id(user.getId())
+            .email(user.getEmail())
+            .password(passwordEncoder.encode(user.getPassword()))
+            .build();
+
     try {
-      repository.insert(user);
+      repository.insert(userToSave);
     } catch (DuplicateKeyException e) {
       throw new DuplicateDocuments(
-          "User with email " + user.getEmail() + " already exists!", e.getCause());
+          "User with email " + userToSave.getEmail() + " already exists!", e.getCause());
     }
   }
 
@@ -32,7 +42,14 @@ public class UserDbService {
   }
 
   public User updateUser(User user) {
-    return repository.save(user);
+    User userToSave =
+        User.builder()
+            .id(user.getId())
+            .email(user.getEmail())
+            .password(passwordEncoder.encode(user.getPassword()))
+            .build();
+
+    return repository.save(userToSave);
   }
 
   public void deleteUser(String email) {
