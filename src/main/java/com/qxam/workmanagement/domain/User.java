@@ -3,6 +3,7 @@ package com.qxam.workmanagement.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -20,4 +21,6 @@ public class User {
   private final String email;
 
   private final String password;
+
+  @Setter private boolean enabled;
 }

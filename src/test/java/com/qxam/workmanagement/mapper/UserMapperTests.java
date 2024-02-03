@@ -18,7 +18,13 @@ class UserMapperTests {
   @Test
   void shouldMapToUserDto() {
     // Given
-    User user = new User(new ObjectId(), "example@example.com", "12345");
+    User user =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("12345")
+            .enabled(false)
+            .build();
 
     // When
     UserDto userDto = userMapper.mapToUserDto(user);
@@ -33,7 +39,8 @@ class UserMapperTests {
   @Test
   void shouldMapToUser() {
     // Given
-    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "12345");
+    UserDto userDto =
+        UserDto.builder().id(new ObjectId()).email("example@example.com").password("12345").build();
 
     // When
     User user = userMapper.mapToUser(userDto);

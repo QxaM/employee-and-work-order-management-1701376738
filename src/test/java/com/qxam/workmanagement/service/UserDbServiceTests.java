@@ -27,7 +27,28 @@ class UserDbServiceTests {
 
   @BeforeAll
   static void createUser() {
-    user = new User(new ObjectId(), "example@example.com", "12345");
+    user =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("12345")
+            .enabled(false)
+            .build();
+  }
+
+  @Test
+  void shouldCreateNewUser() throws DuplicateDocuments {
+    // Given
+    User newUser = mock(User.class);
+    when(newUser.getId()).thenReturn(user.getId());
+    when(newUser.getEmail()).thenReturn(user.getEmail());
+    when(newUser.getPassword()).thenReturn(user.getPassword());
+
+    // When
+    service.createNewUser(newUser);
+
+    // Then
+    verify(newUser, times(1)).setEnabled(false);
   }
 
   @Test
@@ -65,6 +86,7 @@ class UserDbServiceTests {
     assertEquals(user.getId(), foundUser.getId());
     assertEquals(user.getEmail(), foundUser.getEmail());
     assertEquals(user.getPassword(), foundUser.getPassword());
+    assertFalse(user.isEnabled());
   }
 
   @Test
@@ -78,9 +100,30 @@ class UserDbServiceTests {
   }
 
   @Test
+  void shouldEnableUser() {
+    // Given
+    User newUser = mock(User.class);
+    when(newUser.getId()).thenReturn(user.getId());
+    when(newUser.getEmail()).thenReturn(user.getEmail());
+    when(newUser.getPassword()).thenReturn(user.getPassword());
+
+    // When
+    service.enableUser(newUser);
+
+    // Then
+    verify(newUser, times(1)).setEnabled(true);
+  }
+
+  @Test
   void shouldUpdateUser() {
     // Given
-    User newUser = new User(user.getId(), "changed@changed.com", "54321");
+    User newUser =
+        User.builder()
+            .id(new ObjectId())
+            .email("changed@changed.com")
+            .password("54321")
+            .enabled(true)
+            .build();
     when(repository.save(any(User.class))).thenReturn(newUser);
 
     // When
@@ -90,6 +133,7 @@ class UserDbServiceTests {
     assertEquals(updatedUser.getId(), newUser.getId());
     assertEquals(updatedUser.getEmail(), newUser.getEmail());
     assertEquals(updatedUser.getPassword(), newUser.getPassword());
+    assertTrue(updatedUser.isEnabled());
   }
 
   @Test

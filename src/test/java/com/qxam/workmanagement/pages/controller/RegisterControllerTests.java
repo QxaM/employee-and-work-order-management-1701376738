@@ -60,8 +60,19 @@ public class RegisterControllerTests {
   @Test
   void shouldSaveUser() throws Exception {
     // Given
-    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "aTest30@");
-    User user = new User(new ObjectId(), "example@example.com", "aTest30@");
+    UserDto userDto =
+        UserDto.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("aTest30@")
+            .build();
+    User user =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("aTest30@")
+            .enabled(false)
+            .build();
 
     when(mapper.mapToUser(userDto)).thenReturn(user);
 
@@ -79,11 +90,22 @@ public class RegisterControllerTests {
   @Test
   void shouldThrowUserAlreadyExists() throws Exception {
     // Given
-    UserDto userDto = new UserDto(new ObjectId(), "example@example.com", "aTest30@");
-    User user = new User(new ObjectId(), "example@example.com", "aTest30@");
+    UserDto userDto =
+        UserDto.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("aTest30@")
+            .build();
+    User user =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("aTest30@")
+            .enabled(false)
+            .build();
 
     when(mapper.mapToUser(userDto)).thenReturn(user);
-    doThrow(DuplicateDocuments.class).when(service).saveUser(user);
+    doThrow(DuplicateDocuments.class).when(service).createNewUser(user);
 
     // When + Then
     this.mockMvc

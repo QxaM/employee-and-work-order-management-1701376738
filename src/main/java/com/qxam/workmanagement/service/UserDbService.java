@@ -18,12 +18,18 @@ public class UserDbService {
 
   private final PasswordEncoder passwordEncoder;
 
+  public void createNewUser(User user) throws DuplicateDocuments {
+    user.setEnabled(false);
+    saveUser(user);
+  }
+
   public void saveUser(User user) throws DuplicateDocuments {
     User userToSave =
         User.builder()
             .id(user.getId())
             .email(user.getEmail())
             .password(passwordEncoder.encode(user.getPassword()))
+            .enabled(user.isEnabled())
             .build();
 
     try {
@@ -34,11 +40,9 @@ public class UserDbService {
     }
   }
 
-  public User findUserByEmail(String email) throws ElementNotFound {
-    Optional<User> foundUser = repository.findByEmail(email);
-    return foundUser.orElseThrow(
-        () ->
-            new ElementNotFound("User with given email: " + email + " not found in the database!"));
+  public User enableUser(User user) {
+    user.setEnabled(true);
+    return updateUser(user);
   }
 
   public User updateUser(User user) {
@@ -47,9 +51,17 @@ public class UserDbService {
             .id(user.getId())
             .email(user.getEmail())
             .password(passwordEncoder.encode(user.getPassword()))
+            .enabled(user.isEnabled())
             .build();
 
     return repository.save(userToSave);
+  }
+
+  public User findUserByEmail(String email) throws ElementNotFound {
+    Optional<User> foundUser = repository.findByEmail(email);
+    return foundUser.orElseThrow(
+        () ->
+            new ElementNotFound("User with given email: " + email + " not found in the database!"));
   }
 
   public void deleteUser(String email) {

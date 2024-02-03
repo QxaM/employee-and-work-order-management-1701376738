@@ -26,7 +26,13 @@ class UserRepositoryTests {
 
   @BeforeEach
   void createUser() {
-    user = new User(new ObjectId(), "example@example.com", "12345");
+    user =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("12345")
+            .enabled(false)
+            .build();
   }
 
   @AfterEach
@@ -46,6 +52,7 @@ class UserRepositoryTests {
     assertTrue(foundUser.isPresent());
     assertEquals(user.getEmail(), foundUser.get().getEmail());
     assertEquals(user.getPassword(), foundUser.get().getPassword());
+    assertFalse(user.isEnabled());
   }
 
   @Test
@@ -54,7 +61,13 @@ class UserRepositoryTests {
     repository.insert(user);
 
     // When
-    User user2 = new User(new ObjectId(), "example@example.com", "12345");
+    User user2 =
+        User.builder()
+            .id(new ObjectId())
+            .email("example@example.com")
+            .password("12345")
+            .enabled(false)
+            .build();
 
     // Then
     assertThrows(DuplicateKeyException.class, () -> repository.insert(user2));
@@ -72,6 +85,7 @@ class UserRepositoryTests {
     assertTrue(foundUser.isPresent());
     assertEquals(user.getId(), foundUser.get().getId());
     assertEquals(user.getPassword(), foundUser.get().getPassword());
+    assertFalse(user.isEnabled());
   }
 
   @Test
@@ -80,7 +94,13 @@ class UserRepositoryTests {
     repository.insert(user);
 
     // When
-    User changedUser = new User(user.getId(), "changed@changed.com", "54321");
+    User changedUser =
+        User.builder()
+            .id(user.getId())
+            .email("changed@changed.com")
+            .password("54321")
+            .enabled(false)
+            .build();
     repository.save(changedUser);
     Optional<User> foundUser = repository.findById(user.getId());
 
@@ -88,6 +108,7 @@ class UserRepositoryTests {
     assertTrue(foundUser.isPresent());
     assertEquals(changedUser.getEmail(), foundUser.get().getEmail());
     assertEquals(changedUser.getPassword(), foundUser.get().getPassword());
+    assertFalse(changedUser.isEnabled());
   }
 
   @Test

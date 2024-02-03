@@ -45,7 +45,7 @@ public class RegisterController {
     }
 
     try {
-      service.saveUser(user);
+      service.createNewUser(user);
     } catch (DuplicateDocuments duplicateDocuments) {
       bindingResult.rejectValue("email", StringUtils.EMPTY, "User already exists");
       return returnConflictUserDtoAndView(userDto, model, response);
