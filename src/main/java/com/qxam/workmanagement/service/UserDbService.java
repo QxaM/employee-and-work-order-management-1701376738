@@ -18,12 +18,12 @@ public class UserDbService {
 
   private final PasswordEncoder passwordEncoder;
 
-  public void createNewUser(User user) throws DuplicateDocuments {
+  public User createNewUser(User user) throws DuplicateDocuments {
     user.setEnabled(false);
-    saveUser(user);
+    return saveUser(user);
   }
 
-  public void saveUser(User user) throws DuplicateDocuments {
+  public User saveUser(User user) throws DuplicateDocuments {
     User userToSave =
         User.builder()
             .id(user.getId())
@@ -32,12 +32,14 @@ public class UserDbService {
             .enabled(user.isEnabled())
             .build();
 
+    User savedUser;
     try {
-      repository.insert(userToSave);
+      savedUser = repository.insert(userToSave);
     } catch (DuplicateKeyException e) {
       throw new DuplicateDocuments(
           "User with email " + userToSave.getEmail() + " already exists!", e.getCause());
     }
+    return savedUser;
   }
 
   public User enableUser(User user) {

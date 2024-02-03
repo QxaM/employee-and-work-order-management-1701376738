@@ -43,23 +43,34 @@ class UserDbServiceTests {
     when(newUser.getId()).thenReturn(user.getId());
     when(newUser.getEmail()).thenReturn(user.getEmail());
     when(newUser.getPassword()).thenReturn(user.getPassword());
+    when(repository.insert(any(User.class))).thenReturn(user);
 
     // When
-    service.createNewUser(newUser);
+    User createdUser = service.createNewUser(newUser);
 
     // Then
     verify(newUser, times(1)).setEnabled(false);
+    assertAll(
+        () -> assertEquals(user.getId(), createdUser.getId()),
+        () -> assertEquals(user.getEmail(), createdUser.getEmail()),
+        () -> assertEquals(user.getPassword(), createdUser.getPassword()),
+        () -> assertFalse(createdUser.isEnabled()));
   }
 
   @Test
   void shouldSaveUser() throws DuplicateDocuments {
     // Given
+    when(repository.insert(any(User.class))).thenReturn(user);
 
     // When
-    service.saveUser(user);
+    User savedUser = service.saveUser(user);
 
     // Then
-    verify(repository, times(1)).insert(any(User.class));
+    assertAll(
+        () -> assertEquals(user.getId(), savedUser.getId()),
+        () -> assertEquals(user.getEmail(), savedUser.getEmail()),
+        () -> assertEquals(user.getPassword(), savedUser.getPassword()),
+        () -> assertEquals(user.isEnabled(), savedUser.isEnabled()));
   }
 
   @Test
