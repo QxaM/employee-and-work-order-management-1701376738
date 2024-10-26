@@ -70,7 +70,7 @@ jobs:
         working-directory: uitests
 
       - name: Upload UI Test Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ui-test-report
           path: uitests/build/reports
