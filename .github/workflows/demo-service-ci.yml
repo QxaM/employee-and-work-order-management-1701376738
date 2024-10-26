@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - backend/demo/**
-    branches: ["*"]
+    branches: ["**"]
   pull_request:
     paths:
       - backend/demo/**
-    branches: ["*"]
+    branches: ["**"]
   workflow_dispatch:
 
 jobs:
