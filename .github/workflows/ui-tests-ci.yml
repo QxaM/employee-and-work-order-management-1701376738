@@ -55,7 +55,9 @@ jobs:
         run: sleep 20
 
       - name: Run UI Tests
-        run: ./gradlew test
+        run:  |
+          chmod +x ./gradlew
+          ./gradlew test
         working-directory: uitests
 
       - name: Upload UI Test Report
