@@ -31,16 +31,20 @@ jobs:
         run: chmod +x ./backend/gradlew
 
       - name: Install dependencies
-        run: ./backend/gradlew demo:build -x test
+        run: ./gradlew demo:build -x test
+        working-directory: backend
 
       - name: Run Lint Checks
-        run: ./backend/gradlew demo:check
+        run: ./gradlew demo:check
+        working-directory: backend
 
       - name: Run Unit Tests
-        run: ./backend/gradlew demo:test
+        run: ./gradlew demo:test
+        working-directory: backend
 
       - name: Build
-        run: ./backend/gradlew demo:assemble
+        run: ./gradlew demo:assemble
+        working-directory: backend
 
       - name: Upload Test Reports
         uses: actions/upload-artifact@v3
