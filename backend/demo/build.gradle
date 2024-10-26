@@ -44,19 +44,11 @@ sourceSets {
     }
 }
 
-task printRuntimeClasspath {
-    def runtimeClasspath = sourceSets.main.runtimeClasspath
-    inputs.files( runtimeClasspath )
-    doLast {
-        println runtimeClasspath.join( File.pathSeparator )
-    }
-}
-
 pmd {
     consoleOutput = true
     toolVersion = "7.0.0"
     rulesMinimumPriority = 5
-    ruleSetFiles = files("/build/resources/main/rulesets/java/quickstart.xml")
+    ruleSetFiles = files("$projectDir/build/resources/main/rulesets/java/quickstart.xml")
 }
 
 tasks.named('test') {
