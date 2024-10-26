@@ -31,7 +31,7 @@ jobs:
         run: chmod +x ./backend/gradlew
 
       - name: Install dependencies
-        run: ./gradlew clean demo:build -x test
+        run: ./gradlew clean demo:build -x test -x check -x assemble -x pmdMain -x pmdTest
         working-directory: backend
 
       - name: Run Lint Checks
