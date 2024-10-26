@@ -1,14 +1,7 @@
 name: Frontend CI Pipeline
 
 on:
-  push:
-    paths:
-      - 'frontend/**'
-    branches: ["**"]
-  pull_request:
-    paths:
-      - 'frontend/**'
-    branches: ["**"]
+  workflow_call:
   workflow_dispatch:
 
 

@@ -1,14 +1,7 @@
 name: Demo Service CI Pipeline
 
 on:
-  push:
-    paths:
-      - backend/demo/**
-    branches: ["**"]
-  pull_request:
-    paths:
-      - backend/demo/**
-    branches: ["**"]
+  workflow_call:
   workflow_dispatch:
 
 jobs:

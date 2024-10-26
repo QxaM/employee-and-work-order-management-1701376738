@@ -1,17 +1,17 @@
 name: Postman API Tests for Demo Service
 
 on:
-  workflow_run:
-    workflows:
-      - Demo Service CI Pipeline
-    types:
-      - completed
-    conclusion: success
+  workflow_call:
   workflow_dispatch:
 
 jobs:
+  demo-backend-ci:
+    uses: ./.github/workflows/demo-service-ci.yml@main
+
   postman-tests-demo-service:
     runs-on: ubuntu-latest
+
+    needs: demo-backend-ci
 
     steps:
       - name: Checkout code
