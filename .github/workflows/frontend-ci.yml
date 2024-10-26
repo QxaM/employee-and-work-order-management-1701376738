@@ -11,6 +11,8 @@ on:
       - 'frontend/**'
     branches:
       - main
+  workflow_dispatch:
+
 
 jobs:
   frontend:
@@ -44,6 +46,5 @@ jobs:
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
-          name: frontend-coverage
           path: frontend/coverage
 
