@@ -4,13 +4,11 @@ on:
   push:
     paths:
       - 'frontend/**'
-    branches:
-      - main
+    branches: ["*"]
   pull_request:
     paths:
       - 'frontend/**'
-    branches:
-      - main
+    branches: ["*"]
   workflow_dispatch:
 
 
