@@ -7,6 +7,7 @@ on:
     types:
       - completed
     conclusion: success
+    workflow_dispatch:
 
 jobs:
   postman-tests-demo-service:
@@ -38,7 +39,7 @@ jobs:
 
       - name: Run Postman Tests
         run: newman run Demo.postman_collection.json \
-          --reporters cli,htmlextra \
+          --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
         working-directory: postman-api-tests/demo
 
