@@ -1,0 +1,46 @@
+name: Demo Service CI Pipeline
+
+on:
+  push:
+    paths:
+      - backend/demo/**
+    branches:
+      - main
+  pull_request:
+    paths:
+      - backend/demo/**
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  demo-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install dependencies
+        run: ./backend/gradlew demo:build -x test
+
+      - name: Run Lint Checks
+        run: ./backend/gradlew demo:check
+
+      - name: Run Unit Tests
+        run: ./backend/gradlew demo:test
+
+      - name: Build
+        run: ./backend/gradlew demo:assemble
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: demo-tests
+          path: backend/demo/build/reports
