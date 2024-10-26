@@ -16,7 +16,6 @@
     <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
     <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
     <rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
-    <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitch"/>
     <rule ref="category/java/bestpractices.xml/DoubleBraceInitialization"/>
     <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach"/>
     <rule ref="category/java/bestpractices.xml/ForLoopVariableCount" />
@@ -33,7 +32,6 @@
     <rule ref="category/java/bestpractices.xml/LooseCoupling"/>
     <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray" />
     <rule ref="category/java/bestpractices.xml/MissingOverride"/>
-    <rule ref="category/java/bestpractices.xml/NonExhaustiveSwitch"/>
     <rule ref="category/java/bestpractices.xml/OneDeclarationPerLine"/>
     <rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation"/>
     <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
@@ -73,7 +71,6 @@
     <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions"/>
     <rule ref="category/java/codestyle.xml/GenericsNaming"/>
     <rule ref="category/java/codestyle.xml/IdenticalCatchBranches"/>
-    <rule ref="category/java/codestyle.xml/LambdaCanBeMethodReference"/>
     <rule ref="category/java/codestyle.xml/LinguisticNaming" />
     <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions" />
     <rule ref="category/java/codestyle.xml/NoPackage"/>
@@ -129,12 +126,12 @@
     <rule ref="category/java/design.xml/ExceptionAsFlowControl" />
     <rule ref="category/java/design.xml/ExcessiveParameterList">
         <properties>
-            <property name="minimum" value="7.0" />
+            <property name="minimum" value="7" />
         </properties>
     </rule>
     <rule ref="category/java/design.xml/ExcessivePublicCount">
         <properties>
-            <property name="minimum" value="45.0" />
+            <property name="minimum" value="45" />
         </properties>
     </rule>
     <rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
@@ -154,13 +151,6 @@
         </properties>
     </rule>
     <rule ref="category/java/design.xml/UselessOverridingMethod"/>
-    <rule ref="category/java/design.xml/UseUtilityClass"/>
-    <rule ref="category/java/documentation.xml/CommentContent">
-        <properties>
-            <property name="caseSensitive" value="false" />
-            <property name="disallowedTerms" value="idiot|jerk|dupa" />
-        </properties>
-    </rule>
     <rule ref="category/java/documentation.xml/UncommentedEmptyConstructor"/>
     <rule ref="category/java/documentation.xml/UncommentedEmptyMethodBody"/>
 
@@ -211,7 +201,6 @@
     <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
     <rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass"/>
     <rule ref="category/java/errorprone.xml/MoreThanOneLogger" />
-    <rule ref="category/java/errorprone.xml/NonCaseLabelInSwitch"/>
     <rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
     <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode"/>
     <rule ref="category/java/errorprone.xml/ProperCloneImplementation"/>

@@ -36,7 +36,7 @@ pmd {
     consoleOutput = true
     toolVersion = "7.0.0"
     rulesMinimumPriority = 5
-    ruleSetFiles = files("rulesets/java/quickstart.xml")
+    ruleSetFiles = files("/src/main/resources/rulesets/java/quickstart.xml")
 }
 
 tasks.named('test') {
