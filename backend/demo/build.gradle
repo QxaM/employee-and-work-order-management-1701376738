@@ -32,11 +32,31 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+task printRuntimeClasspath {
+    def runtimeClasspath = sourceSets.main.runtimeClasspath
+    inputs.files( runtimeClasspath )
+    doLast {
+        println runtimeClasspath.join( File.pathSeparator )
+    }
+}
+
 pmd {
     consoleOutput = true
     toolVersion = "7.0.0"
     rulesMinimumPriority = 5
-    ruleSetFiles = files("/src/main/resources/rulesets/java/quickstart.xml")
+    ruleSetFiles = files("/build/resources/main/rulesets/java/quickstart.xml")
 }
 
 tasks.named('test') {
