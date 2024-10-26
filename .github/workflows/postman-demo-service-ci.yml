@@ -6,7 +6,7 @@ on:
 
 jobs:
   demo-backend-ci:
-    uses: ./.github/workflows/demo-service-ci.yml@main
+    uses: ./.github/workflows/demo-service-ci.yml
 
   postman-tests-demo-service:
     runs-on: ubuntu-latest

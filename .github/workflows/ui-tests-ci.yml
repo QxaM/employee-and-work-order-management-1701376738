@@ -11,10 +11,10 @@ on:
 
 jobs:
   frontend:
-    uses: ./.github/workflows/frontend-ci.yml@main
+    uses: ./.github/workflows/frontend-ci.yml
 
   api-tests:
-    uses: ./.github/workflows/postman-demo-service-ci.yml@main
+    uses: ./.github/workflows/postman-demo-service-ci.yml
 
   ui-tests:
     runs-on: ubuntu-latest
