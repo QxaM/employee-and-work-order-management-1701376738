@@ -8,7 +8,7 @@ jobs:
   demo-postman-tests:
     uses: ./.github/workflows/postman-demo-service-ci.yml
 
-  postman-tests-demo-service:
+  backend-api-tests:
     runs-on: ubuntu-latest
 
     needs:
