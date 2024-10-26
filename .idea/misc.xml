@@ -3,6 +3,7 @@
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/backend" />
+    <file type="web" url="file://$PROJECT_DIR$/uitests" />
   </component>
   <component name="PWA">
     <option name="enabled" value="true" />
