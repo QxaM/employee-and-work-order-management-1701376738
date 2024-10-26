@@ -56,10 +56,10 @@ jobs:
 
       - name: Run UI Tests
         run: ./gradlew test
-        working-directory: ui-tests
+        working-directory: uitests
 
       - name: Upload UI Test Report
         uses: actions/upload-artifact@v3
         with:
           name: ui-test-report
-          path: ui-tests/build/reports
+          path: uitests/build/reports
