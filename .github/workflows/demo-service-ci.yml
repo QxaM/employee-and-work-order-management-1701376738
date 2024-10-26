@@ -27,6 +27,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./backend/gradlew
+
       - name: Install dependencies
         run: ./backend/gradlew demo:build -x test
 
