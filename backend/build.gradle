@@ -1,2 +1,14 @@
+plugins {
+    id 'java'
+    id 'pmd'
+}
+
 group = 'org.maxq'
 version = '1.0-SNAPSHOT'
+
+pmd {
+    consoleOutput = true
+    toolVersion = "7.0.0"
+    rulesMinimumPriority = 5
+    ruleSetFiles = files("resources/rulesets/java/quickstart.xml")
+}
