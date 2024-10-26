@@ -1,0 +1,54 @@
+name: Postman API Tests for Demo Service
+
+on:
+  workflow_run:
+    workflows:
+      - Demo Service CI Pipeline
+    types:
+      - completed
+    conclusion: success
+  workflow_dispatch:
+
+jobs:
+  postman-tests-demo-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install HTMLExtra
+        run: npm install -g newman-reporter-htmlextra
+
+      - name: Start Demo Service
+        run: |
+          chmod +x ./gradlew
+          ./gradlew demo:bootRun &
+        working-directory: backend
+
+      - name: Wait for Backend Health Check
+        run: sleep 20
+
+      - name: Run Postman Tests
+        run: | 
+          newman run Demo.postman_collection.json \
+          --reporters='cli,htmlextra' \
+          --reporter-htmlextra-export ./results/report.html
+        working-directory: postman-api-tests/demo
+
+      - name: Debug files
+        run: ls -R
+
+      - name: Upload Postman Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: postman-report-demo-service
+          path: postman-api-tests/demo/results
