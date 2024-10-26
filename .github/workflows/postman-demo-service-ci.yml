@@ -7,7 +7,7 @@ on:
     types:
       - completed
     conclusion: success
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   postman-tests-demo-service:
@@ -38,7 +38,8 @@ jobs:
         run: sleep 20
 
       - name: Run Postman Tests
-        run: newman run Demo.postman_collection.json \
+        run: | 
+          newman run Demo.postman_collection.json \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
         working-directory: postman-api-tests/demo
