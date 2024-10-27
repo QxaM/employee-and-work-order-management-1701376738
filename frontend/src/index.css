@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .btn {
-  @apply p-2;
+  @apply px-2 py-1.5;
 }
 
 .btn-primary {
@@ -20,6 +20,22 @@
 
 .btn-secondary:hover {
   @apply bg-qxam-secondary-darker text-qxam-neutral-light;
+}
+
+.btn-secondary-lighter {
+  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+}
+
+.btn-secondary-lighter:hover {
+  @apply bg-qxam-secondary text-qxam-primary-darkest;
+}
+
+.btn-secondary-lightest {
+  @apply bg-qxam-secondary-lightest text-qxam-primary-darker;
+}
+
+.btn-secondary-lightest:hover {
+  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
 }
 
 .btn-accent {
