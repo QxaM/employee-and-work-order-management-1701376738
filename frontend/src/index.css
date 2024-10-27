@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn-primary {
+  @apply bg-qxam-primary text-qxam-neutral-light-lightest;
+}
+
+.btn-primary:hover {
+  @apply bg-qxam-primary-darker text-qxam-neutral-light;
+}
+
+.btn-secondary {
+  @apply bg-qxam-secondary text-qxam-neutral-light-lightest;
+}
+
+.btn-secondary:hover {
+  @apply bg-qxam-secondary-darker text-qxam-neutral-light;
+}
+
+.btn-accent {
+  @apply bg-qxam-accent text-qxam-neutral-light-lightest;
+}
+
+.btn-accent:hover {
+  @apply bg-qxam-accent-darker text-qxam-neutral-light;
+}
+
+.btn-destructive {
+  @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
+}
+
+.btn-destructive:hover {
+  @apply bg-qxam-error text-qxam-neutral-dark-darkest;
+}

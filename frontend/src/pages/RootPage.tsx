@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom';
 
+import MainNavigationHeader from '../components/shared/navigation/MainNavigationHeader.tsx';
+
 const RootPage = () => {
   return (
-    <div className="text-qxam-primary">
-      Test Page
+    <>
+      <MainNavigationHeader />
       <Outlet />
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -62,57 +63,6 @@ export default {
         },
       },
     },
-    plugins: [
-      function ({ addUtilities, theme }) {
-        const newUtilities = {
-          '.btn-primary': {
-            backgroundColor: theme('colors.qxam-primary.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.lightest'),
-            '&:hover': {
-              backgroundColor: theme('colors.qxam-primary.darker'),
-              color: theme('colors.qxam-neutral-light.DEFAULT'),
-            },
-          },
-          '.btn-secondary': {
-            backgroundColor: theme('colors.qxam-secondary.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.lightest'),
-            '&:hover': {
-              backgroundColor: theme('colors.qxam-secondary.darker'),
-              color: theme('colors.qxam-neutral-light.DEFAULT'),
-            },
-          },
-          '.btn-accent': {
-            backgroundColor: theme('colors.qxam-accent.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.lightest'),
-            '&:hover': {
-              backgroundColor: theme('colors.qxam-accent.darker'),
-              color: theme('colors.qxam-neutral-light.DEFAULT'),
-            },
-          },
-          '.btn-destructive': {
-            backgroundColor: theme('colors.qxam-error.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.lightest'),
-            '&:hover': {
-              backgroundColor: theme('colors.qxam-error.darker'),
-              color: theme('colors.qxam-neutral-light.DEFAULT'),
-            },
-          },
-          '.msg-success': {
-            backgroundColor: theme('colors.qxam-success.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.darkest'),
-          },
-          '.msg-warning': {
-            backgroundColor: theme('colors.qxam-warning.DEFAULT'),
-            color: theme('colors.qxam-neutral-dark.DEFAULT'),
-          },
-          '.msg-error': {
-            backgroundColor: theme('colors.qxam-error.DEFAULT'),
-            color: theme('colors.qxam-neutral-light.lightest'),
-          },
-        };
-
-        addUtilities(newUtilities, ['responsive', 'hover']);
-      },
-    ],
+    plugins: [],
   },
 };
