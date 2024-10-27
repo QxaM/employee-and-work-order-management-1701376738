@@ -40,7 +40,9 @@ const MainNavigationHeader = () => {
         </NavLink>
       </nav>
       <div className="flex justify-center items-center content-auto">
-        <button className="btn-accent">Example</button>
+        <button className="btn btn-secondary mr-2 border-qxam-accent border rounded shadow">
+          Example
+        </button>
       </div>
     </header>
   );
