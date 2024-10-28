@@ -1,4 +1,5 @@
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import Logo from '../../Logo.tsx';
 
 const MainNavigationHeader = () => {
   let navShared = 'text-lg py-1 px-2 m-2 rounded';
@@ -13,18 +14,7 @@ const MainNavigationHeader = () => {
 
   return (
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
-      <Link to="/" className="flex items-center" reloadDocument>
-        <img
-          src="/maxq-logo.jpg"
-          alt="MaxQ Logo with text panel and synthwave background"
-          height={42}
-          width={42}
-          className="m-2 shadow-xl"
-        />
-        <h1 className="text-qxam-neutral-light-lightest text-xl font-extrabold">
-          MaxQ Work Manager
-        </h1>
-      </Link>
+      <Logo />
       <nav className="flex items-center justify-center">
         <NavLink
           to="/"
