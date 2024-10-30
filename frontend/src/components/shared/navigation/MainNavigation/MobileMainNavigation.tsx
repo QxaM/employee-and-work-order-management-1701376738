@@ -7,12 +7,12 @@ import Logo from '../../Logo.tsx';
 const MobileMainNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  let navShared = 'text-xl py-4 px-2 w-2/3 m-2 rounded font-bold';
-  let navInactive =
+  const navShared = 'text-xl py-4 px-2 w-2/3 m-2 rounded font-bold';
+  const navInactive =
     navShared +
     ' text-qxam-neutral-light-lightest hover:underline hover:shadow-md' +
     ' hover:text-qxam-primary-darkest hover:bg-qxam-primary-lightest';
-  let navActive =
+  const navActive =
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
@@ -25,7 +25,7 @@ const MobileMainNavigation = () => {
           <button
             aria-label="Toggle navigation menu"
             className={`btn text-lg m-2 rounded-md border-[3px] border-qxam-primary-darkest transform transition-all duration-300 ease-in-out p-2 ${isOpen ? 'border-opacity-0' : 'border-opacity-100'}`}
-            onClick={() => setIsOpen((prevOpen) => !prevOpen)}
+            onClick={() => { setIsOpen((prevOpen) => !prevOpen); }}
           >
             <div className="flex flex-col justify-between h-5 w-6">
               {/* First line */}

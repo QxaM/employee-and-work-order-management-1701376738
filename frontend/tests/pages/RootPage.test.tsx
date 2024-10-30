@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import RootPage from '@/pages/RootPage.tsx';
+import { Size } from '@/types/WindowTypes.ts';
 
-const mockWindowSize = vi.fn();
+const mockWindowSize = vi.fn(() => ({}) as Size);
 vi.mock('@/hooks/useWindowSize.tsx', () => ({
-  default: () => mockWindowSize(),
+  default: (): Size => mockWindowSize(),
 }));
 
 describe('Root Page', () => {

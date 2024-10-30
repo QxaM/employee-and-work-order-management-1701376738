@@ -2,12 +2,12 @@ import { NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
 
 const MainNavigationHeader = () => {
-  let navShared = 'text-lg py-1 px-2 m-2 rounded';
-  let navInactive =
+  const navShared = 'text-lg py-1 px-2 m-2 rounded';
+  const navInactive =
     navShared +
     ' text-qxam-neutral-light-lightest hover:underline hover:shadow-md' +
     ' hover:text-qxam-primary-darkest hover:bg-qxam-primary-lightest';
-  let navActive =
+  const navActive =
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
