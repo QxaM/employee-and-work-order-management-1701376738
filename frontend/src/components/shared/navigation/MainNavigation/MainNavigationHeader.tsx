@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import Logo from '../../Logo.tsx';
+import Logo from '../../Logo';
 
 const MainNavigationHeader = () => {
   let navShared = 'text-lg py-1 px-2 m-2 rounded';
@@ -16,12 +16,6 @@ const MainNavigationHeader = () => {
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
       <Logo />
       <nav className="flex items-center justify-center">
-        <NavLink
-          to="/"
-          className={({ isActive }) => (isActive ? navActive : navInactive)}
-        >
-          Home
-        </NavLink>
         <NavLink
           to="/"
           className={({ isActive }) => (isActive ? navActive : navInactive)}

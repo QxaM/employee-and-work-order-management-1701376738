@@ -23,6 +23,7 @@ const MobileMainNavigation = () => {
         <Logo />
         <div className="flex justify-center items-center content-auto">
           <button
+            aria-label="Toggle navigation menu"
             className={`btn text-lg m-2 rounded-md border-[3px] border-qxam-primary-darkest transform transition-all duration-300 ease-in-out p-2 ${isOpen ? 'border-opacity-0' : 'border-opacity-100'}`}
             onClick={() => setIsOpen((prevOpen) => !prevOpen)}
           >
@@ -59,12 +60,6 @@ const MobileMainNavigation = () => {
             exit={{ height: 0, opacity: 0 }}
             className="flex flex-col items-center justify-center text-center"
           >
-            <NavLink
-              to="/"
-              className={({ isActive }) => (isActive ? navActive : navInactive)}
-            >
-              Home
-            </NavLink>
             <NavLink
               to="/"
               className={({ isActive }) => (isActive ? navActive : navInactive)}

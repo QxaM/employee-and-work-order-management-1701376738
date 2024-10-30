@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import useWindowSize from './useWindowSize.tsx';
+import useWindowSize from '../../src/hooks/useWindowSize.tsx';
 
 describe('useWindowSize', () => {
   const originalInnerWidth = window.innerWidth;

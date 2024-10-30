@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Footer from './Footer.tsx';
+import Footer from '../../../src/components/shared/Footer';
 
 describe('Footer', () => {
   it('Should contain author', () => {
