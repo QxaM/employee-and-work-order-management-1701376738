@@ -35,7 +35,7 @@ jobs:
         working-directory: frontend
 
       - name: Build Frontend
-        run: npm run build -- --build=/${{ secrets.GCS_BUCKET }}/
+        run: npm run build -- --base=/${{ secrets.GCS_BUCKET }}/
         working-directory: frontend
 
       - name: Upload Coverage Report
