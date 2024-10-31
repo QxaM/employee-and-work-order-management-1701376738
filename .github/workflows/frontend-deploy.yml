@@ -52,5 +52,6 @@ jobs:
 
       - name: Upload to Cloud Storage
         run: |
+          gsutil -m rm -r gs://'${{ secrets.GCS_BUCKET }}'/**
           gsutil -m rsync -R ./frontend/dist gs://'${{ secrets.GCS_BUCKET }}'
           gsutil iam ch allUsers:objectViewer gs://'${{ secrets.GCS_BUCKET }}'
