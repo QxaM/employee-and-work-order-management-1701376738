@@ -8,6 +8,10 @@ on:
       - completed
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+
 
 jobs:
   frontend-deploy:
@@ -27,6 +31,7 @@ jobs:
           workflow: frontend-ci.yml
           name: frontend-build
           path: frontend/dist
+          github_token: '${{ github.token }}'
 
       - name: Test build artifact
         run: ls -R
