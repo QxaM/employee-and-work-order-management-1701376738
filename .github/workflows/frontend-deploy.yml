@@ -28,7 +28,7 @@ jobs:
       - name: Download build artifact
         uses: dawidd6/action-download-artifact@v6
         with:
-          workflow: frontend-ci.yml
+          workflow: ui-tests-ci.yml
           name: frontend-build
           path: frontend/dist
           github_token: '${{ github.token }}'
