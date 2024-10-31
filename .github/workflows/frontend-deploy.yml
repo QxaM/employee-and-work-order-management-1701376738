@@ -24,7 +24,7 @@ jobs:
       - name: Download build artifact
         uses: dawidd6/action-download-artifact@v6
         with:
-          workflow: frontend
+          workflow: frontend-ci.yml
           name: frontend-build
           path: frontend/dist
 
