@@ -34,6 +34,9 @@ jobs:
           path: frontend/dist
           github_token: '${{ github.token }}'
 
+      - name: Test secrets
+        run: echo ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Authenticate to GCP
         id: auth
         uses: google-github-actions/auth@v2
