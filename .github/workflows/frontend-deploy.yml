@@ -3,7 +3,7 @@ name: Deploy frontend to Google Cloud Storage Bucket
 on:
   workflow_run:
     workflows:
-      - ui-tests
+      - UI Tests Pipeline
     types:
       - completed
   workflow_dispatch:
