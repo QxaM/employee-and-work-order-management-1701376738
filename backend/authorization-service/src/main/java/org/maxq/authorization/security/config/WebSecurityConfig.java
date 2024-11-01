@@ -1,37 +1,48 @@
 package org.maxq.authorization.security.config;
 
+import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
+import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
+import org.maxq.authorization.security.UserDetailsDbService;
+import org.maxq.authorization.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
   @Bean
-  public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-    UserDetails user = User.builder()
-        .username("admin")
-        .password(passwordEncoder.encode("admin"))
-        .roles("ADMIN")
-        .build();
-    return new InMemoryUserDetailsManager(user);
+  public AuthenticationProvider authenticationProvider(UserService userService) {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(passwordEncoder());
+    provider.setUserDetailsService(userDetailsService(userService));
+    return provider;
+  }
+
+  @Bean
+  public UserDetailsService userDetailsService(UserService userService) {
+    return new UserDetailsDbService(userService);
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
   @Bean
@@ -42,13 +53,12 @@ public class WebSecurityConfig {
                 .anyRequest().permitAll())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
-        .httpBasic(withDefaults());
+        .httpBasic(basic -> basic
+            .authenticationEntryPoint(authenticationFailureHandler()))
+        .exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint(authenticationFailureHandler())
+            .accessDeniedHandler(accessDeniedHandler()));
     return http.build();
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
   }
 
   @Bean
@@ -67,5 +77,15 @@ public class WebSecurityConfig {
     source.registerCorsConfiguration("/**", corsConfiguration);
 
     return source;
+  }
+
+  @Bean
+  public AuthenticationEntryPoint authenticationFailureHandler() {
+    return new CustomAuthenticationFailureHandler();
+  }
+
+  @Bean
+  public AccessDeniedHandler accessDeniedHandler() {
+    return new CustomAccessDeniedHandler();
   }
 }

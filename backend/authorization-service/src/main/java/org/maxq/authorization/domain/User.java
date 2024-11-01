@@ -15,7 +15,9 @@ import org.hibernate.validator.constraints.Length;
 public class User {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(generator = "user_seq")
+  @SequenceGenerator(name = "user_seq", sequenceName = "USER_SEQ",
+      initialValue = 1, allocationSize = 1)
   private Long id;
 
   @NotNull

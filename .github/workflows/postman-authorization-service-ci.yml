@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/authorization-service-ci.yml
     secrets: inherit
 
-  postman-tests-demo-service:
+  postman-tests-authorization-service:
     runs-on: ubuntu-latest
 
     needs: authorization-service-ci
@@ -39,7 +39,7 @@ jobs:
         run: sleep 20
 
       - name: Run Postman Tests
-        run: | 
+        run: |
           newman run Demo.postman_collection.json \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html

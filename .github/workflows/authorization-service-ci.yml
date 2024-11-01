@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  demo-service:
+  authorization-service:
     runs-on: ubuntu-latest
 
     steps:
