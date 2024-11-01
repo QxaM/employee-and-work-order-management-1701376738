@@ -1,0 +1,24 @@
+name: Backend services Build and Tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  demo-postman-tests:
+    uses: ./.github/workflows/postman-demo-service-ci.yml
+    secrets: inherit
+
+  backend-api-tests:
+    runs-on: ubuntu-latest
+
+    needs:
+      - demo-postman-tests
+
+    steps:
+      - name: Check previous job status
+        if: ${{ needs.demo-postman-tests.result == 'success' }}
+        run: echo Backend Integration Successful
+      - name: Fail if previous job failed
+        if: ${{ needs.demo-postman-tests.result != 'success' }}
+        run: exit 1

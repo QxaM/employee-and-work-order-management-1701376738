@@ -1,18 +1,29 @@
 name: UI Tests Pipeline
 
 on:
-  workflow_run:
-    workflows:
-      - Frontend CI Pipeline
-      - Postman API Tests for Demo Service
-    types:
-      - completed
-    conclusion: success
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
   workflow_dispatch:
 
 jobs:
+  frontend:
+    uses: ./.github/workflows/frontend-ci.yml
+    secrets: inherit
+
+  api-tests:
+    uses: ./.github/workflows/backend-api-tests.yml
+    secrets: inherit
+
   ui-tests:
     runs-on: ubuntu-latest
+
+    needs:
+      - frontend
+      - api-tests
 
     steps:
       - name: Checkout code
@@ -61,7 +72,7 @@ jobs:
         working-directory: uitests
 
       - name: Upload UI Test Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ui-test-report
           path: uitests/build/reports

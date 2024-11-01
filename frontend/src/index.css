@@ -1,68 +1,55 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.btn {
+  @apply px-2 py-1.5;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+.btn-primary {
+  @apply bg-qxam-primary text-qxam-neutral-light-lightest;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+.btn-primary:hover {
+  @apply bg-qxam-primary-darker text-qxam-neutral-light;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.btn-secondary {
+  @apply bg-qxam-secondary text-qxam-neutral-light-lightest;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.btn-secondary:hover {
+  @apply bg-qxam-secondary-darker text-qxam-neutral-light;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.btn-secondary-lighter {
+  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+}
+
+.btn-secondary-lighter:hover {
+  @apply bg-qxam-secondary text-qxam-primary-darkest;
+}
+
+.btn-secondary-lightest {
+  @apply bg-qxam-secondary-lightest text-qxam-primary-darker;
+}
+
+.btn-secondary-lightest:hover {
+  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+}
+
+.btn-accent {
+  @apply bg-qxam-accent text-qxam-neutral-light-lightest;
+}
+
+.btn-accent:hover {
+  @apply bg-qxam-accent-darker text-qxam-neutral-light;
+}
+
+.btn-destructive {
+  @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
+}
+
+.btn-destructive:hover {
+  @apply bg-qxam-error text-qxam-neutral-dark-darkest;
 }
