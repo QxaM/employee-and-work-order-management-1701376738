@@ -36,8 +36,10 @@ class UserDetailsDbServiceTest {
     UserDetails userDetails = userDetailsDbService.loadUserByUsername(USERNAME);
 
     // Then
-    assertEquals(USERNAME, userDetails.getUsername());
-    assertEquals(user.getPassword(), userDetails.getPassword());
+    assertEquals(USERNAME, userDetails.getUsername(),
+        "Wrong user found - username should be equal");
+    assertEquals(user.getPassword(), userDetails.getPassword(),
+        "Wrong user found - password should be equal");
   }
 
   @Test
@@ -49,6 +51,7 @@ class UserDetailsDbServiceTest {
     Executable executable = () -> userDetailsDbService.loadUserByUsername(USERNAME);
 
     // Then
-    assertThrows(UsernameNotFoundException.class, executable);
+    assertThrows(UsernameNotFoundException.class, executable,
+        "Service should throw error when user does not exist");
   }
 }

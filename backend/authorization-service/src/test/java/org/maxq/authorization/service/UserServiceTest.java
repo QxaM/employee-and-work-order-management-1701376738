@@ -100,6 +100,7 @@ class UserServiceTest {
     // Then
     ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, executable,
         "Service should throw ElementNotFoundException when User was not found");
-    assertTrue(exception.getMessage().contains(user.getEmail()));
+    assertTrue(exception.getMessage().contains(user.getEmail()),
+        "Exception message should contain email that lead to an error");
   }
 }
