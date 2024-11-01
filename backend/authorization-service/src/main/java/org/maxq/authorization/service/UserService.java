@@ -21,11 +21,11 @@ public class UserService {
   public void createUser(User user) throws DuplicateEmailException, DataValidationException {
     try {
       userRepository.save(user);
+    } catch (TransactionSystemException e) {
+      throw new DataValidationException("Failed email or password validation", e);
     } catch (DataIntegrityViolationException e) {
       throw new DuplicateEmailException(
           "User with this email already exists! Email: " + user.getEmail(), e);
-    } catch (TransactionSystemException e) {
-      throw new DataValidationException("Failed email or password validation", e);
     }
   }
 
