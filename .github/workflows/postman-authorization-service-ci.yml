@@ -51,21 +51,11 @@ jobs:
         working-directory: backend
 
       - name: Wait for application to be ready
-        timeout-minutes: 5
-        shell: bash
+        timeout-minutes: 2
         run: |
-          echo "Waiting for application to be ready..."
-          while true; do
-            HTTP_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" http://localhost:8081/actuator/health)
-            if [ $HTTP_RESPONSE -eq 200 ]; then
-              STATUS=$(cat response.txt | jq -r '.status')
-              if [ "$STATUS" = "UP" ]; then
-                echo "Application is up and running!"
-                exit 0
-              fi
-            fi
-            echo "Application is not ready yet. Waiting 5 seconds..."
-            sleep 5
+          until curl -v -s http://localhost:8081/actuator/health | grep -q '"status":"UP"'; do
+            echo "Waiting for application to start..."
+            sleep 3
           done
 
       - name: Wait for Backend Health Check

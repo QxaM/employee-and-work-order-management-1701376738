@@ -25,6 +25,21 @@ jobs:
       - frontend
       - api-tests
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: local_app
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: authorization-db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -53,6 +68,14 @@ jobs:
       - name: Start Demo Service
         run: ./gradlew authorization-service:bootRun &
         working-directory: backend
+
+      - name: Wait for application to be ready
+        timeout-minutes: 2
+        run: |
+          until curl -v -s http://localhost:8081/actuator/health | grep -q '"status":"UP"'; do
+            echo "Waiting for application to start..."
+            sleep 3
+          done
 
       - name: Build Frontend
         run: npm run build
