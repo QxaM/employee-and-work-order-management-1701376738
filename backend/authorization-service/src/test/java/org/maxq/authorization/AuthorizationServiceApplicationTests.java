@@ -37,7 +37,7 @@ class AuthorizationServiceApplicationTests {
         // When
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
-            log.info("Connected to: {}}", metaData.getURL());
+            log.info("Connected to: {}", metaData.getURL());
             url = metaData.getURL();
         } catch (SQLException e) {
             if (log.isErrorEnabled()){

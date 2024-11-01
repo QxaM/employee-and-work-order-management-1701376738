@@ -29,9 +29,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.postgresql:postgresql'
+    implementation 'com.google.code.gson:gson'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -43,6 +45,38 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.register('connectionTest', Test) {
+    dependsOn compileTestJava
+
+    filter {
+        includeTestsMatching "org.maxq.authorization.AuthorizationServiceApplicationTests"
+    }
+
+    // Fail fast if this test fails
+    failFast = true
+    testLogging {
+        events "failed"
+    }
+}
+
+tasks.named('connectionTest') {
+    useJUnitPlatform()
+}
+
+tasks.test {
+    dependsOn connectionTest
+
+    doFirst {
+        if (connectionTest.state.failure) {
+            throw new GradleException('Connection test failed. Halting the build.')
+        }
+    }
+
+    filter {
+        excludeTestsMatching "org.maxq.authorization.AuthorizationServiceApplicationTests"
+    }
 }
 
 pmd {
