@@ -47,7 +47,7 @@ jobs:
       - name: Start Demo Service
         run: |
           chmod +x ./gradlew
-          ./gradlew authorization-service:bootRun &
+          ./gradlew authorization-service:bootRun
         working-directory: backend
 
       - name: Wait for application to be ready
@@ -72,6 +72,7 @@ jobs:
         run: ls -R
 
       - name: Upload Postman Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: postman-report-authorization-service

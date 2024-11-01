@@ -95,6 +95,7 @@ jobs:
         working-directory: uitests
 
       - name: Upload UI Test Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ui-test-report
