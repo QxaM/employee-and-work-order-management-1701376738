@@ -49,8 +49,24 @@ jobs:
           chmod +x ./gradlew
           ./gradlew authorization-service:bootRun &
         working-directory: backend
-        env:
-          -
+
+      - name: Wait for application to be ready
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          echo "Waiting for application to be ready..."
+          while true; do
+            HTTP_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" http://localhost:8081/actuator/health)
+            if [ $HTTP_RESPONSE -eq 200 ]; then
+              STATUS=$(cat response.txt | jq -r '.status')
+              if [ "$STATUS" = "UP" ]; then
+                echo "Application is up and running!"
+                exit 0
+              fi
+            fi
+            echo "Application is not ready yet. Waiting 5 seconds..."
+            sleep 5
+          done
 
       - name: Wait for Backend Health Check
         run: sleep 20

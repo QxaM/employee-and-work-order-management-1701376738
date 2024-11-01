@@ -51,7 +51,7 @@ jobs:
         working-directory: backend
 
       - name: Start Demo Service
-        run: ./gradlew demo:bootRun &
+        run: ./gradlew authorization-service:bootRun &
         working-directory: backend
 
       - name: Build Frontend
@@ -66,7 +66,7 @@ jobs:
         run: sleep 20
 
       - name: Run UI Tests
-        run:  |
+        run: |
           chmod +x ./gradlew
           ./gradlew test
         working-directory: uitests
