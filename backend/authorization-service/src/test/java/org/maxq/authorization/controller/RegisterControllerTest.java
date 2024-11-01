@@ -5,7 +5,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -106,7 +105,6 @@ class RegisterControllerTest {
   }
 
   @ParameterizedTest
-  @EmptySource
   @ValueSource(strings = {"1"})
   void shouldReturnValidationError_WhenPasswordTooShort(String password) throws Exception {
     // Given
@@ -153,8 +151,22 @@ class RegisterControllerTest {
             .post(URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
-        .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
+  }
+
+  @Test
+  void shouldThrowMalformedJson() throws Exception {
+    // Given
+    String malformedJson = "{ test, }";
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(malformedJson))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+            Matchers.containsString("JSON parse error")));
   }
 }

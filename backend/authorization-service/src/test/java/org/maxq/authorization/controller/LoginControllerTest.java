@@ -55,4 +55,17 @@ class LoginControllerTest {
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
   }
+
+  @Test
+  @WithMockUser(username = "test@test.com")
+  void shouldReturnMethodNotAllowed_WhenGetRequest() throws Exception {
+    // Given
+    String message = "Request method GET not supported";
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL))
+        .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+  }
 }
