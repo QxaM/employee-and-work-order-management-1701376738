@@ -66,7 +66,7 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "EWM - Authorization Service.postman_collection.json"\
+          newman run "EWM - Authorization Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
         working-directory: postman-api-tests/authorization-service
