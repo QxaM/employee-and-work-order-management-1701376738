@@ -1,6 +1,7 @@
 package org.maxq.authorization.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDetailsDbService implements UserDetailsService {
@@ -23,6 +25,7 @@ public class UserDetailsDbService implements UserDetailsService {
     try {
       foundUser = userService.getUserByEmail(username);
     } catch (ElementNotFoundException e) {
+      log.error(e.getMessage(), e);
       throw new UsernameNotFoundException(e.getMessage(), e);
     }
     return new org.springframework.security.core.userdetails.User(
