@@ -1,13 +1,13 @@
-package org.maxq.demo;
+package org.maxq.authorization;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class AuthorizationServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(AuthorizationServiceApplication.class, args);
     }
 
 }

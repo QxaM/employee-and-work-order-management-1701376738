@@ -1,4 +1,4 @@
-name: Demo Service CI Pipeline
+name: Authorization Service CI Pipeline
 
 on:
   workflow_call:
@@ -22,23 +22,23 @@ jobs:
         run: chmod +x ./backend/gradlew
 
       - name: Install dependencies
-        run: ./gradlew clean demo:build -x test -x check -x assemble -x pmdMain -x pmdTest
+        run: ./gradlew clean authorization-service:build -x test -x check -x assemble -x pmdMain -x pmdTest
         working-directory: backend
 
       - name: Run Lint Checks
-        run: ./gradlew demo:check
+        run: ./gradlew authorization-service:check
         working-directory: backend
 
       - name: Run Unit Tests
-        run: ./gradlew demo:test
+        run: ./gradlew authorization-service:test
         working-directory: backend
 
       - name: Build
-        run: ./gradlew demo:assemble
+        run: ./gradlew authorization-service:assemble
         working-directory: backend
 
       - name: Upload Test Reports
         uses: actions/upload-artifact@v4
         with:
-          name: demo-tests
-          path: backend/demo/build/reports
+          name: authorization-service-tests
+          path: backend/authorization-service/build/reports

@@ -5,8 +5,21 @@
     <file type="web" url="file://$PROJECT_DIR$/backend" />
     <file type="web" url="file://$PROJECT_DIR$/uitests" />
   </component>
-  <component name="PWA">
-    <option name="enabled" value="true" />
-    <option name="wasEnabledAtLeastOnce" value="true" />
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State />
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Android</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectRootManager">
+    <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

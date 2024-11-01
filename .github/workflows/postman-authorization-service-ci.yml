@@ -5,14 +5,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  demo-backend-ci:
-    uses: ./.github/workflows/demo-service-ci.yml
+  authorization-service-ci:
+    uses: ./.github/workflows/authorization-service-ci.yml
     secrets: inherit
 
   postman-tests-demo-service:
     runs-on: ubuntu-latest
 
-    needs: demo-backend-ci
+    needs: authorization-service-ci
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
           newman run Demo.postman_collection.json \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
-        working-directory: postman-api-tests/demo
+        working-directory: postman-api-tests/authorization-service
 
       - name: Debug files
         run: ls -R
@@ -51,5 +51,5 @@ jobs:
       - name: Upload Postman Report
         uses: actions/upload-artifact@v4
         with:
-          name: postman-report-demo-service
-          path: postman-api-tests/demo/results
+          name: postman-report-authorization-service
+          path: postman-api-tests/authorization-service/results
