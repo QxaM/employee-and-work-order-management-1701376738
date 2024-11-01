@@ -554,8 +554,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", () => {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Status code is 405\", () => {\r",
+									"    pm.response.to.have.status(405);\r",
 									"});\r",
 									"\r",
 									"const response = pm.response.json();\r",
