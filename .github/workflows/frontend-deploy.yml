@@ -36,22 +36,13 @@ jobs:
           path: frontend/dist
           github_token: '${{ github.token }}'
 
-      - name: Test secrets
-        run: echo '${{ secrets.GCP_PROJECT_ID }}'
-
-      - name: Authenticate to GCP
-        id: auth
-        uses: google-github-actions/auth@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: '${{ secrets.GCP_PROJECT_ID }}'
-
-      - name: Upload to Cloud Storage
+      - name: Upload to S3
         run: |
-          gsutil -m rm -r gs://'${{ secrets.GCS_BUCKET }}'/**
-          gsutil -m rsync -R ./frontend/dist gs://'${{ secrets.GCS_BUCKET }}'
-          gsutil iam ch allUsers:objectViewer gs://'${{ secrets.GCS_BUCKET }}'
+          aws s3 sync build s3://${{ secrets.S3_BUCKET }} --delete
