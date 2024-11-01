@@ -53,7 +53,7 @@ jobs:
       - name: Start Authorization Service
         run: |
           chmod +x ./gradlew
-          ./gradlew authorization-service:bootRun
+          ./gradlew authorization-service:bootRun &
         working-directory: backend
 
       - name: Wait for application to be ready
@@ -63,9 +63,6 @@ jobs:
             echo "Waiting for application to start..."
             sleep 3
           done
-
-      - name: Wait for Backend Health Check
-        run: sleep 20
 
       - name: Run Postman Tests
         run: |
