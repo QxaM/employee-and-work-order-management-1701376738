@@ -14,6 +14,21 @@ jobs:
 
     needs: authorization-service-ci
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: local_app
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: authorization-db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,8 +47,10 @@ jobs:
       - name: Start Demo Service
         run: |
           chmod +x ./gradlew
-          ./gradlew demo:bootRun &
+          ./gradlew authorization-service:bootRun &
         working-directory: backend
+        env:
+          -
 
       - name: Wait for Backend Health Check
         run: sleep 20
