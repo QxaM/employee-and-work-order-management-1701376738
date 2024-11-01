@@ -1,10 +1,11 @@
-# GenericTemplate
+# MaxQ Employee and Work Management Platform
 
-**[Insert a brief description of your application here. Describe its purpose, functionality, etc.]**
+This application is a Mini Pet Project which allows for Employee and Work 
+Management.
 
 ## 🌐 Demo
 
-[Your Demo Link Here](http://replace-with-your-link.com)
+[Application Demo (Frontend)](http://employee-work-management.s3-website.eu-west-3.amazonaws.com/)
 
 **Demo Credentials (If applicable):**
 - **Username:** ReplaceThisWithUsername
@@ -20,6 +21,40 @@ Provide a comprehensive explanation of your software here. Dive into its core fu
 2. **Feature 2:** Brief description.
 3. **...:** Continue listing out the core features of your application.
 
+### Technology stack
+* **Frontend:**
+    * Typescript
+    * React
+    * TailwindCSS
+    * React-Router
+    * Vite + Vitest
+    * React-Testing-Library
+    * **Hosting** - AWS S3
+* **Backend:**
+    * Java
+    * Spring
+    * Gradle
+    * JUnit
+* **CI/CD:**
+    * GitHub Actions
+
+### CI/CD Pipelines
+
+Several pipelines were created to allow automated integration, testing and 
+deployment:
+
+1. Frontend CI pipeline - installs dependencies, lints, formats, tests and 
+   builds the application. Two artifacts are provided - test report 
+   (including coverage) and build files.
+2. Backend CI pipeline - installs dependencies, lints, tests and builds the 
+   application. Unit test report is published as artifact.
+3. API tests pipeline - after successfull build backend is tested with API 
+   tests. Report is published as artifact.
+4. UI tests pipeline - if both API tests and Frontend CI pipeline is 
+   successfull UI tests are triggered. Report is published as artifact
+5. Frontend CD pipeline - after successfull integration to main branch 
+   deployment will happen to AWS S3.
+
 ## 🖼️ Screenshots
 
 To give you a visual overview of the application, here are some screenshots:
@@ -29,31 +64,3 @@ To give you a visual overview of the application, here are some screenshots:
 
 ### [Another Feature or Page Name]
 ![Description of Image](http://link-to-your-image.com/image2.png)
-
-Add more screenshots as needed. Ensure to replace placeholders with appropriate links and descriptions.
-
-## ⚠️ Warning
-
-**Changing the repository name is NOT allowed.** Renaming this repository can cause issues with the peer review feature integrated into this template. 
-
-If you're planning to present this project to potential employers or external parties:
-
-1. Ensure that all functionalities work as expected.
-2. **Remove this warning section** to maintain a clean and professional look.
-
-## ✅ Best Practices to Follow
-
-To ensure high-quality projects, we recommend adhering to the following best practices:
-
-1. **Gitflow:** Always use pull requests (PRs) for introducing new features or changes. This helps in maintaining a clean commit history and enables peer reviews.
-2. **Commit Formatting:** Follow a commit convention such as Git convention or [Conventional Commits](https://www.conventionalcommits.org/). It makes the commit history readable and easy to understand.
-3. **Test Coverage:** Aim for a minimum test coverage of 80-90%. This ensures that the majority of your code is tested, reducing potential bugs and regressions.
-4. **Comprehensive README:** A well-documented README provides clarity about the project's purpose, usage, and maintenance.
-5. **Live Demo:** Always provide a live demo with login credentials (if applicable). It offers a hands-on experience of your application to users or potential employers.
-6. **Continuous Integration (CI):** Implement CI to automatically build and test your project. This ensures that your code is always in a deployable state.
-7. **Continuous Deployment (CD):** While CI is a must, having CD is a nice-to-have feature. It automates the deployment process, ensuring that the latest changes are instantly accessible to users.
-8. **Clean Code:** Avoid clutter or "junk" in your code. Ensure that your codebase is organized, commented when necessary, and follows established coding standards.
-
----
-
-Happy coding! 💻
