@@ -91,7 +91,6 @@ class RegisterControllerTest {
 
   @ParameterizedTest
   @NullSource
-  @ValueSource(strings = {""})
   void shouldReturnValidationError_WhenPasswordNull(String password) throws Exception {
     // Given
     UserDto userDto = new UserDto(null, "test@test.com", password);

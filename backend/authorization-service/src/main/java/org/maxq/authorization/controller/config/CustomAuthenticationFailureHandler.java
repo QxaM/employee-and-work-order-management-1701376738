@@ -21,6 +21,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationEntryPo
         new HttpErrorMessage("Unauthorized to access this resource, login please");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType("application/json");
-    response.getWriter().write((new Gson()).toJson(message));
+    response.getWriter().write(new Gson().toJson(message));
   }
 }

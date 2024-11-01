@@ -18,12 +18,12 @@ public class UserDetailsDbService implements UserDetailsService {
   private final UserService userService;
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String username) {
     User foundUser;
     try {
       foundUser = userService.getUserByEmail(username);
     } catch (ElementNotFoundException e) {
-      throw new UsernameNotFoundException(e.getMessage());
+      throw new UsernameNotFoundException(e.getMessage(), e);
     }
     return new org.springframework.security.core.userdetails.User(
         foundUser.getEmail(),
