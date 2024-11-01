@@ -123,7 +123,7 @@ class UserRepositoryTest {
   }
 
   @Test
-  void findByEmail() {
+  void shouldFindByEmail() {
     // Given
     userRepository.save(user);
 

@@ -75,7 +75,16 @@
     <rule ref="category/java/codestyle.xml/LinguisticNaming"/>
     <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions"/>
     <rule ref="category/java/codestyle.xml/NoPackage"/>
-    <rule ref="category/java/codestyle.xml/MethodNamingConventions"/>
+    <rule ref="category/java/codestyle.xml/MethodNamingConventions">
+        <properties>
+            <property name="methodPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="staticPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="nativePattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="junit3TestPattern" value="test[A-Z0-9][a-zA-Z0-9_]*"/>
+            <property name="junit4TestPattern" value="[a-z][a-zA-Z0-9_]*"/>
+            <property name="junit5TestPattern" value="[a-z][a-zA-Z0-9_]*"/>
+        </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/PackageCase"/>
     <rule ref="category/java/codestyle.xml/PrematureDeclaration"/>
     <rule ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement"/>
