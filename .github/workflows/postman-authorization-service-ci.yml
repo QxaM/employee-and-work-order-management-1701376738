@@ -38,13 +38,19 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
       - name: Install Newman
         run: npm install -g newman
 
       - name: Install HTMLExtra
         run: npm install -g newman-reporter-htmlextra
 
-      - name: Start Demo Service
+      - name: Start Authorization Service
         run: |
           chmod +x ./gradlew
           ./gradlew authorization-service:bootRun
