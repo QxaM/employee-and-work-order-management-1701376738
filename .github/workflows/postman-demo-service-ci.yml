@@ -7,6 +7,7 @@ on:
 jobs:
   demo-backend-ci:
     uses: ./.github/workflows/demo-service-ci.yml
+    secrets: inherit
 
   postman-tests-demo-service:
     runs-on: ubuntu-latest
