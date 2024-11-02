@@ -43,10 +43,24 @@ jobs:
 
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@v6
         with:
           context: ./backend/authorization-service
           file: ./backend/authorization-service/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/authorization-service:0.0.1
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/authorization-service:0.0.1
+            ${{ secrets.DOCKER_USERNAME }}/authorization-service:latest
           labels: authorization-service
+
+      - name: Deploy to Render
+        run: |
+          curl ${{ secrets.AUTHORIZATION_RENDER_HOOK }}
+
+      - name: Wait for application to be ready
+        timeout-minutes: 10
+        run: |
+          until curl -v -s https://${{ secrets.AUTHORIZATION_API_URL }}/actuator/health | grep -q '"status":"UP"'; do
+            echo "Waiting for application to start..."
+            sleep 3
+          done
