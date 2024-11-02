@@ -56,6 +56,10 @@ jobs:
         with:
           node-version: 18
 
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+
       - name: Install Frontend Dependencies
         run: npm ci
         working-directory: frontend
