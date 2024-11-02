@@ -2,6 +2,9 @@ name: Authorization Service CI Pipeline
 
 on:
   workflow_call:
+    secrets:
+      JWT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
 
 jobs:
