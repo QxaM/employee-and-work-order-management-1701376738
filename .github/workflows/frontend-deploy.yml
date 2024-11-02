@@ -1,12 +1,12 @@
 name: Deploy frontend to Google Cloud Storage Bucket
 
 on:
-  workflow_run:
-    workflows:
-      - UI Tests Pipeline
-    types:
-      - completed
-    secrets: inherit
+  #  workflow_run:
+  #    workflows:
+  #      - UI Tests Pipeline
+  #    types:
+  #      - completed
+  #    secrets: inherit
   workflow_dispatch:
 
 permissions:
