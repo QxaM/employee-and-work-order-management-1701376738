@@ -19,34 +19,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Getter
 class AuthorizationServiceApplicationTests {
 
-    @Autowired
-    private DataSource dataSource;
+  @Autowired
+  private DataSource dataSource;
 
-    @Test
-    void contextLoads() {
-        // Explicitly empty - just test Spring configuration
-        assertTrue(true, "Intentionally empty");
+  @Test
+  void contextLoads() {
+    // Explicitly empty - just test Spring configuration
+    assertTrue(true, "Intentionally empty");
+  }
+
+  @Test
+  void shouldConnectToJDB() {
+    // Given
+    String connectionString = "jdbc:h2:mem:testdb";
+    String url = null;
+
+    // When
+    try (Connection connection = dataSource.getConnection()) {
+      DatabaseMetaData metaData = connection.getMetaData();
+      log.info("Connected to: {}", metaData.getURL());
+      url = metaData.getURL();
+    } catch (SQLException e) {
+      if (log.isErrorEnabled()) {
+        log.error(e.getMessage());
+      }
     }
 
-    @Test
-    void shouldConnectToJDB() {
-        // Given
-        String connectionString = "jdbc:h2:mem:testdb";
-        String url = null;
-
-        // When
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            log.info("Connected to: {}", metaData.getURL());
-            url = metaData.getURL();
-        } catch (SQLException e) {
-            if (log.isErrorEnabled()){
-                log.error(e.getMessage());
-            }
-        }
-
-        // Then
-        assertEquals(connectionString, url, "Tests are not connected to internal H2 database");
-    }
+    // Then
+    assertEquals(connectionString, url, "Tests are not connected to internal H2 database");
+  }
 
 }

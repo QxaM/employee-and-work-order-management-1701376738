@@ -3,8 +3,10 @@ package org.maxq.authorization.controller;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.maxq.authorization.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,6 +15,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @WebAppConfiguration
@@ -25,6 +29,9 @@ class LoginControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
+
+  @MockBean
+  private TokenService tokenService;
 
   @BeforeEach
   void securitySetup() {
@@ -42,6 +49,21 @@ class LoginControllerTest {
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL))
         .andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com")
+  void shouldReturnToken() throws Exception {
+    // Given
+    when(tokenService.generateToken(any())).thenReturn("test-token");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.token", Matchers.is("test-token")))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.expiresIn", Matchers.is(3600)))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is("Bearer")));
   }
 
   @Test
