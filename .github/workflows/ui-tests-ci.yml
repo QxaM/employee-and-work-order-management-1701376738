@@ -16,7 +16,8 @@ jobs:
 
   api-tests:
     uses: ./.github/workflows/backend-api-tests.yml
-    secrets: inherit
+    secrets:
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
 
   ui-tests:
     runs-on: ubuntu-latest

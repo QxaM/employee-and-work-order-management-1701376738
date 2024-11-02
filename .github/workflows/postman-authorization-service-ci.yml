@@ -2,12 +2,16 @@ name: Postman API Tests for Demo Service
 
 on:
   workflow_call:
+    secrets:
+      JWT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
 
 jobs:
   authorization-service-ci:
     uses: ./.github/workflows/authorization-service-ci.yml
-    secrets: inherit
+    secrets:
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
