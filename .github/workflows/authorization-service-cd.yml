@@ -8,6 +8,11 @@ on:
     secrets: inherit
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
 jobs:
   authorization-service-deploy:
     runs-on: ubuntu-latest
