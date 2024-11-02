@@ -50,3 +50,11 @@ jobs:
         with:
           name: authorization-service-tests
           path: backend/authorization-service/build/reports
+
+      - name: Upload JAR file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: authorization-service-jar
+          path: |
+            backend/authorization-service/build/libs/authorization-service-*.jar
+            !backend/authorization-service/build/libs/authorization-service-*-plain.jar
