@@ -48,5 +48,5 @@ jobs:
           context: ./backend/authorization-service
           file: ./backend/authorization-service/Dockerfile
           push: true
-          tags: qxam/authorization-service:0.0.1
+          tags: ${{ secrets.DOCKER_USERNAME }}/authorization-service:0.0.1
           labels: authorization-service
