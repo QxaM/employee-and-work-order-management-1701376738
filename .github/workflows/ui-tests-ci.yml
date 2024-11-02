@@ -76,43 +76,28 @@ jobs:
 
       - name: Wait for application to be ready
         timeout-minutes: 2
-        shell: bash
+        env:
+          HEALTHCHECK_URL: http://localhost/actuator/health
         run: |
-          attempt=1
+          ATTEMPT=1
           
-          while [ true ]; do
-            echo "Attempt $attempt of $max_attempts"
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
           
-            # Use curl with additional flags to show connection errors
-            response=$(curl -s -f -w "\n%{http_code}" "http://localhost:8081/actuator/health" 2>&1)
-            curl_exit_code=$?
+            RESPONSE=$(curl -s $HEALTHCHECK_URL)
           
-            if [ $curl_exit_code -ne 0 ]; then
-              echo "Failed to connect: $response"
-              echo "Curl exit code: $curl_exit_code"
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
             else
-              http_code=$(echo "$response" | tail -n1)
-              body=$(echo "$response" | sed '$d')
-          
-              echo "HTTP Status: $http_code"
-              echo "Response body: $body"
-          
-              if [ "$http_code" = "200" ] && echo "$body" | grep -q '"status":"UP"'; then
-                echo "Application is UP!"
-                exit 0
-              fi
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
             fi
           
-            attempt=$((attempt + 1))
-            echo "Application not ready yet, waiting..."
-          
-            echo "Checking if port 8081 is listening:"
-            netstat -tulpn 2>/dev/null | grep ":8081" || echo "Port 8081 is not yet listening"
-          
-            sleep 10
+            ATTEMPT=$((ATTEMPT + 1))
           done
           
-          echo "Timeout waiting for application to be ready"
+          echo "Health check failed to pass within the timeout period."
           exit 1
 
       - name: Build Frontend
