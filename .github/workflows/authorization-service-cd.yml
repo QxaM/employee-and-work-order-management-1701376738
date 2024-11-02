@@ -28,7 +28,7 @@ jobs:
       - name: Download build artifact
         uses: dawidd6/action-download-artifact@v6
         with:
-          workflow: authorization-service-ci.yml
+          workflow: ui-tests-ci.yml
           name: authorization-service-jar
           path: backend/authorization-service/build/libs
           github_token: '${{ github.token }}'
