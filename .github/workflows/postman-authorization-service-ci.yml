@@ -44,17 +44,21 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install Newman
-        run: npm install -g newman
-
-      - name: Install HTMLExtra
-        run: npm install -g newman-reporter-htmlextra
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
 
       - name: Start Authorization Service
         run: |
           chmod +x ./gradlew
           ./gradlew authorization-service:bootRun &
         working-directory: backend
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install HTMLExtra
+        run: npm install -g newman-reporter-htmlextra
 
       - name: Wait for application to be ready
         timeout-minutes: 2
@@ -70,9 +74,6 @@ jobs:
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
         working-directory: postman-api-tests/authorization-service
-
-      - name: Debug files
-        run: ls -R
 
       - name: Upload Postman Report
         if: always()

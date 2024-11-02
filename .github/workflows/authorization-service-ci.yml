@@ -18,6 +18,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./backend/gradlew
 
