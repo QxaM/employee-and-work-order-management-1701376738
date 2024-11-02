@@ -74,7 +74,7 @@ jobs:
           while true; do
             echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
           
-            RESPONSE=$(curl -s $HEALTHCHECK_URL)
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
           
             if echo "$RESPONSE" | grep -q '"status":"UP"'; then
               echo "Service is up and healthy! Health check passed."
