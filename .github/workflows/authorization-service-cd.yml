@@ -58,7 +58,8 @@ jobs:
           curl ${{ secrets.AUTHORIZATION_RENDER_HOOK }}
 
       - name: Wait for application to be ready
-        timeout-minutes: 2
+        timeout-minutes: 10
+        shell: bash
         run: |
           attempt=1
           
