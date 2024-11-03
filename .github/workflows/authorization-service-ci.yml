@@ -2,6 +2,9 @@ name: Authorization Service CI Pipeline
 
 on:
   workflow_call:
+    secrets:
+      JWT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -17,6 +20,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
 
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./backend/gradlew
@@ -43,3 +50,11 @@ jobs:
         with:
           name: authorization-service-tests
           path: backend/authorization-service/build/reports
+
+      - name: Upload JAR file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: authorization-service-jar
+          path: |
+            backend/authorization-service/build/libs/authorization-service-*.jar
+            !backend/authorization-service/build/libs/authorization-service-*-plain.jar

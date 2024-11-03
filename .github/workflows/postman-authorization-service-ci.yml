@@ -2,12 +2,16 @@ name: Postman API Tests for Demo Service
 
 on:
   workflow_call:
+    secrets:
+      JWT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
 
 jobs:
   authorization-service-ci:
     uses: ./.github/workflows/authorization-service-ci.yml
-    secrets: inherit
+    secrets:
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
@@ -44,11 +48,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install Newman
-        run: npm install -g newman
-
-      - name: Install HTMLExtra
-        run: npm install -g newman-reporter-htmlextra
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
 
       - name: Start Authorization Service
         run: |
@@ -56,13 +58,38 @@ jobs:
           ./gradlew authorization-service:bootRun &
         working-directory: backend
 
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install HTMLExtra
+        run: npm install -g newman-reporter-htmlextra
+
       - name: Wait for application to be ready
         timeout-minutes: 2
+        env:
+          HEALTHCHECK_URL: http://localhost:8081/actuator/health
         run: |
-          until curl -v -s http://localhost:8081/actuator/health | grep -q '"status":"UP"'; do
-            echo "Waiting for application to start..."
-            sleep 3
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
           done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
 
       - name: Run Postman Tests
         run: |
@@ -70,9 +97,6 @@ jobs:
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html
         working-directory: postman-api-tests/authorization-service
-
-      - name: Debug files
-        run: ls -R
 
       - name: Upload Postman Report
         if: always()

@@ -6,6 +6,7 @@ build/
 **/secure.properties
 **/local*
 **/network*
+**/*private*
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

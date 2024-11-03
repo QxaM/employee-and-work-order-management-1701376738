@@ -441,7 +441,23 @@
 										"exec": [
 											"pm.test(\"Status code is 200\", () => {\r",
 											"    pm.response.to.have.status(200);\r",
-											"});"
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
 										],
 										"type": "text/javascript",
 										"packages": {}
