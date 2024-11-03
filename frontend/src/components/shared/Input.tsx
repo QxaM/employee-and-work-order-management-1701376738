@@ -1,4 +1,10 @@
-import { FormEvent, HTMLInputTypeAttribute, useState } from 'react';
+import {
+  FormEvent,
+  forwardRef,
+  HTMLInputTypeAttribute,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 import { ValidatorType } from '@/types/ValidatorTypes.ts';
 
@@ -9,9 +15,13 @@ interface InputType {
   validator?: (value: string) => ValidatorType;
 }
 
-const Input = ({ title, placeholder, type = 'text', validator }: InputType) => {
+// eslint-disable-next-line react/display-name
+const Input = forwardRef<string, InputType>((props, ref) => {
+  const { title, placeholder, type = 'text', validator } = props;
   const [value, setValue] = useState('');
   const [error, setError] = useState({} as ValidatorType);
+
+  useImperativeHandle(ref, () => value);
 
   const handleChange = (event: FormEvent<HTMLInputElement>) => {
     const currentValue = event.currentTarget.value;
@@ -24,11 +34,15 @@ const Input = ({ title, placeholder, type = 'text', validator }: InputType) => {
 
   return (
     <div className="flex flex-col gap-1 mx-4 my-2">
-      <label htmlFor={title} className="font-medium ml-2">
+      <label
+        htmlFor={title}
+        className="text-qxam-primary-extreme-dark font-medium ml-2 capitalize"
+      >
         {title}
       </label>
       <input
         id={title}
+        name={title}
         placeholder={placeholder}
         value={value}
         type={type}
@@ -55,6 +69,6 @@ const Input = ({ title, placeholder, type = 'text', validator }: InputType) => {
       )}
     </div>
   );
-};
+});
 
 export default Input;

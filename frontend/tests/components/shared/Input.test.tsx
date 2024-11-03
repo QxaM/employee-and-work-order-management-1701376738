@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Input from '@/components/shared/Input.tsx';
 import { ValidatorType } from '@/types/ValidatorTypes.ts';
 
@@ -104,5 +104,31 @@ describe('Input tests', () => {
 
     // Then
     expect(errorElement).toBeInTheDocument();
+  });
+
+  it('Should return value through ref', async () => {
+    // Given
+    const testInput = 'Test input';
+    let refValue = '';
+
+    const TestComponent = () => (
+      <Input
+        title={TITLE}
+        placeholder={PLACEHOLDER}
+        ref={(value) => {
+          refValue = value ?? '';
+        }}
+      />
+    );
+
+    // When
+    render(<TestComponent />);
+    const inputElement = screen.getByPlaceholderText(PLACEHOLDER);
+    fireEvent.change(inputElement, { target: { value: testInput } });
+
+    // Then
+    await waitFor(() => {
+      expect(refValue).toBe(testInput);
+    });
   });
 });
