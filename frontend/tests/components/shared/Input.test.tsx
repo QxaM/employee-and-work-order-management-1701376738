@@ -106,6 +106,31 @@ describe('Input tests', () => {
     expect(errorElement).toBeInTheDocument();
   });
 
+  it('Should validate on input event', async () => {
+    // Given
+    const mockValidator = vi.fn().mockReturnValue({
+      isValid: false,
+      message: 'Test message',
+    } as ValidatorType);
+    render(
+      <Input
+        title={TITLE}
+        placeholder={PLACEHOLDER}
+        validator={mockValidator}
+      />
+    );
+    const inputElement = screen.getByPlaceholderText(PLACEHOLDER);
+
+    // When
+    fireEvent.input(inputElement);
+    const errorElement = await screen.findByText('Test message', {
+      exact: false,
+    });
+
+    // Then
+    expect(errorElement).toBeInTheDocument();
+  });
+
   it('Should return value through ref', async () => {
     // Given
     const testInput = 'Test input';

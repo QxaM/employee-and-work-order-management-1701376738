@@ -19,16 +19,16 @@ interface InputType {
 const Input = forwardRef<string, InputType>((props, ref) => {
   const { title, placeholder, type = 'text', validator } = props;
   const [value, setValue] = useState('');
-  const [error, setError] = useState({} as ValidatorType);
+  const [localError, setLocalError] = useState({} as ValidatorType);
 
-  useImperativeHandle(ref, () => value);
+  useImperativeHandle(ref, () => value, [value]);
 
   const handleChange = (event: FormEvent<HTMLInputElement>) => {
     const currentValue = event.currentTarget.value;
     setValue(currentValue);
 
     if (validator) {
-      setError(validator(currentValue));
+      setLocalError(validator(currentValue));
     }
   };
 
@@ -47,9 +47,10 @@ const Input = forwardRef<string, InputType>((props, ref) => {
         value={value}
         type={type}
         onChange={handleChange}
+        onInput={handleChange}
         className="py-1 px-2 border border-qxam-accent rounded bg-qxam-accent-extreme-light focus:outline-none focus:ring-0 focus:border-qxam-accent-darker focus:border-[3px]"
       ></input>
-      {Object.entries(error).length > 0 && !error.isValid && (
+      {Object.entries(localError).length > 0 && !localError.isValid && (
         <p className="px-2 py-1 flex items-center gap-1 bg-qxam-error-extreme-light text-qxam-error-darker rounded border border-qxam-error-lightest">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +65,7 @@ const Input = forwardRef<string, InputType>((props, ref) => {
             />
           </svg>
 
-          {error.message || 'Input validation error'}
+          {localError.message || 'Input validation error'}
         </p>
       )}
     </div>
