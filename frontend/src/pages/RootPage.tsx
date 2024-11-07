@@ -15,7 +15,7 @@ const RootPage = () => {
     <div className="flex flex-col min-h-screen">
       {!isMobile && <MainNavigationHeader />}
       {isMobile && <MobileMainNavigation />}
-      <div className="flex-grow">
+      <div className="flex flex-grow">
         <Outlet />
       </div>
       <Footer />
