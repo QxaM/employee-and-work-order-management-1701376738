@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
 
 const MainNavigationHeader = () => {
@@ -24,9 +24,12 @@ const MainNavigationHeader = () => {
         </NavLink>
       </nav>
       <div className="flex justify-center items-center content-auto">
-        <button className="btn btn-secondary-lightest text-lg mr-2 border-qxam-neutral-dark-lightest border rounded shadow">
-          Example
-        </button>
+        <Link
+          to="/register"
+          className="btn btn-secondary-lightest text-lg mr-2 border-qxam-neutral-dark-lightest border rounded shadow"
+        >
+          Sign up
+        </Link>
       </div>
     </header>
   );

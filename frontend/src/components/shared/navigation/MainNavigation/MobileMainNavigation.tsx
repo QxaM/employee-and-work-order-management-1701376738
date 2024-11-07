@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -25,7 +25,9 @@ const MobileMainNavigation = () => {
           <button
             aria-label="Toggle navigation menu"
             className={`btn text-lg m-2 rounded-md border-[3px] border-qxam-primary-darkest transform transition-all duration-300 ease-in-out p-2 ${isOpen ? 'border-opacity-0' : 'border-opacity-100'}`}
-            onClick={() => { setIsOpen((prevOpen) => !prevOpen); }}
+            onClick={() => {
+              setIsOpen((prevOpen) => !prevOpen);
+            }}
           >
             <div className="flex flex-col justify-between h-5 w-6">
               {/* First line */}
@@ -72,6 +74,12 @@ const MobileMainNavigation = () => {
             >
               Test
             </NavLink>
+            <Link
+              to="/register"
+              className="text-xl py-4 px-2 w-2/3 m-2 mt-4 btn btn-secondary-lightest border-qxam-neutral-dark-lightest border rounded shadow"
+            >
+              Sign up
+            </Link>
           </motion.nav>
         )}
       </AnimatePresence>

@@ -19,7 +19,7 @@ describe('Register Page', () => {
     const emailElement = screen.getByLabelText(emailTitle);
     const passwordElement = screen.getByLabelText(passwordTitle);
     const confirmPasswordElement = screen.getByLabelText(confirmPasswordTitle);
-    const signupButton = screen.getByText(signupButtonText);
+    const signupButton = screen.getByRole('button', { name: signupButtonText });
 
     // Then
     expect(headerElement).toBeInTheDocument();

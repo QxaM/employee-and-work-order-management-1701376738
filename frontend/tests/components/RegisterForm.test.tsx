@@ -108,7 +108,9 @@ describe('Register Form', () => {
       emailElement = screen.getByLabelText(EMAIL_TITLE);
       passwordElement = screen.getByLabelText(PASSWORD_TITLE);
       confirmPasswordElement = screen.getByLabelText(CONFIRM_PASSWORD_TITLE);
-      registerButton = screen.getByText(REGISTER_BUTTON_TEXT);
+      registerButton = screen.getByRole('button', {
+        name: REGISTER_BUTTON_TEXT,
+      });
 
       vi.spyOn(console, 'log');
     });

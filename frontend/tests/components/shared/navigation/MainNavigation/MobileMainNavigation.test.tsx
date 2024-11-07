@@ -1,10 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import MobileMainNavigation from '@/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
 
 describe('Main Navigation Header', () => {
+  beforeEach(() => {
+    global.scrollTo = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   it('Should contain Logo component', () => {
     // Given
     const appName = 'MaxQ';
@@ -54,25 +62,76 @@ describe('Main Navigation Header', () => {
     expect(homeLink).toBeInTheDocument();
   });
 
-  it('Should navigate home, when "Home" is clicked', async () => {
-    // Given
-    const navHomeText = 'Home';
-    const ariaLabel = 'Toggle navigation menu';
+  describe('Navigation', () => {
+    it('Should navigate home, when "Home" is clicked', async () => {
+      // Given
+      const navHomeText = 'Home';
+      const ariaLabel = 'Toggle navigation menu';
 
-    render(<MobileMainNavigation />, {
-      wrapper: BrowserRouter,
+      render(<MobileMainNavigation />, {
+        wrapper: BrowserRouter,
+      });
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+
+      fireEvent.click(menuButton);
+      const homeLink = await screen.findByText(navHomeText, { exact: false });
+
+      // When
+      fireEvent.click(homeLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/');
     });
-    const menuButton = screen.getByRole('button', {
-      name: new RegExp(ariaLabel, 'i'),
+  });
+
+  describe('Login and Register', () => {
+    it('Should contain Register Button', async () => {
+      // Given
+      const registerButtonText = 'Sign up';
+      const ariaLabel = 'Toggle navigation menu';
+
+      render(<MobileMainNavigation />, {
+        wrapper: BrowserRouter,
+      });
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+
+      fireEvent.click(menuButton);
+
+      // When
+      const registerButton = await screen.findByRole('link', {
+        name: registerButtonText,
+      });
+
+      // Then
+      expect(registerButton).toBeInTheDocument();
     });
 
-    fireEvent.click(menuButton);
-    const homeLink = await screen.findByText(navHomeText, { exact: false });
+    it('Should navigate to register page', async () => {
+      // Given
+      const registerButtonText = 'Sign up';
+      const ariaLabel = 'Toggle navigation menu';
 
-    // When
-    fireEvent.click(homeLink);
+      render(<MobileMainNavigation />, {
+        wrapper: BrowserRouter,
+      });
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+      fireEvent.click(menuButton);
 
-    // Then
-    expect(window.location.pathname).toBe('/');
+      const registerButton = await screen.findByRole('link', {
+        name: registerButtonText,
+      });
+
+      // When
+      fireEvent.click(registerButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/register');
+    });
   });
 });
