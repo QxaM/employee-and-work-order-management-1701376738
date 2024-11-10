@@ -6,6 +6,7 @@ import {
   isValidPassword,
 } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
+import { RegisterType } from '@/types/AuthorizationTypes.ts';
 
 const RegisterForm = () => {
   const passwordRef = useRef<string>('');
@@ -38,8 +39,11 @@ const RegisterForm = () => {
       return;
     }
 
-    delete data['confirm password'];
-    console.log(data);
+    const registerData: RegisterType = {
+      email: data.email as string,
+      password: data.password as string,
+    };
+    console.log(registerData);
   };
 
   return (
