@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { apiBaseUrl } from '@/api/base.ts';
-import { RegisterType } from '@/types/AuthorizationTypes.ts';
-import { ApiErrorType } from '@/types/ApiTypes.ts';
+import { apiBaseUrl } from '../api/base.ts';
+import { RegisterType } from '../types/AuthorizationTypes.ts';
+import { ApiErrorType } from '../types/ApiTypes.ts';
 
 const REGISTER_API = '/register';
 
-interface RegistrationRequest {
+export interface RegistrationRequest {
   data: RegisterType;
   signal?: AbortSignal;
 }

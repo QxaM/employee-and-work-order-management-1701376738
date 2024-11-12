@@ -1,7 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, vi } from 'vitest';
+import { ReactNode, useRef } from 'react';
+import {
+  QueryClient,
+  QueryClientProvider,
+  UseMutationResult,
+} from '@tanstack/react-query';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
+
 import RegisterForm from '@/components/RegisterForm.tsx';
-import { afterEach, beforeEach, describe } from 'vitest';
-import { useRef } from 'react';
+import * as register from '../../src/api/auth.ts';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -13,14 +21,45 @@ vi.mock('react', async () => {
   };
 });
 
+vi.mock('react-router-dom', async () => {
+  const reactRouter = await vi.importActual('react-router-dom');
+  return {
+    ...reactRouter,
+    useNavigate: vi.fn(),
+  };
+});
+
 const EMAIL_TITLE = 'email';
 const PASSWORD_TITLE = 'password';
 const CONFIRM_PASSWORD_TITLE = 'confirm password';
 const REGISTER_BUTTON_TEXT = 'Sign up';
 
+const testWrapper = ({ children }: { children: ReactNode }) => {
+  const queryClient = new QueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </QueryClientProvider>
+  );
+};
+
 describe('Register Form', () => {
+  const mockMutate = vi.fn();
+
   beforeEach(() => {
     vi.resetModules();
+
+    vi.spyOn(register, 'useRegisterUser').mockReturnValue({
+      mutate: mockMutate,
+      isSuccess: false,
+      isError: false,
+      isPending: false,
+      error: null,
+    } as unknown as UseMutationResult<
+      void,
+      Error,
+      register.RegistrationRequest
+    >);
 
     let refValue = '';
     vi.mocked(useRef).mockImplementation(() => ({
@@ -43,7 +82,7 @@ describe('Register Form', () => {
     const headerTitle = 'Enter register details';
 
     // When
-    render(<RegisterForm />);
+    render(<RegisterForm />, { wrapper: testWrapper });
     const headerElement = screen.getByText(headerTitle);
     const emailElement = screen.getByLabelText(EMAIL_TITLE);
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
@@ -60,7 +99,7 @@ describe('Register Form', () => {
 
   it('Should validate confirm password correctly and throw error when confirm empty', async () => {
     // Given
-    render(<RegisterForm />);
+    render(<RegisterForm />, { wrapper: testWrapper });
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const confirmPasswordElement = screen.getByLabelText(
       CONFIRM_PASSWORD_TITLE
@@ -78,7 +117,7 @@ describe('Register Form', () => {
 
   it('Should validate confirm password correctly and throw error when confirm different', async () => {
     // Given
-    render(<RegisterForm />);
+    render(<RegisterForm />, { wrapper: testWrapper });
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const confirmPasswordElement = screen.getByLabelText(
       CONFIRM_PASSWORD_TITLE
@@ -101,18 +140,14 @@ describe('Register Form', () => {
     let confirmPasswordElement: HTMLElement;
     let registerButton: HTMLElement;
 
-    vi.spyOn(console, 'log');
-
     beforeEach(() => {
-      render(<RegisterForm />);
+      render(<RegisterForm />, { wrapper: testWrapper });
       emailElement = screen.getByLabelText(EMAIL_TITLE);
       passwordElement = screen.getByLabelText(PASSWORD_TITLE);
       confirmPasswordElement = screen.getByLabelText(CONFIRM_PASSWORD_TITLE);
       registerButton = screen.getByRole('button', {
         name: REGISTER_BUTTON_TEXT,
       });
-
-      vi.spyOn(console, 'log');
     });
 
     it('Should register with correct data', () => {
@@ -127,10 +162,12 @@ describe('Register Form', () => {
       fireEvent.click(registerButton);
 
       //Then
-      expect(console.log).toHaveBeenCalledOnce();
-      expect(console.log).toHaveBeenCalledWith({
-        email: 'test@test.com',
-        password: 'test123',
+      expect(mockMutate).toHaveBeenCalledOnce();
+      expect(mockMutate).toHaveBeenCalledWith({
+        data: {
+          email: 'test@test.com',
+          password: 'test123',
+        },
       });
     });
 
@@ -144,7 +181,7 @@ describe('Register Form', () => {
       fireEvent.click(registerButton);
 
       //Then
-      expect(console.log).not.toHaveBeenCalledOnce();
+      expect(mockMutate).not.toHaveBeenCalledOnce();
     });
 
     it('Should not register with invalid password', () => {
@@ -157,7 +194,7 @@ describe('Register Form', () => {
       fireEvent.click(registerButton);
 
       //Then
-      expect(console.log).not.toHaveBeenCalledOnce();
+      expect(mockMutate).not.toHaveBeenCalledOnce();
     });
 
     it('Should not register with invalid password confirmation', () => {
@@ -170,7 +207,82 @@ describe('Register Form', () => {
       fireEvent.click(registerButton);
 
       //Then
-      expect(console.log).not.toHaveBeenCalledOnce();
+      expect(mockMutate).not.toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('Rendering mutation result elements', () => {
+    it('Should render loading spinner when pending', () => {
+      // Given
+      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
+        mutate: mockMutate,
+        isSuccess: false,
+        isError: false,
+        isPending: true,
+        error: null,
+      } as unknown as UseMutationResult<
+        void,
+        Error,
+        register.RegistrationRequest
+      >);
+
+      // When
+      render(<RegisterForm />, { wrapper: testWrapper });
+      const loadingSpinner = screen.getByTestId('spinner');
+      const registerButton = screen.queryByRole('button', {
+        name: REGISTER_BUTTON_TEXT,
+      });
+
+      // Then
+      expect(loadingSpinner).toBeInTheDocument();
+      expect(registerButton).not.toBeInTheDocument();
+    });
+
+    it('Should render error element when error', () => {
+      // Given
+      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
+        mutate: mockMutate,
+        isSuccess: false,
+        isError: true,
+        isPending: false,
+        error: new Error('Test Error'),
+      } as unknown as UseMutationResult<
+        void,
+        Error,
+        register.RegistrationRequest
+      >);
+
+      // When
+      render(<RegisterForm />, { wrapper: testWrapper });
+      const errorElement = screen.getByText('Test Error');
+
+      // Then
+      expect(errorElement).toBeInTheDocument();
+    });
+
+    it('Should navigate to home when success', () => {
+      // Given
+      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
+        mutate: mockMutate,
+        isSuccess: true,
+        isError: false,
+        isPending: false,
+        error: null,
+      } as unknown as UseMutationResult<
+        void,
+        Error,
+        register.RegistrationRequest
+      >);
+
+      const mockNavigate = vi.fn();
+      vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+
+      // When
+      render(<RegisterForm />, { wrapper: testWrapper });
+
+      // Then
+      expect(mockNavigate).toHaveBeenCalledOnce();
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 });

@@ -3,6 +3,17 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import RegisterPage from '@/pages/RegisterPage.tsx';
+import { ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const testWrapper = ({ children }: { children: ReactNode }) => {
+  const queryClient = new QueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
 describe('Register Page', () => {
   it('Should contain Register Form elements', () => {
@@ -14,7 +25,7 @@ describe('Register Page', () => {
     const signupButtonText = 'Sign up';
 
     // When
-    render(<RegisterPage />, { wrapper: BrowserRouter });
+    render(<RegisterPage />, { wrapper: testWrapper });
     const headerElement = screen.getByText(headerTitle);
     const emailElement = screen.getByLabelText(emailTitle);
     const passwordElement = screen.getByLabelText(passwordTitle);

@@ -3,7 +3,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import RootPage from './pages/RootPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
-import { queryClient } from '@/api/base.ts';
+import { queryClient } from './api/base.ts';
 
 const router = createBrowserRouter([
   {

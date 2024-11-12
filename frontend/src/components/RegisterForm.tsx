@@ -1,4 +1,5 @@
 import { FormEvent, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   isValidConfirmPassword,
@@ -6,11 +7,23 @@ import {
   isValidPassword,
 } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
-import { RegisterType } from '@/types/AuthorizationTypes.ts';
+import { RegisterType } from '../types/AuthorizationTypes.ts';
+import { useRegisterUser } from '../api/auth.ts';
+import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
+import ErrorComponent from './shared/ErrorComponent.tsx';
 
 const RegisterForm = () => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
+  const navigate = useNavigate();
+
+  const {
+    isSuccess,
+    isPending,
+    isError,
+    error,
+    mutate: register,
+  } = useRegisterUser();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,7 +41,6 @@ const RegisterForm = () => {
     ) {
       if (formRef.current?.elements) {
         Array.from(formRef.current.elements).forEach((element) => {
-          console.log('Event!');
           const blurEvent = new Event('input', {
             bubbles: true,
             cancelable: true,
@@ -43,14 +55,24 @@ const RegisterForm = () => {
       email: data.email as string,
       password: data.password as string,
     };
-    console.log(registerData);
+
+    register({ data: registerData });
   };
+
+  if (isSuccess) {
+    navigate('/');
+  }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
       <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
         Enter register details
       </h2>
+      {isError && (
+        <div className="flex justify-center items-center w-full">
+          <ErrorComponent message={error.message} />
+        </div>
+      )}
       <Input
         title="email"
         placeholder="example@example.com"
@@ -73,9 +95,14 @@ const RegisterForm = () => {
         }
       />
       <div className="flex justify-end mx-4 mt-2">
-        <button type="submit" className="btn-primary px-3 py-1.5 rounded">
-          Sign up
-        </button>
+        <div className="flex w-20 h-9 justify-center items-center">
+          {!isPending && (
+            <button type="submit" className="btn-primary rounded w-full h-full">
+              Sign up
+            </button>
+          )}
+          {isPending && <LoadingSpinner size="small" />}
+        </div>
       </div>
     </form>
   );
