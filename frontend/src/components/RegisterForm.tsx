@@ -1,5 +1,6 @@
 import { FormEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   isValidConfirmPassword,
@@ -11,11 +12,14 @@ import { RegisterType } from '../types/AuthorizationTypes.ts';
 import { useRegisterUser } from '../api/auth.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from './shared/ErrorComponent.tsx';
+import { useDispatch } from 'react-redux';
+import { registerModal } from '../store/modalSlice.ts';
 
 const RegisterForm = () => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     isSuccess,
@@ -60,6 +64,15 @@ const RegisterForm = () => {
   };
 
   if (isSuccess) {
+    dispatch(
+      registerModal({
+        id: uuidv4(),
+        content: {
+          message: 'You have been registered successfully!',
+          type: 'success',
+        },
+      })
+    );
     navigate('/');
   }
 
