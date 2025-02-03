@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, vi } from 'vitest';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import { ReactNode, useRef } from 'react';
 import {
   QueryClient,
@@ -59,11 +59,7 @@ describe('Register Form', () => {
       isError: false,
       isPending: false,
       error: null,
-    } as unknown as UseMutationResult<
-      void,
-      Error,
-      register.RegistrationRequest
-    >);
+    } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
     let refValue = '';
     vi.mocked(useRef).mockImplementation(() => ({
@@ -99,6 +95,22 @@ describe('Register Form', () => {
     expect(emailElement).toBeInTheDocument();
     expect(passwordElement).toBeInTheDocument();
     expect(confirmPasswordElement).toBeInTheDocument();
+  });
+
+  it('Should have register link and message and navigate to Register page', () => {
+    // Given
+    const loginText = 'Already have an account?';
+    const loginLinkText = 'Login';
+
+    render(<RegisterForm />, { wrapper: testWrapper });
+    expect(screen.getByText(loginText)).toBeInTheDocument();
+
+    // When
+    const registerLink = screen.getByRole('link', { name: loginLinkText });
+    fireEvent.click(registerLink);
+
+    // Then
+    expect(window.location.pathname).toBe('/login');
   });
 
   it('Should validate confirm password correctly and throw error when confirm empty', async () => {
@@ -224,11 +236,7 @@ describe('Register Form', () => {
         isError: false,
         isPending: true,
         error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
@@ -250,11 +258,7 @@ describe('Register Form', () => {
         isError: true,
         isPending: false,
         error: new Error('Test Error'),
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
@@ -272,11 +276,7 @@ describe('Register Form', () => {
         isError: false,
         isPending: false,
         error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);

@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
 
 const MainNavigationHeader = () => {
   const navShared = 'text-lg py-1 px-2 m-2 rounded';
@@ -12,6 +13,8 @@ const MainNavigationHeader = () => {
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
 
+  const token = useAppSelector((state) => state.auth.token);
+
   return (
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
       <Logo />
@@ -23,14 +26,27 @@ const MainNavigationHeader = () => {
           Home
         </NavLink>
       </nav>
-      <div className="flex justify-center items-center content-auto">
-        <Link
-          to="/register"
-          className="btn btn-secondary-lightest text-lg mr-2 border-qxam-neutral-dark-lightest border rounded shadow"
-        >
-          Sign up
-        </Link>
-      </div>
+      {!token && (
+        <div className="flex justify-center items-center content-auto">
+          <Link
+            to="/register"
+            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
+          >
+            Sign up
+          </Link>
+          <Link
+            to="/login"
+            className="btn btn-primary-darkest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lighter border rounded shadow text-center"
+          >
+            Login
+          </Link>
+        </div>
+      )}
+      {token && (
+        <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
+          Welcome back!
+        </div>
+      )}
     </header>
   );
 };

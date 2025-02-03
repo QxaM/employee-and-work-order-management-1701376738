@@ -7,6 +7,7 @@ import { queryClient } from './api/base.ts';
 import { Provider } from 'react-redux';
 import { setupStore } from './store';
 import DialogManager from './components/DialogManager.tsx';
+import LoginPage from './pages/LoginPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -15,14 +16,18 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <></> },
       { path: '/register', element: <RegisterPage /> },
+      { path: '/login', element: <LoginPage /> },
     ],
   },
 ]);
 
 function App() {
+  const storedToken = localStorage.getItem('token');
+  const preloadedState = storedToken ? { auth: { token: storedToken } } : {};
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider store={setupStore()}>
+      <Provider store={setupStore(preloadedState)}>
         <RouterProvider router={router} />
         <DialogManager />
       </Provider>

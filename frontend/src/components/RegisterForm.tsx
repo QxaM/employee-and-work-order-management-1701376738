@@ -1,5 +1,5 @@
-import { FormEvent, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { FormEvent, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -63,61 +63,84 @@ const RegisterForm = () => {
     register({ data: registerData });
   };
 
-  if (isSuccess) {
-    dispatch(
-      registerModal({
-        id: uuidv4(),
-        content: {
-          message: 'You have been registered successfully!',
-          type: 'success',
-        },
-      })
-    );
-    navigate('/');
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(
+        registerModal({
+          id: uuidv4(),
+          content: {
+            message: 'You have been registered successfully!',
+            type: 'success',
+          },
+        })
+      );
+    }
+  }, [isSuccess, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/');
+    }
+  }, [isSuccess, navigate]);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
-      <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
-        Enter register details
-      </h2>
-      {isError && (
-        <div className="flex justify-center items-center w-full">
-          <ErrorComponent message={error.message} />
+    <>
+      <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
+        <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
+          Enter register details
+        </h2>
+        {isError && (
+          <div className="flex justify-center items-center w-full">
+            <ErrorComponent message={error.message} />
+          </div>
+        )}
+        <Input
+          title="email"
+          placeholder="example@example.com"
+          type="email"
+          validator={isValidEmail}
+        />
+        <Input
+          title="password"
+          placeholder="Enter password"
+          type="password"
+          validator={isValidPassword}
+          ref={passwordRef}
+        />
+        <Input
+          title="confirm password"
+          placeholder="Confirm password"
+          type="password"
+          validator={(value) =>
+            isValidConfirmPassword(passwordRef.current, value)
+          }
+        />
+        <div className="flex justify-end mx-4 mt-2">
+          <div className="flex w-20 h-9 justify-center items-center">
+            {!isPending && (
+              <button
+                type="submit"
+                className="btn-primary rounded w-full h-full"
+              >
+                Sign up
+              </button>
+            )}
+            {isPending && <LoadingSpinner size="small" />}
+          </div>
         </div>
-      )}
-      <Input
-        title="email"
-        placeholder="example@example.com"
-        type="email"
-        validator={isValidEmail}
-      />
-      <Input
-        title="password"
-        placeholder="Enter password"
-        type="password"
-        validator={isValidPassword}
-        ref={passwordRef}
-      />
-      <Input
-        title="confirm password"
-        placeholder="Confirm password"
-        type="password"
-        validator={(value) =>
-          isValidConfirmPassword(passwordRef.current, value)
-        }
-      />
-      <div className="flex justify-end mx-4 mt-2">
-        <div className="flex w-20 h-9 justify-center items-center">
-          {!isPending && (
-            <button type="submit" className="btn-primary rounded w-full h-full">
-              Sign up
-            </button>
-          )}
-          {isPending && <LoadingSpinner size="small" />}
-        </div>
+      </form>
+      <div>
+        <p className="text-center">
+          Already have an account?{' '}
+          <Link
+            to="/login"
+            className="text-qxam-secondary-darker hover:underline"
+          >
+            Login
+          </Link>
+        </p>
       </div>
-    </form>
+    </>
   );
 };
 

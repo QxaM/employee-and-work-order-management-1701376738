@@ -8,10 +8,6 @@ export interface ModalType {
   onClose: () => void;
 }
 
-export interface ModalRefType {
-  open: () => void;
-}
-
 export interface ModalData {
   id: string;
   content: Omit<ModalType, 'onClose' | 'index'>;

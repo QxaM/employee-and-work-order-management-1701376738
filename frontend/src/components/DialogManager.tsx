@@ -1,11 +1,10 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store';
 import Modal from './shared/Modal.tsx';
 import { removeModal } from '../store/modalSlice.ts';
+import { useAppDispatch, useAppSelector } from '../hooks/useStore.tsx';
 
 const DialogManager = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const modals = useSelector((state: RootState) => state.modal.modals);
+  const dispatch = useAppDispatch();
+  const modals = useAppSelector((state) => state.modal.modals);
 
   const visibleModals = modals.slice(0, 5);
 
