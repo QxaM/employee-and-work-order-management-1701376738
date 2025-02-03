@@ -68,6 +68,26 @@ describe('Login Form', () => {
     expect(loginButton).toBeInTheDocument();
   });
 
+  it('Should have register link and message and navigate to Register page', () => {
+    // Given
+    const registerText = "Don't have an account?";
+    const registerLinkText = 'Sign up';
+
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
+    expect(screen.getByText(registerText)).toBeInTheDocument();
+
+    // When
+    const registerLink = screen.getByRole('link', { name: registerLinkText });
+    fireEvent.click(registerLink);
+
+    // Then
+    expect(window.location.pathname).toBe('/register');
+  });
+
   it('Should login correctly', () => {
     // Given
     vi.spyOn(login, 'useLoginUser').mockReturnValue({
