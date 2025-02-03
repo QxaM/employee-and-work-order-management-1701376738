@@ -10,6 +10,8 @@ import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import RegisterForm from '@/components/RegisterForm.tsx';
 import * as register from '../../src/api/auth.ts';
+import { Provider } from 'react-redux';
+import { setupStore } from '@/store';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -37,9 +39,11 @@ const REGISTER_BUTTON_TEXT = 'Sign up';
 const testWrapper = ({ children }: { children: ReactNode }) => {
   const queryClient = new QueryClient();
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientProvider>
+    <Provider store={setupStore()}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>{children}</BrowserRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 };
 
