@@ -1,7 +1,7 @@
 import { ModalData } from '@/types/ModalTypes.ts';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface ModalState {
+export interface ModalState {
   modals: ModalData[];
 }
 
