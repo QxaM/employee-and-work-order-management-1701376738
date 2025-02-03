@@ -13,7 +13,7 @@ export const renderWithProviders = (
   extendedRenderOptions: ExtendedRenderOptions = {}
 ) => {
   const {
-    preloadedState,
+    preloadedState = {},
     store = setupStore(preloadedState),
     ...renderOptions
   } = extendedRenderOptions;

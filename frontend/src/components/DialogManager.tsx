@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import Modal from '@/components/shared/Modal.tsx';
-import { removeModal } from '@/store/modalSlice.ts';
+import Modal from './shared/Modal.tsx';
+import { removeModal } from '../store/modalSlice.ts';
 
 const DialogManager = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -11,9 +11,10 @@ const DialogManager = () => {
 
   return (
     <>
-      {visibleModals.map((modal) => (
+      {visibleModals.map((modal, index) => (
         <Modal
           key={modal.id}
+          index={index}
           message={modal.content.message}
           hideTimeout={modal.content.hideTimeout}
           type={modal.content.type}

@@ -1,6 +1,7 @@
 import { MODAL_TYPE } from '@/components/shared/Modal.tsx';
 
 export interface ModalType {
+  index: number;
   message: string;
   hideTimeout?: number;
   type?: keyof typeof MODAL_TYPE;
@@ -13,5 +14,5 @@ export interface ModalRefType {
 
 export interface ModalData {
   id: string;
-  content: Omit<ModalType, 'onClose'>;
+  content: Omit<ModalType, 'onClose' | 'index'>;
 }

@@ -65,10 +65,13 @@ export const MODAL_TYPE = {
 
 const Modal = ({
   message,
+  index,
   hideTimeout = 10_000,
   type = 'info',
   onClose,
 }: ModalType) => {
+  const MODAL_Y_TRANSLATION = -50;
+  const MAX_INDEX = 4;
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -97,7 +100,7 @@ const Modal = ({
             ref={dialogRef}
             className={`relative m-0 p-4 rounded-lg shadow-lg border w-full ${MODAL_TYPE[type].border} ${MODAL_TYPE[type].background} ${MODAL_TYPE[type].text}`}
             initial={{ y: 200 }}
-            animate={{ y: 0 }}
+            animate={{ y: MODAL_Y_TRANSLATION * (MAX_INDEX - index) }}
             exit={{ y: 200 }}
             transition={{ duration: 1, type: 'spring' }}
             open

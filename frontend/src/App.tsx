@@ -4,6 +4,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import RootPage from './pages/RootPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
 import { queryClient } from './api/base.ts';
+import { Provider } from 'react-redux';
+import { setupStore } from './store';
+import DialogManager from './components/DialogManager.tsx';
 
 const router = createBrowserRouter([
   {
@@ -19,7 +22,10 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />;
+      <Provider store={setupStore()}>
+        <RouterProvider router={router} />
+        <DialogManager />
+      </Provider>
     </QueryClientProvider>
   );
 }
