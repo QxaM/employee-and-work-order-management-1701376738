@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    /* Modules */
+    "module": "ESNext",
+    "baseUrl": "./",
+    "resolveJsonModule": true,
+    /* Emit */
+    "noEmit": true,
+    /* Interop Constraints */
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    /* Type Checking */
+    "strict": true,
+    /* Completeness */
+    "skipLibCheck": true
+  },
+  "include": [
+    "./tests/**/*.ts",
+    "eslint.config.mjs",
+    "playwright.config.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
