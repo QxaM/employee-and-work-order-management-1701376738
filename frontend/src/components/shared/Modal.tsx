@@ -1,8 +1,9 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
+import { ModalRefType, ModalType } from '@/types/ModalTypes.ts';
 
-const MODAL_TYPE = {
+export const MODAL_TYPE = {
   info: {
     background: 'bg-qxam-accent-extreme-light',
     text: 'text-qxam-accent-neutral-dark',
@@ -61,16 +62,6 @@ const MODAL_TYPE = {
     ),
   },
 };
-
-interface ModalType {
-  message: string;
-  hideTimeout?: number;
-  type?: keyof typeof MODAL_TYPE;
-}
-
-export interface ModalRefType {
-  open: () => void;
-}
 
 const Modal = forwardRef<ModalRefType, ModalType>(
   ({ message, hideTimeout = 10_000, type = 'info' }, ref) => {

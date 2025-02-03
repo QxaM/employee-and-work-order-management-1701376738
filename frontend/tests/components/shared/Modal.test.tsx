@@ -6,8 +6,9 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import Modal, { ModalRefType } from '@/components/shared/Modal.tsx';
+import Modal from '@/components/shared/Modal.tsx';
 import { createRef } from 'react';
+import { ModalRefType } from '@/types/ModalTypes.ts';
 
 const TEST_MESSAGE = 'Test message';
 
