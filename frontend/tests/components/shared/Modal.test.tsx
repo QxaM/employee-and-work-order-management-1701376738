@@ -7,8 +7,6 @@ import {
   waitFor,
 } from '@testing-library/react';
 import Modal from '@/components/shared/Modal.tsx';
-import { createRef } from 'react';
-import { ModalRefType } from '@/types/ModalTypes.ts';
 
 const TEST_MESSAGE = 'Test message';
 
@@ -19,25 +17,11 @@ describe('Modal Tests', () => {
     document.body.appendChild(modalRoot);
   });
   describe('Rendering', () => {
-    it('Should render nothing initially', () => {
+    it('Opens and displays the message when Modal is created', () => {
       // Given
 
       // When
-      render(<Modal message={TEST_MESSAGE} />);
-
-      // Then
-      expect(screen.queryByText(TEST_MESSAGE)).not.toBeInTheDocument();
-    });
-
-    it('Opens and displays the message when open is called', () => {
-      // Given
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} />);
-
-      // When
-      act(() => {
-        ref.current?.open();
-      });
+      render(<Modal message={TEST_MESSAGE} onClose={vi.fn()} />);
 
       // Then
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
@@ -45,11 +29,8 @@ describe('Modal Tests', () => {
 
     it('Closes when the close button is clicked', async () => {
       // Given
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} />);
-      act(() => {
-        ref.current?.open();
-      });
+      const onCloseMock = vi.fn();
+      render(<Modal message={TEST_MESSAGE} onClose={onCloseMock} />);
 
       // When
       const closeButtonLabel = '\u2715';
@@ -61,6 +42,7 @@ describe('Modal Tests', () => {
       // Then
       await waitFor(() => {
         expect(screen.queryByText(TEST_MESSAGE)).not.toBeInTheDocument();
+        expect(onCloseMock).toHaveBeenCalledOnce();
       });
     });
 
@@ -68,11 +50,8 @@ describe('Modal Tests', () => {
       // Given
       vi.useFakeTimers();
 
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} />);
-      act(() => {
-        ref.current?.open();
-      });
+      const onCloseMock = vi.fn();
+      render(<Modal message={TEST_MESSAGE} onClose={onCloseMock} />);
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
 
       // When
@@ -84,6 +63,7 @@ describe('Modal Tests', () => {
       // Then
       await waitFor(() => {
         expect(screen.queryByText(TEST_MESSAGE)).not.toBeInTheDocument();
+        expect(onCloseMock).toHaveBeenCalledOnce();
       });
 
       // Cleanup
@@ -94,11 +74,14 @@ describe('Modal Tests', () => {
       // Given
       vi.useFakeTimers();
 
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} hideTimeout={5_000} />);
-      act(() => {
-        ref.current?.open();
-      });
+      const onCloseMock = vi.fn();
+      render(
+        <Modal
+          message={TEST_MESSAGE}
+          hideTimeout={5_000}
+          onClose={onCloseMock}
+        />
+      );
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
 
       // When
@@ -110,6 +93,7 @@ describe('Modal Tests', () => {
       // Then
       await waitFor(() => {
         expect(screen.queryByText(TEST_MESSAGE)).not.toBeInTheDocument();
+        expect(onCloseMock).toHaveBeenCalledOnce();
       });
 
       // Cleanup
@@ -120,13 +104,10 @@ describe('Modal Tests', () => {
   describe('Modal style changes', () => {
     it('Should apply "info" style by default', () => {
       // Given
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} />);
+      const onCloseMock = vi.fn();
+      render(<Modal message={TEST_MESSAGE} onClose={onCloseMock} />);
 
       // When
-      act(() => {
-        ref.current?.open();
-      });
       const dialog = screen.getByRole('dialog');
 
       // Then
@@ -137,13 +118,12 @@ describe('Modal Tests', () => {
 
     it('Should apply "success" style', () => {
       // Given
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} type="success" />);
+      const onCloseMock = vi.fn();
+      render(
+        <Modal message={TEST_MESSAGE} onClose={onCloseMock} type={'success'} />
+      );
 
       // When
-      act(() => {
-        ref.current?.open();
-      });
       const dialog = screen.getByRole('dialog');
 
       // Then
@@ -154,13 +134,12 @@ describe('Modal Tests', () => {
 
     it('Should apply "error" style', () => {
       // Given
-      const ref = createRef<ModalRefType>();
-      render(<Modal ref={ref} message={TEST_MESSAGE} type="error" />);
+      const onCloseMock = vi.fn();
+      render(
+        <Modal message={TEST_MESSAGE} onClose={onCloseMock} type={'error'} />
+      );
 
       // When
-      act(() => {
-        ref.current?.open();
-      });
       const dialog = screen.getByRole('dialog');
 
       // Then

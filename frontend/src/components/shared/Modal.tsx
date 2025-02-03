@@ -1,7 +1,7 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { ModalRefType, ModalType } from '@/types/ModalTypes.ts';
+import { ModalType } from '@/types/ModalTypes.ts';
 
 export const MODAL_TYPE = {
   info: {
@@ -63,63 +63,66 @@ export const MODAL_TYPE = {
   },
 };
 
-const Modal = forwardRef<ModalRefType, ModalType>(
-  ({ message, hideTimeout = 10_000, type = 'info' }, ref) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [timer, setTimer] = useState<NodeJS.Timeout>();
-    const dialogRef = useRef<HTMLDialogElement>(null);
+const Modal = ({
+  message,
+  hideTimeout = 10_000,
+  type = 'info',
+  onClose,
+}: ModalType) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-    useImperativeHandle(ref, () => ({
-      open: () => {
-        setIsOpen(true);
-        setTimer(
-          setTimeout(() => {
-            handleClose();
-          }, hideTimeout)
-        );
-      },
-    }));
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    onClose();
+  }, [onClose]);
 
-    const handleClose = () => {
-      setIsOpen(false);
-      clearTimeout(timer);
+  useEffect(() => {
+    setIsOpen(true);
+
+    const timeout = setTimeout(() => {
+      handleClose();
+    }, hideTimeout);
+
+    return () => {
+      clearTimeout(timeout);
     };
+  }, [handleClose, hideTimeout]);
 
-    return createPortal(
-      <div className="fixed w-1/6 bottom-4 right-4 z-50">
-        <AnimatePresence>
-          {isOpen && (
-            <motion.dialog
-              ref={dialogRef}
-              className={`relative m-0 p-4 rounded-lg shadow-lg border w-full ${MODAL_TYPE[type].border} ${MODAL_TYPE[type].background} ${MODAL_TYPE[type].text}`}
-              initial={{ y: 200 }}
-              animate={{ y: 0 }}
-              exit={{ y: 200 }}
-              transition={{ duration: 1, type: 'spring' }}
-              open
-              onClose={() => {
-                setIsOpen(false);
-              }}
-            >
-              <header className="flex justify-between items-center text-center">
-                <div>{MODAL_TYPE[type].icon}</div>
-                <button
-                  className="hover:shadow-lg px-2 py-1 rounded"
-                  onClick={handleClose}
-                >
-                  ✕
-                </button>
-              </header>
-              <p className="text-center">{message}</p>
-            </motion.dialog>
-          )}
-        </AnimatePresence>
-      </div>,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      document.getElementById('modal')!
-    );
-  }
-);
+  return createPortal(
+    <div className="fixed w-1/6 bottom-4 right-4 z-50">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.dialog
+            ref={dialogRef}
+            className={`relative m-0 p-4 rounded-lg shadow-lg border w-full ${MODAL_TYPE[type].border} ${MODAL_TYPE[type].background} ${MODAL_TYPE[type].text}`}
+            initial={{ y: 200 }}
+            animate={{ y: 0 }}
+            exit={{ y: 200 }}
+            transition={{ duration: 1, type: 'spring' }}
+            open
+            onClose={() => {
+              setIsOpen(false);
+            }}
+          >
+            <header className="flex justify-between items-center text-center">
+              <div>{MODAL_TYPE[type].icon}</div>
+              <button
+                className="hover:shadow-lg px-2 py-1 rounded"
+                onClick={handleClose}
+              >
+                ✕
+              </button>
+            </header>
+            <p className="text-center">{message}</p>
+          </motion.dialog>
+        )}
+      </AnimatePresence>
+    </div>,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    document.getElementById('modal')!
+  );
+};
 
 Modal.displayName = 'Modal';
 

@@ -4,6 +4,7 @@ export interface ModalType {
   message: string;
   hideTimeout?: number;
   type?: keyof typeof MODAL_TYPE;
+  onClose: () => void;
 }
 
 export interface ModalRefType {
@@ -12,5 +13,5 @@ export interface ModalRefType {
 
 export interface ModalData {
   id: string;
-  content: ModalType;
+  content: Omit<ModalType, 'onClose'>;
 }
