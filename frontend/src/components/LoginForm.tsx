@@ -1,12 +1,12 @@
 import Input from './shared/Input.tsx';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import { useLoginUser } from '@/api/auth.ts';
-import { LoginType } from '@/types/AuthorizationTypes.ts';
-import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
-import ErrorComponent from '@/components/shared/ErrorComponent.tsx';
+import { useLoginUser } from '../api/auth.ts';
+import { LoginType } from '../types/AuthorizationTypes.ts';
+import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
+import ErrorComponent from '../components/shared/ErrorComponent.tsx';
 import { login as loginAction } from '../store/authSlice.ts';
 
 const LoginForm = () => {
@@ -29,10 +29,17 @@ const LoginForm = () => {
     login({ data: loginData });
   };
 
-  if (isSuccess) {
-    dispatch(loginAction({ token: data.token }));
-    navigate('/');
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(loginAction({ token: data.token }));
+    }
+  }, [isSuccess, data, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/');
+    }
+  }, [isSuccess, navigate]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col">

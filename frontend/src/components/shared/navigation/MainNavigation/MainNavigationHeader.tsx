@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
-import { useAppSelector } from '@/hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
 
 const MainNavigationHeader = () => {
   const navShared = 'text-lg py-1 px-2 m-2 rounded';
@@ -43,7 +43,7 @@ const MainNavigationHeader = () => {
         </div>
       )}
       {token && (
-        <div className="flex justify-center items-center content-auto text-xl">
+        <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
           Welcome back!
         </div>
       )}

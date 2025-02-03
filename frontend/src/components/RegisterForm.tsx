@@ -1,4 +1,4 @@
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -63,18 +63,25 @@ const RegisterForm = () => {
     register({ data: registerData });
   };
 
-  if (isSuccess) {
-    dispatch(
-      registerModal({
-        id: uuidv4(),
-        content: {
-          message: 'You have been registered successfully!',
-          type: 'success',
-        },
-      })
-    );
-    navigate('/');
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(
+        registerModal({
+          id: uuidv4(),
+          content: {
+            message: 'You have been registered successfully!',
+            type: 'success',
+          },
+        })
+      );
+    }
+  }, [isSuccess, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/');
+    }
+  }, [isSuccess, navigate]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>

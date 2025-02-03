@@ -1,6 +1,6 @@
 import Modal from './shared/Modal.tsx';
 import { removeModal } from '../store/modalSlice.ts';
-import { useAppDispatch, useAppSelector } from '@/hooks/useStore.tsx';
+import { useAppDispatch, useAppSelector } from '../hooks/useStore.tsx';
 
 const DialogManager = () => {
   const dispatch = useAppDispatch();

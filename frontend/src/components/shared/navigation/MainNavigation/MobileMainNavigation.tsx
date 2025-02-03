@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
-import { useAppSelector } from '@/hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
 
 const MobileMainNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +94,7 @@ const MobileMainNavigation = () => {
               </>
             )}
             {token && (
-              <div className="flex justify-center items-center content-auto text-xl">
+              <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
                 Welcome back!
               </div>
             )}
