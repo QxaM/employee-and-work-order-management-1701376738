@@ -22,9 +22,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const storedToken = localStorage.getItem('token');
+  const preloadedState = storedToken ? { auth: { token: storedToken } } : {};
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider store={setupStore()}>
+      <Provider store={setupStore(preloadedState)}>
         <RouterProvider router={router} />
         <DialogManager />
       </Provider>

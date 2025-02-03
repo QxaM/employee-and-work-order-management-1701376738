@@ -1,14 +1,18 @@
 import Input from './shared/Input.tsx';
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import { useLoginUser } from '@/api/auth.ts';
 import { LoginType } from '@/types/AuthorizationTypes.ts';
 import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
 import ErrorComponent from '@/components/shared/ErrorComponent.tsx';
+import { login as loginAction } from '../store/authSlice.ts';
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { data, isSuccess, isPending, isError, mutate: login } = useLoginUser();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -26,6 +30,7 @@ const LoginForm = () => {
   };
 
   if (isSuccess) {
+    dispatch(loginAction({ token: data.token }));
     navigate('/');
   }
 

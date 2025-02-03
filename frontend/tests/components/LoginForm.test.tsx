@@ -1,15 +1,13 @@
 import { PropsWithChildren } from 'react';
-import { Provider } from 'react-redux';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, it } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-
-import { setupStore } from '@/store';
+import { fireEvent, screen } from '@testing-library/react';
 import LoginForm from '@/components/LoginForm.tsx';
 import { QueryClientProvider, UseMutationResult } from '@tanstack/react-query';
 import { queryClient } from '@/api/base.ts';
 import { TokenType } from '@/types/AuthorizationTypes.ts';
 import * as login from '@/api/auth.ts';
+import { renderWithProviders } from '../test-utils.tsx';
 
 vi.mock('react-router-dom', async () => {
   const reactRouter = await vi.importActual('react-router-dom');
@@ -23,13 +21,11 @@ const EMAIL_TITLE = 'email';
 const PASSWORD_TITLE = 'password';
 const LOGIN_BUTTON_TEXT = 'Sign in';
 
-const testWrapper = ({ children }: PropsWithChildren) => {
+const TestWrapper = ({ children }: PropsWithChildren) => {
   return (
-    <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -55,7 +51,11 @@ describe('Login Form', () => {
     const headerTitle = 'Enter login details';
 
     // When
-    render(<LoginForm />, { wrapper: testWrapper });
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
     const headerElement = screen.getByText(headerTitle);
     const emailElement = screen.getByLabelText(EMAIL_TITLE);
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
@@ -79,7 +79,11 @@ describe('Login Form', () => {
       data: mockReturnData,
     } as unknown as UseMutationResult<TokenType, Error, login.LoginRequest>);
 
-    render(<LoginForm />, { wrapper: testWrapper });
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
     const emailElement = screen.getByLabelText(EMAIL_TITLE);
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const loginButton = screen.getByRole('button', { name: LOGIN_BUTTON_TEXT });
@@ -111,7 +115,11 @@ describe('Login Form', () => {
     } as unknown as UseMutationResult<TokenType, Error, login.LoginRequest>);
 
     // When
-    render(<LoginForm />, { wrapper: testWrapper });
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
     const loadingSpinner = screen.getByTestId('spinner');
     const loginButton = screen.queryByRole('button', {
       name: LOGIN_BUTTON_TEXT,
@@ -134,7 +142,11 @@ describe('Login Form', () => {
     } as unknown as UseMutationResult<TokenType, Error, login.LoginRequest>);
 
     // When
-    render(<LoginForm />, { wrapper: testWrapper });
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
     const errorElement = screen.getByText(
       'Login failed. Invalid email or password.'
     );
@@ -158,10 +170,49 @@ describe('Login Form', () => {
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 
     // When
-    render(<LoginForm />, { wrapper: testWrapper });
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
 
     // Then
     expect(mockNavigate).toHaveBeenCalledOnce();
     expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('Should handle login action correctly', () => {
+    // Given
+    const localStorageMock = {
+      setItem: vi.fn(),
+    };
+    vi.stubGlobal('localStorage', localStorageMock);
+
+    vi.spyOn(login, 'useLoginUser').mockReturnValue({
+      mutate: mockMutate,
+      isSuccess: true,
+      isError: false,
+      isPending: false,
+      error: null,
+      data: mockReturnData,
+    } as unknown as UseMutationResult<TokenType, Error, login.LoginRequest>);
+
+    const mockNavigate = vi.fn();
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+
+    // When
+    const { store } = renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
+
+    // Then
+    expect(store.getState().auth.token).toEqual(mockReturnData.token);
+    expect(localStorageMock.setItem).toHaveBeenCalledOnce();
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      'token',
+      mockReturnData.token
+    );
   });
 });
