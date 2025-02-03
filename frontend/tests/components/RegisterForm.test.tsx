@@ -59,11 +59,7 @@ describe('Register Form', () => {
       isError: false,
       isPending: false,
       error: null,
-    } as unknown as UseMutationResult<
-      void,
-      Error,
-      register.RegistrationRequest
-    >);
+    } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
     let refValue = '';
     vi.mocked(useRef).mockImplementation(() => ({
@@ -224,11 +220,7 @@ describe('Register Form', () => {
         isError: false,
         isPending: true,
         error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
@@ -250,11 +242,7 @@ describe('Register Form', () => {
         isError: true,
         isPending: false,
         error: new Error('Test Error'),
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
@@ -272,11 +260,7 @@ describe('Register Form', () => {
         isError: false,
         isPending: false,
         error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        register.RegistrationRequest
-      >);
+      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);
