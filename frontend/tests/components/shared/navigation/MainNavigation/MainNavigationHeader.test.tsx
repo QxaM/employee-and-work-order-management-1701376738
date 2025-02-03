@@ -75,5 +75,34 @@ describe('Main Navigation Header', () => {
       // Then
       expect(window.location.pathname).toBe('/register');
     });
+
+    it('Should contain Login Button', () => {
+      // Given
+      const loginButtonText = 'Login';
+
+      // When
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      const loginButton = screen.getByRole('link', {
+        name: loginButtonText,
+      });
+
+      // Then
+      expect(loginButton).toBeInTheDocument();
+    });
+
+    it('Should navigate to login page', () => {
+      // Given
+      const loginButtonText = 'Login';
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      const loginButton = screen.getByRole('link', {
+        name: loginButtonText,
+      });
+
+      // When
+      fireEvent.click(loginButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/login');
+    });
   });
 });

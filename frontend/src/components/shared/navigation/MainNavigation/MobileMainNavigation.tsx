@@ -80,6 +80,12 @@ const MobileMainNavigation = () => {
             >
               Sign up
             </Link>
+            <Link
+              to="/login"
+              className="text-xl py-4 px-2 w-2/3 m-2 mt-0 btn btn-primary-darkest border-qxam-neutral-dark-lighter border rounded shadow text-center"
+            >
+              Login
+            </Link>
           </motion.nav>
         )}
       </AnimatePresence>

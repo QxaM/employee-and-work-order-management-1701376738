@@ -3,53 +3,61 @@
 @tailwind utilities;
 
 .btn {
-  @apply px-2 py-1.5;
+    @apply px-2 py-1.5;
 }
 
 .btn-primary {
-  @apply bg-qxam-primary text-qxam-neutral-light-lightest;
+    @apply bg-qxam-primary text-qxam-neutral-light-lightest;
 }
 
 .btn-primary:hover {
-  @apply bg-qxam-primary-darker text-qxam-neutral-light;
+    @apply bg-qxam-primary-darker text-qxam-neutral-light;
+}
+
+.btn-primary-darkest {
+    @apply bg-qxam-primary-darkest text-qxam-neutral-light-lightest;
+}
+
+.btn-primary-darkest:hover {
+    @apply bg-qxam-primary-darker text-qxam-neutral-light;
 }
 
 .btn-secondary {
-  @apply bg-qxam-secondary text-qxam-neutral-light-lightest;
+    @apply bg-qxam-secondary text-qxam-neutral-light-lightest;
 }
 
 .btn-secondary:hover {
-  @apply bg-qxam-secondary-darker text-qxam-neutral-light;
+    @apply bg-qxam-secondary-darker text-qxam-neutral-light;
 }
 
 .btn-secondary-lighter {
-  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+    @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
 }
 
 .btn-secondary-lighter:hover {
-  @apply bg-qxam-secondary text-qxam-primary-darkest;
+    @apply bg-qxam-secondary text-qxam-primary-darkest;
 }
 
 .btn-secondary-lightest {
-  @apply bg-qxam-secondary-lightest text-qxam-primary-darker;
+    @apply bg-qxam-secondary-lightest text-qxam-primary-darker;
 }
 
 .btn-secondary-lightest:hover {
-  @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+    @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
 }
 
 .btn-accent {
-  @apply bg-qxam-accent text-qxam-neutral-light-lightest;
+    @apply bg-qxam-accent text-qxam-neutral-light-lightest;
 }
 
 .btn-accent:hover {
-  @apply bg-qxam-accent-darker text-qxam-neutral-light;
+    @apply bg-qxam-accent-darker text-qxam-neutral-light;
 }
 
 .btn-destructive {
-  @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
+    @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
 }
 
 .btn-destructive:hover {
-  @apply bg-qxam-error text-qxam-neutral-dark-darkest;
+    @apply bg-qxam-error text-qxam-neutral-dark-darkest;
 }

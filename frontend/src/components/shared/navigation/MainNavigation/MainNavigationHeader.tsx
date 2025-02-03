@@ -26,9 +26,15 @@ const MainNavigationHeader = () => {
       <div className="flex justify-center items-center content-auto">
         <Link
           to="/register"
-          className="btn btn-secondary-lightest text-lg mr-2 border-qxam-neutral-dark-lightest border rounded shadow"
+          className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
         >
           Sign up
+        </Link>
+        <Link
+          to="/login"
+          className="btn btn-primary-darkest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lighter border rounded shadow text-center"
+        >
+          Login
         </Link>
       </div>
     </header>

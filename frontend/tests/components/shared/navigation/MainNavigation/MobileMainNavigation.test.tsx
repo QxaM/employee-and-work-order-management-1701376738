@@ -133,5 +133,52 @@ describe('Main Navigation Header', () => {
       // Then
       expect(window.location.pathname).toBe('/register');
     });
+
+    it('Should contain Login Button', async () => {
+      // Given
+      const loginButtonText = 'Login';
+      const ariaLabel = 'Toggle navigation menu';
+
+      render(<MobileMainNavigation />, {
+        wrapper: BrowserRouter,
+      });
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+
+      fireEvent.click(menuButton);
+
+      // When
+      const loginButton = await screen.findByRole('link', {
+        name: loginButtonText,
+      });
+
+      // Then
+      expect(loginButton).toBeInTheDocument();
+    });
+
+    it('Should navigate to login page', async () => {
+      // Given
+      const loginButtonText = 'Login';
+      const ariaLabel = 'Toggle navigation menu';
+
+      render(<MobileMainNavigation />, {
+        wrapper: BrowserRouter,
+      });
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+      fireEvent.click(menuButton);
+
+      const loginButton = await screen.findByRole('link', {
+        name: loginButtonText,
+      });
+
+      // When
+      fireEvent.click(loginButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/login');
+    });
   });
 });
