@@ -19,28 +19,61 @@ describe('Main Navigation Header', () => {
     expect(headerElement).toBeInTheDocument();
   });
 
-  it('Should contain navigation links', () => {
-    // Given
-    const navHomeText = 'Home';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+  describe('Navigation', () => {
+    it('Should contain navigation links', () => {
+      // Given
+      const navHomeText = 'Home';
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
 
-    // When
-    const homeLink = screen.getByText(navHomeText, { exact: false });
+      // When
+      const homeLink = screen.getByText(navHomeText, { exact: false });
 
-    // Then
-    expect(homeLink).toBeInTheDocument();
+      // Then
+      expect(homeLink).toBeInTheDocument();
+    });
+
+    it('Should navigate home, when "Home" is clicked', () => {
+      // Given
+      const navHomeText = 'Home';
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      const homeLink = screen.getByText(navHomeText, { exact: false });
+
+      // When
+      fireEvent.click(homeLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/');
+    });
   });
 
-  it('Should navigate home, when "Home" is clicked', () => {
-    // Given
-    const navHomeText = 'Home';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
-    const homeLink = screen.getByText(navHomeText, { exact: false });
+  describe('Login and Register', () => {
+    it('Should contain Register Button', () => {
+      // Given
+      const registerButtonText = 'Sign up';
 
-    // When
-    fireEvent.click(homeLink);
+      // When
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      const registerButton = screen.getByRole('link', {
+        name: registerButtonText,
+      });
 
-    // Then
-    expect(window.location.pathname).toBe('/');
+      // Then
+      expect(registerButton).toBeInTheDocument();
+    });
+
+    it('Should navigate to register page', () => {
+      // Given
+      const registerButtonText = 'Sign up';
+      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      const registerButton = screen.getByRole('link', {
+        name: registerButtonText,
+      });
+
+      // When
+      fireEvent.click(registerButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/register');
+    });
   });
 });

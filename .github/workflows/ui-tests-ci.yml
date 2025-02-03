@@ -106,7 +106,7 @@ jobs:
         working-directory: frontend
 
       - name: Preview Frontend
-        run: npm run preview &
+        run: npm run dev &
         working-directory: frontend
 
       - name: Wait for services Health Check
