@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
+import { useAppSelector } from '@/hooks/useStore.tsx';
 
 const MobileMainNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +17,8 @@ const MobileMainNavigation = () => {
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
+
+  const token = useAppSelector((state) => state.auth.token);
 
   return (
     <header className="bg-qxam-primary shadow-lg">
@@ -74,18 +77,27 @@ const MobileMainNavigation = () => {
             >
               Test
             </NavLink>
-            <Link
-              to="/register"
-              className="text-xl py-4 px-2 w-2/3 m-2 mt-4 btn btn-secondary-lightest border-qxam-neutral-dark-lightest border rounded shadow"
-            >
-              Sign up
-            </Link>
-            <Link
-              to="/login"
-              className="text-xl py-4 px-2 w-2/3 m-2 mt-0 btn btn-primary-darkest border-qxam-neutral-dark-lighter border rounded shadow text-center"
-            >
-              Login
-            </Link>
+            {!token && (
+              <>
+                <Link
+                  to="/register"
+                  className="text-xl py-4 px-2 w-2/3 m-2 mt-4 btn btn-secondary-lightest border-qxam-neutral-dark-lightest border rounded shadow"
+                >
+                  Sign up
+                </Link>
+                <Link
+                  to="/login"
+                  className="text-xl py-4 px-2 w-2/3 m-2 mt-0 btn btn-primary-darkest border-qxam-neutral-dark-lighter border rounded shadow text-center"
+                >
+                  Login
+                </Link>
+              </>
+            )}
+            {token && (
+              <div className="flex justify-center items-center content-auto text-xl">
+                Welcome back!
+              </div>
+            )}
           </motion.nav>
         )}
       </AnimatePresence>

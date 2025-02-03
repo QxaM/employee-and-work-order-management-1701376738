@@ -1,14 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 
 import MainNavigationHeader from '@/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import { renderWithProviders } from '../../../../test-utils.tsx';
+import { login } from '@/store/authSlice.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
     // Given
     const appName = 'MaxQ';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+    renderWithProviders(
+      <BrowserRouter>
+        <MainNavigationHeader />
+      </BrowserRouter>
+    );
 
     // When
     const imageElement = screen.getByAltText(appName, { exact: false });
@@ -23,7 +29,11 @@ describe('Main Navigation Header', () => {
     it('Should contain navigation links', () => {
       // Given
       const navHomeText = 'Home';
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
 
       // When
       const homeLink = screen.getByText(navHomeText, { exact: false });
@@ -35,7 +45,11 @@ describe('Main Navigation Header', () => {
     it('Should navigate home, when "Home" is clicked', () => {
       // Given
       const navHomeText = 'Home';
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
       const homeLink = screen.getByText(navHomeText, { exact: false });
 
       // When
@@ -52,7 +66,11 @@ describe('Main Navigation Header', () => {
       const registerButtonText = 'Sign up';
 
       // When
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
       const registerButton = screen.getByRole('link', {
         name: registerButtonText,
       });
@@ -64,7 +82,11 @@ describe('Main Navigation Header', () => {
     it('Should navigate to register page', () => {
       // Given
       const registerButtonText = 'Sign up';
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
       const registerButton = screen.getByRole('link', {
         name: registerButtonText,
       });
@@ -81,7 +103,11 @@ describe('Main Navigation Header', () => {
       const loginButtonText = 'Login';
 
       // When
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
       const loginButton = screen.getByRole('link', {
         name: loginButtonText,
       });
@@ -93,7 +119,11 @@ describe('Main Navigation Header', () => {
     it('Should navigate to login page', () => {
       // Given
       const loginButtonText = 'Login';
-      render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
       const loginButton = screen.getByRole('link', {
         name: loginButtonText,
       });
@@ -103,6 +133,29 @@ describe('Main Navigation Header', () => {
 
       // Then
       expect(window.location.pathname).toBe('/login');
+    });
+
+    it('Should contain welcome message when logged in', () => {
+      // Given
+      const { store } = renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+
+      // When
+      act(() => {
+        store.dispatch(login({ token: '12345' }));
+      });
+
+      const loginButtonText = 'Login';
+      const loginButton = screen.queryByRole('link', {
+        name: loginButtonText,
+      });
+
+      // Then
+      expect(loginButton).not.toBeInTheDocument();
+      expect(screen.getByText('Welcome back!')).toBeInTheDocument();
     });
   });
 });

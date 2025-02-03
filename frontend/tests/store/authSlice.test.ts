@@ -24,7 +24,7 @@ describe('AuthSlice', () => {
   it('Should handle initial state', () => {
     // Given
     const initialState = {
-      token: '',
+      token: undefined,
     };
 
     // When
@@ -37,7 +37,7 @@ describe('AuthSlice', () => {
   it('Should handle login action', () => {
     // Given
     const initialState = {
-      token: '',
+      token: undefined,
     };
     const token = '12345';
 
@@ -60,7 +60,7 @@ describe('AuthSlice', () => {
     const resultState = authReducer(initialState, logout());
 
     // Then
-    expect(resultState.token).toBe('');
+    expect(resultState.token).toBe(undefined);
     expect(localStorageMock.removeItem).toHaveBeenCalledOnce();
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
   });
