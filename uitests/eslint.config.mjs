@@ -8,6 +8,10 @@ import playwright from "eslint-plugin-playwright";
 export default [
   { files: ["**/*.{js,mjs,cjs,ts}"] },
   {
+    plugins: {
+      "@typescript-eslint": tseslint,
+      playwright: playwright,
+    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
