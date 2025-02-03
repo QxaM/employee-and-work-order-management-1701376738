@@ -50,6 +50,21 @@ describe('AuthSlice', () => {
     expect(localStorageMock.setItem).toHaveBeenCalledWith('token', token);
   });
 
+  it('Should handle login action with empty token', () => {
+    // Given
+    const initialState = {
+      token: undefined,
+    };
+
+    // When
+    const resultState = authReducer(initialState, login({ token: undefined }));
+
+    // Then
+    expect(resultState.token).toBe(undefined);
+    expect(localStorageMock.removeItem).toHaveBeenCalledOnce();
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
+  });
+
   it('Should handle logout action', () => {
     // Given
     const initialState = {
