@@ -70,7 +70,7 @@ jobs:
           ./gradlew clean build
         working-directory: backend
 
-      - name: Start Demo Service
+      - name: Start Authorization Service
         run: ./gradlew authorization-service:bootRun &
         working-directory: backend
 
@@ -112,15 +112,22 @@ jobs:
       - name: Wait for services Health Check
         run: sleep 20
 
-      - name: Run UI Tests
-        run: |
-          chmod +x ./gradlew
-          ./gradlew test
+      - name: Install tests dependencies
+        run: npm ci
+        working-directory: uitests
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: uitests
+
+      - name: Run Playwright tests
+        run: npm run test
         working-directory: uitests
 
       - name: Upload UI Test Report
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: ui-test-report
-          path: uitests/build/reports
+          path: uitests/playwright-report
+          retention-days: 30
