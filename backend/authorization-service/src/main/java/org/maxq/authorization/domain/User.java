@@ -17,7 +17,7 @@ public class User {
   @Id
   @GeneratedValue(generator = "user_seq")
   @SequenceGenerator(name = "user_seq", sequenceName = "USER_SEQ",
-      initialValue = 1, allocationSize = 1)
+      allocationSize = 1)
   private Long id;
 
   @NotNull
