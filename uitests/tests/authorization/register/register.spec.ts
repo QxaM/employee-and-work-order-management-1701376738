@@ -13,6 +13,10 @@ import {
   successfullRegistrationMessage,
 } from "./register.utils";
 
+import credentials from "../../../test-data/credentials.json";
+
+const userCredentials = credentials.user;
+
 test("TC3 - should register with valid credentials", async ({
   page,
   baseURL,
@@ -150,4 +154,21 @@ test("TC4 - should validate register fields", async ({ page }) => {
     // Then
     await expect(passwordMismatchMessage(page)).toBeVisible();
   });
+});
+
+test("TC5 - should not register with invalid credentials", async ({ page }) => {
+  // Given
+  await openHomePage(page);
+  await openRegisterPage(page);
+
+  // When
+  await fillRegistrationDetails(page, {
+    email: userCredentials.login,
+    password: userCredentials.password,
+    passwordConfirmation: userCredentials.password,
+  });
+  await clickRegisterButton(page);
+
+  // Then
+  await expect(registerError(page)).toBeVisible();
 });
