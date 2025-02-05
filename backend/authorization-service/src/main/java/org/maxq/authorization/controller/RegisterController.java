@@ -2,6 +2,7 @@ package org.maxq.authorization.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.maxq.authorization.controller.api.RegisterApi;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/register")
 @RequiredArgsConstructor
-public class RegisterController {
+public class RegisterController implements RegisterApi {
 
   private final UserService userService;
   private final UserMapper userMapper;
