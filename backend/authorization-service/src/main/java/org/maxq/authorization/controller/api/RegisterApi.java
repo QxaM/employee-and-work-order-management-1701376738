@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.maxq.authorization.domain.HttpErrorMessage;
@@ -24,11 +23,9 @@ public interface RegisterApi {
           + "Provide user as request body. "
           + "User in a body will be validated"
   )
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "User registered successfully"),
-      @ApiResponse(responseCode = "400", description = "Error during registration process", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
-      })
+  @ApiResponse(responseCode = "201", description = "User registered successfully")
+  @ApiResponse(responseCode = "400", description = "Error during registration process", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })
   ResponseEntity<Void> register(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -36,7 +33,7 @@ public interface RegisterApi {
           content = @Content(
               mediaType = "application/json",
               schema = @Schema(implementation = UserDto.class),
-              examples = @ExampleObject(value = "{ \"email\": \"example@example.com\", " +
+              examples = @ExampleObject("{ \"email\": \"example@example.com\", " +
                   "\"password\": \"Example1234\" }")
           )
       )

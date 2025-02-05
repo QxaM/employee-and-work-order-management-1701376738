@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.authorization.domain.HttpErrorMessage;
@@ -20,13 +19,11 @@ public interface LoginApi {
       description = "Authenticate user and provide with JWT token in return",
       security = @SecurityRequirement(name = "basicAuth")
   )
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Successful authentication", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))
-      }),
-      @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
-      })
+  @ApiResponse(responseCode = "200", description = "Successful authentication", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))
+  })
+  @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })
   ResponseEntity<TokenDto> login(Authentication authentication);
 }

@@ -24,6 +24,7 @@ public class RegisterController implements RegisterApi {
   private final UserService userService;
   private final UserMapper userMapper;
 
+  @Override
   @PostMapping
   public ResponseEntity<Void> register(@RequestBody @Valid UserDto userDto)
       throws DataValidationException, DuplicateEmailException {
