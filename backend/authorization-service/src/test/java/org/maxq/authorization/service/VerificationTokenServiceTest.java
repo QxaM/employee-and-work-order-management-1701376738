@@ -1,17 +1,20 @@
 package org.maxq.authorization.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -24,11 +27,18 @@ class VerificationTokenServiceTest {
   @MockBean
   private VerificationTokenRepository verificationTokenRepository;
 
+  private User user;
+  private VerificationToken token;
+
+  @BeforeEach
+  void setUp() {
+    user = new User(1L, "test@test.com", "test", false);
+    token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+  }
+
   @Test
   void shouldSaveToken() {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
-    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
     when(verificationTokenRepository.save(any(VerificationToken.class))).thenReturn(token);
 
     // When
@@ -42,5 +52,36 @@ class VerificationTokenServiceTest {
           assertEquals(token.getCreationDate(), foundToken.getCreationDate(), "Creation date should match!");
         }
     );
+  }
+
+  @Test
+  void shouldGetToken() throws ElementNotFoundException {
+    // Given
+    when(verificationTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
+
+    // When
+    VerificationToken foundToken = verificationTokenService.getToken(token.getToken());
+
+    // Then
+    assertAll(() -> {
+          assertEquals(token.getId(), foundToken.getId(), "Token ID should match!");
+          assertEquals(token.getToken(), foundToken.getToken(), "Token should match!");
+          assertEquals(token.getUser().getId(), foundToken.getUser().getId(), "User ID should match!");
+          assertEquals(token.getCreationDate(), foundToken.getCreationDate(), "Creation date should match!");
+        }
+    );
+  }
+
+
+  @Test
+  void shouldThrow_When_TokenNotReturned() {
+    // Given
+    when(verificationTokenRepository.findByToken(token.getToken())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> verificationTokenService.getToken(token.getToken());
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable);
   }
 }

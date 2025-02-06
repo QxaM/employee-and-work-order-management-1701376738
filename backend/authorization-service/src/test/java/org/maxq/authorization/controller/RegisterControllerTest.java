@@ -9,12 +9,15 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.maxq.authorization.domain.User;
+import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
+import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -31,6 +34,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -42,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 class RegisterControllerTest {
 
   private static final String URL = "/register";
+  private static final String CONFIRM_URL = "/register/confirm";
   private static final String EMPTY_EMAIL_MESSAGE = "Email cannot be empty";
   private static final String EMPTY_PASSWORD_MESSAGE = "Password cannot be empty";
   private static final String PASSWORD_TOO_SHORT_MESSAGE =
@@ -57,6 +63,8 @@ class RegisterControllerTest {
   private UserMapper userMapper;
   @MockBean
   private ApplicationEventPublisher eventPublisher;
+  @MockBean
+  private VerificationTokenService verificationTokenService;
 
   @BeforeEach
   void securitySetup() {
@@ -82,7 +90,7 @@ class RegisterControllerTest {
   }
 
   @Test
-  void shouldPublishRegistrationEven() throws Exception {
+  void shouldPublishRegistrationEvent() throws Exception {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
@@ -195,6 +203,98 @@ class RegisterControllerTest {
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message",
             Matchers.containsString("JSON parse error")));
+  }
+
+  @Test
+  void shouldConfirmRegistration() throws Exception {
+    // Given
+    User user = new User(1L, "test@test.com", "test", false);
+    VerificationToken token = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1));
+
+    when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", token.getToken()))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
+  @Test
+  void shouldThrowElementNotFound_When_TokenNotFound() throws Exception {
+    // Given
+    when(verificationTokenService.getToken(anyString()))
+        .thenThrow(new ElementNotFoundException("Test error"));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", "token"))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
+  }
+
+  @Test
+  void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
+    // Given
+    User user = new User(1L, "test@test.com", "test", false);
+    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+
+    when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doThrow(new ElementNotFoundException("Test error"))
+        .when(userService).updateUser(any(User.class));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", "token"))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
+  }
+
+  @Test
+  void shouldThrowExpiredVerification_When_ExpirationBeforeNow() throws Exception {
+    // Given
+    User user = new User(1L, "test@test.com", "test", false);
+    VerificationToken token = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1));
+
+    when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", "token"))
+        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.message", Matchers.containsString("Provided verification token expired at:"))
+        );
+    verify(eventPublisher, times(1)).publishEvent(any(OnRegistrationComplete.class));
+  }
+
+  @Test
+  void shouldThrowDataValidation_When_InvalidData() throws Exception {
+    // Given
+    User user = new User(1L, "test@test.com", "test", false);
+    VerificationToken token = new VerificationToken(1L, "token", user,
+        LocalDateTime.now());
+
+    when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doThrow(new DataValidationException("Test error", new Exception()))
+        .when(userService).updateUser(any(User.class));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", "token"))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
   }
 }
 

@@ -32,7 +32,7 @@ class UserServiceTest {
 
   @BeforeEach
   void createUser() {
-    user = new User("test@test.com", "test");
+    user = new User(1L, "test@test.com", "test", false);
   }
 
 
@@ -73,6 +73,47 @@ class UserServiceTest {
     // Then
     assertThrows(DataValidationException.class, executable,
         "Service should throw DataValidationException when Transaction error detected");
+  }
+
+  @Test
+  void shouldUpdateUser_When_ValidDataProvided() {
+    // Given
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+    when(userRepository.save(user)).thenReturn(user);
+
+    // When
+    Executable executable = () -> userService.updateUser(user);
+
+    // Then
+    assertDoesNotThrow(executable, "Service should not throw when correctly saving user");
+    verify(userRepository, times(1)).save(user);
+  }
+
+  @Test
+  void shouldThrowValidationException_When_RepositoryTransactionExceptionDuringUpdate() {
+    // Given
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+    when(userRepository.save(user)).thenThrow(TransactionSystemException.class);
+
+    // When
+    Executable executable = () -> userService.updateUser(user);
+
+    // Then
+    assertThrows(DataValidationException.class, executable,
+        "Service should throw DataValidationException when Transaction error detected");
+  }
+
+  @Test
+  void shouldThrowElementNotFound_When_WrongUserProvided() {
+    // Given
+    when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> userService.updateUser(user);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable,
+        "Service should throw ElementNotFoundException when User was not found");
   }
 
   @Test
