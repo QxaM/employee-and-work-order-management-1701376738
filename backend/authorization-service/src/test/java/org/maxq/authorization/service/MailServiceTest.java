@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -22,12 +22,12 @@ class MailServiceTest {
   @Test
   void shouldSendEmail() {
     // Given
-    doNothing().when(mailSender).send(any(SimpleMailMessage.class));
+    doNothing().when(mailSender).send(any(MimeMessagePreparator.class));
 
     // When
-    mailService.sendVerificationEmail("token");
+    mailService.sendVerificationEmail("token", "test@test.com");
 
     // Then
-    verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
+    verify(mailSender, times(1)).send(any(MimeMessagePreparator.class));
   }
 }

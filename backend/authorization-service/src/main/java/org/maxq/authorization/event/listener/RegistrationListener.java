@@ -24,7 +24,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
     VerificationToken savedToken = verificationTokenService.createToken(user);
 
-    mailService.sendVerificationEmail(savedToken.getToken());
+    mailService.sendVerificationEmail(savedToken.getToken(), user.getEmail());
   }
 
   @Override

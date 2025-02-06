@@ -2,8 +2,9 @@ package org.maxq.authorization.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,15 +15,22 @@ public class MailService {
   private static final String SENDER = "noreply@maxq.com";
 
   private final JavaMailSender javaMailSender;
+  private final MailCreatorService mailCreatorService;
 
-  public void sendVerificationEmail(String token) {
-    SimpleMailMessage message = new SimpleMailMessage();
-    message.setFrom(SENDER);
-    message.setTo("pgliszczu@gmail.com");
-    message.setSubject("Verification email");
-    message.setText(token);
+  public void sendVerificationEmail(String token, String email) {
+    String message = mailCreatorService.buildVerificationEmail(token, email);
     javaMailSender.send(
-        message
+        createMimeMessage(message, email)
     );
+  }
+
+  private MimeMessagePreparator createMimeMessage(String htmlMessage, String email) {
+    return mimeMessage -> {
+      MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+      mimeMessageHelper.setFrom(SENDER);
+      mimeMessageHelper.setTo(email);
+      mimeMessageHelper.setSubject("MaxQ Work Manager Verification");
+      mimeMessageHelper.setText(htmlMessage, true);
+    };
   }
 }

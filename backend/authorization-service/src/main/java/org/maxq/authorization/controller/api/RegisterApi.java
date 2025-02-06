@@ -20,8 +20,8 @@ public interface RegisterApi {
   @Operation(
       summary = "Register new user",
       description = "Register new user in the authorization service. "
-          + "Provide user as request body. "
-          + "User in a body will be validated"
+          + "Provide user as request body. User in a body will be validated. "
+          + "Service will asynchronously send confirmation email to the user."
   )
   @ApiResponse(responseCode = "201", description = "User registered successfully")
   @ApiResponse(responseCode = "400", description = "Error during registration process", content = {
