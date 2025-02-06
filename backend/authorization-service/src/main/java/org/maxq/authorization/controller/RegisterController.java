@@ -7,8 +7,10 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
+import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ public class RegisterController implements RegisterApi {
 
   private final UserService userService;
   private final UserMapper userMapper;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   @PostMapping
@@ -30,6 +33,9 @@ public class RegisterController implements RegisterApi {
       throws DataValidationException, DuplicateEmailException {
     User user = userMapper.mapToUser(userDto);
     userService.createUser(user);
+
+    eventPublisher.publishEvent(new OnRegistrationComplete(user));
+
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 }

@@ -12,11 +12,17 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
+import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,13 +32,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @WebAppConfiguration
+@Import(MockitoPublisherConfiguration.class)
 class RegisterControllerTest {
 
   private static final String URL = "/register";
@@ -49,6 +55,8 @@ class RegisterControllerTest {
   private UserService userService;
   @MockBean
   private UserMapper userMapper;
+  @MockBean
+  private ApplicationEventPublisher eventPublisher;
 
   @BeforeEach
   void securitySetup() {
@@ -62,7 +70,8 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
-    when(userMapper.mapToUser(userDto)).thenReturn(user);
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -70,6 +79,24 @@ class RegisterControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isCreated());
+  }
+
+  @Test
+  void shouldPublishRegistrationEven() throws Exception {
+    // Given
+    UserDto userDto = new UserDto("test@test.com", "test");
+    User user = new User("test@test.com", "test");
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    doNothing().when(eventPublisher).publishEvent(any());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new Gson().toJson(userDto)))
+        .andExpect(MockMvcResultMatchers.status().isCreated());
+    verify(eventPublisher, times(1))
+        .publishEvent(any(OnRegistrationComplete.class));
   }
 
   @ParameterizedTest
@@ -168,5 +195,15 @@ class RegisterControllerTest {
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message",
             Matchers.containsString("JSON parse error")));
+  }
+}
+
+@TestConfiguration
+class MockitoPublisherConfiguration {
+
+  @Bean
+  @Primary
+  ApplicationEventPublisher publisher() {
+    return mock(ApplicationEventPublisher.class);
   }
 }
