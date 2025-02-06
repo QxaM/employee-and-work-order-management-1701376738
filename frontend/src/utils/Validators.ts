@@ -1,5 +1,10 @@
-import { ValidatorType } from '@/types/ValidatorTypes.ts';
+import {ValidatorType} from '../../src/types/ValidatorTypes.ts';
 
+/**
+ * Validates if a string is a valid email address.
+ * @param {string} value - The string to validate.
+ * @returns {ValidatorType} The validation result.
+ */
 export const isValidEmail = (value: string): ValidatorType => {
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return {
@@ -8,6 +13,11 @@ export const isValidEmail = (value: string): ValidatorType => {
   };
 };
 
+/**
+ * Validates if a string meets password requirements.
+ * @param {string} value - The password to validate.
+ * @returns {ValidatorType} The validation result.
+ */
 export const isValidPassword = (value: string): ValidatorType => {
   const minCharacters = 4;
 
@@ -22,6 +32,13 @@ export const isValidPassword = (value: string): ValidatorType => {
   };
 };
 
+/**
+ * Compares two strings for equality.
+ * @param {string} value - The first string.
+ * @param {string} other - The second string.
+ * @param {string} message - The message to return if the strings are unequal.
+ * @returns {ValidatorType} The validation result.
+ */
 export const isEqual = (
   value: string,
   other: string,
@@ -33,6 +50,12 @@ export const isEqual = (
   };
 };
 
+/**
+ * Validates if a password confirmation matches the original password.
+ * @param {string} value - The confirmation password.
+ * @param {string} other - The original password.
+ * @returns {ValidatorType} The validation result.
+ */
 export const isValidConfirmPassword = (
   value: string,
   other: string

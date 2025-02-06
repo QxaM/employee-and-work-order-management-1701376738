@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe } from 'vitest';
 
-import authReducer, { login, logout } from '@/store/authSlice';
+import authReducer, { login, logout } from '../../src/store/authSlice';
 
 const localStorageMock = {
   getItem: vi.fn(),

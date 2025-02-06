@@ -1,7 +1,18 @@
-import { Link, NavLink } from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 import Logo from '../../Logo';
-import { useAppSelector } from '../../../../hooks/useStore.tsx';
+import {useAppSelector} from '../../../../hooks/useStore.tsx';
 
+/**
+ * Renders the main navigation header with links and conditional content
+ * based on the user's authentication state.
+ *
+ * This header should be displayed on large (Web) screens.
+ *
+ * Features:
+ * - Displays the logo and navigation links.
+ * - Shows "Sign up" and "Login" links for unauthenticated users.
+ * - Displays a welcome message for authenticated users.
+ */
 const MainNavigationHeader = () => {
   const navShared = 'text-lg py-1 px-2 m-2 rounded';
   const navInactive =

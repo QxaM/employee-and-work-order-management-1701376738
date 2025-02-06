@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import Modal from '@/components/shared/Modal.tsx';
+import Modal from '../../../src/components/shared/Modal.tsx';
 
 const TEST_MESSAGE = 'Test message';
 

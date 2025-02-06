@@ -1,8 +1,8 @@
 import { beforeAll, describe, it } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import { registerModal } from '@/store/modalSlice.ts';
+import { registerModal } from '../../src/store/modalSlice.ts';
 import { renderWithProviders } from '../test-utils.tsx';
-import DialogManager from '@/components/DialogManager.tsx';
+import DialogManager from '../../src/components/DialogManager.tsx';
 
 describe('Dialog Manager', () => {
   beforeAll(() => {

@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import Input from '@/components/shared/Input.tsx';
-import { ValidatorType } from '@/types/ValidatorTypes.ts';
+import Input from '../../../src/components/shared/Input.tsx';
+import { ValidatorType } from '../../../src/types/ValidatorTypes.ts';
 
 describe('Input tests', () => {
   const TITLE = 'Test label';

@@ -1,5 +1,9 @@
 import RegisterForm from '../components/RegisterForm.tsx';
 
+/**
+ * Renders the Register page with a centered `RegisterPage` component, Register page is opened when
+ * navigating to /register
+ */
 const RegisterPage = () => {
   return (
     <div className="flex flex-grow items-center justify-center w-full">

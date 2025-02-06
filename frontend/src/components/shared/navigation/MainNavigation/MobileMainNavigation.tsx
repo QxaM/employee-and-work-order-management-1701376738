@@ -1,10 +1,22 @@
-import { Link, NavLink } from 'react-router-dom';
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import {Link, NavLink} from 'react-router-dom';
+import {useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
-import { useAppSelector } from '../../../../hooks/useStore.tsx';
+import {useAppSelector} from '../../../../hooks/useStore.tsx';
 
+/**
+ * Renders the main navigation header with links and conditional content
+ * based on the user's authentication state and navigation opened state.
+ *
+ * This header should be displayed on mobile screens.
+ *
+ * Features:
+ * - Displays the logo and navigation links.
+ * - Shows hamburger button to open navigation manu
+ * - Shows "Sign up" and "Login" links for unauthenticated users.
+ * - Displays a welcome message for authenticated users.
+ */
 const MobileMainNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 

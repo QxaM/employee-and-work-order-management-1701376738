@@ -27,6 +27,23 @@ interface SpinnerType {
   color?: ColorType;
 }
 
+/**
+ * Animated loading spinner customizable component utilizing.
+ *
+ * @param {SpinnerType} props - Props for the LoadingSpinner component.
+ * @param {SizeType} [props.size="medium"] - The size of the spinner; options are "small", "medium", or
+ * "large".
+ * @param {ColorType} [props.color="primary"] - The color theme of the spinner; options include
+ * "primary", "secondary", "accent", etc.
+ *
+ * @example
+ * // Render a medium primary-colored spinner:
+ * <LoadingSpinner />
+ *
+ * // Render a large spinner with an error color theme:
+ * <LoadingSpinner size="large" color="error" />
+ */
+
 const LoadingSpinner = ({
   size = 'medium',
   color = 'primary',

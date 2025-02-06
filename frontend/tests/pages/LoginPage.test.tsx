@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 
-import { setupStore } from '@/store';
+import { setupStore } from '../../src/store';
 import { BrowserRouter } from 'react-router-dom';
-import LoginPage from '@/pages/LoginPage.tsx';
+import LoginPage from '../../src/pages/LoginPage.tsx';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/api/base.ts';
+import { queryClient } from '../../src/api/base.ts';
 
 const testWrapper = ({ children }: PropsWithChildren) => {
   return (
