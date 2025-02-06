@@ -1,20 +1,27 @@
-import { FormEvent, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import {FormEvent, useEffect, useRef} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {v4 as uuidv4} from 'uuid';
 
-import {
-  isValidConfirmPassword,
-  isValidEmail,
-  isValidPassword,
-} from '../utils/Validators.ts';
+import {isValidConfirmPassword, isValidEmail, isValidPassword,} from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
-import { RegisterType } from '../types/AuthorizationTypes.ts';
-import { useRegisterUser } from '../api/auth.ts';
+import {RegisterType} from '../types/AuthorizationTypes.ts';
+import {useRegisterUser} from '../api/auth.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from './shared/ErrorComponent.tsx';
-import { useDispatch } from 'react-redux';
-import { registerModal } from '../store/modalSlice.ts';
+import {useDispatch} from 'react-redux';
+import {registerModal} from '../store/modalSlice.ts';
 
+/**
+ * A user register form component with validation and API interaction.
+ *
+ * The register form component should be present on the RegisterPage.
+ *
+ * The `RegisterForm` component allows users to enter their Registration details
+ * and submit the information to register. Entered data is also validated for correctness.
+ * It handles loading states, error states and successful registration by dispatching Redux
+ * actions and navigating the user upon success to the main page.
+ *
+ */
 const RegisterForm = () => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);

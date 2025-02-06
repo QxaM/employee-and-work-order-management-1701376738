@@ -2,11 +2,11 @@ import { describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import RegisterPage from '@/pages/RegisterPage.tsx';
+import RegisterPage from '../../src/pages/RegisterPage.tsx';
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
-import { setupStore } from '@/store';
+import { setupStore } from '../../src/store';
 
 const testWrapper = ({ children }: { children: ReactNode }) => {
   const queryClient = new QueryClient();

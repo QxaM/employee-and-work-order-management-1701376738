@@ -8,10 +8,10 @@ import {
 } from '@tanstack/react-query';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 
-import RegisterForm from '@/components/RegisterForm.tsx';
+import RegisterForm from '../../src/components/RegisterForm.tsx';
 import * as register from '../../src/api/auth.ts';
 import { Provider } from 'react-redux';
-import { setupStore } from '@/store';
+import { setupStore } from '../../src/store';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');

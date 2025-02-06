@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import RootPage from '@/pages/RootPage.tsx';
-import { Size } from '@/types/WindowTypes.ts';
+import RootPage from '../../src/pages/RootPage.tsx';
+import { Size } from '../../src/types/WindowTypes.ts';
 import { renderWithProviders } from '../test-utils.tsx';
 
 const mockWindowSize = vi.fn(() => ({}) as Size);

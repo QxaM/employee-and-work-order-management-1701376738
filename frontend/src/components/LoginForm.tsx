@@ -1,14 +1,24 @@
 import Input from './shared/Input.tsx';
-import { FormEvent, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import {FormEvent, useEffect} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
 
-import { useLoginUser } from '../api/auth.ts';
-import { LoginType } from '../types/AuthorizationTypes.ts';
+import {useLoginUser} from '../api/auth.ts';
+import {LoginType} from '../types/AuthorizationTypes.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from '../components/shared/ErrorComponent.tsx';
-import { login as loginAction } from '../store/authSlice.ts';
+import {login as loginAction} from '../store/authSlice.ts';
 
+/**
+ * A user login form component with API interaction, and Redux integration.
+ *
+ * The Login form component should be present on the LoginPage.
+ *
+ * The `LoginForm` component allows users to enter their email and password,
+ * and submit the information to log in. It handles loading states, error states, and successful logins by
+ * dispatching Redux actions and navigating the user upon success to the main page.
+ *
+ */
 const LoginForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

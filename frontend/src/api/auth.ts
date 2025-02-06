@@ -11,16 +11,31 @@ import { ApiErrorType } from '../types/ApiTypes.ts';
 const REGISTER_API = '/register';
 const LOGIN_API = '/login';
 
+/**
+ * Request payload for the register API.
+ */
 export interface RegisterRequest {
   data: RegisterType;
   signal?: AbortSignal;
 }
 
+/**
+ * Request payload for the login API.
+ */
 export interface LoginRequest {
   data: LoginType;
   signal?: AbortSignal;
 }
 
+/**
+ * Handles user registration by sending a POST request to Authorization Service
+ * /register API
+ * Throws an error with a message if the registration fails.
+ *
+ * @param {RegisterRequest} param0 - Registration payload and optional AbortSignal.
+ * @returns {Promise<void>} - Resolves when registration succeeds.
+ * @throws {Error} - throws Error when registration fails
+ */
 export const register = async ({
   data,
   signal,
@@ -51,6 +66,15 @@ export const register = async ({
   }
 };
 
+/**
+ * Handles user login by sending a POST request, including a basic authentication header.
+ * Uses Authorization Service /login request.
+ * Throws an error with a message if the login fails.
+ *
+ * @param {LoginRequest} param0 - Login payload and optional AbortSignal.
+ * @returns {Promise<TokenType>} - Resolves with the authentication token when login succeeds.
+ * @throws {Error} - Throws Error when login fails
+ */
 export const login = async ({
   data,
   signal,

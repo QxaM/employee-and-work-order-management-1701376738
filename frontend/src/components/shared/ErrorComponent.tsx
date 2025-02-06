@@ -1,3 +1,14 @@
+/**
+ * Renders an error message styled with a red background
+ * and an error icon.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.message - The error message to display.
+ *
+ * @example
+ * <ErrorComponent message="Something went wrong. Please try again." />
+ *
+ */
 const ErrorComponent = ({ message }: { message: string }) => {
   return (
     <p className="px-2 py-1 flex items-center gap-1 bg-qxam-error-extreme-light text-qxam-error-darker rounded border border-qxam-error-lightest">

@@ -5,7 +5,7 @@ import {
   isValidConfirmPassword,
   isValidEmail,
   isValidPassword,
-} from '@/utils/Validators.ts';
+} from '../../src/utils/Validators.ts';
 
 describe('Validators', () => {
   describe('Email Validator', () => {

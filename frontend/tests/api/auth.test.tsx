@@ -1,11 +1,16 @@
 import { afterEach, describe } from 'vitest';
 
-import { login, register, useLoginUser, useRegisterUser } from '@/api/auth.ts';
+import {
+  login,
+  register,
+  useLoginUser,
+  useRegisterUser,
+} from '../../src/api/auth.ts';
 import {
   LoginType,
   RegisterType,
   TokenType,
-} from '@/types/AuthorizationTypes.ts';
+} from '../../src/types/AuthorizationTypes.ts';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';

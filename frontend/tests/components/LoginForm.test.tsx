@@ -2,11 +2,11 @@ import { PropsWithChildren } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, it } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
-import LoginForm from '@/components/LoginForm.tsx';
+import LoginForm from '../../src/components/LoginForm.tsx';
 import { QueryClientProvider, UseMutationResult } from '@tanstack/react-query';
-import { queryClient } from '@/api/base.ts';
-import { TokenType } from '@/types/AuthorizationTypes.ts';
-import * as login from '@/api/auth.ts';
+import { queryClient } from '../../src/api/base.ts';
+import { TokenType } from '../../src/types/AuthorizationTypes.ts';
+import * as login from '../../src/api/auth.ts';
 import { renderWithProviders } from '../test-utils.tsx';
 
 vi.mock('react-router-dom', async () => {

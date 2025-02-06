@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MobileMainNavigation from '@/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
+import MobileMainNavigation from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
-import { login } from '@/store/authSlice.ts';
+import { login } from '../../../../../src/store/authSlice.ts';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {

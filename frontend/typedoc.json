@@ -12,5 +12,8 @@
   "excludePrivate": false,
   "excludeExternals": true,
   "entryPointStrategy": "expand",
-  "readme": "../README.md"
+  "readme": "../README.md",
+  "plugin": [
+    "typedoc-plugin-missing-exports"
+  ]
 }

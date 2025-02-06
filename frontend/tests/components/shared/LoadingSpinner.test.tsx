@@ -1,7 +1,7 @@
 import { describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
+import LoadingSpinner from '../../../src/components/shared/LoadingSpinner.tsx';
 
 describe('LoadingSpinner', () => {
   it('Should render default spinner', () => {

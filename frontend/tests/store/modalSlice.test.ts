@@ -1,7 +1,10 @@
 import { describe, expect } from 'vitest';
 
-import { ModalData } from '@/types/ModalTypes.ts';
-import modalReducer, { registerModal, removeModal } from '@/store/modalSlice';
+import { ModalData } from '../../src/types/ModalTypes.tsx';
+import modalReducer, {
+  registerModal,
+  removeModal,
+} from '../../src/store/modalSlice';
 
 describe('ModalSlice Tests', () => {
   it('Should handle initial state', () => {

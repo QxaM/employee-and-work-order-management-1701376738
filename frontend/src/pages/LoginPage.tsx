@@ -1,5 +1,9 @@
 import LoginForm from '../components/LoginForm.tsx';
 
+/**
+ * Renders the login page with a centered `LoginForm` component, login page is opened when
+ * navigating to /login
+ */
 const LoginPage = () => {
   return (
     <div className="flex flex-grow items-center justify-center w-full">

@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 
-import { ValidatorType } from '@/types/ValidatorTypes.ts';
+import { ValidatorType } from '../../types/ValidatorTypes.ts';
 
 interface InputType {
   title: string;
@@ -15,8 +15,33 @@ interface InputType {
   validator?: (value: string) => ValidatorType;
 }
 
-// eslint-disable-next-line react/display-name
+/**
+ * A customizable input component with validation support.
+ *
+ * @param {InputType} props - The props for the Input component.
+ * @param {string} props.title - The input's label and identifier.
+ * @param {string} props.placeholder - Placeholder text for the input field.
+ * @param {HTMLInputTypeAttribute} [props.type='text'] - Type of the input (e.g., "text", "email", "password").
+ * @param {function} [props.validator] - A validation function that checks the input value and returns a validation result (e.g., `{ isValid: boolean, message?: string }`).
+ *
+ * @example
+ * const validator = (value: string) => {
+ *   if (value.length < 3) {
+ *     return { isValid: false, message: "Input must be at least 3 characters long." };
+ *   }
+ *   return { isValid: true };
+ * };
+ *
+ * <Input
+ *   title="Username"
+ *   placeholder="Enter your username"
+ *   validator={validator}
+ *   ref={inputRef}
+ * />
+ */
 const Input = forwardRef<string, InputType>((props, ref) => {
+  Input.displayName = 'Input';
+
   const { title, placeholder, type = 'text', validator } = props;
   const [value, setValue] = useState('');
   const [localError, setLocalError] = useState({} as ValidatorType);

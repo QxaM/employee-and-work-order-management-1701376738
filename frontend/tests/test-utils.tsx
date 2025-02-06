@@ -1,5 +1,5 @@
 import { render, RenderOptions } from '@testing-library/react';
-import { AppStore, RootState, setupStore } from '@/store';
+import { AppStore, RootState, setupStore } from '../src/store';
 import { PropsWithChildren, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 

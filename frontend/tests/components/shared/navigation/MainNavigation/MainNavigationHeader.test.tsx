@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MainNavigationHeader from '@/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
-import { login } from '@/store/authSlice.ts';
+import { login } from '../../../../../src/store/authSlice.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
