@@ -29,6 +29,19 @@ public class UserService {
     }
   }
 
+  public void updateUser(User user) throws ElementNotFoundException, DataValidationException {
+    Optional<User> foundUser = userRepository.findById(user.getId());
+    if (foundUser.isEmpty()) {
+      throw new ElementNotFoundException("User with id '" + user.getId() + "' does not exist");
+    }
+
+    try {
+      userRepository.save(user);
+    } catch (TransactionSystemException e) {
+      throw new DataValidationException("Failed email or password validation", e);
+    }
+  }
+
   public User getUserByEmail(String email) throws ElementNotFoundException {
     Optional<User> user = userRepository.findByEmail(email);
     return user.orElseThrow(() ->

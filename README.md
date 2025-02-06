@@ -20,7 +20,9 @@ project and employees managing easier.
 ### Features:
 
 1. **Authorization:** Application allows for registration and authorization
-   of users
+   of users. Registered users are disabled by default - verification email
+   will be sent to provided email. If verification expired a new one will be
+   sent.
 
 ### Services:
 
@@ -29,7 +31,7 @@ project and employees managing easier.
    /frontend directory and running `npm run docs:serve` command.
 2. **Backend:** Backend is split into multiple microservices
     * **Authorization Service:** Responsible for all authorization related
-      operations - registration and login -
+      operations - registration, registration verification, login -
       see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html)
 
 ### Technology stack
