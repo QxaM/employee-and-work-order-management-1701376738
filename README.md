@@ -26,7 +26,7 @@ project and employees managing easier.
 
 1. **Frontend:** Built using React + Typescript handles all client side
    operations. Frontend code documentation can be seen be navigating to .
-   /frontend directory and running `npm run docs/serve` command.
+   /frontend directory and running `npm run docs:serve` command.
 2. **Backend:** Backend is split into multiple microservices
     * **Authorization Service:** Responsible for all authorization related
       operations - registration and login -

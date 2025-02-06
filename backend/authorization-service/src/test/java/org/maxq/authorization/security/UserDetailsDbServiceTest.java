@@ -29,7 +29,7 @@ class UserDetailsDbServiceTest {
   @Test
   void shouldLoadUserByUsername() throws ElementNotFoundException {
     // Given
-    User user = new User(1L, USERNAME, "test");
+    User user = new User(USERNAME, "test");
     when(userService.getUserByEmail(USERNAME)).thenReturn(user);
 
     // When

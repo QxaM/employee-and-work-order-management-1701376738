@@ -3,6 +3,8 @@ package org.maxq.authorization.controller;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.maxq.authorization.domain.User;
+import org.maxq.authorization.security.UserDetailsDbService;
 import org.maxq.authorization.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebAppConfiguration
 @SpringBootTest
@@ -32,6 +35,9 @@ class LoginControllerTest {
 
   @MockBean
   private TokenService tokenService;
+
+  @MockBean
+  private UserDetailsDbService userDetailsDbService;
 
   @BeforeEach
   void securitySetup() {
@@ -64,6 +70,25 @@ class LoginControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.token", Matchers.is("test-token")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.expiresIn", Matchers.is(3600)))
         .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is("Bearer")));
+  }
+
+  @Test
+  void shouldReturn401_WhenDisabled() throws Exception {
+    // Given
+    User user = new User("test@test.com", "test");
+    when(userDetailsDbService.loadUserByUsername(user.getEmail())).thenReturn(
+        org.springframework.security.core.userdetails.User
+            .withUsername("test@test.com")
+            .password("test")
+            .disabled(true)
+            .build()
+    );
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized());
   }
 
   @Test

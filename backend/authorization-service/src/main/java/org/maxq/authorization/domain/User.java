@@ -28,8 +28,18 @@ public class User {
   @Length(min = 4)
   private String password;
 
+  @NotNull
+  private boolean enabled;
+
   public User(String email, String password) {
     this.password = password;
     this.email = email;
+    this.enabled = false;
+  }
+
+  public User(String email, String password, boolean enabled) {
+    this.password = password;
+    this.email = email;
+    this.enabled = enabled;
   }
 }

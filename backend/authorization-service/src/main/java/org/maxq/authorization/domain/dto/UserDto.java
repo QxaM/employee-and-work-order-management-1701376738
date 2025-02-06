@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class UserDto {
 
-  private Long id;
-
   @NotBlank(message = "Email cannot be empty")
   private String email;
 

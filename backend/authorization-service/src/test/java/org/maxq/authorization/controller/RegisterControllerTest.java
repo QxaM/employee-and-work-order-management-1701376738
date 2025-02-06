@@ -60,7 +60,7 @@ class RegisterControllerTest {
   @Test
   void shouldRegisterUser() throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, "test@test.com", "test");
+    UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
     when(userMapper.mapToUser(userDto)).thenReturn(user);
 
@@ -76,7 +76,7 @@ class RegisterControllerTest {
   @NullAndEmptySource
   void shouldReturnValidationError_WhenEmailEmptyOrNull(String email) throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, email, "test");
+    UserDto userDto = new UserDto(email, "test");
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -92,7 +92,7 @@ class RegisterControllerTest {
   @NullSource
   void shouldReturnValidationError_WhenPasswordNull(String password) throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, "test@test.com", password);
+    UserDto userDto = new UserDto("test@test.com", password);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -108,7 +108,7 @@ class RegisterControllerTest {
   @ValueSource(strings = {"1"})
   void shouldReturnValidationError_WhenPasswordTooShort(String password) throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, "test@test.com", password);
+    UserDto userDto = new UserDto("test@test.com", password);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -123,7 +123,7 @@ class RegisterControllerTest {
   @Test
   void shouldReturnDuplicationError_WhenUserAlreadyExists() throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, "test@test.com", "test");
+    UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
     when(userMapper.mapToUser(userDto)).thenReturn(user);
     doThrow(new DuplicateEmailException("Test message", new Exception())).when(userService).createUser(any());
@@ -141,7 +141,7 @@ class RegisterControllerTest {
   @Test
   void shouldReturnValidationError_WhenDBValidationError() throws Exception {
     // Given
-    UserDto userDto = new UserDto(null, "test@test.com", "test");
+    UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
     when(userMapper.mapToUser(userDto)).thenReturn(user);
     doThrow(new DataValidationException("Test message", new Exception())).when(userService).createUser(any());

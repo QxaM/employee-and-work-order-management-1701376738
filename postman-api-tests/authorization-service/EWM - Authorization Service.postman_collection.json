@@ -470,12 +470,12 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "12345",
+											"value": "{{enabledUserPassword}}",
 											"type": "string"
 										},
 										{
 											"key": "username",
-											"value": "{{registerEmail}}",
+											"value": "{{enabledUserEmail}}",
 											"type": "string"
 										}
 									]
@@ -536,6 +536,61 @@
 										{
 											"key": "username",
 											"value": "unknown@unknown.com",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login with disabled account",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has correct message\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+											"    pm.expect(response.message).to.include('Unauthorized to access this resource, login please');\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "12345",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{registerEmail}}",
 											"type": "string"
 										}
 									]
@@ -633,13 +688,13 @@
 			"value": ""
 		},
 		{
-			"key": "loginEmail",
-			"value": "postman@test.com",
+			"key": "enabledUserEmail",
+			"value": "test@maxq.com",
 			"type": "string"
 		},
 		{
-			"key": "loginPassword",
-			"value": "test",
+			"key": "enabledUserPassword",
+			"value": "Test12345",
 			"type": "string"
 		}
 	]

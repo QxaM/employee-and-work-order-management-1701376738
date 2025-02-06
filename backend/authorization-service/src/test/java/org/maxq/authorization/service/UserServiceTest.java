@@ -32,7 +32,7 @@ class UserServiceTest {
 
   @BeforeEach
   void createUser() {
-    user = new User(1L, "test@test.com", "test");
+    user = new User("test@test.com", "test");
   }
 
 
@@ -84,7 +84,6 @@ class UserServiceTest {
     User foundUser = userService.getUserByEmail(user.getEmail());
 
     // Then
-    assertEquals(foundUser.getId(), user.getId(), "Incorrect user found, ids should be equal!");
     assertEquals(foundUser.getEmail(), user.getEmail(), "Incorrect user found, email should be equal!");
     assertEquals(foundUser.getPassword(), user.getPassword(), "Incorrect user found, password should be equal!");
   }
