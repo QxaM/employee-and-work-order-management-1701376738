@@ -5,6 +5,10 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      MAIL_USERNAME:
+        required: true
+      MAIL_PASSWORD:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -12,6 +16,8 @@ jobs:
     uses: ./.github/workflows/authorization-service-ci.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
@@ -56,6 +62,9 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew authorization-service:bootRun &
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         working-directory: backend
 
       - name: Install Newman

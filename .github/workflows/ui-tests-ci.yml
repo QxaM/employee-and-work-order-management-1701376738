@@ -18,6 +18,8 @@ jobs:
     uses: ./.github/workflows/backend-api-tests.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -72,6 +74,9 @@ jobs:
 
       - name: Start Authorization Service
         run: ./gradlew authorization-service:bootRun &
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         working-directory: backend
 
       - name: Wait for application to be ready
