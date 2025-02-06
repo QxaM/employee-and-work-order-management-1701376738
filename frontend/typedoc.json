@@ -1,0 +1,16 @@
+{
+  "entryPoints": [
+    "src"
+  ],
+  "out": "docs",
+  "exclude": [
+    "**/node_modules",
+    "**/dist"
+  ],
+  "includeVersion": true,
+  "excludeNotDocumented": false,
+  "excludePrivate": false,
+  "excludeExternals": true,
+  "entryPointStrategy": "expand",
+  "readme": "../README.md"
+}

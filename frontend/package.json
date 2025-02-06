@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
-    "format": "prettier --write ./src"
+    "format": "prettier --write ./src",
+    "docs:generate": "typedoc --options typedoc.json",
+    "docs:serve": "vite serve ./docs --port 5174"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
@@ -47,6 +49,7 @@
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.14",
+    "typedoc": "^0.27.6",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.10.0",
     "vite": "^5.4.9",
