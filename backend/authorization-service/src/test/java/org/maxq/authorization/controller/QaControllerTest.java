@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebAppConfiguration
 @SpringBootTest
@@ -61,8 +61,66 @@ class QaControllerTest {
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL + "/token")
             .queryParam("email", user.getEmail()))
-        .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(token.getToken())));
+  }
+
+  @Test
+  void shouldThrow_When_UserNotFound() throws Exception {
+    // given
+    when(userService.getUserByEmail(anyString()))
+        .thenThrow(new ElementNotFoundException("Test message"));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/token")
+            .param("email", "test@test.com"))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
+  }
+
+  @Test
+  void shouldThrow_When_TokenNotFound() throws Exception {
+    // given
+    User user = new User("test@test.com", "test");
+    when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+    when(verificationTokenService.getTokenByUser(any(User.class)))
+        .thenThrow(new ElementNotFoundException("Test message"));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/token")
+            .param("email", user.getEmail()))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
+  }
+
+  @Test
+  void shouldUpdateTokenCreationDate() throws Exception {
+    // Given
+    User user = new User("test@test.com", "test");
+    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now());
+    LocalDateTime newDate = LocalDateTime.now().minusDays(1);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/token/" + token.getToken())
+            .param("creationDate", newDate.toString()))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(verificationTokenService, times(1)).updateCreationDate(token.getToken(), newDate);
+  }
+
+  @Test
+  void shouldThrowException_When_UpdateException() throws Exception {
+    // Given
+    doThrow(new ElementNotFoundException("Test message"))
+        .when(verificationTokenService).updateCreationDate(anyString(), any(LocalDateTime.class));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/token/test")
+            .param("creationDate", LocalDateTime.now().toString()))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
   }
 }

@@ -8,9 +8,7 @@ import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -25,14 +23,16 @@ public class QaController implements QaApi {
 
   @Override
   @GetMapping("/token")
-  public ResponseEntity<String> fetchNonExpiredVerificationTokenForUser(String email) throws ElementNotFoundException {
+  public ResponseEntity<String> fetchNonExpiredVerificationTokenForUser(@RequestParam String email) throws ElementNotFoundException {
     User user = userService.getUserByEmail(email);
     String token = verificationTokenService.getTokenByUser(user).getToken();
     return ResponseEntity.ok(token);
   }
 
   @Override
-  public ResponseEntity<Void> updateTokenCreationDate(String token, LocalDateTime creationDate) throws ElementNotFoundException {
+  @PatchMapping("/token/{token}")
+  public ResponseEntity<Void> updateTokenCreationDate(@PathVariable String token,
+                                                      @RequestParam LocalDateTime creationDate) throws ElementNotFoundException {
     verificationTokenService.updateCreationDate(token, creationDate);
     return ResponseEntity.ok().build();
   }
