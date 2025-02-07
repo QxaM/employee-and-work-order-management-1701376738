@@ -1037,7 +1037,7 @@
 									"script": {
 										"exec": [
 											"const date = new Date();\r",
-											"const expiredDate = new Date(date.setMinutes(date.getMinutes() - (23 * 60) - 1));\r",
+											"const expiredDate = new Date(date.setMinutes(date.getMinutes() - (24 * 60)) - 1);\r",
 											"const expiredDateJavaLocalDateTimeString = expiredDate.toISOString().replace(/Z/g, '')\r",
 											"pm.collectionVariables.set('expiredDate', expiredDateJavaLocalDateTimeString);"
 										],
