@@ -9,6 +9,8 @@ export default defineConfig({
     include: ['./test[s]/**/*.{test,spec}.{js,jsx,ts,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
     coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
       exclude: [
         'node_modules',
         'dist',
@@ -24,6 +26,7 @@ export default defineConfig({
         './src/vite-env.d.ts',
         'tests',
         'src/store/index.ts',
+        './docs',
       ],
     },
   },

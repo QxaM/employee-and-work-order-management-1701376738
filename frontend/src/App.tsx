@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { setupStore } from './store';
 import DialogManager from './components/DialogManager.tsx';
 import LoginPage from './pages/LoginPage.tsx';
+import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <></> },
       { path: '/register', element: <RegisterPage /> },
+      { path: '/register/confirm', element: <RegisterConfirmationPage /> },
       { path: '/login', element: <LoginPage /> },
     ],
   },
