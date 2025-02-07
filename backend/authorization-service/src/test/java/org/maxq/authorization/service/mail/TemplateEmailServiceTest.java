@@ -32,4 +32,16 @@ class TemplateEmailServiceTest {
     // Then
     verify(mailSender, times(1)).send(any(MimeMessagePreparator.class));
   }
+
+  @Test
+  void shouldSendPasswordResetEmail() {
+    // Given
+    doNothing().when(mailSender).send(any(MimeMessagePreparator.class));
+
+    // When
+    templateEmailService.sendPasswordReset("token", "test@test.com");
+
+    // Then
+    verify(mailSender, times(1)).send(any(MimeMessagePreparator.class));
+  }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.maxq.authorization.config.MockitoPublisherConfiguration;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.dto.UserDto;
@@ -20,12 +21,9 @@ import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -295,15 +293,5 @@ class RegisterControllerTest {
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
-  }
-}
-
-@TestConfiguration
-class MockitoPublisherConfiguration {
-
-  @Bean
-  @Primary
-  ApplicationEventPublisher publisher() {
-    return mock(ApplicationEventPublisher.class);
   }
 }
