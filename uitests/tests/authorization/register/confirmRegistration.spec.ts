@@ -102,7 +102,7 @@ test.describe("Confirmation registration tests", () => {
 
       const date = new Date();
       const expiredDate = new Date(
-        date.setMinutes(date.getMinutes() - 23 * 60 - 1),
+        date.setMinutes(date.getMinutes() - 24 * 60 - 1),
       );
       const expiredDateJavaLocalDateTimeString = expiredDate
         .toISOString()
