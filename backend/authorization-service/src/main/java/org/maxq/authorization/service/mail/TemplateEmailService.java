@@ -27,6 +27,14 @@ public class TemplateEmailService implements MailService {
     );
   }
 
+  @Override
+  public void sendPasswordReset(String email, String token) {
+    String message = mailCreatorService.buildPasswordResetEmail(token, email);
+    javaMailSender.send(
+        createMimeMessage(message, email)
+    );
+  }
+
   private MimeMessagePreparator createMimeMessage(String htmlMessage, String email) {
     return mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
