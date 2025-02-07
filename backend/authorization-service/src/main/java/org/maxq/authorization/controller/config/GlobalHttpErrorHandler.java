@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.domain.HttpErrorMessage;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -30,6 +32,18 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<HttpErrorMessage> handleDataValidationException(DataValidationException e) {
     log.error(e.getMessage(), e);
     return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(ElementNotFoundException.class)
+  public ResponseEntity<HttpErrorMessage> handleElementNotFoundException(ElementNotFoundException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(ExpiredVerificationToken.class)
+  public ResponseEntity<HttpErrorMessage> handleExpiredVerificationTokenException(ExpiredVerificationToken e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   @Override

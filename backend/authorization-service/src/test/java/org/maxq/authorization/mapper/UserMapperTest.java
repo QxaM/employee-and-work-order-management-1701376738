@@ -22,13 +22,12 @@ class UserMapperTest {
   @Test
   void shouldAddToUSer() {
     // Given
-    UserDto userDto = new UserDto(1L, "test@test.com", "test");
+    UserDto userDto = new UserDto("test@test.com", "test");
 
     // When
     User user = userMapper.mapToUser(userDto);
 
     // Then
-    assertEquals(userDto.getId(), user.getId(), "Mapper should map to same id!");
     assertEquals(userDto.getEmail(), user.getEmail(), "Mapper should map to same email!");
     assertTrue(passwordEncoder.matches(userDto.getPassword(), user.getPassword()), "Mapper should map to same password!");
   }

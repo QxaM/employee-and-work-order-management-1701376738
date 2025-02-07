@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,10 +26,10 @@ public class UserDetailsDbService implements UserDetailsService {
       log.error(e.getMessage(), e);
       throw new UsernameNotFoundException(e.getMessage(), e);
     }
-    return new org.springframework.security.core.userdetails.User(
-        foundUser.getEmail(),
-        foundUser.getPassword(),
-        Collections.emptyList()
-    );
+    return org.springframework.security.core.userdetails.User
+        .withUsername(foundUser.getEmail())
+        .password(foundUser.getPassword())
+        .disabled(!foundUser.isEnabled())
+        .build();
   }
 }

@@ -22,8 +22,9 @@ public interface LoginApi {
   @ApiResponse(responseCode = "200", description = "Successful authentication", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))
   })
-  @ApiResponse(responseCode = "401", description = "Invalid credentials", content = {
-      @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
-  })
+  @ApiResponse(responseCode = "401", description = "Invalid credentials or account disabled",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
   ResponseEntity<TokenDto> login(Authentication authentication);
 }

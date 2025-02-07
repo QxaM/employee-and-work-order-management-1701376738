@@ -139,4 +139,30 @@ class UserRepositoryTest {
     assertEquals(foundUser.get().getPassword(), user.getPassword(),
         "Wrong user was fetched - password does not match");
   }
+
+  @Test
+  void shouldUpdateUser() {
+    // Given
+    userRepository.save(user);
+
+    // When
+    User updatedUser = new User(user.getId(), "updated@email.com", user.getPassword(),
+        user.isEnabled());
+    userRepository.save(updatedUser);
+
+    // Then
+    Optional<User> foundUser = userRepository.findById(updatedUser.getId());
+    assertTrue(foundUser.isPresent(), "User could not be found");
+
+    User fetchedUser = foundUser.get();
+    assertAll(() -> {
+      assertEquals(updatedUser.getId(), fetchedUser.getId(), "User ID should match after update");
+      assertEquals(updatedUser.getEmail(), fetchedUser.getEmail(),
+          "User email should match after update");
+      assertEquals(updatedUser.getPassword(), fetchedUser.getPassword(),
+          "User password should match after update");
+      assertEquals(updatedUser.isEnabled(), fetchedUser.isEnabled(),
+          "User enabled status should match after update");
+    });
+  }
 }

@@ -5,6 +5,10 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      MAIL_USERNAME:
+        required: true
+      MAIL_PASSWORD:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -30,18 +34,28 @@ jobs:
 
       - name: Install dependencies
         run: ./gradlew clean authorization-service:build -x test -x check -x assemble -x pmdMain -x pmdTest
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Run Lint Checks
         run: ./gradlew authorization-service:check
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Run Unit Tests
         run: ./gradlew authorization-service:test
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Build
         run: ./gradlew authorization-service:assemble
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: PROD
         working-directory: backend
 
       - name: Upload Test Reports

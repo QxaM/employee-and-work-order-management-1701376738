@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class UserDetailsDbServiceTest {
 
-  private final static String USERNAME = "test@test.com";
+  private static final String USERNAME = "test@test.com";
 
   @Autowired
   private UserDetailsDbService userDetailsDbService;
@@ -29,7 +29,7 @@ class UserDetailsDbServiceTest {
   @Test
   void shouldLoadUserByUsername() throws ElementNotFoundException {
     // Given
-    User user = new User(1L, USERNAME, "test");
+    User user = new User(USERNAME, "test");
     when(userService.getUserByEmail(USERNAME)).thenReturn(user);
 
     // When

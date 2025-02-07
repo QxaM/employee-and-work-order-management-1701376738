@@ -5,6 +5,10 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      MAIL_USERNAME:
+        required: true
+      MAIL_PASSWORD:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -12,6 +16,8 @@ jobs:
     uses: ./.github/workflows/postman-authorization-service-ci.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
   backend-api-tests:
     runs-on: ubuntu-latest
