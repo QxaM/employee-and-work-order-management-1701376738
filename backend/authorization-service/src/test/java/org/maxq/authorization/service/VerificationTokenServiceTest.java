@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,7 +73,6 @@ class VerificationTokenServiceTest {
     );
   }
 
-
   @Test
   void shouldThrow_When_TokenNotReturned() {
     // Given
@@ -80,6 +80,39 @@ class VerificationTokenServiceTest {
 
     // When
     Executable executable = () -> verificationTokenService.getToken(token.getToken());
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable);
+  }
+
+  @Test
+  void shouldReturnNewestToken_FromList() throws ElementNotFoundException {
+    // Given
+    VerificationToken token2 = new VerificationToken(
+        2L, "token2", user, LocalDateTime.now().minusHours(1L)
+    );
+    when(verificationTokenRepository.findAllByUser(any(User.class))).thenReturn(List.of(token, token2));
+
+    // When
+    VerificationToken foundToken = verificationTokenService.getTokenByUser(user);
+
+    // Then
+    assertEquals(token.getId(), foundToken.getId(), "Token ID should match!");
+  }
+
+  @Test
+  void shouldUnexpiredTokensOnly() {
+    // Given
+    VerificationToken token1 = new VerificationToken(
+        1L, "token1", user, LocalDateTime.now().minusMinutes(24L * 60)
+    );
+    VerificationToken token2 = new VerificationToken(
+        2L, "token2", user, LocalDateTime.now().minusMinutes(24L * 60)
+    );
+    when(verificationTokenRepository.findAllByUser(any(User.class))).thenReturn(List.of(token1, token2));
+
+    // When
+    Executable executable = () -> verificationTokenService.getTokenByUser(user);
 
     // Then
     assertThrows(ElementNotFoundException.class, executable);

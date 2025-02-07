@@ -10,10 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class VerificationTokenRepositoryTest {
@@ -86,5 +86,25 @@ class VerificationTokenRepositoryTest {
 
     // Cleanup
     repository.deleteById(token1.getId());
+  }
+
+  @Test
+  void shouldReturnMultipleTokensForOneUser() {
+    // Given
+    VerificationToken token2 = new VerificationToken(2L, "token2", user, LocalDateTime.now());
+    repository.save(token2);
+
+    // when
+    List<VerificationToken> foundTokens = repository.findAllByUser(user);
+
+    // Then
+    assertAll(() -> {
+      assertEquals(2, foundTokens.size(), "Wrong number of tokens found!");
+      assertEquals(token.getId(), foundTokens.get(0).getId(), "Token 1 was not found!");
+      assertEquals(token2.getId(), foundTokens.get(1).getId(), "Token 2 was not found!");
+    });
+
+    // Cleanup
+    repository.deleteById(token2.getId());
   }
 }
