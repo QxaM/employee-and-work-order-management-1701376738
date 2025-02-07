@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
-import org.maxq.authorization.service.MailService;
 import org.maxq.authorization.service.VerificationTokenService;
+import org.maxq.authorization.service.mail.MailService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class RegistrationListener implements ApplicationListener<OnRegistrationComplete> {
 
   private final VerificationTokenService verificationTokenService;
-  private final MailService mailService;
+  private final MailService emailService;
 
   @Override
   @Async
@@ -24,7 +24,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
     VerificationToken savedToken = verificationTokenService.createToken(user);
 
-    mailService.sendVerificationEmail(savedToken.getToken(), user.getEmail());
+    emailService.sendVerificationEmail(savedToken.getToken(), user.getEmail());
   }
 
   @Override

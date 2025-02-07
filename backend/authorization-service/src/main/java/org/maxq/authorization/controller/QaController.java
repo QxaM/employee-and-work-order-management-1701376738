@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/qa")
 @RequiredArgsConstructor
@@ -27,5 +29,11 @@ public class QaController implements QaApi {
     User user = userService.getUserByEmail(email);
     String token = verificationTokenService.getTokenByUser(user).getToken();
     return ResponseEntity.ok(token);
+  }
+
+  @Override
+  public ResponseEntity<Void> updateTokenCreationDate(String token, LocalDateTime creationDate) throws ElementNotFoundException {
+    verificationTokenService.updateCreationDate(token, creationDate);
+    return ResponseEntity.ok().build();
   }
 }

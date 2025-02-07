@@ -31,7 +31,7 @@ class VerificationTokenRepositoryTest {
     user = new User("test@test.com", "test", false);
     userRepository.save(user);
 
-    token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+    token = new VerificationToken("token", user, LocalDateTime.now());
     repository.save(token);
   }
 
@@ -91,7 +91,7 @@ class VerificationTokenRepositoryTest {
   @Test
   void shouldReturnMultipleTokensForOneUser() {
     // Given
-    VerificationToken token2 = new VerificationToken(2L, "token2", user, LocalDateTime.now());
+    VerificationToken token2 = new VerificationToken("token2", user, LocalDateTime.now());
     repository.save(token2);
 
     // when

@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
-import org.maxq.authorization.service.MailService;
 import org.maxq.authorization.service.VerificationTokenService;
+import org.maxq.authorization.service.mail.TemplateEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +31,7 @@ class RegistrationListenerTest {
   @MockBean
   private VerificationTokenService verificationTokenService;
   @MockBean
-  private MailService mailService;
+  private TemplateEmailService templateEmailService;
 
   @Test
   void shouldHandleRegistrationEvent() {
@@ -47,7 +47,7 @@ class RegistrationListenerTest {
 
     // Then
     verify(verificationTokenService, times(1)).createToken(any(User.class));
-    verify(mailService, times(1)).sendVerificationEmail(token.getToken(), user.getEmail());
+    verify(templateEmailService, times(1)).sendVerificationEmail(token.getToken(), user.getEmail());
   }
 }
 

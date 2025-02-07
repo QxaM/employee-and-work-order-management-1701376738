@@ -42,4 +42,16 @@ public class VerificationTokenService {
         .orElseThrow(() ->
             new ElementNotFoundException("Verification token was not found"));
   }
+
+  public void updateCreationDate(String token, LocalDateTime creationDate) throws ElementNotFoundException {
+    Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+
+    if (verificationToken.isEmpty()) {
+      throw new ElementNotFoundException("Verification token was not found");
+    }
+
+    VerificationToken updatedToken = verificationToken.get();
+    updatedToken.setCreationDate(creationDate);
+    verificationTokenRepository.save(updatedToken);
+  }
 }

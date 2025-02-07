@@ -1,4 +1,4 @@
-package org.maxq.authorization.service;
+package org.maxq.authorization.service.mail;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

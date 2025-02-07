@@ -17,6 +17,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -113,6 +115,31 @@ class VerificationTokenServiceTest {
 
     // When
     Executable executable = () -> verificationTokenService.getTokenByUser(user);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable);
+  }
+
+  @Test
+  void shouldUpdateToken() throws ElementNotFoundException {
+    // Given
+    when(verificationTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
+
+    // When
+    LocalDateTime newDate = LocalDateTime.now().plusMinutes(10L);
+    verificationTokenService.updateCreationDate(token.getToken(), newDate);
+
+    // Then
+    verify(verificationTokenRepository).save(argThat(vt -> vt.getCreationDate().isEqual(newDate)));
+  }
+
+  @Test
+  void shouldThrow_When_TokenNotFound_DuringUpdate() {
+    // Given
+    when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> verificationTokenService.updateCreationDate("token", LocalDateTime.now());
 
     // Then
     assertThrows(ElementNotFoundException.class, executable);
