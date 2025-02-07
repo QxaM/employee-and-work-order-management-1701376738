@@ -5,7 +5,7 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.service.VerificationTokenService;
-import org.maxq.authorization.service.mail.TemplateEmailService;
+import org.maxq.authorization.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +31,7 @@ class RegistrationListenerTest {
   @MockBean
   private VerificationTokenService verificationTokenService;
   @MockBean
-  private TemplateEmailService templateEmailService;
+  private MailService templateEmailService;
 
   @Test
   void shouldHandleRegistrationEvent() {
