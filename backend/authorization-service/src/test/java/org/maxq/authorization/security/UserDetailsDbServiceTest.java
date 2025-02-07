@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class UserDetailsDbServiceTest {
 
-  private final static String USERNAME = "test@test.com";
+  private static final String USERNAME = "test@test.com";
 
   @Autowired
   private UserDetailsDbService userDetailsDbService;

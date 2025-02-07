@@ -16,6 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VerificationTokenService {
 
+  private static final String VERIFICATION_TOKEN_NOT_FOUND = "Verification token was not found";
+
   private final VerificationTokenRepository verificationTokenRepository;
 
   public VerificationToken createToken(User user) {
@@ -30,7 +32,7 @@ public class VerificationTokenService {
   public VerificationToken getToken(String token) throws ElementNotFoundException {
     Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
     return verificationToken.orElseThrow(() ->
-        new ElementNotFoundException("Verification token was not found"));
+        new ElementNotFoundException(VERIFICATION_TOKEN_NOT_FOUND));
   }
 
   public VerificationToken getTokenByUser(User user) throws ElementNotFoundException {
@@ -40,14 +42,14 @@ public class VerificationTokenService {
             token.getCreationDate().plusMinutes(23L * 60).isAfter(LocalDateTime.now()))
         .min((token1, token2) -> token2.getCreationDate().compareTo(token1.getCreationDate()))
         .orElseThrow(() ->
-            new ElementNotFoundException("Verification token was not found"));
+            new ElementNotFoundException(VERIFICATION_TOKEN_NOT_FOUND));
   }
 
   public void updateCreationDate(String token, LocalDateTime creationDate) throws ElementNotFoundException {
     Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
 
     if (verificationToken.isEmpty()) {
-      throw new ElementNotFoundException("Verification token was not found");
+      throw new ElementNotFoundException(VERIFICATION_TOKEN_NOT_FOUND);
     }
 
     VerificationToken updatedToken = verificationToken.get();
