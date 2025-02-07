@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +31,7 @@ public class VerificationToken {
   private User user;
 
   @Column(name = "CREATION_DATE")
+  @Setter
   private LocalDateTime creationDate;
 
   public VerificationToken(String token, User user, LocalDateTime creationDate) {

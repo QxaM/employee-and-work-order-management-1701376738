@@ -1,4 +1,4 @@
-package org.maxq.authorization.service;
+package org.maxq.authorization.service.mail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

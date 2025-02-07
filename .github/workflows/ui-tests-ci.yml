@@ -70,6 +70,8 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Start Authorization Service
@@ -77,6 +79,7 @@ jobs:
         env:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Wait for application to be ready

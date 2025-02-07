@@ -1,4 +1,4 @@
-package org.maxq.authorization.service;
+package org.maxq.authorization.service.mail;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,15 +6,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class MailServiceTest {
+@ActiveProfiles("DEV")
+class TemplateEmailServiceTest {
 
   @Autowired
-  private MailService mailService;
+  private TemplateEmailService templateEmailService;
 
   @MockBean
   private JavaMailSender mailSender;
@@ -25,7 +27,7 @@ class MailServiceTest {
     doNothing().when(mailSender).send(any(MimeMessagePreparator.class));
 
     // When
-    mailService.sendVerificationEmail("token", "test@test.com");
+    templateEmailService.sendVerificationEmail("token", "test@test.com");
 
     // Then
     verify(mailSender, times(1)).send(any(MimeMessagePreparator.class));

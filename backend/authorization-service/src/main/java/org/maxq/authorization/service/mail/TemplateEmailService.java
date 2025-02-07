@@ -1,7 +1,8 @@
-package org.maxq.authorization.service;
+package org.maxq.authorization.service.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -10,13 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MailService {
+@Profile("!QA")
+public class TemplateEmailService implements MailService {
 
   private static final String SENDER = "noreply@maxq.com";
 
   private final JavaMailSender javaMailSender;
   private final MailCreatorService mailCreatorService;
 
+  @Override
   public void sendVerificationEmail(String token, String email) {
     String message = mailCreatorService.buildVerificationEmail(token, email);
     javaMailSender.send(
