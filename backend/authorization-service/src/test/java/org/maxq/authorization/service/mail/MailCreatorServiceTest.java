@@ -46,7 +46,7 @@ class MailCreatorServiceTest {
     String email = "test@example.com";
     String emailContent = "Email Content";
 
-    when(templateEngine.process(eq("mail/password-reset-email"), any(Context.class)))
+    when(templateEngine.process(eq("mail/reset-password-email"), any(Context.class)))
         .thenReturn(emailContent);
 
     // When
@@ -54,6 +54,6 @@ class MailCreatorServiceTest {
 
     // Then
     assertEquals(emailContent, convertedContent, "Template processing should give correct output!");
-    verify(templateEngine, times(1)).process(eq("mail/password-reset-email"), any(Context.class));
+    verify(templateEngine, times(1)).process(eq("mail/reset-password-email"), any(Context.class));
   }
 }
