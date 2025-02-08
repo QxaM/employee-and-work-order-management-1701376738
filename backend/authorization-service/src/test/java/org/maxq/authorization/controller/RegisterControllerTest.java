@@ -15,6 +15,7 @@ import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
@@ -242,6 +243,7 @@ class RegisterControllerTest {
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));
     doThrow(new ElementNotFoundException("Test error"))
         .when(userService).updateUser(any(User.class));
 
@@ -262,6 +264,8 @@ class RegisterControllerTest {
         LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1));
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doThrow(new ExpiredVerificationToken("Test error"))
+        .when(verificationTokenService).validateToken(any(VerificationToken.class));
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -270,7 +274,7 @@ class RegisterControllerTest {
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
         .andExpect(MockMvcResultMatchers.jsonPath(
-            "$.message", Matchers.containsString("Provided verification token expired at:"))
+            "$.message", Matchers.containsString("Test error"))
         );
     verify(eventPublisher, times(1)).publishEvent(any(OnRegistrationComplete.class));
   }
@@ -283,6 +287,7 @@ class RegisterControllerTest {
         LocalDateTime.now());
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));
     doThrow(new DataValidationException("Test error", new Exception()))
         .when(userService).updateUser(any(User.class));
 
