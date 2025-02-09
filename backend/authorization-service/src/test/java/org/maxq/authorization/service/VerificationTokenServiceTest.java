@@ -6,6 +6,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -143,5 +144,31 @@ class VerificationTokenServiceTest {
 
     // Then
     assertThrows(ElementNotFoundException.class, executable);
+  }
+
+  @Test
+  void shouldNotThrow_When_TokenNotExpired() {
+    // Given
+    VerificationToken nonExpiredToken = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1));
+
+    // When
+    Executable executable = () -> verificationTokenService.validateToken(nonExpiredToken);
+
+    // Then
+    assertDoesNotThrow(executable);
+  }
+
+  @Test
+  void shouldThrow_When_TokenExpired() {
+    // Given
+    VerificationToken nonExpiredToken = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1));
+
+    // When
+    Executable executable = () -> verificationTokenService.validateToken(nonExpiredToken);
+
+    // Then
+    assertThrows(ExpiredVerificationToken.class, executable);
   }
 }

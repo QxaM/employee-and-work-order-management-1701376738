@@ -27,6 +27,7 @@ public class User {
 
   @NotNull
   @Length(min = 4)
+  @Setter
   private String password;
 
   @NotNull
