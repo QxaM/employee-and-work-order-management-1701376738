@@ -136,7 +136,7 @@ const RegisterForm = () => {
           </div>
         </div>
       </form>
-      <div>
+      <div className="mt-4 text-sm">
         <p className="text-center">
           Already have an account?{' '}
           <Link

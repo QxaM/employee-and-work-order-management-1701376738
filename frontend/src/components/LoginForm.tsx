@@ -64,7 +64,16 @@ const LoginForm = () => {
         )}
         <Input title="email" placeholder="example@example.com" type="email" />
         <Input title="password" placeholder="Enter password" type="password" />
-        <div className="flex justify-end mx-4 mt-2">
+        <div className="flex justify-between mx-4 mt-2 items-center">
+          <p>
+            Don&apos;t remember password?{' '}
+            <Link
+              to="/password/request"
+              className="text-qxam-secondary-darker hover:underline"
+            >
+              Reset now
+            </Link>
+          </p>
           <div className="flex w-20 h-9 justify-center items-center">
             {!isPending && (
               <button
@@ -78,7 +87,7 @@ const LoginForm = () => {
           </div>
         </div>
       </form>
-      <div>
+      <div className="mt-4 text-sm">
         <p className="text-center">
           Don&apos;t have an account?{' '}
           <Link

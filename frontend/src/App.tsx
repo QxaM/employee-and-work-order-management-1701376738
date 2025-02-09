@@ -9,6 +9,7 @@ import { setupStore } from './store';
 import DialogManager from './components/DialogManager.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
+import PasswordRequestPage from './pages/PasswordRequestPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: '/register', element: <RegisterPage /> },
       { path: '/register/confirm', element: <RegisterConfirmationPage /> },
       { path: '/login', element: <LoginPage /> },
+      { path: '/password/request', element: <PasswordRequestPage /> },
     ],
   },
 ]);
