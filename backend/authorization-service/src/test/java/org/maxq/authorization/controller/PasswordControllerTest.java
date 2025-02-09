@@ -69,7 +69,7 @@ class PasswordControllerTest {
     password = "newPassword";
     encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
     User user = new User(1L, "test@test.com", "test", true);
-    token = new VerificationToken(1L, "test", user, LocalDateTime.now());
+    token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
   }
 
   @Test
@@ -102,6 +102,7 @@ class PasswordControllerTest {
         .andExpect(MockMvcResultMatchers.status().isOk());
     verify(userService, times(1)).updateUser(any(User.class));
     verify(userService).updateUser(argThat(updatedUser -> password.equals(updatedUser.getPassword())));
+    verify(verificationTokenService, times(1)).setUsed(any(VerificationToken.class));
   }
 
   @Test

@@ -34,9 +34,20 @@ public class VerificationToken {
   @Setter
   private LocalDateTime creationDate;
 
+  @Setter
+  private boolean used;
+
   public VerificationToken(String token, User user, LocalDateTime creationDate) {
     this.token = token;
     this.user = user;
     this.creationDate = creationDate;
+    this.used = false;
+  }
+
+  public VerificationToken(String token, User user, LocalDateTime creationDate, boolean used) {
+    this.token = token;
+    this.user = user;
+    this.creationDate = creationDate;
+    this.used = used;
   }
 }

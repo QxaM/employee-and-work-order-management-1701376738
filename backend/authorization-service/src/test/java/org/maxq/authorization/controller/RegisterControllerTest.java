@@ -209,7 +209,7 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1));
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
 
@@ -219,6 +219,8 @@ class RegisterControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", token.getToken()))
         .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(userService, times(1)).updateUser(any(User.class));
+    verify(verificationTokenService, times(1)).setUsed(any(VerificationToken.class));
   }
 
   @Test
@@ -240,7 +242,7 @@ class RegisterControllerTest {
   void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
-    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
     doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));
@@ -261,7 +263,7 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1));
+        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
     doThrow(new ExpiredVerificationToken("Test error"))
@@ -284,7 +286,7 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now());
+        LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
     doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));

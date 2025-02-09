@@ -69,7 +69,9 @@ class VerificationTokenRepositoryTest {
   void shouldCreateMultipleTokensForOneUser() {
     // Given
     String tokenString = "token1";
-    VerificationToken token1 = new VerificationToken(2L, tokenString, user, LocalDateTime.now());
+    VerificationToken token1 = new VerificationToken(
+        2L, tokenString, user, LocalDateTime.now(), false
+    );
 
     // When
     repository.save(token1);

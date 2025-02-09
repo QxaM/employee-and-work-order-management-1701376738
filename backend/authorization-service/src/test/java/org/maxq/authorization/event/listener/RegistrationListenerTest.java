@@ -34,7 +34,7 @@ class RegistrationListenerTest {
     User user = new User(1L, "test@test.com", "test", false);
     OnRegistrationComplete event = new OnRegistrationComplete(user);
 
-    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
     when(verificationTokenService.createToken(user)).thenReturn(token);
 
     // When
