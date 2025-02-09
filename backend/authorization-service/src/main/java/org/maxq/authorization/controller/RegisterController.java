@@ -57,6 +57,7 @@ public class RegisterController implements RegisterApi {
     User enabledUser = foundToken.getUser();
     enabledUser.setEnabled(true);
     userService.updateUser(enabledUser);
+    verificationTokenService.setUsed(foundToken);
 
     return ResponseEntity.ok().build();
   }

@@ -49,6 +49,7 @@ public class PasswordController implements PasswordApi {
         )
     );
     userService.updateUser(user);
+    verificationTokenService.setUsed(foundToken);
 
     return ResponseEntity.ok().build();
   }

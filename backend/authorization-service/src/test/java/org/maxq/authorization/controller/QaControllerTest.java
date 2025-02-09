@@ -53,7 +53,7 @@ class QaControllerTest {
   void shouldReturnToken() throws Exception {
     // Given
     User user = new User("test@test.com", "test");
-    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now());
+    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
     when(userService.getUserByEmail("test@test.com")).thenReturn(user);
     when(verificationTokenService.getTokenByUser(any(User.class))).thenReturn(token);
 
@@ -99,7 +99,7 @@ class QaControllerTest {
   void shouldUpdateTokenCreationDate() throws Exception {
     // Given
     User user = new User("test@test.com", "test");
-    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now());
+    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
     LocalDateTime newDate = LocalDateTime.now().minusDays(1);
 
     // When + Then

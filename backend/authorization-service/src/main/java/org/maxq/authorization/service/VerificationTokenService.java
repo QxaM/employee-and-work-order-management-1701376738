@@ -40,6 +40,7 @@ public class VerificationTokenService {
   public VerificationToken getTokenByUser(User user) throws ElementNotFoundException {
     List<VerificationToken> tokens = verificationTokenRepository.findAllByUser(user);
     return tokens.stream()
+        .filter(token -> !token.isUsed())
         .filter(token ->
             token.getCreationDate().plusMinutes(23L * 60).isAfter(LocalDateTime.now()))
         .min((token1, token2) -> token2.getCreationDate().compareTo(token1.getCreationDate()))
@@ -59,10 +60,19 @@ public class VerificationTokenService {
     verificationTokenRepository.save(updatedToken);
   }
 
+  public void setUsed(VerificationToken token) {
+    token.setUsed(true);
+    verificationTokenRepository.save(token);
+  }
+
   public void validateToken(VerificationToken token) throws ExpiredVerificationToken {
     LocalDateTime expirationTime = token.getCreationDate().plusMinutes(TOKEN_EXPIRATION_TIME);
     if (expirationTime.isBefore(LocalDateTime.now())) {
       throw new ExpiredVerificationToken("Provided verification token expired at: " + expirationTime);
+    }
+
+    if (token.isUsed()) {
+      throw new ExpiredVerificationToken("Provided verification token was already used");
     }
   }
 }

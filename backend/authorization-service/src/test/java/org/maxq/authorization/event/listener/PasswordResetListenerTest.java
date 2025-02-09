@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,7 +37,7 @@ class PasswordResetListenerTest {
   void shouldHandleRegistrationEvent() throws ElementNotFoundException {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
-    VerificationToken token = new VerificationToken(1L, "token", user, null);
+    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
     OnPasswordReset event = new OnPasswordReset(user.getEmail());
 
     when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
