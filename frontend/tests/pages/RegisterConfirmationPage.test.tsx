@@ -86,6 +86,20 @@ describe('RegisterConfirmationPage', () => {
     });
   });
 
+  it('Should use empty string when token empty', async () => {
+    // Given
+    const mockUrlParams = new URLSearchParams('?test=test');
+    vi.mocked(useSearchParams).mockReturnValue([mockUrlParams, vi.fn()]);
+
+    render(<RegisterConfirmationPage />, { wrapper: testWrapper });
+
+    // Then
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledOnce();
+      expect(mockMutate).toHaveBeenCalledWith({ token: '' });
+    });
+  });
+
   describe('Navigation after confirmation', () => {
     it('Should navigate home on success', async () => {
       // Given

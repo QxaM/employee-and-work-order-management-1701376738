@@ -76,7 +76,8 @@ const RegisterForm = () => {
         registerModal({
           id: uuidv4(),
           content: {
-            message: 'You have been registered successfully!',
+            message:
+              'You have been registered successfully! Please verify your email.',
             type: 'success',
           },
         })
@@ -136,7 +137,7 @@ const RegisterForm = () => {
           </div>
         </div>
       </form>
-      <div>
+      <div className="mt-4 text-sm">
         <p className="text-center">
           Already have an account?{' '}
           <Link

@@ -68,7 +68,7 @@ public class WebSecurityConfig {
     corsConfiguration.setAllowedOriginPatterns(
         List.of("http://localhost:[*]", "http://*:5173", "http://*:4173")
     );
-    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
     corsConfiguration.setExposedHeaders(List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
     corsConfiguration.setMaxAge(3600L);
