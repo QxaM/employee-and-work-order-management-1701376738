@@ -1,17 +1,25 @@
-import { FormEvent, useEffect, useRef } from 'react';
+import {FormEvent, useEffect, useRef} from 'react';
 
 import Input from './shared/Input';
-import {
-  isValidConfirmPassword,
-  isValidPassword,
-} from '../utils/Validators.ts';
+import {isValidConfirmPassword, isValidPassword,} from '../utils/Validators.ts';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import { usePasswordUpdate } from '../api/passwordReset.ts';
-import { registerModal } from '../store/modalSlice.ts';
-import { v4 as uuidv4 } from 'uuid';
-import { useAppDispatch } from '../hooks/useStore.tsx';
-import { useNavigate } from 'react-router-dom';
+import {usePasswordUpdate} from '../api/passwordReset.ts';
+import {registerModal} from '../store/modalSlice.ts';
+import {v4 as uuidv4} from 'uuid';
+import {useAppDispatch} from '../hooks/useStore.tsx';
+import {useNavigate} from 'react-router-dom';
 
+/**
+ * A user password update request form component with validation and API interaction.
+ *
+ * The password reset update request form component should be present on the `PasswordUpdatePage`.
+ *
+ * The `PasswordUpdateForm` component allows users to enter new password
+ * and submit the information to reset password. Entered data is also validated for correctness.
+ * It handles loading states, error states and successful registration by dispatching Redux
+ * actions and navigating the user upon success to the main page.
+ *
+ */
 const PasswordUpdateForm = ({ token }: { token: string }) => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
