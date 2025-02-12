@@ -91,7 +91,7 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
         })
       );
     }
-  }, [isSuccess, isError, dispatch]);
+  }, [isSuccess, isError, error?.message, dispatch]);
 
   useEffect(() => {
     if (isSuccess || isError) {
