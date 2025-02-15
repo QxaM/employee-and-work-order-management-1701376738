@@ -21,6 +21,7 @@ import {
   openUpdatePasswordPage,
 } from "../../utils/navigation.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
+import { invalidEmailMessage } from "../register/register.utils";
 
 let email: string;
 let password: string;
@@ -289,4 +290,23 @@ test("TC12 - should handle correctly invalid token", async ({
     // Then
     await expect(loginError(page)).toBeVisible();
   });
+});
+
+test("TC13 - should validate email during password reset", async ({
+  page,
+  baseURL,
+}) => {
+  // Given
+  const invalidEmail = "test@";
+  await openResetPasswordPage(page);
+
+  // When
+  await fillEmail(page, invalidEmail);
+  await clickResetPassword(page);
+
+  // Then
+  await Promise.all([
+    await expect(page).not.toHaveURL(baseURL || ""),
+    await expect(invalidEmailMessage(page)).toBeVisible(),
+  ]);
 });
