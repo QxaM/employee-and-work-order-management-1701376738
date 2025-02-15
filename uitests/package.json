@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "codegen": "playwright codegen",
     "report:merge": "playwright merge-reports --reporter html",
     "report:serve": "playwright show-report"
   },
