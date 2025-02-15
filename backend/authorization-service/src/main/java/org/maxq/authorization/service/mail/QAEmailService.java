@@ -11,6 +11,11 @@ public class QAEmailService implements MailService {
 
   @Override
   public void sendVerificationEmail(String token, String email) {
-    log.info("Email Service Stub - sending email to {} with token {}", email, token);
+    log.info("Email Service Stub - sending verification email to {} with token {}", email, token);
+  }
+
+  @Override
+  public void sendPasswordReset(String email, String token) {
+    log.info("Email Service Stub - sending password reset email to {} with token {}", email, token);
   }
 }

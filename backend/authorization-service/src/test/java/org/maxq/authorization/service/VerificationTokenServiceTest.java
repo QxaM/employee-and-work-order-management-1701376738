@@ -6,6 +6,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class VerificationTokenServiceTest {
@@ -36,7 +36,7 @@ class VerificationTokenServiceTest {
   @BeforeEach
   void setUp() {
     user = new User(1L, "test@test.com", "test", false);
-    token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+    token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
   }
 
   @Test
@@ -91,7 +91,7 @@ class VerificationTokenServiceTest {
   void shouldReturnNewestToken_FromList() throws ElementNotFoundException {
     // Given
     VerificationToken token2 = new VerificationToken(
-        2L, "token2", user, LocalDateTime.now().minusHours(1L)
+        2L, "token2", user, LocalDateTime.now().minusHours(1L), false
     );
     when(verificationTokenRepository.findAllByUser(any(User.class))).thenReturn(List.of(token, token2));
 
@@ -103,13 +103,28 @@ class VerificationTokenServiceTest {
   }
 
   @Test
+  void shouldSkipUsedTokens() throws ElementNotFoundException {
+    // Given
+    VerificationToken token2 = new VerificationToken(
+        2L, "token2", user, LocalDateTime.now().plusHours(1L), true
+    );
+    when(verificationTokenRepository.findAllByUser(any(User.class))).thenReturn(List.of(token, token2));
+
+    // When
+    VerificationToken foundToken = verificationTokenService.getTokenByUser(user);
+
+    // Then
+    assertEquals(token.getId(), foundToken.getId(), "Token ID should match unused token!");
+  }
+
+  @Test
   void shouldUnexpiredTokensOnly() {
     // Given
     VerificationToken token1 = new VerificationToken(
-        1L, "token1", user, LocalDateTime.now().minusMinutes(24L * 60)
+        1L, "token1", user, LocalDateTime.now().minusMinutes(24L * 60), false
     );
     VerificationToken token2 = new VerificationToken(
-        2L, "token2", user, LocalDateTime.now().minusMinutes(24L * 60)
+        2L, "token2", user, LocalDateTime.now().minusMinutes(24L * 60), false
     );
     when(verificationTokenRepository.findAllByUser(any(User.class))).thenReturn(List.of(token1, token2));
 
@@ -134,6 +149,19 @@ class VerificationTokenServiceTest {
   }
 
   @Test
+  void shouldSetUsed() {
+    // Given
+    when(verificationTokenRepository.findByToken(token.getToken())).thenReturn(Optional.of(token));
+
+    // When
+    verificationTokenService.setUsed(token);
+
+    // Then
+    verify(verificationTokenRepository, times(1)).save(any(VerificationToken.class));
+    verify(verificationTokenRepository).save(argThat(VerificationToken::isUsed));
+  }
+
+  @Test
   void shouldThrow_When_TokenNotFound_DuringUpdate() {
     // Given
     when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(Optional.empty());
@@ -143,5 +171,44 @@ class VerificationTokenServiceTest {
 
     // Then
     assertThrows(ElementNotFoundException.class, executable);
+  }
+
+  @Test
+  void shouldNotThrow_When_TokenNotExpired() {
+    // Given
+    VerificationToken nonExpiredToken = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
+
+    // When
+    Executable executable = () -> verificationTokenService.validateToken(nonExpiredToken);
+
+    // Then
+    assertDoesNotThrow(executable);
+  }
+
+  @Test
+  void shouldThrow_When_TokenExpired() {
+    // Given
+    VerificationToken expired = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
+
+    // When
+    Executable executable = () -> verificationTokenService.validateToken(expired);
+
+    // Then
+    assertThrows(ExpiredVerificationToken.class, executable);
+  }
+
+  @Test
+  void shouldThrow_When_TokenAlreadyUser() {
+    // Given
+    VerificationToken usedToken = new VerificationToken(1L, "token", user,
+        LocalDateTime.now(), true);
+
+    // When
+    Executable executable = () -> verificationTokenService.validateToken(usedToken);
+
+    // Then
+    assertThrows(ExpiredVerificationToken.class, executable);
   }
 }

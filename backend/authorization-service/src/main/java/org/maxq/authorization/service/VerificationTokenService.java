@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.repository.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VerificationTokenService {
 
+  private static final Integer TOKEN_EXPIRATION_TIME = 60 * 24;
   private static final String VERIFICATION_TOKEN_NOT_FOUND = "Verification token was not found";
 
   private final VerificationTokenRepository verificationTokenRepository;
@@ -38,6 +40,7 @@ public class VerificationTokenService {
   public VerificationToken getTokenByUser(User user) throws ElementNotFoundException {
     List<VerificationToken> tokens = verificationTokenRepository.findAllByUser(user);
     return tokens.stream()
+        .filter(token -> !token.isUsed())
         .filter(token ->
             token.getCreationDate().plusMinutes(23L * 60).isAfter(LocalDateTime.now()))
         .min((token1, token2) -> token2.getCreationDate().compareTo(token1.getCreationDate()))
@@ -55,5 +58,21 @@ public class VerificationTokenService {
     VerificationToken updatedToken = verificationToken.get();
     updatedToken.setCreationDate(creationDate);
     verificationTokenRepository.save(updatedToken);
+  }
+
+  public void setUsed(VerificationToken token) {
+    token.setUsed(true);
+    verificationTokenRepository.save(token);
+  }
+
+  public void validateToken(VerificationToken token) throws ExpiredVerificationToken {
+    LocalDateTime expirationTime = token.getCreationDate().plusMinutes(TOKEN_EXPIRATION_TIME);
+    if (expirationTime.isBefore(LocalDateTime.now())) {
+      throw new ExpiredVerificationToken("Provided verification token expired at: " + expirationTime);
+    }
+
+    if (token.isUsed()) {
+      throw new ExpiredVerificationToken("Provided verification token was already used");
+    }
   }
 }

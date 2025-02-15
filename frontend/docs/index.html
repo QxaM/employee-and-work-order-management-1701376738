@@ -10,15 +10,19 @@ Management.</p>
 project and employees managing easier.</p>
 <a id="features" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Features:<a href="#features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
 <li><strong>Authorization:</strong> Application allows for registration and authorization
-of users</li>
+of users. Registered users are disabled by default - verification email
+will be sent to provided email. If verification expired a new one will be
+sent. Users can also request to reset their password from login page -
+this will send email to users with password reset.</li>
 </ol>
 <a id="services" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Services:<a href="#services" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
 <li><strong>Frontend:</strong> Built using React + Typescript handles all client side
-operations</li>
+operations. Frontend code documentation can be seen be navigating to .
+/frontend directory and running <code>npm run docs:serve</code> command.</li>
 <li><strong>Backend:</strong> Backend is split into multiple microservices
 <ul>
 <li><strong>Authorization Service:</strong> Responsible for all authorization related
-operations - registration and login -
+operations - registration, registration verification, login -
 see <a href="https://authorization-service-0h7q.onrender.com/swagger-ui.html">API docs here</a></li>
 </ul>
 </li>
@@ -32,6 +36,7 @@ see <a href="https://authorization-service-0h7q.onrender.com/swagger-ui.html">AP
 <li>React-Router</li>
 <li>Vite + Vitest</li>
 <li>React-Testing-Library</li>
+<li>TypeDoc</li>
 <li><strong>Hosting</strong> - AWS S3</li>
 </ul>
 </li>
@@ -71,7 +76,8 @@ application. Unit test report is published as artifact.</li>
 <li>API tests pipeline - after successfull build backend is tested with API
 tests. Report is published as artifact.</li>
 <li>UI tests pipeline - if both API tests and Frontend CI pipeline is
-successfull UI tests are triggered. Report is published as artifact</li>
+successfull UI tests are triggered. UI tests are split into
+multiple shards for faster execution. Report is published as artifact</li>
 <li>Frontend CD pipeline - after successfull integration to main branch
 deployment will happen to AWS S3.</li>
 </ol>

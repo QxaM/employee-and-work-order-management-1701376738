@@ -235,4 +235,21 @@ describe('Login Form', () => {
       mockReturnData.token
     );
   });
+
+  it('Should navigate to password reset', () => {
+    // Given
+    const resetNowText = 'Reset now';
+    renderWithProviders(
+      <TestWrapper>
+        <LoginForm />
+      </TestWrapper>
+    );
+
+    // When
+    const resetNow = screen.getByRole('link', { name: resetNowText });
+    fireEvent.click(resetNow);
+
+    // Then
+    expect(window.location.pathname).toBe('/password/request');
+  });
 });

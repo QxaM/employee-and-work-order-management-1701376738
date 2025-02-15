@@ -19,14 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/register")
 @RequiredArgsConstructor
 public class RegisterController implements RegisterApi {
-
-  private static final Integer TOKEN_EXPIRATION_TIME = 60 * 24;
 
   private final UserService userService;
   private final VerificationTokenService verificationTokenService;
@@ -51,15 +47,17 @@ public class RegisterController implements RegisterApi {
       throws ElementNotFoundException, ExpiredVerificationToken, DataValidationException {
     VerificationToken foundToken = verificationTokenService.getToken(token);
 
-    LocalDateTime expirationTime = foundToken.getCreationDate().plusMinutes(TOKEN_EXPIRATION_TIME);
-    if (expirationTime.isBefore(LocalDateTime.now())) {
+    try {
+      verificationTokenService.validateToken(foundToken);
+    } catch (ExpiredVerificationToken e) {
       eventPublisher.publishEvent(new OnRegistrationComplete(foundToken.getUser()));
-      throw new ExpiredVerificationToken("Provided verification token expired at: " + expirationTime);
+      throw e;
     }
 
     User enabledUser = foundToken.getUser();
     enabledUser.setEnabled(true);
     userService.updateUser(enabledUser);
+    verificationTokenService.setUsed(foundToken);
 
     return ResponseEntity.ok().build();
   }

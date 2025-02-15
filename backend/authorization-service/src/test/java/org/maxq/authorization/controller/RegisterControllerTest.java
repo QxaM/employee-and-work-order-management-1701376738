@@ -8,24 +8,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.maxq.authorization.config.MockitoPublisherConfiguration;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -210,7 +209,7 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1));
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
 
@@ -220,6 +219,8 @@ class RegisterControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", token.getToken()))
         .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(userService, times(1)).updateUser(any(User.class));
+    verify(verificationTokenService, times(1)).setUsed(any(VerificationToken.class));
   }
 
   @Test
@@ -241,9 +242,10 @@ class RegisterControllerTest {
   void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
-    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now());
+    VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));
     doThrow(new ElementNotFoundException("Test error"))
         .when(userService).updateUser(any(User.class));
 
@@ -261,9 +263,11 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1));
+        LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doThrow(new ExpiredVerificationToken("Test error"))
+        .when(verificationTokenService).validateToken(any(VerificationToken.class));
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -272,7 +276,7 @@ class RegisterControllerTest {
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
         .andExpect(MockMvcResultMatchers.jsonPath(
-            "$.message", Matchers.containsString("Provided verification token expired at:"))
+            "$.message", Matchers.containsString("Test error"))
         );
     verify(eventPublisher, times(1)).publishEvent(any(OnRegistrationComplete.class));
   }
@@ -282,9 +286,10 @@ class RegisterControllerTest {
     // Given
     User user = new User(1L, "test@test.com", "test", false);
     VerificationToken token = new VerificationToken(1L, "token", user,
-        LocalDateTime.now());
+        LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+    doNothing().when(verificationTokenService).validateToken(any(VerificationToken.class));
     doThrow(new DataValidationException("Test error", new Exception()))
         .when(userService).updateUser(any(User.class));
 
@@ -295,15 +300,5 @@ class RegisterControllerTest {
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
-  }
-}
-
-@TestConfiguration
-class MockitoPublisherConfiguration {
-
-  @Bean
-  @Primary
-  ApplicationEventPublisher publisher() {
-    return mock(ApplicationEventPublisher.class);
   }
 }

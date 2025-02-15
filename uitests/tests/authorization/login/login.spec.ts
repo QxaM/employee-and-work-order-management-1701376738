@@ -3,9 +3,9 @@ import { expect, test } from "@playwright/test";
 import credentials from "../../../test-data/credentials.json";
 import { openHomePage } from "../../utils/navigation.utils";
 import {
+  clickLoginButton,
   login,
   loginError,
-  openLoginPage,
   welcomeMessage,
 } from "./login.utils";
 
@@ -14,7 +14,7 @@ test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   const userCredentials = credentials.user;
 
   await openHomePage(page);
-  await openLoginPage(page);
+  await clickLoginButton(page);
   await page.getByText("Enter login details").waitFor({ state: "visible" });
 
   // When
@@ -32,7 +32,7 @@ test("TC2 - should not login with invalid credentials", async ({ page }) => {
   const userCredentials = credentials.user;
 
   await openHomePage(page);
-  await openLoginPage(page);
+  await clickLoginButton(page);
 
   await test.step(`TC2.1 - should not login with invalid email`, async () => {
     // Given

@@ -87,7 +87,7 @@ test.describe("Confirmation registration tests", () => {
     });
   });
 
-  test("TC-8 - should not confirm on expiration", async ({ page, baseURL }) => {
+  test("TC8 - should not confirm on expiration", async ({ page, baseURL }) => {
     let token: string;
 
     await test.step("TC-8.1 - expire token", async () => {
@@ -119,7 +119,7 @@ test.describe("Confirmation registration tests", () => {
       expect(expirationResponse.ok()).toBeTruthy();
     });
 
-    await test.step("TC-8.2 - try confirmation with expired token", async () => {
+    await test.step("TC8.2 - try confirmation with expired token", async () => {
       // Given
 
       // When
@@ -132,7 +132,7 @@ test.describe("Confirmation registration tests", () => {
       ]);
     });
 
-    await test.step("TC-8.3 - should not login after unsuccessful confirmation", async () => {
+    await test.step("TC8.3 - should not login after unsuccessful confirmation", async () => {
       // Given
       await page.goto("/login");
 

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class TemplateEmailService implements MailService {
 
   private static final String SENDER = "noreply@maxq.com";
+  private static final String VERIFICATION_SUBJECT = "MaxQ Work Manager Verification";
+  private static final String PASSWORD_RESET_SUBJECT = "MaxQ Work Manager Password Reset";
 
   private final JavaMailSender javaMailSender;
   private final MailCreatorService mailCreatorService;
@@ -23,16 +25,25 @@ public class TemplateEmailService implements MailService {
   public void sendVerificationEmail(String token, String email) {
     String message = mailCreatorService.buildVerificationEmail(token, email);
     javaMailSender.send(
-        createMimeMessage(message, email)
+        createMimeMessage(message, email, VERIFICATION_SUBJECT)
     );
   }
 
-  private MimeMessagePreparator createMimeMessage(String htmlMessage, String email) {
+  @Override
+  public void sendPasswordReset(String email, String token) {
+    String message = mailCreatorService.buildPasswordResetEmail(token, email);
+    javaMailSender.send(
+        createMimeMessage(message, email, PASSWORD_RESET_SUBJECT)
+    );
+  }
+
+  private MimeMessagePreparator createMimeMessage(
+      String htmlMessage, String email, String subject) {
     return mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
       mimeMessageHelper.setFrom(SENDER);
       mimeMessageHelper.setTo(email);
-      mimeMessageHelper.setSubject("MaxQ Work Manager Verification");
+      mimeMessageHelper.setSubject(subject);
       mimeMessageHelper.setText(htmlMessage, true);
     };
   }

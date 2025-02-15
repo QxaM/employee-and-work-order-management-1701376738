@@ -22,7 +22,8 @@ project and employees managing easier.
 1. **Authorization:** Application allows for registration and authorization
    of users. Registered users are disabled by default - verification email
    will be sent to provided email. If verification expired a new one will be
-   sent.
+   sent. Users can also request to reset their password from login page -
+   this will send email to users with password reset.
 
 ### Services:
 
@@ -71,7 +72,8 @@ deployment:
 3. API tests pipeline - after successfull build backend is tested with API
    tests. Report is published as artifact.
 4. UI tests pipeline - if both API tests and Frontend CI pipeline is
-   successfull UI tests are triggered. Report is published as artifact
+   successfull UI tests are triggered. UI tests are split into
+   multiple shards for faster execution. Report is published as artifact
 5. Frontend CD pipeline - after successfull integration to main branch
    deployment will happen to AWS S3.
 
