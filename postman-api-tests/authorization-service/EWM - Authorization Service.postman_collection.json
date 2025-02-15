@@ -1388,6 +1388,126 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "Invalid Token",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const invalidTokenEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"invalidTokenEmail\", invalidTokenEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Confirm registration",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Verification token was not found');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/register/confirm?token=test",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register",
+												"confirm"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "test"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				}
@@ -1809,526 +1929,1241 @@
 					"name": "Negative",
 					"item": [
 						{
-							"name": "Request Password Reset",
-							"event": [
+							"name": "Non-Existing Email",
+							"item": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"const nonExistingEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
-											"pm.collectionVariables.set(\"nonExistingEmail\", nonExistingEmail);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/password/reset?email={{nonExistingEmail}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"password",
-										"reset"
-									],
-									"query": [
+									"name": "Request Password Reset",
+									"event": [
 										{
-											"key": "email",
-											"value": "{{nonExistingEmail}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Fetch verification token",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 404\", () => {\r",
-											"    pm.response.to.have.status(404);\r",
-											"});\r",
-											"\r",
-											"const response = pm.response.json();\r",
-											"pm.test(\"Response contain valid message\", () => {\r",
-											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
-											"    pm.expect(response.message).to.include('User with email');\r",
-											"    pm.expect(response.message).to.include('does not exist');\r",
-											"});\r",
-											"pm.test(\"Response contains correct email\", () => {\r",
-											"    const nonExistingEmail = pm.variables.get('nonExistingEmail');\r",
-											"    pm.expect(response.message).to.include(nonExistingEmail);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/qa/token?email={{nonExistingEmail}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"qa",
-										"token"
-									],
-									"query": [
-										{
-											"key": "email",
-											"value": "{{nonExistingEmail}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Register new user",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"const reusedPasswordEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
-											"pm.collectionVariables.set(\"reusedPasswordEmail\", reusedPasswordEmail);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 201\", () => {\r",
-											"    pm.response.to.have.status(201);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{reusedPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:8081/register",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"register"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Fetch verification token",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"const response = pm.response.text();\r",
-											"\r",
-											"pm.test(\"Response contain valid token\", () => {\r",
-											"    pm.expect(response).to.be.a('string');\r",
-											"    pm.collectionVariables.set('reusedPasswordResetToken', response);\r",
-											"})"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/qa/token?email={{reusedPasswordEmail}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"qa",
-										"token"
-									],
-									"query": [
-										{
-											"key": "email",
-											"value": "{{reusedPasswordEmail}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Confirm registration",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/register/confirm?token={{reusedPasswordResetToken}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"register",
-										"confirm"
-									],
-									"query": [
-										{
-											"key": "token",
-											"value": "{{reusedPasswordResetToken}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Request Password Reset",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/password/reset?email={{reusedPasswordEmail}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"password",
-										"reset"
-									],
-									"query": [
-										{
-											"key": "email",
-											"value": "{{reusedPasswordEmail}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Fetch verification token",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"const response = pm.response.text();\r",
-											"\r",
-											"pm.test(\"Response contain valid token\", () => {\r",
-											"    pm.expect(response).to.be.a('string');\r",
-											"    pm.collectionVariables.set('reusedPasswordResetToken', response);\r",
-											"})"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/qa/token?email={{reusedPasswordEmail}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"qa",
-										"token"
-									],
-									"query": [
-										{
-											"key": "email",
-											"value": "{{reusedPasswordEmail}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Request Password Reset",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
-											"pm.collectionVariables.set('encodedPassword', encodedPassword);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "PATCH",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/password/reset?token={{reusedPasswordResetToken}}&password={{encodedPassword}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"password",
-										"reset"
-									],
-									"query": [
-										{
-											"key": "token",
-											"value": "{{reusedPasswordResetToken}}"
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const nonExistingEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"nonExistingEmail\", nonExistingEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										},
 										{
-											"key": "password",
-											"value": "{{encodedPassword}}"
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Request With Reused Token",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
-											"pm.collectionVariables.set('encodedPassword', encodedPassword);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?email={{nonExistingEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{nonExistingEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
 								},
 								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 422\", () => {\r",
-											"    pm.response.to.have.status(422);\r",
-											"});\r",
-											"\r",
-											"const response = pm.response.json();\r",
-											"pm.test('Should include correct message', () => {\r",
-											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
-											"    pm.expect(response.message).to.include('Provided verification token was already used');\r",
-											"})"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "PATCH",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/password/reset?token={{reusedPasswordResetToken}}&password={{encodedPassword}}",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"password",
-										"reset"
-									],
-									"query": [
+									"name": "Fetch verification token",
+									"event": [
 										{
-											"key": "token",
-											"value": "{{reusedPasswordResetToken}}"
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										},
 										{
-											"key": "password",
-											"value": "{{encodedPassword}}"
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response contain valid message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.include('User with email');\r",
+													"    pm.expect(response.message).to.include('does not exist');\r",
+													"});\r",
+													"pm.test(\"Response contains correct email\", () => {\r",
+													"    const nonExistingEmail = pm.variables.get('nonExistingEmail');\r",
+													"    pm.expect(response.message).to.include(nonExistingEmail);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
-									]
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{nonExistingEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{nonExistingEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
+						},
+						{
+							"name": "Used Token",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const reusedPasswordEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"reusedPasswordEmail\", reusedPasswordEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{reusedPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch verification token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.text();\r",
+													"\r",
+													"pm.test(\"Response contain valid token\", () => {\r",
+													"    pm.expect(response).to.be.a('string');\r",
+													"    pm.collectionVariables.set('reusedPasswordResetToken', response);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{reusedPasswordEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{reusedPasswordEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Confirm registration",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/register/confirm?token={{reusedPasswordResetToken}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register",
+												"confirm"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{reusedPasswordResetToken}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?email={{reusedPasswordEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{reusedPasswordEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch verification token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.text();\r",
+													"\r",
+													"pm.test(\"Response contain valid token\", () => {\r",
+													"    pm.expect(response).to.be.a('string');\r",
+													"    pm.collectionVariables.set('reusedPasswordResetToken', response);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{reusedPasswordEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{reusedPasswordEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
+													"pm.collectionVariables.set('encodedPassword', encodedPassword);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?token={{reusedPasswordResetToken}}&password={{encodedPassword}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{reusedPasswordResetToken}}"
+												},
+												{
+													"key": "password",
+													"value": "{{encodedPassword}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request With Reused Token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
+													"pm.collectionVariables.set('encodedPassword', encodedPassword);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 422\", () => {\r",
+													"    pm.response.to.have.status(422);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test('Should include correct message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.include('Provided verification token was already used');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?token={{reusedPasswordResetToken}}&password={{encodedPassword}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{reusedPasswordResetToken}}"
+												},
+												{
+													"key": "password",
+													"value": "{{encodedPassword}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Expired Token",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const expiredPasswordTokenEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"expiredPasswordTokenEmail\", expiredPasswordTokenEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{expiredPasswordTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch verification token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.text();\r",
+													"\r",
+													"pm.test(\"Response contain valid token\", () => {\r",
+													"    pm.expect(response).to.be.a('string');\r",
+													"    pm.collectionVariables.set('expiredPasswordToken', response);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{expiredPasswordTokenEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{expiredPasswordTokenEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Confirm registration",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/register/confirm?token={{expiredPasswordToken}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register",
+												"confirm"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{expiredPasswordToken}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?email={{expiredPasswordTokenEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{expiredPasswordTokenEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch verification token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.text();\r",
+													"\r",
+													"pm.test(\"Response contain valid token\", () => {\r",
+													"    pm.expect(response).to.be.a('string');\r",
+													"    pm.collectionVariables.set('expiredPasswordToken', response);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{expiredPasswordTokenEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{expiredPasswordTokenEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Expire token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const date = new Date();\r",
+													"const expiredDate = new Date(date.setMinutes(date.getMinutes() - (24 * 60)) - 1);\r",
+													"const expiredDateJavaLocalDateTimeString = expiredDate.toISOString().replace(/Z/g, '')\r",
+													"pm.collectionVariables.set('expiredDate', expiredDateJavaLocalDateTimeString);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token/:token?creationDate={{expiredDate}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token",
+												":token"
+											],
+											"query": [
+												{
+													"key": "creationDate",
+													"value": "{{expiredDate}}"
+												}
+											],
+											"variable": [
+												{
+													"key": "token",
+													"value": "{{expiredPasswordToken}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
+													"pm.collectionVariables.set('encodedPassword', encodedPassword);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 422\", () => {\r",
+													"    pm.response.to.have.status(422);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test('Should contain correct error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.include('Provided verification token expired at:');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?token={{expiredPasswordToken}}&password={{encodedPassword}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{expiredPasswordToken}}"
+												},
+												{
+													"key": "password",
+													"value": "{{encodedPassword}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Invalid Token",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const invalidTokenEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"invalidTokenEmail\", invalidTokenEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch verification token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.text();\r",
+													"\r",
+													"pm.test(\"Response contain valid token\", () => {\r",
+													"    pm.expect(response).to.be.a('string');\r",
+													"    pm.collectionVariables.set('validVerificationToken', response);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/qa/token?email={{invalidTokenEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"qa",
+												"token"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{invalidTokenEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Confirm registration",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/register/confirm?token={{validVerificationToken}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register",
+												"confirm"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{validVerificationToken}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?email={{invalidTokenEmail}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "{{invalidTokenEmail}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request Password Reset",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"var encodedPassword = require('btoa')(pm.variables.get('newPassword'));\r",
+													"pm.collectionVariables.set('encodedPassword', encodedPassword);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test('Should contain correct error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Verification token was not found');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/password/reset?token=token&password={{encodedPassword}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"password",
+												"reset"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "token"
+												},
+												{
+													"key": "password",
+													"value": "{{encodedPassword}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				}
@@ -2479,6 +3314,22 @@
 		},
 		{
 			"key": "reusedPasswordResetToken",
+			"value": ""
+		},
+		{
+			"key": "invalidTokenEmail",
+			"value": ""
+		},
+		{
+			"key": "expiredPasswordTokenEmail",
+			"value": ""
+		},
+		{
+			"key": "expiredPasswordToken",
+			"value": ""
+		},
+		{
+			"key": "validVerificationToken",
 			"value": ""
 		}
 	]

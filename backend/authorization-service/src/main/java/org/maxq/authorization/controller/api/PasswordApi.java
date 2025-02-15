@@ -34,6 +34,10 @@ public interface PasswordApi {
   @ApiResponse(responseCode = "400", description = "Error during password reset process",
       content = {@Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))}
   )
+  @ApiResponse(responseCode = "404", description = "Provided token was not found or is not " +
+      "linked to any password reset request", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+  })
   @ApiResponse(responseCode = "422", description = "Token expired", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })

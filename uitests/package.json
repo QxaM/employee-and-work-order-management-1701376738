@@ -4,7 +4,10 @@
   "description": "UI mTests for MaxQ Work Manager",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "codegen": "playwright codegen",
+    "report:merge": "playwright merge-reports --reporter html",
+    "report:serve": "playwright show-report"
   },
   "author": "Piotr Gliszczyński",
   "license": "ISC",

@@ -52,6 +52,10 @@ public interface RegisterApi {
   @ApiResponse(responseCode = "400", description = "Error during verification process", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })
+  @ApiResponse(responseCode = "404", description = "Provided token was not found or is not " +
+      "linked to any registration", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+  })
   @ApiResponse(responseCode = "422", description = "Token expired, new email was sent", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })
