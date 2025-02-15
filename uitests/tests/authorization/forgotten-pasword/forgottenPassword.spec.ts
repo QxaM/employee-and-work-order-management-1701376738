@@ -21,7 +21,13 @@ import {
   openUpdatePasswordPage,
 } from "../../utils/navigation.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
-import { invalidEmailMessage } from "../register/register.utils";
+import {
+  invalidEmailMessage,
+  passwordConfirmationEmptyMessage,
+  passwordEmptyMessage,
+  passwordMismatchMessage,
+  passwordTooShortMessage,
+} from "../register/register.utils";
 
 let email: string;
 let password: string;
@@ -309,4 +315,73 @@ test("TC13 - should validate email during password reset", async ({
     await expect(page).not.toHaveURL(baseURL || ""),
     await expect(invalidEmailMessage(page)).toBeVisible(),
   ]);
+});
+
+test("TC14 - should validate password during password registration", async ({
+  page,
+  baseURL,
+}) => {
+  await test.step("TC14.1 - should validate invalid password (too short)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+    const invalidPassword = "123";
+
+    // When
+    await fillPassword(page, invalidPassword);
+    await fillPasswordConfirmation(page, invalidPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordTooShortMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC14.2 - should validate invalid password (empty)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+
+    // When
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordEmptyMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC14.3 - should validate password confirmation (mismatch)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+    const validPassword = "1234";
+
+    // When
+    await fillPassword(page, validPassword);
+    await fillPasswordConfirmation(page, "4321");
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordMismatchMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC14.4 - should validate password confirmation (empty)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+    const validPassword = "1234";
+
+    // When
+    await fillPassword(page, validPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordConfirmationEmptyMessage(page)).toBeVisible(),
+    ]);
+  });
 });
