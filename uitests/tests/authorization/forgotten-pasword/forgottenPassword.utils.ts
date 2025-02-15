@@ -50,3 +50,7 @@ export const updatePasswordSuccessfullMessage = (page: Page): Locator => {
 export const tokenExpiredMessage = (page: Page): Locator => {
   return page.getByText("Token expired, try new password reset request");
 };
+
+export const resetPasswordError = (page: Page): Locator => {
+  return page.getByText("Error during verification process, try again later");
+};

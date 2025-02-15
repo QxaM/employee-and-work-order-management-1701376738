@@ -9,6 +9,7 @@ import {
   fillPassword,
   fillPasswordConfirmation,
   passwordResetTitle,
+  resetPasswordError,
   resetPasswordSuccessfullMessage,
   tokenExpiredMessage,
   updatePasswordSuccessfullMessage,
@@ -253,5 +254,39 @@ test("TC11 - should handle correctly non-existent email", async ({
     // Then
     expect(response.ok()).toBeFalsy();
     expect(response.status()).toBe(404);
+  });
+});
+
+test("TC12 - should handle correctly invalid token", async ({
+  page,
+  baseURL,
+}) => {
+  let newPassword = faker.internet.password();
+
+  await test.step("TC12.1 - try to reset password", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+
+    // When
+    await fillPassword(page, newPassword);
+    await fillPasswordConfirmation(page, newPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).toHaveURL(baseURL || ""),
+      await expect(resetPasswordError(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC12.2 - cannot log in when update failed", async () => {
+    // Given
+    await openLoginPage(page);
+
+    // When
+    await login(page, email, newPassword);
+
+    // Then
+    await expect(loginError(page)).toBeVisible();
   });
 });
