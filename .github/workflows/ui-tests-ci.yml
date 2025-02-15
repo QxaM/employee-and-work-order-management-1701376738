@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [ 1, 2, 3, 4, 6, 7, 8 ]
+        shardIndex: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
         shardTotal: [ 8 ]
 
     needs:
@@ -170,6 +170,7 @@ jobs:
 
       - name: Merge into HTML Report
         run: npm report:merge ./all-blob-reports
+        working-directory: uitests
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
