@@ -16,6 +16,7 @@ import {
 } from "./forgottenPassword.utils";
 import {
   openLoginPage,
+  openResetPasswordPage,
   openUpdatePasswordPage,
 } from "../../utils/navigation.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
@@ -215,5 +216,42 @@ test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
       await expect(page).toHaveURL(baseURL || ""),
       await expect(tokenExpiredMessage(page)).toBeVisible(),
     ]);
+  });
+});
+
+test("TC11 - should handle correctly non-existent email", async ({
+  page,
+  baseURL,
+}) => {
+  const nonExistentEmail = faker.internet.email();
+
+  await test.step("TC11.1 - request password reset", async () => {
+    // Given
+    await openResetPasswordPage(page);
+
+    // When
+    await fillEmail(page, nonExistentEmail);
+    await clickResetPassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).toHaveURL(baseURL || ""),
+      await expect(resetPasswordSuccessfullMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC11.2 - open reset password page", async () => {
+    // Given
+
+    // When
+    const response = await apiContext.get(`/qa/token`, {
+      params: {
+        email: nonExistentEmail,
+      },
+    });
+
+    // Then
+    expect(response.ok()).toBeFalsy();
+    expect(response.status()).toBe(404);
   });
 });
