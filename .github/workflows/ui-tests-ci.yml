@@ -169,7 +169,7 @@ jobs:
           merge-multiple: true
 
       - name: Merge into HTML Report
-        run: npm report:merge ./all-blob-reports
+        run: npm run report:merge ./all-blob-reports
         working-directory: uitests
 
       - name: Upload HTML report
