@@ -4,6 +4,7 @@ import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
 import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
 import org.maxq.authorization.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,6 +27,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+  @Value("${frontend.url}")
+  private String frontendUrl;
 
   @Bean
   public AuthenticationProvider authenticationProvider(UserService userService) {
@@ -66,7 +70,7 @@ public class WebSecurityConfig {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
 
     corsConfiguration.setAllowedOriginPatterns(
-        List.of("http://localhost:[*]", "http://*:5173", "http://*:4173")
+        List.of("http://localhost:[*]", frontendUrl)
     );
     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
