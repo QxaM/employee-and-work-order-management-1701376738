@@ -52,3 +52,15 @@ export const passwordEmptyMessage = (page: Page): Locator => {
 export const passwordMismatchMessage = (page: Page): Locator => {
   return page.getByText("Passwords do not match");
 };
+
+export const passwordConfirmationEmptyMessage = (page: Page): Locator => {
+  return page.getByText("Enter password confirmation");
+};
+
+export const successfullConfirmationMessage = (page: Page): Locator => {
+  return page.getByText("Verification was successfull - you can now login");
+};
+
+export const expiredTokenMessage = (page: Page): Locator => {
+  return page.getByText("Token is expired - sent a new one");
+};

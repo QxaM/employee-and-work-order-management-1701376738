@@ -1,6 +1,6 @@
 import { Locator, Page } from "playwright";
 
-export const openLoginPage = async (page: Page) => {
+export const clickLoginButton = async (page: Page) => {
   await page.getByRole("link", { name: "Login" }).click();
 };
 

@@ -18,9 +18,16 @@ jobs:
     uses: ./.github/workflows/backend-api-tests.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
   ui-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+        shardTotal: [ 8 ]
 
     needs:
       - frontend
@@ -68,10 +75,16 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Start Authorization Service
         run: ./gradlew authorization-service:bootRun &
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
       - name: Wait for application to be ready
@@ -121,13 +134,47 @@ jobs:
         working-directory: uitests
 
       - name: Run Playwright tests
-        run: npm run test
+        run: npm run test --- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         working-directory: uitests
 
       - name: Upload UI Test Report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: ui-test-report
+          name: blob-report-${{ matrix.shardIndex }}
+          path: uitests/blob-report
+          retention-days: 30
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs:
+      - ui-tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: uitests
+
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: uitests/all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npm run report:merge ./all-blob-reports
+        working-directory: uitests
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
           path: uitests/playwright-report
           retention-days: 30

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
@@ -26,10 +27,22 @@ public class User {
 
   @NotNull
   @Length(min = 4)
+  @Setter
   private String password;
+
+  @NotNull
+  @Setter
+  private boolean enabled;
 
   public User(String email, String password) {
     this.password = password;
     this.email = email;
+    this.enabled = false;
+  }
+
+  public User(String email, String password, boolean enabled) {
+    this.password = password;
+    this.email = email;
+    this.enabled = enabled;
   }
 }

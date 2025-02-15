@@ -9,6 +9,7 @@ import {
 import { ApiErrorType } from '../types/ApiTypes.ts';
 
 const REGISTER_API = '/register';
+const VERIFICATION_API = '/register/confirm';
 const LOGIN_API = '/login';
 
 /**
@@ -16,6 +17,14 @@ const LOGIN_API = '/login';
  */
 export interface RegisterRequest {
   data: RegisterType;
+  signal?: AbortSignal;
+}
+
+/**
+ * Request payload for the register/confirm API.
+ */
+export interface ConfirmRequest {
+  token: string;
   signal?: AbortSignal;
 }
 
@@ -67,6 +76,40 @@ export const register = async ({
 };
 
 /**
+ * Handles user verification by sending a POST request to Authorization Service
+ * /register/confirm API
+ * Throws an error with a message if the verification fails or token was expired.
+ *
+ * @param {ConfirmRequest} param0 - Registration payload and optional AbortSignal.
+ * @returns {Promise<void>} - Resolves when registration succeeds.
+ * @throws {Error} - throws Error when registration fails
+ */
+export const confirmRegistration = async ({
+  token,
+  signal,
+}: ConfirmRequest): Promise<void> => {
+  const url = apiBaseUrl + VERIFICATION_API + `?token=${token}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    signal,
+  });
+
+  if (!response.ok) {
+    let message = 'Error during verification process, try again later';
+
+    if (response.status === 422) {
+      message = 'Token is expired - sent a new one';
+    }
+
+    throw new Error(message);
+  }
+};
+
+/**
  * Handles user login by sending a POST request, including a basic authentication header.
  * Uses Authorization Service /login request.
  * Throws an error with a message if the login fails.
@@ -113,6 +156,14 @@ export const useRegisterUser = () => {
     mutationKey: ['register'],
     mutationFn: ({ data, signal }: RegisterRequest) =>
       register({ data, signal }),
+  });
+};
+
+export const useConfirmRegistration = () => {
+  return useMutation({
+    mutationKey: ['registrationVerification'],
+    mutationFn: ({ token, signal }: ConfirmRequest) =>
+      confirmRegistration({ token, signal }),
   });
 };
 

@@ -20,16 +20,19 @@ project and employees managing easier.
 ### Features:
 
 1. **Authorization:** Application allows for registration and authorization
-   of users
+   of users. Registered users are disabled by default - verification email
+   will be sent to provided email. If verification expired a new one will be
+   sent. Users can also request to reset their password from login page -
+   this will send email to users with password reset.
 
 ### Services:
 
 1. **Frontend:** Built using React + Typescript handles all client side
    operations. Frontend code documentation can be seen be navigating to .
-   /frontend directory and running `npm run docs/serve` command.
+   /frontend directory and running `npm run docs:serve` command.
 2. **Backend:** Backend is split into multiple microservices
     * **Authorization Service:** Responsible for all authorization related
-      operations - registration and login -
+      operations - registration, registration verification, login -
       see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html)
 
 ### Technology stack
@@ -69,7 +72,8 @@ deployment:
 3. API tests pipeline - after successfull build backend is tested with API
    tests. Report is published as artifact.
 4. UI tests pipeline - if both API tests and Frontend CI pipeline is
-   successfull UI tests are triggered. Report is published as artifact
+   successfull UI tests are triggered. UI tests are split into
+   multiple shards for faster execution. Report is published as artifact
 5. Frontend CD pipeline - after successfull integration to main branch
    deployment will happen to AWS S3.
 
