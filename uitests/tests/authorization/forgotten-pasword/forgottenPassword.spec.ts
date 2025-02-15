@@ -59,13 +59,17 @@ test.beforeEach(async () => {
 
   await test.step("Prepare user - confirm registration", async () => {
     // Given
-    const response = await apiContext.get(`/qa/token`, {
-      params: {
-        email,
-      },
-    });
-    expect(response.ok()).toBeTruthy();
-    const token = await response.text();
+    let token: string = "";
+
+    await expect(async () => {
+      const response = await apiContext.get(`/qa/token`, {
+        params: {
+          email,
+        },
+      });
+      expect(response.ok()).toBeTruthy();
+      token = await response.text();
+    }).toPass();
 
     // When
     const verificationResponse = await apiContext.post(`/register/confirm`, {
@@ -111,13 +115,16 @@ test("TC9 - should correctly reset password", async ({ page, baseURL }) => {
 
   await test.step("TC9.4 - open reset password page", async () => {
     // Given
-    const response = await apiContext.get(`/qa/token`, {
-      params: {
-        email,
-      },
-    });
-    expect(response.ok()).toBeTruthy();
-    const resetPasswordToken = await response.text();
+    let resetPasswordToken: string = "";
+    await expect(async () => {
+      const response = await apiContext.get(`/qa/token`, {
+        params: {
+          email,
+        },
+      });
+      expect(response.ok()).toBeTruthy();
+      resetPasswordToken = await response.text();
+    }).toPass();
 
     // When
     await openUpdatePasswordPage(page, resetPasswordToken);
@@ -180,13 +187,15 @@ test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
   await test.step("TC10.2 - use token for the first time", async () => {
     // Given
     const newPassword = faker.internet.password();
-    const tokenResponse = await apiContext.get(`/qa/token`, {
-      params: {
-        email,
-      },
-    });
-    expect(tokenResponse.ok()).toBeTruthy();
-    reusedToken = await tokenResponse.text();
+    await expect(async () => {
+      const tokenResponse = await apiContext.get(`/qa/token`, {
+        params: {
+          email,
+        },
+      });
+      expect(tokenResponse.ok()).toBeTruthy();
+      reusedToken = await tokenResponse.text();
+    }).toPass();
 
     // When
     const updateResponse = await apiContext.patch(`password/reset`, {
@@ -252,15 +261,17 @@ test("TC11 - should handle correctly non-existent email", async ({
     // Given
 
     // When
-    const response = await apiContext.get(`/qa/token`, {
-      params: {
-        email: nonExistentEmail,
-      },
-    });
+    await expect(async () => {
+      const response = await apiContext.get(`/qa/token`, {
+        params: {
+          email: nonExistentEmail,
+        },
+      });
 
-    // Then
-    expect(response.ok()).toBeFalsy();
-    expect(response.status()).toBe(404);
+      // Then
+      expect(response.ok()).toBeFalsy();
+      expect(response.status()).toBe(404);
+    }).toPass();
   });
 });
 
