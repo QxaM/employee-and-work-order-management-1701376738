@@ -46,3 +46,7 @@ export const resetPasswordSuccessfullMessage = (page: Page): Locator => {
 export const updatePasswordSuccessfullMessage = (page: Page): Locator => {
   return page.getByText("Password was updated successfully!");
 };
+
+export const tokenExpiredMessage = (page: Page): Locator => {
+  return page.getByText("Token expired, try new password reset request");
+};

@@ -10,6 +10,7 @@ import {
   fillPasswordConfirmation,
   passwordResetTitle,
   resetPasswordSuccessfullMessage,
+  tokenExpiredMessage,
   updatePasswordSuccessfullMessage,
   updatePasswordTitle,
 } from "./forgottenPassword.utils";
@@ -146,6 +147,73 @@ test("TC9 - should correctly reset password", async ({ page, baseURL }) => {
       await expect(loginError(page)).toBeHidden(),
       await expect(page).toHaveURL(baseURL || ""),
       await expect(welcomeMessage(page)).toBeVisible(),
+    ]);
+  });
+});
+
+test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
+  let reusedToken: string;
+
+  await test.step("TC10.1 - request password reset", async () => {
+    // Given
+
+    // When
+    const response = await apiContext.post("/password/reset", {
+      params: {
+        email,
+      },
+    });
+
+    // Then
+    expect(response.ok()).toBeTruthy();
+  });
+
+  await test.step("TC10.2 - use token for the first time", async () => {
+    // Given
+    const newPassword = faker.internet.password();
+    const tokenResponse = await apiContext.get(`/qa/token`, {
+      params: {
+        email,
+      },
+    });
+    expect(tokenResponse.ok()).toBeTruthy();
+    reusedToken = await tokenResponse.text();
+
+    // When
+    const updateResponse = await apiContext.patch(`password/reset`, {
+      params: {
+        token: reusedToken,
+        password: btoa(newPassword),
+      },
+    });
+
+    // Then
+    expect(updateResponse.ok()).toBeTruthy();
+  });
+
+  await test.step("TC10.3 - open reset password page", async () => {
+    // Given
+
+    // When
+    await openUpdatePasswordPage(page, reusedToken);
+
+    // Then
+    await expect(updatePasswordTitle(page)).toBeVisible();
+  });
+
+  await test.step("TC9.5 - reset password", async () => {
+    // Given
+    const newPassword = faker.internet.password();
+
+    // When
+    await fillPassword(page, newPassword);
+    await fillPasswordConfirmation(page, newPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).toHaveURL(baseURL || ""),
+      await expect(tokenExpiredMessage(page)).toBeVisible(),
     ]);
   });
 });
