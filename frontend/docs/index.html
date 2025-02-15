@@ -12,7 +12,8 @@ project and employees managing easier.</p>
 <li><strong>Authorization:</strong> Application allows for registration and authorization
 of users. Registered users are disabled by default - verification email
 will be sent to provided email. If verification expired a new one will be
-sent.</li>
+sent. Users can also request to reset their password from login page -
+this will send email to users with password reset.</li>
 </ol>
 <a id="services" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Services:<a href="#services" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
 <li><strong>Frontend:</strong> Built using React + Typescript handles all client side
@@ -75,7 +76,8 @@ application. Unit test report is published as artifact.</li>
 <li>API tests pipeline - after successfull build backend is tested with API
 tests. Report is published as artifact.</li>
 <li>UI tests pipeline - if both API tests and Frontend CI pipeline is
-successfull UI tests are triggered. Report is published as artifact</li>
+successfull UI tests are triggered. UI tests are split into
+multiple shards for faster execution. Report is published as artifact</li>
 <li>Frontend CD pipeline - after successfull integration to main branch
 deployment will happen to AWS S3.</li>
 </ol>
