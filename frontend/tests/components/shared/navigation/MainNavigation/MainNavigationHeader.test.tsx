@@ -1,14 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 
-import MainNavigationHeader from '@/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import { renderWithProviders } from '../../../../test-utils.tsx';
+import { login } from '../../../../../src/store/authSlice.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
     // Given
     const appName = 'MaxQ';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+    renderWithProviders(
+      <BrowserRouter>
+        <MainNavigationHeader />
+      </BrowserRouter>
+    );
 
     // When
     const imageElement = screen.getByAltText(appName, { exact: false });
@@ -19,28 +25,137 @@ describe('Main Navigation Header', () => {
     expect(headerElement).toBeInTheDocument();
   });
 
-  it('Should contain navigation links', () => {
-    // Given
-    const navHomeText = 'Home';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
+  describe('Navigation', () => {
+    it('Should contain navigation links', () => {
+      // Given
+      const navHomeText = 'Home';
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
 
-    // When
-    const homeLink = screen.getByText(navHomeText, { exact: false });
+      // When
+      const homeLink = screen.getByText(navHomeText, { exact: false });
 
-    // Then
-    expect(homeLink).toBeInTheDocument();
+      // Then
+      expect(homeLink).toBeInTheDocument();
+    });
+
+    it('Should navigate home, when "Home" is clicked', () => {
+      // Given
+      const navHomeText = 'Home';
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const homeLink = screen.getByText(navHomeText, { exact: false });
+
+      // When
+      fireEvent.click(homeLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/');
+    });
   });
 
-  it('Should navigate home, when "Home" is clicked', () => {
-    // Given
-    const navHomeText = 'Home';
-    render(<MainNavigationHeader />, { wrapper: BrowserRouter });
-    const homeLink = screen.getByText(navHomeText, { exact: false });
+  describe('Login and Register', () => {
+    it('Should contain Register Button', () => {
+      // Given
+      const registerButtonText = 'Sign up';
 
-    // When
-    fireEvent.click(homeLink);
+      // When
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const registerButton = screen.getByRole('link', {
+        name: registerButtonText,
+      });
 
-    // Then
-    expect(window.location.pathname).toBe('/');
+      // Then
+      expect(registerButton).toBeInTheDocument();
+    });
+
+    it('Should navigate to register page', () => {
+      // Given
+      const registerButtonText = 'Sign up';
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const registerButton = screen.getByRole('link', {
+        name: registerButtonText,
+      });
+
+      // When
+      fireEvent.click(registerButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/register');
+    });
+
+    it('Should contain Login Button', () => {
+      // Given
+      const loginButtonText = 'Login';
+
+      // When
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const loginButton = screen.getByRole('link', {
+        name: loginButtonText,
+      });
+
+      // Then
+      expect(loginButton).toBeInTheDocument();
+    });
+
+    it('Should navigate to login page', () => {
+      // Given
+      const loginButtonText = 'Login';
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const loginButton = screen.getByRole('link', {
+        name: loginButtonText,
+      });
+
+      // When
+      fireEvent.click(loginButton);
+
+      // Then
+      expect(window.location.pathname).toBe('/login');
+    });
+
+    it('Should contain welcome message when logged in', () => {
+      // Given
+      const { store } = renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+
+      // When
+      act(() => {
+        store.dispatch(login({ token: '12345' }));
+      });
+
+      const loginButtonText = 'Login';
+      const loginButton = screen.queryByRole('link', {
+        name: loginButtonText,
+      });
+
+      // Then
+      expect(loginButton).not.toBeInTheDocument();
+      expect(screen.getByText('Welcome back!')).toBeInTheDocument();
+    });
   });
 });

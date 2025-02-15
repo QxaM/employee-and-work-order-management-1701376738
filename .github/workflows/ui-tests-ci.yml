@@ -16,14 +16,37 @@ jobs:
 
   api-tests:
     uses: ./.github/workflows/backend-api-tests.yml
-    secrets: inherit
+    secrets:
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
   ui-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+        shardTotal: [ 8 ]
 
     needs:
       - frontend
       - api-tests
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: local_app
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: authorization-db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -40,6 +63,10 @@ jobs:
         with:
           node-version: 18
 
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+
       - name: Install Frontend Dependencies
         run: npm ci
         working-directory: frontend
@@ -48,31 +75,106 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
+        env:
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
 
-      - name: Start Demo Service
-        run: ./gradlew demo:bootRun &
+      - name: Start Authorization Service
+        run: ./gradlew authorization-service:bootRun &
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: QA
         working-directory: backend
+
+      - name: Wait for application to be ready
+        timeout-minutes: 2
+        env:
+          HEALTHCHECK_URL: http://localhost:8081/actuator/health
+        run: |
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
 
       - name: Build Frontend
         run: npm run build
         working-directory: frontend
 
       - name: Preview Frontend
-        run: npm run preview &
+        run: npm run dev &
         working-directory: frontend
 
       - name: Wait for services Health Check
         run: sleep 20
 
-      - name: Run UI Tests
-        run:  |
-          chmod +x ./gradlew
-          ./gradlew test
+      - name: Install tests dependencies
+        run: npm ci
+        working-directory: uitests
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: uitests
+
+      - name: Run Playwright tests
+        run: npm run test --- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         working-directory: uitests
 
       - name: Upload UI Test Report
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: ui-test-report
-          path: uitests/build/reports
+          name: blob-report-${{ matrix.shardIndex }}
+          path: uitests/blob-report
+          retention-days: 30
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs:
+      - ui-tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: uitests
+
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: uitests/all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npm run report:merge ./all-blob-reports
+        working-directory: uitests
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: uitests/playwright-report
+          retention-days: 30

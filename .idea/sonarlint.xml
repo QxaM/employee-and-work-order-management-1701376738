@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="fileExclusions">
+      <list>
+        <option value="GLOB:**/.github/**" />
+        <option value="GLOB:**/.idea/**" />
+        <option value="GLOB:**/.gradle/**" />
+        <option value="GLOB:**/build/**" />
+        <option value="GLOB:**/coverage/**" />
+        <option value="GLOB:**/dist/**" />
+        <option value="GLOB:**/docs/**" />
+        <option value="GLOB:**/node_modules/**" />
+        <option value="GLOB:**/public/**" />
+        <option value="GLOB:**/*.json" />
+        <option value="GLOB:**/playwright-report/**" />
+        <option value="GLOB:**/test-data/**" />
+        <option value="GLOB:**/test-results/**" />
+      </list>
+    </option>
+  </component>
+</project>

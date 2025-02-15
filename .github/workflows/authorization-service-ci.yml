@@ -1,0 +1,74 @@
+name: Authorization Service CI Pipeline
+
+on:
+  workflow_call:
+    secrets:
+      JWT_PRIVATE_KEY:
+        required: true
+      MAIL_USERNAME:
+        required: true
+      MAIL_PASSWORD:
+        required: true
+  workflow_dispatch:
+
+jobs:
+  authorization-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./backend/gradlew
+
+      - name: Install dependencies
+        run: ./gradlew clean authorization-service:build -x test -x check -x assemble -x pmdMain -x pmdTest
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Lint Checks
+        run: ./gradlew authorization-service:check
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Unit Tests
+        run: ./gradlew authorization-service:test
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Build
+        run: ./gradlew authorization-service:assemble
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: PROD
+        working-directory: backend
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authorization-service-tests
+          path: backend/authorization-service/build/reports
+
+      - name: Upload JAR file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: authorization-service-jar
+          path: |
+            backend/authorization-service/build/libs/authorization-service-*.jar
+            !backend/authorization-service/build/libs/authorization-service-*-plain.jar

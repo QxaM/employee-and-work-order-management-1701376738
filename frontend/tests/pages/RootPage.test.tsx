@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import RootPage from '@/pages/RootPage.tsx';
-import { Size } from '@/types/WindowTypes.ts';
+import RootPage from '../../src/pages/RootPage.tsx';
+import { Size } from '../../src/types/WindowTypes.ts';
+import { renderWithProviders } from '../test-utils.tsx';
 
 const mockWindowSize = vi.fn(() => ({}) as Size);
 vi.mock('@/hooks/useWindowSize.tsx', () => ({
@@ -25,7 +26,11 @@ describe('Root Page', () => {
     mockWindowSize.mockReturnValue({ width: 1024, height: 768 });
 
     // When
-    render(<RootPage />, { wrapper: BrowserRouter });
+    renderWithProviders(
+      <BrowserRouter>
+        <RootPage />
+      </BrowserRouter>
+    );
     const footerElement = screen.getByText(authorName, { exact: false });
 
     // Then
@@ -38,7 +43,11 @@ describe('Root Page', () => {
     mockWindowSize.mockReturnValue({ width: 1024, height: 768 });
 
     // When
-    render(<RootPage />, { wrapper: BrowserRouter });
+    renderWithProviders(
+      <BrowserRouter>
+        <RootPage />
+      </BrowserRouter>
+    );
     const menuButton = screen.queryByRole('button', {
       name: new RegExp(ariaLabel, 'i'),
     });
@@ -53,7 +62,11 @@ describe('Root Page', () => {
     mockWindowSize.mockReturnValue({ width: 500, height: 768 });
 
     // When
-    render(<RootPage />, { wrapper: BrowserRouter });
+    renderWithProviders(
+      <BrowserRouter>
+        <RootPage />
+      </BrowserRouter>
+    );
     const menuButton = screen.queryByRole('button', {
       name: new RegExp(ariaLabel, 'i'),
     });

@@ -1,0 +1,87 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="."><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>frontend - v0.0.0</title><meta name="description" content="Documentation for frontend"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search"><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">frontend - v0.0.0</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>frontend - v0.0.0</h1></div><div class="tsd-panel tsd-typography"><a id="maxq-employee-and-work-management-platform" class="tsd-anchor"></a><h1 class="tsd-anchor-link">MaxQ Employee and Work Management Platform<a href="#maxq-employee-and-work-management-platform" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p>This application is a Mini Pet Project which allows for Employee and Work
+Management.</p>
+<a id="🌐-demo" class="tsd-anchor"></a><h2 class="tsd-anchor-link">🌐 Demo<a href="#🌐-demo" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p><a href="http://employee-work-management.s3-website.eu-west-3.amazonaws.com/">Application Demo (Frontend)</a></p>
+<p><strong>Demo Credentials:</strong></p>
+<ul>
+<li><strong>Username:</strong> <a href="mailto:test@maxq.com">test@maxq.com</a></li>
+<li><strong>Password:</strong> Test12345</li>
+</ul>
+<a id="📖-about-this-software" class="tsd-anchor"></a><h2 class="tsd-anchor-link">📖 About this Software<a href="#📖-about-this-software" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>This application is an Employee and Work Management application to help with
+project and employees managing easier.</p>
+<a id="features" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Features:<a href="#features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
+<li><strong>Authorization:</strong> Application allows for registration and authorization
+of users. Registered users are disabled by default - verification email
+will be sent to provided email. If verification expired a new one will be
+sent. Users can also request to reset their password from login page -
+this will send email to users with password reset.</li>
+</ol>
+<a id="services" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Services:<a href="#services" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
+<li><strong>Frontend:</strong> Built using React + Typescript handles all client side
+operations. Frontend code documentation can be seen be navigating to .
+/frontend directory and running <code>npm run docs:serve</code> command.</li>
+<li><strong>Backend:</strong> Backend is split into multiple microservices
+<ul>
+<li><strong>Authorization Service:</strong> Responsible for all authorization related
+operations - registration, registration verification, login -
+see <a href="https://authorization-service-0h7q.onrender.com/swagger-ui.html">API docs here</a></li>
+</ul>
+</li>
+</ol>
+<a id="technology-stack" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Technology stack<a href="#technology-stack" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li><strong>Frontend:</strong>
+<ul>
+<li>Typescript</li>
+<li>React</li>
+<li>TailwindCSS</li>
+<li>React-Router</li>
+<li>Vite + Vitest</li>
+<li>React-Testing-Library</li>
+<li>TypeDoc</li>
+<li><strong>Hosting</strong> - AWS S3</li>
+</ul>
+</li>
+<li><strong>Backend:</strong>
+<ul>
+<li>Java</li>
+<li>Spring</li>
+<li>Gradle</li>
+<li>JUnit</li>
+<li>Swagger UI (API docs)</li>
+</ul>
+</li>
+<li><strong>API Testing:</strong>
+<ul>
+<li>Postman</li>
+</ul>
+</li>
+<li><strong>UI Testing:</strong>
+<ul>
+<li>PlaywrightTS</li>
+</ul>
+</li>
+<li><strong>CI/CD:</strong>
+<ul>
+<li>GitHub Actions</li>
+</ul>
+</li>
+</ul>
+<a id="cicd-pipelines" class="tsd-anchor"></a><h3 class="tsd-anchor-link">CI/CD Pipelines<a href="#cicd-pipelines" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Several pipelines were created to allow automated integration, testing and
+deployment:</p>
+<ol>
+<li>Frontend CI pipeline - installs dependencies, lints, formats, tests and
+builds the application. Two artifacts are provided - test report
+(including coverage) and build files.</li>
+<li>Backend CI pipeline - installs dependencies, lints, tests and builds the
+application. Unit test report is published as artifact.</li>
+<li>API tests pipeline - after successfull build backend is tested with API
+tests. Report is published as artifact.</li>
+<li>UI tests pipeline - if both API tests and Frontend CI pipeline is
+successfull UI tests are triggered. UI tests are split into
+multiple shards for faster execution. Report is published as artifact</li>
+<li>Frontend CD pipeline - after successfull integration to main branch
+deployment will happen to AWS S3.</li>
+</ol>
+<a id="🖼️-screenshots" class="tsd-anchor"></a><h2 class="tsd-anchor-link">🖼️ Screenshots<a href="#🖼️-screenshots" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>To give you a visual overview of the application, here are some screenshots:</p>
+<a id="feature-or-page-name" class="tsd-anchor"></a><h3 class="tsd-anchor-link">[Feature or Page Name]<a href="#feature-or-page-name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p><img src="http://link-to-your-image.com/image1.png" alt="Description of Image"></p>
+<a id="another-feature-or-page-name" class="tsd-anchor"></a><h3 class="tsd-anchor-link">[Another Feature or Page Name]<a href="#another-feature-or-page-name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p><img src="http://link-to-your-image.com/image2.png" alt="Description of Image"></p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#maxq-employee-and-work-management-platform"><span>Max<wbr/>Q <wbr/>Employee and <wbr/>Work <wbr/>Management <wbr/>Platform</span></a><ul><li><a href="#🌐-demo"><span>🌐 <wbr/>Demo</span></a></li><li><a href="#📖-about-this-software"><span>📖 <wbr/>About this <wbr/>Software</span></a></li><li><ul><li><a href="#features"><span>Features:</span></a></li><li><a href="#services"><span>Services:</span></a></li><li><a href="#technology-stack"><span>Technology stack</span></a></li><li><a href="#cicd-pipelines"><span>CI/CD <wbr/>Pipelines</span></a></li></ul></li><li><a href="#🖼️-screenshots"><span>🖼️ <wbr/>Screenshots</span></a></li><li><ul><li><a href="#feature-or-page-name"><span>[<wbr/>Feature or <wbr/>Page <wbr/>Name]</span></a></li><li><a href="#another-feature-or-page-name"><span>[<wbr/>Another <wbr/>Feature or <wbr/>Page <wbr/>Name]</span></a></li></ul></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">frontend - v0.0.0</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>

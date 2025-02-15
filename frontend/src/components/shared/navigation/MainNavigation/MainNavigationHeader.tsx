@@ -1,6 +1,18 @@
-import { NavLink } from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 import Logo from '../../Logo';
+import {useAppSelector} from '../../../../hooks/useStore.tsx';
 
+/**
+ * Renders the main navigation header with links and conditional content
+ * based on the user's authentication state.
+ *
+ * This header should be displayed on large (Web) screens.
+ *
+ * Features:
+ * - Displays the logo and navigation links.
+ * - Shows "Sign up" and "Login" links for unauthenticated users.
+ * - Displays a welcome message for authenticated users.
+ */
 const MainNavigationHeader = () => {
   const navShared = 'text-lg py-1 px-2 m-2 rounded';
   const navInactive =
@@ -11,6 +23,8 @@ const MainNavigationHeader = () => {
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
+
+  const token = useAppSelector((state) => state.auth.token);
 
   return (
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
@@ -23,11 +37,27 @@ const MainNavigationHeader = () => {
           Home
         </NavLink>
       </nav>
-      <div className="flex justify-center items-center content-auto">
-        <button className="btn btn-secondary-lightest text-lg mr-2 border-qxam-neutral-dark-lightest border rounded shadow">
-          Example
-        </button>
-      </div>
+      {!token && (
+        <div className="flex justify-center items-center content-auto">
+          <Link
+            to="/register"
+            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
+          >
+            Sign up
+          </Link>
+          <Link
+            to="/login"
+            className="btn btn-primary-darkest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lighter border rounded shadow text-center"
+          >
+            Login
+          </Link>
+        </div>
+      )}
+      {token && (
+        <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
+          Welcome back!
+        </div>
+      )}
     </header>
   );
 };
