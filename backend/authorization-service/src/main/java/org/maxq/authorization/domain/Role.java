@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "ROLES")
 @AllArgsConstructor
@@ -22,4 +25,12 @@ public class Role {
   @NotNull
   @Column(unique = true)
   private String name;
+
+  @ManyToMany(mappedBy = "roles")
+  private List<User> users;
+
+  public Role(String name) {
+    this.name = name;
+    users = new ArrayList<>();
+  }
 }

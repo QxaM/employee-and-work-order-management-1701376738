@@ -3,6 +3,7 @@ package org.maxq.authorization.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,8 @@ class VerificationTokenServiceTest {
 
   @BeforeEach
   void setUp() {
-    user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    user = new User(1L, "test@test.com", "test", false, List.of(role));
     token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
   }
 

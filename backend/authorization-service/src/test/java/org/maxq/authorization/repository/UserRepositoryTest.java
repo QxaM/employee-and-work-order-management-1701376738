@@ -7,6 +7,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +27,11 @@ class UserRepositoryTest {
 
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  private RoleRepository roleRepository;
 
   private User user;
+  private Role role;
 
   static Stream<Arguments> createWrongPasswords() {
     List<User> users = List.of(
@@ -40,13 +44,18 @@ class UserRepositoryTest {
 
   @BeforeEach
   void createUser() {
-    user = new User(EMAIL, "test");
+    role = new Role("admin");
+    roleRepository.save(role);
+    user = new User(EMAIL, "test", List.of(role));
   }
 
   @AfterEach
   void deleteUser() {
     if (user.getId() != null) {
       userRepository.deleteById(user.getId());
+    }
+    if (role.getId() != null) {
+      roleRepository.deleteById(role.getId());
     }
   }
 
@@ -147,7 +156,7 @@ class UserRepositoryTest {
 
     // When
     User updatedUser = new User(user.getId(), "updated@email.com", user.getPassword(),
-        user.isEnabled());
+        user.isEnabled(), user.getRoles());
     userRepository.save(updatedUser);
 
     // Then
@@ -164,5 +173,21 @@ class UserRepositoryTest {
       assertEquals(updatedUser.isEnabled(), fetchedUser.isEnabled(),
           "User enabled status should match after update");
     });
+  }
+
+  @Test
+  void shouldReturnUserWithRole() {
+    // Given
+    userRepository.save(user);
+
+    // When
+    Optional<User> foundUser = userRepository.findById(user.getId());
+
+    // Then
+    assertTrue(foundUser.isPresent(), "User could not be found");
+    assertEquals(user.getRoles().size(), foundUser.get().getRoles().size(),
+        "User should have exactly one role");
+    assertEquals(user.getRoles().getFirst().getName(), foundUser.get().getRoles().getFirst().getName(),
+        "User should have correct roles fetched from database");
   }
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.maxq.authorization.config.MockitoPublisherConfiguration;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.dto.UserDto;
@@ -34,6 +35,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -207,7 +210,8 @@ class RegisterControllerTest {
   @Test
   void shouldConfirmRegistration() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, List.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
 
@@ -241,7 +245,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, List.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
@@ -261,7 +266,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowExpiredVerification_When_ExpirationBeforeNow() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, List.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
 
@@ -284,7 +290,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowDataValidation_When_InvalidData() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, List.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now(), false);
 
