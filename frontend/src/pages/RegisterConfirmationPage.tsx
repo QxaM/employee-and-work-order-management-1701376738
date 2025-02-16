@@ -61,7 +61,6 @@ const RegisterConfirmationPage = () => {
 
   return (
     <div className="flex flex-grow items-center justify-center w-full">
-      {searchParams.get('token')}
       <LoadingSpinner size="large" />
     </div>
   );
