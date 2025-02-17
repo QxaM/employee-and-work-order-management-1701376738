@@ -433,7 +433,7 @@
 					"name": "Positive",
 					"item": [
 						{
-							"name": "Login with existing credentials",
+							"name": "Login as admin",
 							"event": [
 								{
 									"listen": "test",
@@ -470,12 +470,140 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{enabledUserPassword}}",
+											"value": "{{adminPassword}}",
 											"type": "string"
 										},
 										{
 											"key": "username",
-											"value": "{{enabledUserEmail}}",
+											"value": "{{adminEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as operator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{operatorPassword}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{operatorEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as designer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{designerPassword}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{designerEmail}}",
 											"type": "string"
 										}
 									]
@@ -3242,13 +3370,13 @@
 			"value": ""
 		},
 		{
-			"key": "enabledUserEmail",
-			"value": "test@maxq.com",
+			"key": "adminEmail",
+			"value": "admin@maxq.com",
 			"type": "string"
 		},
 		{
-			"key": "enabledUserPassword",
-			"value": "Test12345",
+			"key": "adminPassword",
+			"value": "Admin12345",
 			"type": "string"
 		},
 		{
@@ -3331,6 +3459,26 @@
 		{
 			"key": "validVerificationToken",
 			"value": ""
+		},
+		{
+			"key": "operatorEmail",
+			"value": "operator@maxq.com",
+			"type": "string"
+		},
+		{
+			"key": "operatorPassword",
+			"value": "Operator12345",
+			"type": "string"
+		},
+		{
+			"key": "designerEmail",
+			"value": "designer@maxq.com",
+			"type": "string"
+		},
+		{
+			"key": "designerPassword",
+			"value": "Designer12345",
+			"type": "string"
 		}
 	]
 }
