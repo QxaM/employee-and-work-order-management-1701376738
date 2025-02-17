@@ -3,9 +3,12 @@ package org.maxq.authorization.service;
 import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.exception.DuplicateRoleException;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.repository.RoleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,5 +23,11 @@ public class RoleService {
       throw new DuplicateRoleException(
           "Provided role already exists: " + roleName, e);
     }
+  }
+
+  public Role findByName(String roleName) throws ElementNotFoundException {
+    Optional<Role> foundRole = roleRepository.findByName(roleName);
+    return foundRole.orElseThrow(() ->
+        new ElementNotFoundException("Role with name '" + roleName + "' does not exist"));
   }
 }

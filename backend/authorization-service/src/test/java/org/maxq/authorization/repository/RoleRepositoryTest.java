@@ -50,12 +50,38 @@ class RoleRepositoryTest {
   @Test
   void shouldThrow_When_DuplicateRoleProvided() {
     // Given
-    Role duplicateRole = new Role("ADMIN");
+    roleRepository.save(role);
+    Role duplicateRole = new Role("TEST");
 
     // When
     Executable executable = () -> roleRepository.save(duplicateRole);
 
     // Then
     assertThrows(DataIntegrityViolationException.class, executable);
+  }
+
+  @Test
+  void shouldFindByName() {
+    // Given
+    roleRepository.save(role);
+
+    // When
+    Optional<Role> foundRole = roleRepository.findByName(role.getName());
+
+    // Then
+    assertTrue(foundRole.isPresent(), "Role was not found");
+    assertEquals(role.getName(), foundRole.get().getName(),
+        "Role name should save with equal name");
+  }
+
+  @Test
+  void shouldReturnEmpty_When_RoleDoesNotExist() {
+    // Given
+
+    // When
+    Optional<Role> foundRole = roleRepository.findByName(role.getName());
+
+    // Then
+    assertFalse(foundRole.isPresent(), "Role was found ad should not");
   }
 }

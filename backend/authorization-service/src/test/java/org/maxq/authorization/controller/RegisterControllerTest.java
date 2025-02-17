@@ -19,6 +19,7 @@ import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
+import org.maxq.authorization.service.RoleService;
 import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ class RegisterControllerTest {
   @MockBean
   private UserService userService;
   @MockBean
+  private RoleService roleService;
+  @MockBean
   private UserMapper userMapper;
   @MockBean
   private ApplicationEventPublisher eventPublisher;
@@ -80,7 +83,9 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
+    Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(roleService.findByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -96,7 +101,9 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
+    Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(roleService.findByName("DESIGNER")).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -106,7 +113,10 @@ class RegisterControllerTest {
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isCreated());
     verify(eventPublisher, times(1))
-        .publishEvent(any(OnRegistrationComplete.class));
+        .publishEvent(argThat(event ->
+            ((OnRegistrationComplete) event).getUser().getRoles().size() == 1
+                && ((OnRegistrationComplete) event).getUser().getRoles().get(0).getName().equals(role.getName()))
+        );
   }
 
   @ParameterizedTest
@@ -162,7 +172,7 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
-    when(userMapper.mapToUser(userDto)).thenReturn(user);
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DuplicateEmailException("Test message", new Exception())).when(userService).createUser(any());
 
     // When + Then
@@ -180,7 +190,7 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
-    when(userMapper.mapToUser(userDto)).thenReturn(user);
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DataValidationException("Test message", new Exception())).when(userService).createUser(any());
 
     // When + Then

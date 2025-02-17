@@ -40,7 +40,7 @@ public interface RegisterApi {
                   "\"password\": \"Example1234\" }")
           )
       )
-      @RequestBody @Valid UserDto userDto) throws DataValidationException, DuplicateEmailException;
+      @RequestBody @Valid UserDto userDto) throws DataValidationException, DuplicateEmailException, ElementNotFoundException;
 
   @Operation(
       summary = "Confirms registration of a user",

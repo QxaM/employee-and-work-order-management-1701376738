@@ -5,14 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.exception.DuplicateRoleException;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -60,5 +62,29 @@ class RoleServiceTest {
     // Then
     assertThrows(DuplicateRoleException.class, executable,
         "Creating duplicated role should throw DuplicateRoleException");
+  }
+
+  @Test
+  void shouldFindRoleByName() throws ElementNotFoundException {
+    // Given
+    when(roleRepository.findByName(ROLE_NAME)).thenReturn(Optional.of(role));
+
+    // When
+    Role foundRole = roleService.findByName(ROLE_NAME);
+
+    // Then
+    assertEquals(role.getName(), foundRole.getName(), "Incorrect role found, name should be equal!");
+  }
+
+  @Test
+  void shouldThrow_When_RoleNotFound() {
+    // Given
+    when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> roleService.findByName("TEST");
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
   }
 }
