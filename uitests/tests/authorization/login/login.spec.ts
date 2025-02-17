@@ -11,7 +11,7 @@ import {
 
 test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   // Given
-  const userCredentials = credentials.user;
+  const userCredentials = credentials.admin;
 
   await openHomePage(page);
   await clickLoginButton(page);
@@ -29,7 +29,7 @@ test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
 });
 
 test("TC2 - should not login with invalid credentials", async ({ page }) => {
-  const userCredentials = credentials.user;
+  const userCredentials = credentials.admin;
 
   await openHomePage(page);
   await clickLoginButton(page);
