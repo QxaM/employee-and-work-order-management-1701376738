@@ -9,8 +9,15 @@ Management.
 
 **Demo Credentials:**
 
-- **Username:** test@maxq.com
-- **Password:** Test12345
+1. **Admin**:
+    - **username:** admin@maxq.com
+    - **password:** Admin12345
+2. **Operator**:
+    - **username:** operator@maxq.com
+    - **password:** Operator12345
+3. **Designer**:
+    - **username:** designer@maxq.com
+    - **password:** Designer12345
 
 ## 📖 About this Software
 
@@ -24,6 +31,8 @@ project and employees managing easier.
    will be sent to provided email. If verification expired a new one will be
    sent. Users can also request to reset their password from login page -
    this will send email to users with password reset.
+2. **Authentication:** Role-base authentication is in place, as default
+   three user roles are created - Admin, Operator and Designer.
 
 ### Services:
 
@@ -33,7 +42,8 @@ project and employees managing easier.
 2. **Backend:** Backend is split into multiple microservices
     * **Authorization Service:** Responsible for all authorization related
       operations - registration, registration verification, login -
-      see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html)
+      see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html).
+      Authorization service also provides role-based authentication.
 
 ### Technology stack
 
