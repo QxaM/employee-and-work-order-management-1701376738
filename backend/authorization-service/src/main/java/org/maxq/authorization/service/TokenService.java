@@ -58,8 +58,6 @@ public class TokenService {
   public String generateToken(UserDetails userDetails) {
     List<String> roles = userDetails.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
-        .map(role -> role.replace("ROLE_", ""))
-        .map(String::toLowerCase)
         .toList();
 
     JwtClaimsSet claimsSet = JwtClaimsSet.builder()
