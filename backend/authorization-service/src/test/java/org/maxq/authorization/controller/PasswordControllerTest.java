@@ -4,6 +4,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.maxq.authorization.config.MockitoPublisherConfiguration;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.exception.DataValidationException;
@@ -27,6 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -68,7 +71,8 @@ class PasswordControllerTest {
 
     password = "newPassword";
     encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-    User user = new User(1L, "test@test.com", "test", true);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", true, List.of(role));
     token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
   }
 

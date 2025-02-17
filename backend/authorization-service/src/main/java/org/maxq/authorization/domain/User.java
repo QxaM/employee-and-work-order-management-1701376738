@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "USERS")
 @NoArgsConstructor
@@ -34,15 +37,30 @@ public class User {
   @Setter
   private boolean enabled;
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "USER_ROLE",
+      joinColumns = @JoinColumn(name = "USER_ID"),
+      inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+  private List<Role> roles;
+
   public User(String email, String password) {
     this.password = password;
     this.email = email;
     this.enabled = false;
+    this.roles = new ArrayList<>();
+  }
+
+  public User(String email, String password, List<Role> roles) {
+    this.password = password;
+    this.email = email;
+    this.enabled = false;
+    this.roles = roles;
   }
 
   public User(String email, String password, boolean enabled) {
     this.password = password;
     this.email = email;
     this.enabled = enabled;
+    this.roles = new ArrayList<>();
   }
 }

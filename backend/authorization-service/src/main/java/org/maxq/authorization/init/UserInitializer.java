@@ -20,6 +20,8 @@ public class UserInitializer {
 
   @PostConstruct
   public void init() {
+    log.info("Initializing users");
+
     @SuppressWarnings("java:S6437")
     User user = new User(TEST_EMAIL, passwordEncoder.encode(TEST_PASSWORD), true);
 

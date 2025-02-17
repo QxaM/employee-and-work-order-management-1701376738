@@ -2,6 +2,7 @@ package org.maxq.authorization.event.listener;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.authorization.config.AsyncConfig;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -31,7 +34,8 @@ class RegistrationListenerTest {
   @Test
   void shouldHandleRegistrationEvent() {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, List.of(role));
     OnRegistrationComplete event = new OnRegistrationComplete(user);
 
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
