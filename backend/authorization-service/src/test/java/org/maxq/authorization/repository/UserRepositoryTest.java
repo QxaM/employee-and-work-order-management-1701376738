@@ -190,4 +190,32 @@ class UserRepositoryTest {
     assertEquals(user.getRoles().getFirst().getName(), foundUser.get().getRoles().getFirst().getName(),
         "User should have correct roles fetched from database");
   }
+
+  @Test
+  void shouldReturnEmpty_When_NoUserExists() {
+    // Given
+
+    // When
+    List<User> foundUsers = userRepository.findAll();
+
+    // Then
+    assertTrue(foundUsers.isEmpty(), "User was found ad should not");
+  }
+
+  @Test
+  void shouldReturnFoundUsers() {
+    // Given
+    User user1 = new User("test1@test.com", "test1", List.of(role));
+    userRepository.save(user);
+    userRepository.save(user1);
+
+    // When
+    List<User> foundUsers = userRepository.findAll();
+
+    // Then
+    assertEquals(2, foundUsers.size(), "Wrong number of users found!");
+
+    // Cleanup
+    userRepository.deleteById(user1.getId());
+  }
 }

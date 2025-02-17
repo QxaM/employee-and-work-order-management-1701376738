@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,5 +47,9 @@ public class UserService {
     Optional<User> user = userRepository.findByEmail(email);
     return user.orElseThrow(() ->
         new ElementNotFoundException("User with email '" + email + "' does not exist"));
+  }
+
+  public List<User> getAllUsers() {
+    return userRepository.findAll();
   }
 }

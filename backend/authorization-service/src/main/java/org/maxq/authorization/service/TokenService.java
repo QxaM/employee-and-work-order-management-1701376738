@@ -72,7 +72,8 @@ public class TokenService {
     return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
   }
 
-  private RSAPublicKey loadPublicKey(String publicKeyPath) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+  public RSAPublicKey loadPublicKey(String publicKeyPath) throws IOException,
+      NoSuchAlgorithmException, InvalidKeySpecException {
     Resource resource = resourceLoader.getResource(publicKeyPath);
     String publicKeyContent = new String(resource.getInputStream().readAllBytes())
         .replace("-----BEGIN PUBLIC KEY-----", "")

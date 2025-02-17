@@ -13,7 +13,8 @@ public class OpenApiConfig {
 
   @Bean
   public OpenAPI customOpenAPI() {
-    final String basicAuthSchemeName = "basicAuth";
+    final String basicAuthSchemeName = "Basic Authorization (for login request)";
+    final String jwtAuthSchemeName = "JWT Authorization (for protected resources)";
 
     return new OpenAPI()
         .info(new Info()
@@ -21,10 +22,14 @@ public class OpenApiConfig {
             .version("1.0")
             .description("Authorization related APIs service for MaxQ Work Manager"))
         .addSecurityItem(new SecurityRequirement().addList(basicAuthSchemeName))
+        .addSecurityItem(new SecurityRequirement().addList(jwtAuthSchemeName))
         .components(new Components()
             .addSecuritySchemes(basicAuthSchemeName, new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
-                .scheme("basic")));
+                .scheme("basic"))
+            .addSecuritySchemes(jwtAuthSchemeName, new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")));
   }
 
 }

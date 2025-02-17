@@ -32,10 +32,11 @@ class UserServiceTest {
   private UserRepository userRepository;
 
   private User user;
+  private Role role;
 
   @BeforeEach
   void createUser() {
-    Role role = new Role(1L, "admin", Collections.emptyList());
+    role = new Role(1L, "admin", Collections.emptyList());
     user = new User(1L, "test@test.com", "test", false, List.of(role));
   }
 
@@ -146,5 +147,20 @@ class UserServiceTest {
         "Service should throw ElementNotFoundException when User was not found");
     assertTrue(exception.getMessage().contains(user.getEmail()),
         "Exception message should contain email that lead to an error");
+  }
+
+  @Test
+  void shouldReturnAllUsers() {
+    // Given
+    User user1 = new User("test1@test.com", "test1", List.of(role));
+    when(userRepository.findAll()).thenReturn(List.of(user, user1));
+
+    // When
+    List<User> foundUsers = userService.getAllUsers();
+
+    // Then
+    assertEquals(2, foundUsers.size(), "Incorrect number of users found");
+    assertEquals(user.getEmail(), foundUsers.getFirst().getEmail(), "Incorrect user found, email should be equal!");
+    assertEquals(user1.getEmail(), foundUsers.get(1).getEmail(), "Incorrect user found, email should be equal!");
   }
 }
