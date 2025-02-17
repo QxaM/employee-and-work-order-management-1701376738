@@ -13,6 +13,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
   Optional<User> findByEmail(String email);
 
+  @Override
   @Nonnull
   List<User> findAll();
 }

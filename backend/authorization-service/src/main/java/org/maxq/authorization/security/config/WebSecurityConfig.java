@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
 import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
-import org.maxq.authorization.service.TokenService;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 @Configuration
@@ -39,13 +35,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-  private final TokenService tokenService;
-
   @Value("${frontend.url}")
   private String frontendUrl;
-
-  @Value("${jwt.public-key-path}")
-  private String publicKeyPath;
 
   @Bean
   public AuthenticationProvider authenticationProvider(UserService userService) {
@@ -66,7 +57,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
     http.authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
                 .requestMatchers("/login").authenticated()
@@ -74,7 +65,7 @@ public class WebSecurityConfig {
                 .anyRequest().permitAll())
         .oauth2ResourceServer(oauth2 ->
             oauth2.jwt(jwtConfigurer ->
-                    jwtConfigurer.decoder(nimbusJwtDecoder()))
+                    jwtConfigurer.decoder(nimbusJwtDecoder(publicKey)))
                 .authenticationEntryPoint(authenticationFailureHandler()))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
@@ -105,13 +96,8 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public JwtDecoder nimbusJwtDecoder() {
-    try {
-      RSAPublicKey publicKey = tokenService.loadPublicKey(publicKeyPath);
-      return NimbusJwtDecoder.withPublicKey(publicKey).build();
-    } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-      throw new IllegalStateException("Failed to load public key", e);
-    }
+  public JwtDecoder nimbusJwtDecoder(RSAPublicKey publicKey) {
+    return NimbusJwtDecoder.withPublicKey(publicKey).build();
   }
 
   @Bean
