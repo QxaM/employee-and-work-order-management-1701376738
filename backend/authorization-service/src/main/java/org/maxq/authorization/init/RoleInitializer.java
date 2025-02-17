@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.repository.RoleRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+@Component("roleInitializer")
+@ConditionalOnProperty(name = "app.init", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @Slf4j
 public class RoleInitializer {

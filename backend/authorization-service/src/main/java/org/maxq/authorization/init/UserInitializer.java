@@ -8,12 +8,16 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.service.RoleService;
 import org.maxq.authorization.service.UserService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@DependsOn("roleInitializer")
+@ConditionalOnProperty(name = "app.init", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserInitializer {
@@ -51,9 +55,9 @@ public class UserInitializer {
     List.of(admin, operator, designer).forEach(user -> {
       try {
         userService.createUser(user);
-        log.info("Default user created - {}", user.getRoles().getFirst().getName());
+        log.info("Default user created - {}", user.getEmail());
       } catch (Exception e) {
-        log.info("Default {} user already exists", user.getRoles().getFirst().getName());
+        log.info("Default {} user already exists", user.getEmail());
       }
     });
   }
