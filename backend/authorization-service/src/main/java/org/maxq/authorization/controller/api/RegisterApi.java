@@ -1,6 +1,7 @@
 package org.maxq.authorization.controller.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,5 +60,11 @@ public interface RegisterApi {
   @ApiResponse(responseCode = "422", description = "Token expired, new email was sent", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
   })
-  ResponseEntity<Void> confirmRegistration(@RequestParam String token) throws ElementNotFoundException, ExpiredVerificationToken, DataValidationException;
+  ResponseEntity<Void> confirmRegistration(@RequestParam
+                                           @Parameter(
+                                               description = "Verification token",
+                                               required = true
+                                           )
+                                           String token
+  ) throws ElementNotFoundException, ExpiredVerificationToken, DataValidationException;
 }
