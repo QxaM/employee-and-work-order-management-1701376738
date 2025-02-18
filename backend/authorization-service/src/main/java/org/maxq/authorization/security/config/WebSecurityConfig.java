@@ -62,6 +62,7 @@ public class WebSecurityConfig {
             authorizeRequests -> authorizeRequests
                 .requestMatchers("/login").authenticated()
                 .requestMatchers("/users/**").hasRole("ADMIN")
+                .requestMatchers("/roles/**").hasRole("ADMIN")
                 .anyRequest().permitAll())
         .oauth2ResourceServer(oauth2 ->
             oauth2.jwt(jwtConfigurer ->

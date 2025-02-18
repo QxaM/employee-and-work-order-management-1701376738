@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,5 +84,35 @@ class RoleRepositoryTest {
 
     // Then
     assertFalse(foundRole.isPresent(), "Role was found ad should not");
+  }
+
+  @Test
+  void shouldReturnEmpty_When_NoRolesSaved() {
+    // Given
+
+    // When
+    List<Role> foundRoles = roleRepository.findAll();
+
+    // Then
+    assertTrue(foundRoles.isEmpty(), "Roles were found ad should not");
+  }
+
+  @Test
+  void shouldReturnAllRoles() {
+    // Given
+    Role role1 = new Role("ROLE1");
+    roleRepository.save(role);
+    roleRepository.save(role1);
+
+    // When
+    List<Role> foundRoles = roleRepository.findAll();
+
+    // Then
+    assertEquals(2, foundRoles.size());
+
+    // Clean up
+    if (role.getId() != null) {
+      roleRepository.deleteById(role.getId());
+    }
   }
 }

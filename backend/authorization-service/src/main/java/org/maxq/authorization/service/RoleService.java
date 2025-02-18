@@ -8,6 +8,7 @@ import org.maxq.authorization.repository.RoleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,5 +30,9 @@ public class RoleService {
     Optional<Role> foundRole = roleRepository.findByName(roleName);
     return foundRole.orElseThrow(() ->
         new ElementNotFoundException("Role with name '" + roleName + "' does not exist"));
+  }
+
+  public List<Role> getAllRoles() {
+    return roleRepository.findAll();
   }
 }

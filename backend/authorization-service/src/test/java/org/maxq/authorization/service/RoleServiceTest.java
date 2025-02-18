@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,5 +87,18 @@ class RoleServiceTest {
 
     // Then
     assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
+  }
+
+  @Test
+  void shouldReturnAllRoles() {
+    // Given
+    Role role1 = new Role("ROLE1");
+    when(roleRepository.findAll()).thenReturn(List.of(role, role1));
+
+    // When
+    List<Role> foundRoles = roleService.getAllRoles();
+
+    // Then
+    assertEquals(2, foundRoles.size());
   }
 }
