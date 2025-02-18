@@ -12,6 +12,8 @@ import org.maxq.authorization.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
@@ -194,26 +196,40 @@ class UserRepositoryTest {
   @Test
   void shouldReturnEmpty_When_NoUserExists() {
     // Given
+    Pageable page = Pageable.ofSize(10).withPage(0);
 
     // When
-    List<User> foundUsers = userRepository.findAll();
+    Page<User> foundUsers = userRepository.findAll(page);
 
     // Then
     assertTrue(foundUsers.isEmpty(), "User was found ad should not");
+    assertAll(
+        () -> assertEquals(0, foundUsers.getNumberOfElements(),
+            "Should not return any users on page"),
+        () -> assertEquals(0, foundUsers.getTotalPages(),
+            "Should not return any pages"),
+        () -> assertEquals(0, foundUsers.getTotalElements(),
+            "Should not return any elements")
+    );
   }
 
   @Test
   void shouldReturnFoundUsers() {
     // Given
+    Pageable page = Pageable.ofSize(10).withPage(0);
     User user1 = new User("test1@test.com", "test1", List.of(role));
     userRepository.save(user);
     userRepository.save(user1);
 
     // When
-    List<User> foundUsers = userRepository.findAll();
+    Page<User> foundUsers = userRepository.findAll(page);
 
     // Then
-    assertEquals(2, foundUsers.size(), "Wrong number of users found!");
+    assertAll(
+        () -> assertEquals(2, foundUsers.getNumberOfElements(), "Wrong number of users found!"),
+        () -> assertEquals(1, foundUsers.getTotalPages(), "Should return only one page"),
+        () -> assertEquals(2, foundUsers.getTotalElements(), "Should return two users")
+    );
 
     // Cleanup
     userRepository.deleteById(user1.getId());

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +26,9 @@ public class UserMapper {
     );
   }
 
-  public List<GetUserDto> mapToGetUserDtoList(List<User> users) {
-    return users.stream().map(user ->
+  public Page<GetUserDto> mapToGetUserDtoPage(Page<User> users) {
+    Pageable page = users.getPageable();
+    List<GetUserDto> userDtoList = users.stream().map(user ->
         new GetUserDto(
             user.getId(),
             user.getEmail(),
@@ -32,5 +36,6 @@ public class UserMapper {
             roleMapper.mapToRoleDtoList(user.getRoles())
         )
     ).toList();
+    return new PageImpl<>(userDtoList, page, users.getTotalElements());
   }
 }

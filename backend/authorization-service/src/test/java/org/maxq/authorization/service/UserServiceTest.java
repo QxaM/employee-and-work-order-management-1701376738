@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionSystemException;
 
 import java.util.Collections;
@@ -153,14 +156,25 @@ class UserServiceTest {
   void shouldReturnAllUsers() {
     // Given
     User user1 = new User("test1@test.com", "test1", List.of(role));
-    when(userRepository.findAll()).thenReturn(List.of(user, user1));
+    Pageable pageable = Pageable.ofSize(10).withPage(0);
+    Page<User> userPage = new PageImpl<>(List.of(user, user1), pageable, 2);
+    when(userRepository.findAll(pageable)).thenReturn(userPage);
 
     // When
-    List<User> foundUsers = userService.getAllUsers();
+    Page<User> foundUsers = userService.getAllUsers(0, 10);
 
     // Then
-    assertEquals(2, foundUsers.size(), "Incorrect number of users found");
-    assertEquals(user.getEmail(), foundUsers.getFirst().getEmail(), "Incorrect user found, email should be equal!");
-    assertEquals(user1.getEmail(), foundUsers.get(1).getEmail(), "Incorrect user found, email should be equal!");
+    assertAll(
+        () -> assertEquals(2, foundUsers.getNumberOfElements(),
+            "Incorrect number of users found"),
+        () -> assertEquals(user.getEmail(), foundUsers.getContent().getFirst().getEmail(),
+            "Incorrect user found, email should be equal!"),
+        () -> assertEquals(user1.getEmail(), foundUsers.getContent().get(1).getEmail(),
+            "Incorrect user found, email should be equal!"),
+        () -> assertEquals(2, foundUsers.getTotalElements(),
+            "Incorrect total number of users found"),
+        () -> assertEquals(1, foundUsers.getTotalPages(),
+            "Incorrect total number of pages found")
+    );
   }
 }

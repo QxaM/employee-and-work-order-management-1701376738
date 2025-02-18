@@ -1,6 +1,7 @@
 package org.maxq.authorization.controller.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,8 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.authorization.domain.HttpErrorMessage;
 import org.maxq.authorization.domain.dto.GetUserDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Users API")
 public interface UserApi {
@@ -27,5 +29,17 @@ public interface UserApi {
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
-  List<GetUserDto> getUsers();
+  ResponseEntity<Page<GetUserDto>> getUsers(
+      @RequestParam(required = false, defaultValue = "0")
+      @Parameter(
+          description = "Page number of the user request",
+          schema = @Schema(type = "integer", defaultValue = "0")
+      )
+      Integer page,
+      @Parameter(
+          description = "Number of element to return on the page",
+          schema = @Schema(type = "integer", defaultValue = "10")
+      )
+      @RequestParam(required = false, defaultValue = "10") Integer size
+  );
 }

@@ -7,6 +7,9 @@ import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -43,19 +46,25 @@ class UserMapperTest {
     User user1 = new User(1L, "test1@test.com", "test1", false, List.of(role));
     User user2 = new User(2L, "test2@test.com", "test2", false, List.of(role));
     List<User> users = List.of(user1, user2);
+    Pageable page = Pageable.ofSize(10).withPage(0);
+    Page<User> userPage = new PageImpl<>(users, page, users.size());
 
     // When
-    List<GetUserDto> getUserDtoList = userMapper.mapToGetUserDtoList(users);
+    Page<GetUserDto> getUserDtoPage = userMapper.mapToGetUserDtoPage(userPage);
 
     // Then
     assertAll(
-        () -> assertEquals(users.size(), getUserDtoList.size(), "Sizes should match after mapping"),
-        () -> assertEquals(users.getFirst().getId(), getUserDtoList.getFirst().getId(),
+        () -> assertEquals(users.size(), getUserDtoPage.getNumberOfElements(), "Sizes should match after mapping"),
+        () -> assertEquals(users.getFirst().getId(), getUserDtoPage.getContent().getFirst().getId(),
             "User IDs should match after mapping"),
         () -> assertEquals(
             users.getFirst().getRoles().getFirst().getId(),
-            getUserDtoList.getFirst().getRoles().getFirst().getId(),
-            "Role IDs should match after mapping")
+            getUserDtoPage.getContent().getFirst().getRoles().getFirst().getId(),
+            "Role IDs should match after mapping"),
+        () -> assertEquals(userPage.getTotalElements(), getUserDtoPage.getTotalElements(),
+            "Total elements should match after mapping"),
+        () -> assertEquals(userPage.getTotalPages(), getUserDtoPage.getTotalPages(),
+            "Total pages should match after mapping")
     );
   }
 }

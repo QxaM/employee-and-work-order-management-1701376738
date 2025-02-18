@@ -12,6 +12,9 @@ import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,9 +25,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -62,21 +67,31 @@ class UserControllerTest {
   @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldGetAllUsers() throws Exception {
     // Given
+    Pageable page = Pageable.ofSize(10).withPage(0);
     RoleDto roleDto = new RoleDto(role.getId(), role.getName());
     List<GetUserDto> userDtos = List.of(
         new GetUserDto(user1.getId(), user1.getEmail(), user1.isEnabled(), List.of(roleDto)),
         new GetUserDto(user2.getId(), user2.getEmail(), user2.isEnabled(), List.of(roleDto))
     );
-    when(userService.getAllUsers()).thenReturn(users);
-    when(userMapper.mapToGetUserDtoList(anyList())).thenReturn(userDtos);
+    Page<User> usersPage = new PageImpl<>(users, page, users.size());
+    Page<GetUserDto> usersDtoPage = new PageImpl<>(userDtos, page, userDtos.size());
+    when(userService.getAllUsers(anyInt(), anyInt())).thenReturn(usersPage);
+    when(userMapper.mapToGetUserDtoPage(any())).thenReturn(usersDtoPage);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL))
+        .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
-        .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(user1.getId().intValue())))
-        .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", Matchers.is(user2.getId().intValue())));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(2)))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.content[0].id", Matchers.is(user1.getId().intValue())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.content[1].id", Matchers.is(user2.getId().intValue())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalElements", Matchers.is(users.size())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalPages", Matchers.is(1)));
   }
 
   @Test

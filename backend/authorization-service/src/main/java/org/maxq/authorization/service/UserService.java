@@ -7,10 +7,11 @@ import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,7 +50,8 @@ public class UserService {
         new ElementNotFoundException("User with email '" + email + "' does not exist"));
   }
 
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public Page<User> getAllUsers(int number, int size) {
+    Pageable page = Pageable.ofSize(size).withPage(number);
+    return userRepository.findAll(page);
   }
 }
