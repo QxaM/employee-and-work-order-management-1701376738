@@ -44,8 +44,6 @@ class RoleControllerTest {
   private Role role1;
   private Role role2;
   private List<Role> roles;
-  private RoleDto roleDto1;
-  private RoleDto roleDto2;
   private List<RoleDto> roleDtos;
 
   @BeforeEach
@@ -57,8 +55,8 @@ class RoleControllerTest {
     role1 = new Role(1L, "TEST1", Collections.emptyList());
     role2 = new Role(2L, "TEST2", Collections.emptyList());
     roles = List.of(role1, role2);
-    roleDto1 = new RoleDto(role1.getId(), role1.getName());
-    roleDto2 = new RoleDto(role2.getId(), role2.getName());
+    RoleDto roleDto1 = new RoleDto(role1.getId(), role1.getName());
+    RoleDto roleDto2 = new RoleDto(role2.getId(), role2.getName());
     roleDtos = List.of(roleDto1, roleDto2);
   }
 

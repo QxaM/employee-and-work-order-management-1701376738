@@ -21,6 +21,7 @@ import org.springframework.transaction.TransactionSystemException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,7 +41,7 @@ class UserServiceTest {
   @BeforeEach
   void createUser() {
     role = new Role(1L, "admin", Collections.emptyList());
-    user = new User(1L, "test@test.com", "test", false, List.of(role));
+    user = new User(1L, "test@test.com", "test", false, Set.of(role));
   }
 
 
@@ -155,7 +156,7 @@ class UserServiceTest {
   @Test
   void shouldReturnAllUsers() {
     // Given
-    User user1 = new User("test1@test.com", "test1", List.of(role));
+    User user1 = new User("test1@test.com", "test1", Set.of(role));
     Pageable pageable = Pageable.ofSize(10).withPage(0);
     Page<User> userPage = new PageImpl<>(List.of(user, user1), pageable, 2);
     when(userRepository.findAll(pageable)).thenReturn(userPage);

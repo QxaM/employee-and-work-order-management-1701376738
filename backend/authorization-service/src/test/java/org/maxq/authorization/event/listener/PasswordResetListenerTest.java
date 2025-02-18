@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -40,7 +40,7 @@ class PasswordResetListenerTest {
   void shouldHandleRegistrationEvent() throws ElementNotFoundException {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
     OnPasswordReset event = new OnPasswordReset(user.getEmail());
 

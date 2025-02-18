@@ -99,6 +99,6 @@ class RoleServiceTest {
     List<Role> foundRoles = roleService.getAllRoles();
 
     // Then
-    assertEquals(2, foundRoles.size());
+    assertEquals(2, foundRoles.size(), "Wrong number of roles found");
   }
 }

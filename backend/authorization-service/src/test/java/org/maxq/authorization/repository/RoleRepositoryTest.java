@@ -108,11 +108,11 @@ class RoleRepositoryTest {
     List<Role> foundRoles = roleRepository.findAll();
 
     // Then
-    assertEquals(2, foundRoles.size());
+    assertEquals(2, foundRoles.size(), "Wrong number of roles found");
 
     // Clean up
-    if (role.getId() != null) {
-      roleRepository.deleteById(role.getId());
+    if (role1.getId() != null) {
+      roleRepository.deleteById(role1.getId());
     }
   }
 }

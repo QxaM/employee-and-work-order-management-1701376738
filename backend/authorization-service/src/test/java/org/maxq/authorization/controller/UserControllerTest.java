@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -57,8 +58,8 @@ class UserControllerTest {
         .build();
 
     role = new Role(1L, "ADMIN", List.of());
-    user1 = new User(1L, "test1@test.com", "test1", true, List.of(role));
-    user2 = new User(2L, "test2@test.com", "test2", true, List.of(role));
+    user1 = new User(1L, "test1@test.com", "test1", true, Set.of(role));
+    user2 = new User(2L, "test2@test.com", "test2", true, Set.of(role));
     users = List.of(user1, user2);
   }
 

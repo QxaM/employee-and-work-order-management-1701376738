@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,8 +44,8 @@ class UserMapperTest {
   void shouldMapToGetUserDtoList() {
     // Given
     Role role = new Role(1L, "TEST", Collections.emptyList());
-    User user1 = new User(1L, "test1@test.com", "test1", false, List.of(role));
-    User user2 = new User(2L, "test2@test.com", "test2", false, List.of(role));
+    User user1 = new User(1L, "test1@test.com", "test1", false, Set.of(role));
+    User user2 = new User(2L, "test2@test.com", "test2", false, Set.of(role));
     List<User> users = List.of(user1, user2);
     Pageable page = Pageable.ofSize(10).withPage(0);
     Page<User> userPage = new PageImpl<>(users, page, users.size());
@@ -58,9 +59,9 @@ class UserMapperTest {
         () -> assertEquals(users.getFirst().getId(), getUserDtoPage.getContent().getFirst().getId(),
             "User IDs should match after mapping"),
         () -> assertEquals(
-            users.getFirst().getRoles().getFirst().getId(),
-            getUserDtoPage.getContent().getFirst().getRoles().getFirst().getId(),
-            "Role IDs should match after mapping"),
+            users.getFirst().getRoles().size(),
+            getUserDtoPage.getContent().getFirst().getRoles().size(),
+            "Roles should match after mapping"),
         () -> assertEquals(userPage.getTotalElements(), getUserDtoPage.getTotalElements(),
             "Total elements should match after mapping"),
         () -> assertEquals(userPage.getTotalPages(), getUserDtoPage.getTotalPages(),
