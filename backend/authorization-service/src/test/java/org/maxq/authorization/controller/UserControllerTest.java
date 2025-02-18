@@ -29,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -81,7 +80,6 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL))
-        .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(2)))
         .andExpect(MockMvcResultMatchers.jsonPath(
