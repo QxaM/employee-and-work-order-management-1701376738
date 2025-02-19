@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
-import org.maxq.authorization.domain.exception.DataValidationException;
-import org.maxq.authorization.domain.exception.DuplicateEmailException;
-import org.maxq.authorization.domain.exception.ElementNotFoundException;
-import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
+import org.maxq.authorization.domain.exception.*;
 import org.maxq.authorization.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -209,7 +206,7 @@ class UserServiceTest {
   }
 
   @Test
-  void shouldUpdateUserRole() throws ElementNotFoundException, RoleAlreadyExistsException {
+  void shouldAddUserRole() throws ElementNotFoundException, RoleAlreadyExistsException {
     // Given
     User userToUpdate = new User(1L, "test@test.com", "test", false, new HashSet<>(List.of(role)));
     Role newRole = new Role(2L, "ROLE2", Collections.emptyList());
@@ -237,5 +234,37 @@ class UserServiceTest {
 
     // Then
     assertThrows(RoleAlreadyExistsException.class, executable);
+  }
+
+  @Test
+  void shouldRemoveUserRole() throws ElementNotFoundException, RoleDoesNotExistException {
+    // Given
+    Role deleteRole = new Role(2L, "ROLE2", Collections.emptyList());
+    User userToUpdate = new User(1L, "test@test.com", "test",
+        false, new HashSet<>(List.of(role, deleteRole)));
+    when(roleService.getRoleById(deleteRole.getId())).thenReturn(deleteRole);
+
+    // When
+    userService.removeRole(userToUpdate, deleteRole.getId());
+
+    // Then
+    verify(userRepository, times(1))
+        .save(argThat(updatedUser -> !updatedUser.getRoles().contains(deleteRole)));
+    assertFalse(userToUpdate.getRoles().contains(deleteRole), "Role should be removed from user");
+  }
+
+  @Test
+  void shouldThrow_When_RoleDoesNotExist() throws ElementNotFoundException {
+    // Given
+    Role newRole = new Role(2L, "ROLE2", Collections.emptyList());
+    User userToUpdate = new User(1L, "test@test.com", "test",
+        false, new HashSet<>(List.of(role)));
+    when(roleService.getRoleById(newRole.getId())).thenReturn(newRole);
+
+    // When
+    Executable executable = () -> userService.removeRole(userToUpdate, newRole.getId());
+
+    // Then
+    assertThrows(RoleDoesNotExistException.class, executable);
   }
 }

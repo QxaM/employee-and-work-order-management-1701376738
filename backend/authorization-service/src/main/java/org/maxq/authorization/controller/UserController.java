@@ -6,6 +6,7 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
+import org.maxq.authorization.domain.exception.RoleDoesNotExistException;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.springframework.data.domain.Page;
@@ -34,9 +35,20 @@ public class UserController implements UserApi {
   @Override
   @PatchMapping("/{userId}/addRole")
   public ResponseEntity<Void> addRole(@PathVariable Long userId,
-                                      @RequestParam(name = "role") Long roleId) throws ElementNotFoundException, RoleAlreadyExistsException {
+                                      @RequestParam(name = "role") Long roleId
+  ) throws ElementNotFoundException, RoleAlreadyExistsException {
     User user = userService.getUserById(userId);
     userService.addRole(user, roleId);
+    return ResponseEntity.ok().build();
+  }
+
+  @Override
+  @PatchMapping("/{userId}/removeRole")
+  public ResponseEntity<Void> removeRole(@PathVariable Long userId,
+                                         @RequestParam(name = "role") Long roleId
+  ) throws ElementNotFoundException, RoleDoesNotExistException {
+    User user = userService.getUserById(userId);
+    userService.removeRole(user, roleId);
     return ResponseEntity.ok().build();
   }
 }

@@ -11,6 +11,7 @@ import org.maxq.authorization.domain.HttpErrorMessage;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
+import org.maxq.authorization.domain.exception.RoleDoesNotExistException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,7 +63,7 @@ public interface UserApi {
       }
   )
   @ApiResponse(responseCode = "404",
-      description = "User with given ID was not found",
+      description = "User or role with given ID was not found",
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       }
@@ -74,4 +75,34 @@ public interface UserApi {
       @RequestParam(name = "role")
       @Parameter(name = "role", description = "Role ID", required = true)
       Long roleId) throws ElementNotFoundException, RoleAlreadyExistsException;
+
+  @Operation(
+      summary = "Remove role to a user",
+      description = "Removes role to a user with given id." +
+          "Only ADMIN users can access this resource."
+  )
+  @ApiResponse(responseCode = "200", description = "Role removed from the user correctly")
+  @ApiResponse(responseCode = "400",
+      description = "Role with given ID does not exist for the user",
+      content = {@Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))}
+  )
+  @ApiResponse(responseCode = "403",
+      description = "Unauthorized - only ADMIN can access this resource",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      }
+  )
+  @ApiResponse(responseCode = "404",
+      description = "User or role with given ID was not found",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      }
+  )
+  ResponseEntity<Void> removeRole(
+      @PathVariable
+      @Parameter(name = "userId", description = "User ID", required = true)
+      Long userId,
+      @RequestParam(name = "role")
+      @Parameter(name = "role", description = "Role ID", required = true)
+      Long roleId) throws ElementNotFoundException, RoleAlreadyExistsException, RoleDoesNotExistException;
 }

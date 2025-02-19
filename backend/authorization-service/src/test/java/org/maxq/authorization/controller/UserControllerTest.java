@@ -9,6 +9,7 @@ import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.RoleDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
+import org.maxq.authorization.domain.exception.RoleDoesNotExistException;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +163,7 @@ class UserControllerTest {
 
   @Test
   @WithMockUser(username = "test@test.com", roles = "ADMIN")
-  void shouldThrow_RoleExists_WhenRoleNotFound() throws Exception {
+  void shouldThrow_RoleExists_WhenRoleExists() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
     doThrow(RoleAlreadyExistsException.class).when(userService)
@@ -188,6 +189,92 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isForbidden());
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldRemoveRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doNothing().when(userService).removeRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .removeRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_NotFound_WhenUserNotFound_When_RemoveRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenThrow(ElementNotFoundException.class);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, never()).removeRole(any(User.class), anyLong());
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_NotFound_WhenRoleNotFound_When_RemoveRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doThrow(ElementNotFoundException.class).when(userService)
+        .removeRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .removeRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_RoleNotExists_WhenRoleNotFound() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doThrow(RoleDoesNotExistException.class).when(userService)
+        .removeRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .removeRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "OPERATOR")
+  void shouldNotAllowNonAdminRoles_When_RemoveRole() throws Exception {
+    // Given
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isForbidden());
   }

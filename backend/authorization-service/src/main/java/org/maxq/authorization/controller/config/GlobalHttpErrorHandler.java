@@ -49,6 +49,12 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(RoleDoesNotExistException.class)
+  public ResponseEntity<HttpErrorMessage> handleRoleDoesNotExistException(RoleDoesNotExistException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     log.error(ex.getMessage(), ex);

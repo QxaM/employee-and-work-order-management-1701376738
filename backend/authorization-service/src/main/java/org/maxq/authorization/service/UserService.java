@@ -3,10 +3,7 @@ package org.maxq.authorization.service;
 import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
-import org.maxq.authorization.domain.exception.DataValidationException;
-import org.maxq.authorization.domain.exception.DuplicateEmailException;
-import org.maxq.authorization.domain.exception.ElementNotFoundException;
-import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
+import org.maxq.authorization.domain.exception.*;
 import org.maxq.authorization.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -70,6 +67,16 @@ public class UserService {
     if (!success) {
       throw new RoleAlreadyExistsException(
           "Role '" + role.getName() + "' already exists on user: " + user.getId());
+    }
+    userRepository.save(user);
+  }
+
+  public void removeRole(User user, Long roleId) throws ElementNotFoundException, RoleDoesNotExistException {
+    Role role = roleService.getRoleById(roleId);
+    boolean success = user.getRoles().remove(role);
+    if (!success) {
+      throw new RoleDoesNotExistException(
+          "Role '" + role.getName() + "' does not exist on user: " + user.getId());
     }
     userRepository.save(user);
   }
