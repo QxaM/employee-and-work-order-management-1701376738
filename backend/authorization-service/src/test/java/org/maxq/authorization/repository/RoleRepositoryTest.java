@@ -115,4 +115,30 @@ class RoleRepositoryTest {
       roleRepository.deleteById(role1.getId());
     }
   }
+
+  @Test
+  void shouldFindById() {
+    // Given
+    roleRepository.save(role);
+
+    // When
+    Optional<Role> foundRole = roleRepository.findById(role.getId());
+
+    // Then
+    assertTrue(foundRole.isPresent(), "Role was not found");
+    assertEquals(role.getName(), foundRole.get().getName(),
+        "Role name should save with equal name");
+  }
+
+  @Test
+  void shouldNot_FindById_WhenRoleDontExist() {
+    // Given
+    Long id = Long.MAX_VALUE;
+    
+    // When
+    Optional<Role> foundRole = roleRepository.findById(id);
+
+    // Then
+    assertFalse(foundRole.isPresent(), "Role was found ad should not");
+  }
 }

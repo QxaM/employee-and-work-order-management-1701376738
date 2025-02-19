@@ -85,7 +85,7 @@ class RegisterControllerTest {
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
-    when(roleService.findByName(anyString())).thenReturn(role);
+    when(roleService.getRoleByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -103,7 +103,7 @@ class RegisterControllerTest {
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
-    when(roleService.findByName("DESIGNER")).thenReturn(role);
+    when(roleService.getRoleByName("DESIGNER")).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then

@@ -235,4 +235,32 @@ class UserRepositoryTest {
     // Cleanup
     userRepository.deleteById(user1.getId());
   }
+
+  @Test
+  void shouldFindById() {
+    // Given
+    userRepository.save(user);
+
+    // When
+    Optional<User> foundUser = userRepository.findById(user.getId());
+
+    // Then
+    assertTrue(foundUser.isPresent(), "Role was not found");
+    assertEquals(user.getEmail(), foundUser.get().getEmail(),
+        "User email should save with equal name");
+    assertEquals(user.getPassword(), foundUser.get().getPassword(),
+        "User password should save with equal name");
+  }
+
+  @Test
+  void shouldNot_FindById_WhenUserDontExist() {
+    // Given
+    Long id = Long.MAX_VALUE;
+
+    // When
+    Optional<User> foundUser = userRepository.findById(id);
+
+    // Then
+    assertFalse(foundUser.isPresent(), "Role was found ad should not");
+  }
 }

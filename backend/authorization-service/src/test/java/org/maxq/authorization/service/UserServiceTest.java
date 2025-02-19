@@ -8,6 +8,7 @@ import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
 import org.maxq.authorization.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,10 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionSystemException;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +32,8 @@ class UserServiceTest {
 
   @MockBean
   private UserRepository userRepository;
+  @MockBean
+  private RoleService roleService;
 
   private User user;
   private Role role;
@@ -177,5 +177,65 @@ class UserServiceTest {
         () -> assertEquals(1, foundUsers.getTotalPages(),
             "Incorrect total number of pages found")
     );
+  }
+
+  @Test
+  void shouldReturnUserById() throws ElementNotFoundException {
+    // Given
+    when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+    // When
+    User foundUser = userService.getUserById(1L);
+
+    // Then
+    assertAll(
+        () -> assertEquals(user.getEmail(), foundUser.getEmail(),
+            "User email should save with equal value"),
+        () -> assertEquals(user.getPassword(), foundUser.getPassword(),
+            "User password should save with equal value")
+    );
+  }
+
+  @Test
+  void shouldThrow_When_UserIdNotFound() {
+    // Given
+    when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> userService.getUserById(1L);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
+  }
+
+  @Test
+  void shouldUpdateUserRole() throws ElementNotFoundException, RoleAlreadyExistsException {
+    // Given
+    User userToUpdate = new User(1L, "test@test.com", "test", false, new HashSet<>(List.of(role)));
+    Role newRole = new Role(2L, "ROLE2", Collections.emptyList());
+    when(roleService.getRoleById(newRole.getId())).thenReturn(newRole);
+
+    // When
+    userService.addRole(userToUpdate, newRole.getId());
+
+    // Then
+    verify(userRepository, times(1))
+        .save(argThat(updatedUser -> updatedUser.getRoles().contains(newRole)));
+    assertTrue(userToUpdate.getRoles().contains(newRole), "Role should be added to user");
+  }
+
+  @Test
+  void shouldThrow_When_RoleAlreadyExists() throws ElementNotFoundException {
+    // Given
+    Role newRole = new Role(2L, "ROLE2", Collections.emptyList());
+    User userToUpdate = new User(1L, "test@test.com", "test",
+        false, new HashSet<>(List.of(role, newRole)));
+    when(roleService.getRoleById(newRole.getId())).thenReturn(newRole);
+
+    // When
+    Executable executable = () -> userService.addRole(userToUpdate, newRole.getId());
+
+    // Then
+    assertThrows(RoleAlreadyExistsException.class, executable);
   }
 }

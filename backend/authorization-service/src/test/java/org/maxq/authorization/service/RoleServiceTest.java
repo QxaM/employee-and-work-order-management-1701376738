@@ -71,7 +71,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(ROLE_NAME)).thenReturn(Optional.of(role));
 
     // When
-    Role foundRole = roleService.findByName(ROLE_NAME);
+    Role foundRole = roleService.getRoleByName(ROLE_NAME);
 
     // Then
     assertEquals(role.getName(), foundRole.getName(), "Incorrect role found, name should be equal!");
@@ -83,7 +83,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
 
     // When
-    Executable executable = () -> roleService.findByName("TEST");
+    Executable executable = () -> roleService.getRoleByName("TEST");
 
     // Then
     assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
@@ -100,5 +100,29 @@ class RoleServiceTest {
 
     // Then
     assertEquals(2, foundRoles.size(), "Wrong number of roles found");
+  }
+
+  @Test
+  void shouldReturnRoleById() throws ElementNotFoundException {
+    // Given
+    when(roleRepository.findById(anyLong())).thenReturn(Optional.of(role));
+
+    // When
+    Role foundRole = roleService.getRoleById(1L);
+
+    // Then
+    assertEquals(role.getName(), foundRole.getName(), "Role name should save with equal name");
+  }
+
+  @Test
+  void shouldThrow_When_RoleIdNotFound() {
+    // Given
+    when(roleRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> roleService.getRoleById(1L);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
   }
 }

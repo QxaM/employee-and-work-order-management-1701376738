@@ -7,6 +7,8 @@ import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.RoleDto;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
+import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringBootTest
@@ -103,5 +104,91 @@ class UserControllerTest {
             .get(URL))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldAddRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doNothing().when(userService).addRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .addRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_NotFound_WhenUserNotFound() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenThrow(ElementNotFoundException.class);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, never()).addRole(any(User.class), anyLong());
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_NotFound_WhenRoleNotFound() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doThrow(ElementNotFoundException.class).when(userService)
+        .addRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .addRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_RoleExists_WhenRoleNotFound() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doThrow(RoleAlreadyExistsException.class).when(userService)
+        .addRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    verify(userService, times(1)).getUserById(user1.getId());
+    verify(userService, times(1))
+        .addRole(
+            argThat(user -> user.getId().equals(user1.getId())),
+            argThat(roleId -> roleId.equals(role.getId())));
+  }
+
+  @Test
+  @WithMockUser(username = "test@test.com", roles = "OPERATOR")
+  void shouldNotAllowNonAdminRoles() throws Exception {
+    // Given
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isForbidden());
   }
 }

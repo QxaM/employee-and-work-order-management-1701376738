@@ -2,10 +2,7 @@ package org.maxq.authorization.controller.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.domain.HttpErrorMessage;
-import org.maxq.authorization.domain.exception.DataValidationException;
-import org.maxq.authorization.domain.exception.DuplicateEmailException;
-import org.maxq.authorization.domain.exception.ElementNotFoundException;
-import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
+import org.maxq.authorization.domain.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -44,6 +41,12 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<HttpErrorMessage> handleExpiredVerificationTokenException(ExpiredVerificationToken e) {
     log.error(e.getMessage(), e);
     return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  @ExceptionHandler(RoleAlreadyExistsException.class)
+  public ResponseEntity<HttpErrorMessage> handleRoleAlreadyExistsException(RoleAlreadyExistsException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
   }
 
   @Override
