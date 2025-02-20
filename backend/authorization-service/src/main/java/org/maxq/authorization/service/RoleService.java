@@ -29,7 +29,7 @@ public class RoleService {
   public Role getRoleById(Long roleId) throws ElementNotFoundException {
     Optional<Role> foundRole = roleRepository.findById(roleId);
     return foundRole.orElseThrow(() ->
-        new ElementNotFoundException("Role with name '" + roleId + "' does not exist"));
+        new ElementNotFoundException("Role with id '" + roleId + "' does not exist"));
   }
 
   public Role getRoleByName(String roleName) throws ElementNotFoundException {
