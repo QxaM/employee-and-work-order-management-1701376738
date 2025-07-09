@@ -22,3 +22,14 @@ export interface TokenType {
   type: string;
   expiresIn: number;
 }
+
+export interface JWT {
+  iss: string;
+  sub: string;
+  exp: number;
+  type: string;
+  iat: number;
+  roles: Role[];
+}
+
+export type Role = 'ROLE_ADMIN' | 'ROLE_OPERATOR' | 'ROLE_DESIGNER';

@@ -1,15 +1,7 @@
 import { base64UrlDecode } from './Base64.ts';
+import { JWT } from '../types/AuthorizationTypes.ts';
 
-export interface JWT {
-  iss: string;
-  sub: string;
-  exp: number;
-  type: string;
-  iat: number;
-  roles: string[];
-}
-
-export const parseJwtPayload = (token: string): JWT | undefined => {
+export const parseJwtPayload = (token: string | undefined): JWT | undefined => {
   if (!token) {
     return undefined;
   }
@@ -30,4 +22,9 @@ export const parseJwtPayload = (token: string): JWT | undefined => {
     return undefined;
   }
   return payloadJson;
+};
+
+export const isAdmin = (token: string | undefined): boolean => {
+  const payload = parseJwtPayload(token);
+  return !!payload && payload.roles.includes('ROLE_ADMIN');
 };

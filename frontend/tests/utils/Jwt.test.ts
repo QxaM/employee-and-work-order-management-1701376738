@@ -1,19 +1,20 @@
-import { beforeEach, describe, vi } from 'vitest';
-import { JWT, parseJwtPayload } from '../../src/utils/Jwt.ts';
+import { afterEach, describe, vi } from 'vitest';
+import { isAdmin, parseJwtPayload } from '../../src/utils/Jwt.ts';
 import * as base64Module from '../../src/utils/Base64.ts';
+import { JWT } from '../../src/types/AuthorizationTypes.ts';
 
 describe('JWT', () => {
-  describe('Parse JWT payload', () => {
-    const fakePayload: JWT = {
-      iss: 'authorization-service',
-      sub: 'admin@maxq.com',
-      exp: 1752076663,
-      type: 'access_token',
-      iat: 1752073063,
-      roles: ['ROLE_ADMIN'],
-    };
+  const fakePayload: JWT = {
+    iss: 'authorization-service',
+    sub: 'admin@maxq.com',
+    exp: 1752076663,
+    type: 'access_token',
+    iat: 1752073063,
+    roles: ['ROLE_ADMIN'],
+  };
 
-    beforeEach(() => {
+  describe('Parse JWT payload', () => {
+    afterEach(() => {
       vi.restoreAllMocks();
     });
 
@@ -34,7 +35,7 @@ describe('JWT', () => {
 
     it('Should handle undefined token', () => {
       // Given
-      const token: never = [][1];
+      const token = undefined;
 
       // When
       const payload = parseJwtPayload(token);
@@ -89,6 +90,60 @@ describe('JWT', () => {
 
       // Then
       expect(payload).toBeUndefined();
+    });
+  });
+
+  describe('Is JWT an admin', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('Should return true if JWT has admin role', () => {
+      // Given
+      const token = 'header.payload.signature';
+      vi.spyOn(base64Module, 'base64UrlDecode').mockReturnValue(
+        JSON.stringify(fakePayload)
+      );
+
+      // When
+      const check = isAdmin(token);
+
+      // Then
+      expect(check).toBe(true);
+    });
+
+    it('Should return false if JWT does not have admin role', () => {
+      // Given
+      const token = 'header.payload.signature';
+      const nonAdmin: JWT = {
+        iss: 'authorization-service',
+        sub: 'operator@maxq.com',
+        exp: 1752076663,
+        type: 'access_token',
+        iat: 1752073063,
+        roles: ['ROLE_OPERATOR'],
+      };
+      vi.spyOn(base64Module, 'base64UrlDecode').mockReturnValue(
+        JSON.stringify(nonAdmin)
+      );
+
+      // When
+      const check = isAdmin(token);
+
+      // Then
+      expect(check).toBe(false);
+    });
+
+    it('Should return false if payload is undefined', () => {
+      // Given
+      const token = 'header.payload.signature';
+      vi.spyOn(base64Module, 'base64UrlDecode').mockReturnValue(undefined);
+
+      // When
+      const check = isAdmin(token);
+
+      // Then
+      expect(check).toBe(false);
     });
   });
 });
