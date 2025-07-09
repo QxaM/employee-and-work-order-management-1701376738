@@ -1,3 +1,17 @@
+/**
+ * Decodes a Base64 URL-encoded string into its original string representation.
+ *
+ * This function converts a Base64 URL-encoded string, where characters `-` and `_`
+ * are used instead of `+` and `/` respectively, back into its original string.
+ * It handles potential padding issues by properly adjusting the length of the
+ * base64 string before decoding.
+ *
+ * @param {string | undefined} base64Url - The Base64 URL-encoded string to decode.
+ * Could be `undefined`.
+ *
+ * @returns {string | undefined} The decoded string if the input is valid. Returns `undefined`
+ * if the input is `undefined` or if the base64 string has an invalid length.
+ */
 export const base64UrlDecode = (
   base64Url: string | undefined
 ): string | undefined => {
