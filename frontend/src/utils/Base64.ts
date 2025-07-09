@@ -1,4 +1,10 @@
-export const base64UrlDecode = (base64Url: string): string | undefined => {
+export const base64UrlDecode = (
+  base64Url: string | undefined
+): string | undefined => {
+  if (base64Url === undefined) {
+    return undefined;
+  }
+
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
 
   if (base64.length % 4 === 1) {

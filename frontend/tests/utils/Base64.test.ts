@@ -3,6 +3,29 @@ import { base64UrlDecode } from '../../src/utils/Base64.ts';
 
 describe('Base64', () => {
   describe('decode', () => {
+    it('Should handle undefined', () => {
+      // Given
+      const base64 = undefined;
+
+      // When
+      const decoded = base64UrlDecode(base64);
+
+      // Then
+      expect(decoded).toBeUndefined();
+    });
+
+    it('Should handle empty string', () => {
+      // Given
+      const base64 = '';
+      const expected = '';
+
+      // When
+      const decoded = base64UrlDecode(base64);
+
+      // Then
+      expect(decoded).toBe(expected);
+    });
+
     it('Should decode base64 string', () => {
       // Given
       const base64url1 = 'w7/Dvw==';
