@@ -1,10 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
 import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
+import * as jwtModule from '../../../../../src/utils/Jwt.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
@@ -26,6 +27,10 @@ describe('Main Navigation Header', () => {
   });
 
   describe('Navigation', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it('Should contain navigation links', () => {
       // Given
       const navHomeText = 'Home';
@@ -57,6 +62,43 @@ describe('Main Navigation Header', () => {
 
       // Then
       expect(window.location.pathname).toBe('/');
+    });
+
+    it('Should contain Admin navigation link, when is logged as admin', () => {
+      // Given
+      const navAdminText = 'Admin';
+      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+
+      // When
+      const adminLink = screen.getByText(navAdminText, { exact: false });
+
+      // Then
+      expect(adminLink).toBeInTheDocument();
+    });
+
+    it('Should navigate to Admin when admin link is clicked', () => {
+      // Given
+      const navAdminText = 'Admin';
+      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const adminLink = screen.getByText(navAdminText, { exact: false });
+
+      // When
+      fireEvent.click(adminLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/admin');
     });
   });
 

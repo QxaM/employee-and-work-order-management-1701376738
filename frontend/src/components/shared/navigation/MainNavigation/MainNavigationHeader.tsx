@@ -1,6 +1,7 @@
-import {Link, NavLink} from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
-import {useAppSelector} from '../../../../hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
+import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -25,6 +26,7 @@ const MainNavigationHeader = () => {
     ' hover:underline hover:text-qxam-primary-darker';
 
   const token = useAppSelector((state) => state.auth.token);
+  const isAdmin = checkJwtIsAdmin(token);
 
   return (
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
@@ -36,6 +38,14 @@ const MainNavigationHeader = () => {
         >
           Home
         </NavLink>
+        {isAdmin && (
+          <NavLink
+            to="/admin"
+            className={({ isActive }) => (isActive ? navActive : navInactive)}
+          >
+            Admin
+          </NavLink>
+        )}
       </nav>
       {!token && (
         <div className="flex justify-center items-center content-auto">
@@ -54,7 +64,7 @@ const MainNavigationHeader = () => {
         </div>
       )}
       {token && (
-        <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
+        <div className="flex justify-center mx-4 text-qxam-neutral-light-lighter items-center content-auto text-xl">
           Welcome back!
         </div>
       )}

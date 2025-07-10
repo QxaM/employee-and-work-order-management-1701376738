@@ -1,9 +1,10 @@
-import {Link, NavLink} from 'react-router-dom';
-import {useState} from 'react';
-import {AnimatePresence, motion} from 'framer-motion';
+import { Link, NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
-import {useAppSelector} from '../../../../hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
+import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -31,6 +32,7 @@ const MobileMainNavigation = () => {
     ' hover:underline hover:text-qxam-primary-darker';
 
   const token = useAppSelector((state) => state.auth.token);
+  const isAdmin = checkJwtIsAdmin(token);
 
   return (
     <header className="bg-qxam-primary shadow-lg">
@@ -83,12 +85,16 @@ const MobileMainNavigation = () => {
             >
               Home
             </NavLink>
-            <NavLink
-              to={'/test'}
-              className={({ isActive }) => (isActive ? navActive : navInactive)}
-            >
-              Test
-            </NavLink>
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  isActive ? navActive : navInactive
+                }
+              >
+                Admin
+              </NavLink>
+            )}
             {!token && (
               <>
                 <Link

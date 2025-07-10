@@ -5,6 +5,7 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import MobileMainNavigation from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
+import * as jwtModule from '../../../../../src/utils/Jwt.ts';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {
@@ -73,28 +74,89 @@ describe('Main Navigation Header', () => {
   });
 
   describe('Navigation', () => {
-    it('Should navigate home, when "Home" is clicked', async () => {
-      // Given
-      const navHomeText = 'Home';
-      const ariaLabel = 'Toggle navigation menu';
+    describe('Default navigation buttons', () => {
+      beforeEach(() => {
+        const ariaLabel = 'Toggle navigation menu';
 
-      renderWithProviders(
-        <BrowserRouter>
-          <MobileMainNavigation />
-        </BrowserRouter>
-      );
-      const menuButton = screen.getByRole('button', {
-        name: new RegExp(ariaLabel, 'i'),
+        renderWithProviders(
+          <BrowserRouter>
+            <MobileMainNavigation />
+          </BrowserRouter>
+        );
+        const menuButton = screen.getByRole('button', {
+          name: new RegExp(ariaLabel, 'i'),
+        });
+
+        fireEvent.click(menuButton);
       });
 
-      fireEvent.click(menuButton);
-      const homeLink = await screen.findByText(navHomeText, { exact: false });
+      it('Should contain Home navigation link', async () => {
+        // Given
+        const navHomeText = 'Home';
 
-      // When
-      fireEvent.click(homeLink);
+        // When
+        const homeLink = await screen.findByText(navHomeText, { exact: false });
 
-      // Then
-      expect(window.location.pathname).toBe('/');
+        // Then
+        expect(homeLink).toBeInTheDocument();
+      });
+
+      it('Should navigate home, when "Home" is clicked', async () => {
+        // Given
+        const navHomeText = 'Home';
+        const homeLink = await screen.findByText(navHomeText, { exact: false });
+
+        // When
+        fireEvent.click(homeLink);
+
+        // Then
+        expect(window.location.pathname).toBe('/');
+      });
+    });
+
+    describe('Admin navigation buttons', () => {
+      beforeEach(() => {
+        vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+        const ariaLabel = 'Toggle navigation menu';
+
+        renderWithProviders(
+          <BrowserRouter>
+            <MobileMainNavigation />
+          </BrowserRouter>
+        );
+        const menuButton = screen.getByRole('button', {
+          name: new RegExp(ariaLabel, 'i'),
+        });
+
+        fireEvent.click(menuButton);
+      });
+      
+      it('Should contain Admin navigation link, when is logged as admin', async () => {
+        // Given
+        const navAdminText = 'Admin';
+
+        // When
+        const adminLink = await screen.findByText(navAdminText, {
+          exact: false,
+        });
+
+        // Then
+        expect(adminLink).toBeInTheDocument();
+      });
+
+      it('Should navigate to Admin, when admin nav is clicked', async () => {
+        // Given
+        const navAdminText = 'Admin';
+        const adminLink = await screen.findByText(navAdminText, {
+          exact: false,
+        });
+
+        // When
+        fireEvent.click(adminLink);
+
+        // Then
+        expect(window.location.pathname).toBe('/admin');
+      });
     });
   });
 

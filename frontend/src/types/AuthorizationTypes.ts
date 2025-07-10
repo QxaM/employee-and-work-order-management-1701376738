@@ -23,6 +23,9 @@ export interface TokenType {
   expiresIn: number;
 }
 
+/**
+ * Represents JWT token returned by authorization.
+ */
 export interface JWT {
   iss: string;
   sub: string;
@@ -32,4 +35,7 @@ export interface JWT {
   roles: Role[];
 }
 
+/**
+ * Represents authorization roles in the application
+ */
 export type Role = 'ROLE_ADMIN' | 'ROLE_OPERATOR' | 'ROLE_DESIGNER';
