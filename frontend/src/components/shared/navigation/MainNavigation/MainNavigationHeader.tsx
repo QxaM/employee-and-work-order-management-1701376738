@@ -2,6 +2,8 @@ import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
 import { useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../../store/authSlice.ts';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -24,6 +26,8 @@ const MainNavigationHeader = () => {
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
+
+  const dispatch = useDispatch();
 
   const token = useAppSelector((state) => state.auth.token);
   const isAdmin = checkJwtIsAdmin(token);
@@ -64,8 +68,16 @@ const MainNavigationHeader = () => {
         </div>
       )}
       {token && (
-        <div className="flex justify-center mx-4 text-qxam-neutral-light-lighter items-center content-auto text-xl">
-          Welcome back!
+        <div className="flex flex-row gap-4 justify-center mx-4 items-center content-auto">
+          <p className="text-qxam-neutral-light-lighter text-xl">
+            Welcome back!
+          </p>
+          <button
+            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
+            onClick={() => dispatch(logout())}
+          >
+            Logout
+          </button>
         </div>
       )}
     </header>

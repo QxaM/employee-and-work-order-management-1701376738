@@ -130,7 +130,7 @@ describe('Main Navigation Header', () => {
 
         fireEvent.click(menuButton);
       });
-      
+
       it('Should contain Admin navigation link, when is logged as admin', async () => {
         // Given
         const navAdminText = 'Admin';
@@ -263,8 +263,10 @@ describe('Main Navigation Header', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    it('Should contain welcome message when logged in', () => {
+    it('Should contain welcome message and logout button when logged in', async () => {
       // Given
+      const loginButtonText = 'Login';
+      const logoutButtonText = 'Logout';
       const { store } = renderWithProviders(
         <BrowserRouter>
           <MobileMainNavigation />
@@ -282,14 +284,43 @@ describe('Main Navigation Header', () => {
         store.dispatch(login({ token: '12345' }));
       });
 
-      const loginButtonText = 'Login';
       const loginButton = screen.queryByRole('link', {
         name: loginButtonText,
       });
+      const logoutButton = await screen.findByText(logoutButtonText);
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(screen.getByText('Welcome back!')).toBeInTheDocument();
+      expect(logoutButton).toBeInTheDocument();
+    });
+
+    it('Should logout and clear store', async () => {
+      // Given
+      const logoutButtonText = 'Logout';
+      const { store } = renderWithProviders(
+        <BrowserRouter>
+          <MobileMainNavigation />
+        </BrowserRouter>
+      );
+
+      const ariaLabel = 'Toggle navigation menu';
+      const menuButton = screen.getByRole('button', {
+        name: new RegExp(ariaLabel, 'i'),
+      });
+      fireEvent.click(menuButton);
+
+      act(() => {
+        store.dispatch(login({ token: '12345' }));
+      });
+
+      const logoutButton = await screen.findByText(logoutButtonText);
+
+      // When
+      fireEvent.click(logoutButton);
+
+      // Then
+      expect(store.getState().auth.token).toBeUndefined();
     });
   });
 });

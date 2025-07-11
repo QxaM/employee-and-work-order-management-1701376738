@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Logo from '../../Logo.tsx';
 import { useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../../store/authSlice.ts';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -30,6 +32,8 @@ const MobileMainNavigation = () => {
     navShared +
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
+
+  const dispatch = useDispatch();
 
   const token = useAppSelector((state) => state.auth.token);
   const isAdmin = checkJwtIsAdmin(token);
@@ -112,8 +116,16 @@ const MobileMainNavigation = () => {
               </>
             )}
             {token && (
-              <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
-                Welcome back!
+              <div className="flex flex-row flex-grow gap-4 justify-between mx-4 my-2 w-2/3 items-center">
+                <p className="text-qxam-neutral-light-lighter text-xl">
+                  Welcome back!
+                </p>
+                <button
+                  className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
+                  onClick={() => dispatch(logout())}
+                >
+                  Logout
+                </button>
               </div>
             )}
           </motion.nav>
