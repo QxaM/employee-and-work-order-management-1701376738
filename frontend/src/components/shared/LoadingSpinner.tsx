@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
+import { Color, Size } from '../../types/TailwindTypes.ts';
 
-const SpinnerSize = {
+const SpinnerSize: Record<Size, string> = {
   small: 'w-8 h-8 border-[5px]',
   medium: 'w-12 h-12 border-[6px]',
   large: 'w-16 h-16 border-[7px]',
 };
 
-type SizeType = keyof typeof SpinnerSize;
-
-const SpinnerColor = {
+const SpinnerColor: Record<Color, string> = {
   primary: 'border-qxam-primary-lightest border-t-qxam-primary',
   secondary: 'border-qxam-secondary-lightest border-t-qxam-secondary',
   accent: 'border-qxam-accent-lightest border-t-qxam-accent',
@@ -20,20 +19,18 @@ const SpinnerColor = {
   error: 'border-qxam-error-lightest border-t-qxam-error',
 };
 
-type ColorType = keyof typeof SpinnerColor;
-
 interface SpinnerType {
-  size?: SizeType;
-  color?: ColorType;
+  size?: Size;
+  color?: Color;
 }
 
 /**
  * Animated loading spinner customizable component utilizing.
  *
  * @param {SpinnerType} props - Props for the LoadingSpinner component.
- * @param {SizeType} [props.size="medium"] - The size of the spinner; options are "small", "medium", or
+ * @param {Size} [props.size="medium"] - The size of the spinner; options are "small", "medium", or
  * "large".
- * @param {ColorType} [props.color="primary"] - The color theme of the spinner; options include
+ * @param {Color} [props.color="primary"] - The color theme of the spinner; options include
  * "primary", "secondary", "accent", etc.
  *
  * @example
