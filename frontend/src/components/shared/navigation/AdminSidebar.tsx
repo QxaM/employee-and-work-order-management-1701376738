@@ -10,7 +10,7 @@ const AdminSidebar = () => {
     ' bg-qxam-primary-lightest rounded-xl shadow-md shadow-qxam-primary/20';
 
   return (
-    <aside className="text-qxam-primary-darkest text-lg bg-qxam-primary-extreme-light w-1/6 m-2 px-2 py-8 rounded-lg shadow-xl shadow-qxam-primary-lighter/20">
+    <aside className="text-qxam-primary-darkest text-lg flex-shrink-0 bg-qxam-primary-extreme-light w-1/6 m-2 px-2 py-8 rounded-lg shadow-xl shadow-qxam-primary-lighter/20">
       <nav
         aria-label="Secondary navigation"
         className="flex flex-col gap-4 items-center"
