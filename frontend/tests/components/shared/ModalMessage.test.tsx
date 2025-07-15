@@ -6,22 +6,24 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import Modal from '../../../src/components/shared/Modal.tsx';
+import ModalMessage from '../../../src/components/shared/ModalMessage.tsx';
 
 const TEST_MESSAGE = 'Test message';
 
-describe('Modal Tests', () => {
+describe('ModalMessage Tests', () => {
   beforeAll(() => {
     const modalRoot = document.createElement('div');
     modalRoot.setAttribute('id', 'modal');
     document.body.appendChild(modalRoot);
   });
   describe('Rendering', () => {
-    it('Opens and displays the message when Modal is created', () => {
+    it('Opens and displays the message when ModalMessage is created', () => {
       // Given
 
       // When
-      render(<Modal index={1} message={TEST_MESSAGE} onClose={vi.fn()} />);
+      render(
+        <ModalMessage index={1} message={TEST_MESSAGE} onClose={vi.fn()} />
+      );
 
       // Then
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
@@ -30,7 +32,9 @@ describe('Modal Tests', () => {
     it('Closes when the close button is clicked', async () => {
       // Given
       const onCloseMock = vi.fn();
-      render(<Modal index={1} message={TEST_MESSAGE} onClose={onCloseMock} />);
+      render(
+        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+      );
 
       // When
       const closeButtonLabel = '\u2715';
@@ -51,7 +55,9 @@ describe('Modal Tests', () => {
       vi.useFakeTimers();
 
       const onCloseMock = vi.fn();
-      render(<Modal index={1} message={TEST_MESSAGE} onClose={onCloseMock} />);
+      render(
+        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+      );
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
 
       // When
@@ -76,7 +82,7 @@ describe('Modal Tests', () => {
 
       const onCloseMock = vi.fn();
       render(
-        <Modal
+        <ModalMessage
           index={1}
           message={TEST_MESSAGE}
           hideTimeout={5_000}
@@ -102,11 +108,13 @@ describe('Modal Tests', () => {
     });
   });
 
-  describe('Modal style changes', () => {
+  describe('ModalMessage style changes', () => {
     it('Should apply "info" style by default', () => {
       // Given
       const onCloseMock = vi.fn();
-      render(<Modal index={1} message={TEST_MESSAGE} onClose={onCloseMock} />);
+      render(
+        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+      );
 
       // When
       const dialog = screen.getByRole('dialog');
@@ -121,7 +129,7 @@ describe('Modal Tests', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <Modal
+        <ModalMessage
           index={1}
           message={TEST_MESSAGE}
           onClose={onCloseMock}
@@ -142,7 +150,7 @@ describe('Modal Tests', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <Modal
+        <ModalMessage
           index={1}
           message={TEST_MESSAGE}
           onClose={onCloseMock}
