@@ -13,10 +13,14 @@ const ModalPage = ({
     <div className="fixed top-0 left-0 w-full h-screen flex flex-col justify-center items-center z-0">
       <div
         id="backdrop"
+        aria-hidden
         className="w-full h-screen bg-qxam-neutral-dark opacity-75 z-40"
         onClick={onClose}
       />
-      <dialog className="z-50 p-2 shadow-xl" open>
+      <dialog
+        className="z-50 p-2 lg:w-1/3 w-2/3 shadow-xl bg-qxam-primary-extreme-light"
+        open
+      >
         <div className="flex items-center justify-end">
           <button
             aria-label="close dialog"

@@ -36,25 +36,29 @@ const TableHeader = ({ headerColumns }: HeaderProps) => {
 };
 
 interface TableDataProps {
-  data: unknown[][];
+  rows: {
+    data: unknown[];
+    onRowClick?: () => void;
+  }[];
 }
 
-const TableData = ({ data }: TableDataProps) => {
+const TableData = ({ rows }: TableDataProps) => {
   const rowStyles = 'hover:bg-qxam-accent-extreme-light cursor-pointer';
   const cellStyles = 'px-6 py-3';
 
   return (
     <tbody>
-      {data.map((rowData, index) => (
+      {rows.map((row, index) => (
         <tr
-          key={`${index} - ${rowData[0] as string}`}
+          key={`${index} - ${row.data[0] as string}`}
           className={
             rowStyles +
             ' ' +
             (index % 2 === 1 ? 'bg-qxam-secondary-extreme-light' : '')
           }
+          onClick={row.onRowClick}
         >
-          {rowData.map((cell, index) => (
+          {row.data.map((cell, index) => (
             <td key={`${index} - ${cell as string}`} className={cellStyles}>
               {cell as string}
             </td>
