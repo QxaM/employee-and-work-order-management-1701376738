@@ -1,5 +1,6 @@
 import { Color } from '../../types/TailwindTypes.ts';
 import { Pageable as PageableData } from '../../types/PageableTypes.ts';
+import { Link } from 'react-router-dom';
 
 interface ElementColor {
   text: string;
@@ -97,7 +98,7 @@ const Pageable = ({
   const buttonClass =
     'flex flex-col w-8 h-8 items-center justify-center border-2 rounded-full';
   const navButtonClass = `${buttonClass} ${PageableColor[color].navButton}`;
-  const disabledClass = `${buttonClass} ${PageableColor.neutralLight.navButton} ${PageableColor.neutralLight.text}`;
+  const disabledClass = `${buttonClass} ${PageableColor.neutralLight.navButton} ${PageableColor.neutralLight.text} pointer-events-none`;
 
   const pageButtonClass =
     'flex flex-col w-6 h-6 items-center justify-center rounded-full text-center';
@@ -109,6 +110,9 @@ const Pageable = ({
   const pages: Record<number, number> = Object.fromEntries(
     Array.from({ length: maxPages }, (_, i) => [i + 1, currentPage + i - 2])
   );
+  const previousPage = currentPage - 1;
+  const nextPage = currentPage + 1;
+
   const startingElement = currentPage * pageSize;
 
   return (
@@ -120,10 +124,10 @@ const Pageable = ({
       <div
         className={`flex flex-row gap-2 items-center justify-center ${PageableColor[color].text}`}
       >
-        <button
+        <Link
+          to={`?page=${previousPage}`}
           aria-label="previous page"
           className={prevDisabled ? disabledClass : navButtonClass}
-          disabled={prevDisabled}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -137,12 +141,13 @@ const Pageable = ({
               clipRule="evenodd"
             />
           </svg>
-        </button>
+        </Link>
         {Object.values(pages)
           .filter((page) => page >= 0)
           .filter((page) => page < totalPages)
           .map((page) => (
-            <button
+            <Link
+              to={`?page=${page}`}
               key={page}
               aria-label={`page ${page + 1}`}
               className={
@@ -150,12 +155,12 @@ const Pageable = ({
               }
             >
               {page + 1}
-            </button>
+            </Link>
           ))}
-        <button
+        <Link
+          to={`?page=${nextPage}`}
           aria-label="next page"
           className={nextDisabled ? disabledClass : navButtonClass}
-          disabled={nextDisabled}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +174,7 @@ const Pageable = ({
               clipRule="evenodd"
             />
           </svg>
-        </button>
+        </Link>
       </div>
       <p className="flex-1 text-right text-qxam-neutral-dark-darkest font-light">
         {startingElement + 1}-{startingElement + currentElements} element(s) of{' '}

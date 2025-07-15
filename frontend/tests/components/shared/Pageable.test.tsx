@@ -1,12 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import Pageable from '../../../src/components/shared/Pageable.tsx';
 import { Pageable as PageableData } from '../../../src/types/PageableTypes.ts';
+import { BrowserRouter } from 'react-router-dom';
+import { describe } from 'vitest';
 
 describe('Pageable', () => {
   describe('Page navigation buttons', () => {
     const previousLabel = 'previous page';
     const nextLabel = 'next page';
+    const disabledClass = 'pointer-events-none';
 
     it('Should contain previous and next page buttons', () => {
       // Given
@@ -20,7 +23,11 @@ describe('Pageable', () => {
         totalPages: 1,
       };
 
-      render(<Pageable pageable={pageable} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const previousButton = screen.getByLabelText(previousLabel);
@@ -43,15 +50,19 @@ describe('Pageable', () => {
         totalPages: 1,
       };
 
-      render(<Pageable pageable={pageable} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const previousButton = screen.getByLabelText(previousLabel);
       const nextButton = screen.getByLabelText(nextLabel);
 
       // Then
-      expect(previousButton).toBeDisabled();
-      expect(nextButton).not.toBeDisabled();
+      expect(previousButton).toHaveClass(disabledClass);
+      expect(nextButton).not.toHaveClass(disabledClass);
     });
 
     it('Should disable next button when last page', () => {
@@ -66,15 +77,75 @@ describe('Pageable', () => {
         totalPages: 1,
       };
 
-      render(<Pageable pageable={pageable} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const previousButton = screen.getByLabelText(previousLabel);
       const nextButton = screen.getByLabelText(nextLabel);
 
       // Then
-      expect(previousButton).not.toBeDisabled();
-      expect(nextButton).toBeDisabled();
+      expect(previousButton).not.toHaveClass(disabledClass);
+      expect(nextButton).toHaveClass(disabledClass);
+    });
+
+    it('Should navigate to previous page', () => {
+      // Given
+      const pageable: PageableData = {
+        isFirst: false,
+        isLast: false,
+        currentElements: 15,
+        currentPage: 1,
+        pageSize: 15,
+        totalElements: 45,
+        totalPages: 3,
+      };
+      const previousPage = pageable.currentPage - 1;
+
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
+      const previousButton = screen.getByLabelText(previousLabel);
+
+      // When
+      fireEvent.click(previousButton);
+
+      // Then
+      expect(window.location.search.endsWith(`?page=${previousPage}`)).toBe(
+        true
+      );
+    });
+
+    it('Should navigate to next page', () => {
+      // Given
+      const pageable: PageableData = {
+        isFirst: false,
+        isLast: false,
+        currentElements: 15,
+        currentPage: 1,
+        pageSize: 15,
+        totalElements: 45,
+        totalPages: 3,
+      };
+      const nextPage = pageable.currentPage + 1;
+
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
+      const nextButton = screen.getByLabelText(nextLabel);
+
+      // When
+      fireEvent.click(nextButton);
+
+      // Then
+      expect(window.location.search.endsWith(`?page=${nextPage}`)).toBe(true);
     });
   });
 
@@ -91,7 +162,11 @@ describe('Pageable', () => {
         totalPages: 1,
       };
 
-      render(<Pageable pageable={pageable} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton = screen.getByLabelText(/page \d/);
@@ -112,7 +187,11 @@ describe('Pageable', () => {
         totalPages: 5,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} maxPages={5} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton1 = screen.getByLabelText(/page 1/);
@@ -141,7 +220,11 @@ describe('Pageable', () => {
         totalPages: 6,
       };
 
-      render(<Pageable pageable={pageable} maxPages={6} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} maxPages={6} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton1 = screen.getByLabelText(/page 1/);
@@ -172,7 +255,11 @@ describe('Pageable', () => {
         totalPages: 6,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} maxPages={5} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton1 = screen.queryByLabelText(/page 1/);
@@ -199,7 +286,11 @@ describe('Pageable', () => {
         totalPages: 6,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} maxPages={5} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton1 = screen.queryByLabelText(/page 0/);
@@ -226,7 +317,11 @@ describe('Pageable', () => {
         totalPages: 6,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} maxPages={5} />
+        </BrowserRouter>
+      );
 
       // When
       const pageButton1 = screen.queryByLabelText(/page 4/);
@@ -239,6 +334,36 @@ describe('Pageable', () => {
       expect(pageButton2).toBeInTheDocument();
       expect(pageButton3).toBeInTheDocument();
       expect(pageButton4).not.toBeInTheDocument();
+    });
+
+    it('Should navigate to page', () => {
+      // Given
+      const pageable: PageableData = {
+        isFirst: false,
+        isLast: false,
+        currentElements: 15,
+        currentPage: 1,
+        pageSize: 15,
+        totalElements: 45,
+        totalPages: 3,
+      };
+      const previousPage = pageable.currentPage - 1;
+      const previousPageLabel = `page ${previousPage + 1}`;
+
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
+      const firstPageButton = screen.getByLabelText(previousPageLabel);
+
+      // When
+      fireEvent.click(firstPageButton);
+
+      // Then
+      expect(window.location.search.endsWith(`?page=${previousPage}`)).toBe(
+        true
+      );
     });
   });
 
@@ -256,7 +381,11 @@ describe('Pageable', () => {
         totalPages: 1,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const elementsCounter = screen.getByText(elementsRegex);
@@ -279,7 +408,11 @@ describe('Pageable', () => {
       const firstElement = 1;
       const lastElement = pageable.pageSize;
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const elementsCounter = screen.getByText(
@@ -305,7 +438,11 @@ describe('Pageable', () => {
       const firstElement = pageable.currentPage * pageable.pageSize + 1;
       const lastElement = pageable.pageSize * (pageable.currentPage + 1);
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const elementsCounter = screen.getByText(
@@ -332,7 +469,11 @@ describe('Pageable', () => {
       const lastElement =
         pageable.pageSize * pageable.currentPage + pageable.currentElements;
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const elementsCounter = screen.getByText(
@@ -356,7 +497,11 @@ describe('Pageable', () => {
         totalPages: 3,
       };
 
-      render(<Pageable pageable={pageable} maxPages={5} />);
+      render(
+        <BrowserRouter>
+          <Pageable pageable={pageable} />
+        </BrowserRouter>
+      );
 
       // When
       const totalCounter = screen.getByText(pageable.totalElements.toString(), {

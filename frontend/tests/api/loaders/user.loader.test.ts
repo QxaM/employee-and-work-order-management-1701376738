@@ -63,26 +63,24 @@ describe('Users loader', () => {
   describe('loadUsers', () => {
     it('Should load with default page', async () => {
       // Given
-      const defaultPage = 1;
-      const correctedPage = defaultPage - 1;
+      const defaultPage = 0;
       const request: Request = new Request(`http:/localhost:8000/users`);
       mockFetchQuery.mockResolvedValue(MOCK_DEFAULT_USERS_DATA);
 
       // When + Then
-      await testUserLoader(request, correctedPage, MOCK_DEFAULT_USERS_DATA);
+      await testUserLoader(request, defaultPage, MOCK_DEFAULT_USERS_DATA);
     });
 
     it('Should load with custom page', async () => {
       // Given
-      const page = 2;
-      const correctedPage = page - 1;
+      const page = 1;
       const request: Request = new Request(
         `http:/localhost:8000/users?page=${page}}`
       );
       mockFetchQuery.mockResolvedValue(MOCK_USERS_DATA);
 
       // When + Then
-      await testUserLoader(request, correctedPage, MOCK_USERS_DATA);
+      await testUserLoader(request, page, MOCK_USERS_DATA);
     });
   });
 });
