@@ -14,15 +14,7 @@ import {
   TokenType,
 } from '../../src/types/AuthorizationTypes.ts';
 import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-
-const queryWrapper = ({ children }: { children: ReactNode }) => {
-  const queryClient = new QueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+import { queryClientWrapper as queryWrapper } from '../test-utils.tsx';
 
 describe('Authorization tests', () => {
   afterEach(() => {

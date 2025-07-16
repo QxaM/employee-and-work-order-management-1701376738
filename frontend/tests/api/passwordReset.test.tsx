@@ -6,15 +6,7 @@ import {
   useResetRequest,
 } from '../../src/api/passwordReset.ts';
 import { renderHook, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryWrapper = ({ children }: { children: ReactNode }) => {
-  const queryClient = new QueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+import { queryClientWrapper as queryWrapper } from '../test-utils.tsx';
 
 describe('Password reset tests', () => {
   afterEach(() => {
