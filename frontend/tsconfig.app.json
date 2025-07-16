@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": [
-      "ES2020",
+      "ESNext",
       "DOM",
       "DOM.Iterable"
     ],
     "types": [
-      "vitest/globals",
-      "@testing-library/jest-dom"
+      "node",
+      "vite/client"
     ],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "Bundler",
+    "downlevelIteration": true,
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -29,7 +30,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src",
-    "tests"
+    "src/**/*",
+    "vite.config.ts"
   ]
 }
