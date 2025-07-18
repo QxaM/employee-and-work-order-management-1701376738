@@ -6,7 +6,7 @@ import {
   useResetRequest,
 } from '../../src/api/passwordReset.ts';
 import { renderHook, waitFor } from '@testing-library/react';
-import { queryClientWrapper as queryWrapper } from '../test-utils.tsx';
+import { QueryClientWrapper as queryWrapper } from '../test-utils.tsx';
 
 describe('Password reset tests', () => {
   afterEach(() => {

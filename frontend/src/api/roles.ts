@@ -1,36 +1,32 @@
-import { apiBaseUrl } from './base.ts';
+import { apiBaseUrl, handleFetch } from './base.ts';
 import { RoleType } from '../types/RoleTypes.ts';
-import { ApiErrorType } from '../types/ApiTypes.ts';
 import { useQuery } from '@tanstack/react-query';
 
 const ROLES_API = '/roles';
 
+/**
+ * Retrieves a list of roles from the specified API endpoint.
+ *
+ * @function getRoles
+ * @async
+ * @param {AbortSignal} [signal] - An optional AbortSignal to allow cancellation of the fetch request.
+ * @returns {Promise<RoleType[]>} A promise that resolves to an array of RoleType objects.
+ * @throws {Error} Throws an error if the fetch request fails or if an unknown error occurs.
+ */
 export const getRoles = async (signal?: AbortSignal): Promise<RoleType[]> => {
   const url = apiBaseUrl + ROLES_API;
+  const defaultErrorMessage = 'Unknown error while fetching roles data';
 
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
+  return await handleFetch<RoleType[]>(
+    url,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      signal,
     },
-    signal,
-  });
-
-  if (!response.ok) {
-    let error = 'Unknown error while fetching roles data';
-
-    try {
-      const errorData = (await response.json()) as ApiErrorType;
-      if (errorData.message) {
-        error = errorData.message;
-      }
-    } catch (error) {
-      console.warn(error);
-    }
-
-    throw new Error(error);
-  }
-
-  return (await response.json()) as RoleType[];
+    defaultErrorMessage
+  );
 };
 
 export const useGetRoles = () => {

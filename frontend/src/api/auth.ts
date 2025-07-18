@@ -1,12 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { apiBaseUrl } from '../api/base.ts';
+import { apiBaseUrl, handleFetch, handleFetchVoid } from './base.ts';
 import {
   LoginType,
   RegisterType,
   TokenType,
 } from '../types/AuthorizationTypes.ts';
-import { ApiErrorType } from '../types/ApiTypes.ts';
 
 const REGISTER_API = '/register';
 const VERIFICATION_API = '/register/confirm';
@@ -50,29 +49,20 @@ export const register = async ({
   signal,
 }: RegisterRequest): Promise<void> => {
   const url = apiBaseUrl + REGISTER_API;
+  const defaultErrorMessage = 'Unknown error during registration process!';
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  await handleFetchVoid(
+    url,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      signal,
     },
-    body: JSON.stringify(data),
-    signal,
-  });
-
-  if (!response.ok) {
-    let message = 'Unknown error during registration process!';
-
-    try {
-      const errorData = (await response.json()) as ApiErrorType;
-      if (errorData.message) {
-        message = errorData.message;
-      }
-    } catch {
-      // JSON parse error or missing message - use default error message
-    }
-    throw new Error(message);
-  }
+    defaultErrorMessage
+  );
 };
 
 /**
@@ -123,32 +113,20 @@ export const login = async ({
   signal,
 }: LoginRequest): Promise<TokenType> => {
   const url = apiBaseUrl + LOGIN_API;
+  const defaultErrorMessage = 'Unknown error during login process!';
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Basic ' + btoa(data.email + ':' + data.password),
+  return await handleFetch<TokenType>(
+    url,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Basic ' + btoa(data.email + ':' + data.password),
+      },
+      signal,
     },
-    signal,
-  });
-
-  if (!response.ok) {
-    let message = 'Unknown error during login process!';
-
-    try {
-      const errorData = (await response.json()) as ApiErrorType;
-      if (errorData.message) {
-        message = errorData.message;
-      }
-    } catch {
-      // JSON parse error or missing message - use default error message
-    }
-
-    throw new Error(message);
-  }
-
-  return (await response.json()) as TokenType;
+    defaultErrorMessage
+  );
 };
 
 export const useRegisterUser = () => {

@@ -3,17 +3,22 @@ import { RoleType } from '../../src/types/RoleTypes.ts';
 import { getRoles, useGetRoles } from '../../src/api/roles.ts';
 import { ApiErrorType } from '../../src/types/ApiTypes.ts';
 import { renderHook, waitFor } from '@testing-library/react';
-import { queryClientWrapper } from '../test-utils.tsx';
+import { QueryClientWrapper } from '../test-utils.tsx';
+import * as baseApiModule from '../../src/api/base.ts';
 
 const localStorageMock = {
   getItem: vi.fn(),
 };
 
 describe('Roles API tests', () => {
+  const mockHandleFetch = vi.fn();
+
   beforeEach(() => {
     localStorageMock.getItem.mockClear();
+    mockHandleFetch.mockClear();
 
     vi.stubGlobal('localStorage', localStorageMock);
+    vi.spyOn(baseApiModule, 'handleFetch').mockImplementation(mockHandleFetch);
   });
 
   afterEach(() => {
@@ -35,24 +40,21 @@ describe('Roles API tests', () => {
     describe('getRoles', () => {
       it('Should fetch roles successfully', async () => {
         // Given
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: true,
-          status: 200,
-          json: () => Promise.resolve(mockData),
-        });
+        mockHandleFetch.mockResolvedValue(mockData);
         localStorageMock.getItem.mockReturnValue('tokenValue');
 
         // When
         const rolesData = await getRoles();
 
         // Then
-        expect(fetch).toHaveBeenCalledWith(
+        expect(mockHandleFetch).toHaveBeenCalledWith(
           expect.stringContaining('/roles'),
           expect.objectContaining({
             headers: {
               Authorization: 'Bearer tokenValue',
             },
-          })
+          }),
+          expect.any(String)
         );
         expect(rolesData).toStrictEqual(mockData);
       });
@@ -62,61 +64,22 @@ describe('Roles API tests', () => {
         const apiMessage: ApiErrorType = {
           message: 'Forbidden',
         };
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: false,
-          status: 403,
-          json: () => Promise.resolve(apiMessage),
-        });
-        localStorageMock.getItem.mockReturnValue('invalid');
+        mockHandleFetch.mockRejectedValue(new Error(apiMessage.message));
 
         // When + Then
         await expect(getRoles()).rejects.toThrow(apiMessage.message);
-      });
-
-      it('Should handle non-API error', async () => {
-        // Given
-        const defaultMessage = 'Unknown error while fetching roles data';
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: false,
-          status: 404,
-          json: vi.fn(),
-        });
-        localStorageMock.getItem.mockReturnValue('tokenValue');
-
-        // When + Then
-        await expect(getRoles()).rejects.toThrow(defaultMessage);
-      });
-
-      it('Should throw when malformed data is returned', async () => {
-        // Given
-        const message = 'Malformed JSON';
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: true,
-          status: 200,
-          json: () => {
-            throw new SyntaxError(message);
-          },
-        });
-        localStorageMock.getItem.mockReturnValue('tokenValue');
-
-        // When + Then
-        await expect(getRoles()).rejects.toThrow(message);
       });
     });
 
     describe('useGetRoles hook', () => {
       it('Should handle successful request', async () => {
         // Given
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: true,
-          status: 200,
-          json: () => Promise.resolve(mockData),
-        });
+        mockHandleFetch.mockResolvedValue(mockData);
         localStorageMock.getItem.mockReturnValue('tokenValue');
 
         // When
         const { result } = renderHook(() => useGetRoles(), {
-          wrapper: queryClientWrapper,
+          wrapper: QueryClientWrapper,
         });
 
         // Then
@@ -130,16 +93,12 @@ describe('Roles API tests', () => {
         const apiMessage: ApiErrorType = {
           message: 'Forbidden',
         };
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: false,
-          status: 403,
-          json: () => Promise.resolve(apiMessage),
-        });
+        mockHandleFetch.mockRejectedValue(new Error(apiMessage.message));
         localStorageMock.getItem.mockReturnValue('invalid');
 
         // When
         const { result } = renderHook(() => useGetRoles(), {
-          wrapper: queryClientWrapper,
+          wrapper: QueryClientWrapper,
         });
 
         // Then
