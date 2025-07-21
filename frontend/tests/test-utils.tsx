@@ -9,6 +9,7 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   store?: AppStore;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const renderWithProviders = (
   ui: ReactElement,
   extendedRenderOptions: ExtendedRenderOptions = {}
@@ -29,7 +30,7 @@ export const renderWithProviders = (
   };
 };
 
-export const queryClientWrapper = ({ children }: PropsWithChildren) => {
+export const QueryClientWrapper = ({ children }: PropsWithChildren) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
