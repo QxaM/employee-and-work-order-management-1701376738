@@ -3,9 +3,8 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
-import { useAppSelector } from '../../../../hooks/useStore.tsx';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
-import { useDispatch } from 'react-redux';
 import { logout } from '../../../../store/authSlice.ts';
 
 /**
@@ -33,7 +32,7 @@ const MobileMainNavigation = () => {
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const token = useAppSelector((state) => state.auth.token);
   const isAdmin = checkJwtIsAdmin(token);

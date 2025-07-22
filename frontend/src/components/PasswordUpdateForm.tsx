@@ -1,13 +1,11 @@
-import {FormEvent, useEffect, useRef} from 'react';
+import { FormEvent, useRef } from 'react';
 
 import Input from './shared/Input';
-import {isValidConfirmPassword, isValidPassword,} from '../utils/Validators.ts';
+import { isValidConfirmPassword, isValidPassword } from '../utils/Validators.ts';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import {usePasswordUpdate} from '../api/passwordReset.ts';
-import {registerModal} from '../store/modalSlice.ts';
-import {v4 as uuidv4} from 'uuid';
-import {useAppDispatch} from '../hooks/useStore.tsx';
-import {useNavigate} from 'react-router-dom';
+import { usePasswordUpdate } from '../api/passwordReset.ts';
+import { useNavigate } from 'react-router-dom';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -23,7 +21,6 @@ import {useNavigate} from 'react-router-dom';
 const PasswordUpdateForm = ({ token }: { token: string }) => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const {
@@ -33,6 +30,25 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     error,
     mutate: updatePassword,
   } = usePasswordUpdate();
+
+  const renavigate = () => {
+    navigate('/');
+  };
+
+  useFormNotifications({
+    success: {
+      status: isSuccess,
+      message: 'Password was updated successfully!',
+      onEvent: renavigate,
+    },
+    error: {
+      status: isError,
+      message:
+        error?.message ??
+        'Something went wrong during password update process. Please try again later.',
+      onEvent: renavigate,
+    },
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -64,40 +80,6 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
       password: data.password as string,
     });
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: 'Password was updated successfully!',
-            type: 'success',
-          },
-        })
-      );
-    }
-
-    if (isError) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message:
-              error.message ||
-              'Something went wrong during password update process. Please try again later.',
-            type: 'error',
-          },
-        })
-      );
-    }
-  }, [isSuccess, isError, error?.message, dispatch]);
-
-  useEffect(() => {
-    if (isSuccess || isError) {
-      navigate('/');
-    }
-  }, [isSuccess, isError, navigate]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>

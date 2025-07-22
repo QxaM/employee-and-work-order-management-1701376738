@@ -1,13 +1,13 @@
 import Input from './shared/Input.tsx';
 import { FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 
 import { useLoginUser } from '../api/auth.ts';
 import { LoginType } from '../types/AuthorizationTypes.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from '../components/shared/ErrorComponent.tsx';
 import { login as loginAction } from '../store/authSlice.ts';
+import { useAppDispatch } from '../hooks/useStore.tsx';
 
 /**
  * A user login form component with API interaction, and Redux integration.
@@ -21,7 +21,7 @@ import { login as loginAction } from '../store/authSlice.ts';
  */
 const LoginForm = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { data, isSuccess, isPending, isError, mutate: login } = useLoginUser();
 
