@@ -30,7 +30,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "tests/**/*",
+    "tests",
     "vitest.config.js"
   ]
 }
