@@ -1,5 +1,14 @@
 import { NavLink } from 'react-router-dom';
 
+/**
+ * AdminSidebar is a React functional component that represents a sidebar navigation menu
+ * specifically designed for administrative tasks.
+ *
+ *
+ * Features:
+ * - Contains a navigation section with link(s) styled for active and inactive states.
+ *
+ */
 const AdminSidebar = () => {
   const inactiveLinkStyle =
     'flex flex-row gap-2 items-center p-1 border-2 border-qxam-primary-extreme-light' +

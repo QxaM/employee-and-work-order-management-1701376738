@@ -4,6 +4,14 @@ interface TableProps {
   title: string;
 }
 
+/**
+ * A functional component that represents a table, which includes a title and renders its children within a styled table layout.
+ *
+ * @param {object} props - The properties object.
+ * @param {string} props.title - The title to be displayed above the table.
+ * @param {React.ReactNode} props.children - The content to be rendered inside the table.
+ * @returns {JSX.Element} A styled table component with a title and content.
+ */
 const Table = ({ title, children }: PropsWithChildren<TableProps>) => {
   return (
     <div className="flex flex-col gap-4 w-full">

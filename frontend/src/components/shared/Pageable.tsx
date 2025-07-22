@@ -82,6 +82,13 @@ interface PageableProps {
   maxPages?: number;
 }
 
+/**
+ * Represents a pageable component used for rendering and handling pagination controls in a paginated dataset.
+ *
+ * The component accepts a pagination configuration (`pageable`) and additional properties for customization,
+ * like the color theme and the maximum number of pages to display in the pagination control.
+ *
+ */
 const Pageable = ({
   pageable: {
     currentElements,

@@ -25,6 +25,23 @@ interface RolesUpdateFormProps {
   onClose?: () => void;
 }
 
+/**
+ * RolesUpdateForm is a React functional component responsible for managing and updating roles for a specified user.
+ * It facilitates viewing, adding, and removing roles.
+ *
+ * @param {Object} props The properties passed to the component.
+ * @param {Object} props.user The user information.
+ * @param {number} props.user.id The unique identifier of the user.
+ * @param {string} props.user.email The email address of the user.
+ * @param {Array} props.user.roles The roles currently assigned to the user.
+ * @param {Object} props.roles The roles data fetched from the backend.
+ * @param {Array} props.roles.data The available roles data.
+ * @param {boolean} props.roles.isSuccess Status indicating if the roles data was successfully fetched.
+ * @param {boolean} props.roles.isPending Status indicating if the roles data is being fetched.
+ * @param {boolean} props.roles.isError Status indicating if there was an error in fetching roles data.
+ * @param {Object} props.roles.error The error object containing the details of the error that occurred.
+ * @param {Function} props.onClose A callback function invoked when the form is closed.
+ */
 const RolesUpdateForm = ({
   user: { id, email, roles },
   roles: { data, isSuccess, isPending, isError, error },

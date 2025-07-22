@@ -5,6 +5,17 @@ interface ModalPageProps {
   onClose: () => void;
 }
 
+/**
+ * ModalPage component.
+ *
+ * A component that renders a modal dialog using React portal. The modal includes a backdrop
+ * and a close button. It supports customizable content through child elements.
+ *
+ * @param {Object} props - The properties object.
+ * @param {function} props.onClose - Callback function invoked when the modal or backdrop is clicked to close the modal.
+ * @param {React.ReactNode} props.children - The content to be displayed within the modal dialog.
+ *
+ */
 const ModalPage = ({
   onClose,
   children,

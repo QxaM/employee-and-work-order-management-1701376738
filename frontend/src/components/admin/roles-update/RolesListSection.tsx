@@ -8,6 +8,15 @@ interface RolesListSectionProps {
   onRoleClick: (role: RoleType) => void;
 }
 
+/**
+ * A React functional component that renders a section displaying a list of roles as selectable items.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @param {string} props.title - The title to be displayed for the roles list section.
+ * @param {Array<Object>} props.roles - An array of role objects to be displayed within the section. Each role object should contain an `id` and `name` property.
+ * @param {Object|null} props.selectedRole - The currently selected role object, or null if no role is selected.
+ * @param {Function} props.onRoleClick - A callback function invoked when a role is clicked, passing the clicked role object as an argument.
+ */
 const RolesListSection = ({
   title,
   roles,

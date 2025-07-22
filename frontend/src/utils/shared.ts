@@ -41,10 +41,20 @@ export const deepEquals = <T>(a: T, b: T): boolean => {
   );
 };
 
+/**
+ * Returns the provided string value if it is neither undefined, null, nor a string containing only whitespace.
+ * If the provided value is invalid, the specified default string is returned.
+ *
+ * Mainly to bypass ESLint and SonarQubes errors of prefer-nullish-operator with empty (``) string
+ *
+ * @param {string | undefined | null} value - The input string to validate.
+ * @param {string} defaultString - The string to return if the input value is invalid.
+ * @returns {string} - The validated string or the default string if the value is invalid.
+ */
 export const getStringOrDefault = (
   value: string | undefined | null,
   defaultString: string
-) => {
+): string => {
   if (!value) {
     return defaultString;
   }

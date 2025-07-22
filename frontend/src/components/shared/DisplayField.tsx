@@ -5,6 +5,16 @@ interface DisplayFieldProps {
   className?: string;
 }
 
+/**
+ * DisplayField is a functional component used for displaying a labeled value with a customizable layout and styling.
+ *
+ * @param {object} props - Configuration object for the DisplayField component.
+ * @param {string} props.title - The label or title to be displayed.
+ * @param {string|number} props.value - The value to be displayed next to the label.
+ * @param {string} [props.orientation='vertical'] - Determines the layout of the label and value. Accepts 'vertical' (default) or 'horizontal'.
+ * @param {string} [props.className] - Additional custom CSS class names to apply to the component.
+ *
+ */
 const DisplayField = ({
   title,
   value,

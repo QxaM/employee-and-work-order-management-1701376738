@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { RoleType } from '../../../types/RoleTypes';
 
+/**
+ * A custom hook for managing roles in an application. This hook provides state management
+ * and utility functions for adding, removing, and interacting with user roles on Admin
+ * RoleUpdate page.
+ *
+ * @param {RoleType[]} initialRoles - A list of initial roles to set as the current roles.
+ *
+ */
 export const useRoleManagement = (initialRoles: RoleType[]) => {
   const [selectedRole, setSelectedRole] = useState<RoleType | null>(null);
   const [currentRoles, setCurrentRoles] = useState<RoleType[]>(initialRoles);

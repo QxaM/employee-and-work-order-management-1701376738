@@ -3,6 +3,15 @@ interface RoleControlProps {
   onRemoveRole: () => void;
 }
 
+/**
+ * RoleControl is a React functional component that renders controls
+ * for adding and removing roles. It consists of two buttons that trigger
+ * corresponding action handlers when clicked.
+ *
+ * @param {Object} props - The props object.
+ * @param {Function} props.onAddRole - Callback function invoked when the add role button is clicked.
+ * @param {Function} props.onRemoveRole - Callback function invoked when the remove role button is clicked.
+ */
 const RoleControl = ({ onAddRole, onRemoveRole }: RoleControlProps) => {
   return (
     <section

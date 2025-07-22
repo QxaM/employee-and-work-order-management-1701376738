@@ -9,6 +9,19 @@ import { useEffect, useState } from 'react';
 import RolesUpdateForm from './RolesUpdateForm.tsx';
 import { useGetRoles } from '../../../api/roles.ts';
 
+/**
+ * The `RolesUpdate` component is responsible for managing and displaying user role updates.
+ * It renders a table of users and their respective roles, provides pagination support,
+ * and enables updating roles through a modal dialog form.
+ *
+ * Key Features:
+ * - Displays a table of users with columns for ID, email, and current roles.
+ * - Supports row-click functionality to trigger the role update form for a specific user.
+ * - Implements pagination support using the `Pageable` component with dynamically calculated pagination data.
+ * - Displays a modal dialog with a `RolesUpdateForm` component to handle role updates.
+ * - Handles modal dialog state (open/close) and user selection state.
+ *
+ */
 const RolesUpdate = () => {
   const usersData: GetUsersType = useLoaderData() as GetUsersType;
   const {
