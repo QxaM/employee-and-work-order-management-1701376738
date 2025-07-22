@@ -40,3 +40,18 @@ export const deepEquals = <T>(a: T, b: T): boolean => {
     (key) => keysB.includes(key) && deepEquals(objA[key], objB[key])
   );
 };
+
+export const getStringOrDefault = (
+  value: string | undefined | null,
+  defaultString: string
+) => {
+  if (!value) {
+    return defaultString;
+  }
+
+  if (!value.trim()) {
+    return defaultString;
+  }
+
+  return value;
+};

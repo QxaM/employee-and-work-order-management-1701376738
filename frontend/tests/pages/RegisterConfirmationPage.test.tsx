@@ -219,7 +219,7 @@ describe('RegisterConfirmationPage', () => {
         isSuccess: false,
         isError: true,
         isPending: false,
-        error: new Error(),
+        error: undefined,
       } as unknown as UseMutationResult<void, Error, auth.ConfirmRequest>);
 
       // When

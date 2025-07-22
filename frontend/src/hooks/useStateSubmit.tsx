@@ -37,6 +37,7 @@ export function useStateSubmit<T>(
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [error, setError] = useState<Error | undefined>(undefined);
+  const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
 
   const submit = useSubmit();
   const actionReturnData = useActionData();
@@ -53,7 +54,7 @@ export function useStateSubmit<T>(
     success: false,
   };
 
-  if (actionReturnData) {
+  if (actionReturnData && wasSubmitted) {
     const actionCast = actionReturnData as ActionResponse<T>;
     actionData = actionCast.data;
     success = actionCast.success;
@@ -65,6 +66,7 @@ export function useStateSubmit<T>(
     setIsError(false);
     setError(undefined);
     setData(correctedInitialData);
+    setWasSubmitted(true);
     submit(data, options);
   };
 
@@ -78,6 +80,7 @@ export function useStateSubmit<T>(
       setIsSuccess(true);
       setIsError(false);
       setError(undefined);
+      setWasSubmitted(false);
     }
   }, [actionData, success, isPending, correctedInitialData]);
 
@@ -86,6 +89,7 @@ export function useStateSubmit<T>(
       setIsSuccess(false);
       setIsError(true);
       setError(actionError);
+      setWasSubmitted(false);
     }
   }, [actionError]);
 

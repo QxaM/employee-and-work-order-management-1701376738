@@ -1,7 +1,5 @@
 import {
-  createMemoryRouter,
   Navigation,
-  RouterProvider,
   SubmitOptions,
   useActionData,
   useNavigation,
@@ -9,9 +7,10 @@ import {
 } from 'react-router-dom';
 import { useStateSubmit } from '../../src/hooks/useStateSubmit.tsx';
 import { renderHook } from '@testing-library/react';
-import { act, PropsWithChildren } from 'react';
+import { act } from 'react';
 import { ActionResponse } from '../../src/types/ActionTypes.ts';
 import { afterEach, beforeEach } from 'vitest';
+import { createHookDataRouter } from '../test-utils.tsx';
 
 vi.mock('react-router-dom', async () => {
   const reactRouter = await vi.importActual('react-router-dom');
@@ -23,27 +22,12 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-function createHookDataRouter<T>(actionData?: ActionResponse<T>) {
-  const TestWrapper = ({ children }: PropsWithChildren) => {
-    const router = createMemoryRouter(
-      [
-        {
-          path: '/',
-          element: <>{children}</>,
-          action: vi.fn().mockReturnValue(actionData),
-        },
-      ],
-      {
-        initialEntries: ['/'],
-        initialIndex: 0,
-      }
-    );
-    return <RouterProvider router={router} />;
-  };
-
-  TestWrapper.displayName = 'TestWrapper';
-  return TestWrapper;
-}
+const data = {
+  id: 1,
+};
+const options: SubmitOptions = {
+  method: 'POST',
+};
 
 describe('useStateSubmit', () => {
   const mockSubmit = vi.fn();
@@ -68,13 +52,6 @@ describe('useStateSubmit', () => {
   });
 
   describe('customSubmit', () => {
-    const data = {
-      id: 1,
-    };
-    const options: SubmitOptions = {
-      method: 'POST',
-    };
-
     it('Should return and call a function, that will call useSubmit with correct data', () => {
       // Given
 
@@ -91,13 +68,19 @@ describe('useStateSubmit', () => {
       expect(mockSubmit).toHaveBeenCalledWith(data, options);
     });
 
-    it('Should return data and success to default after success', () => {
+    it('Should change data and success to default after success', () => {
       // Given
       const { result } = renderHook(() => useStateSubmit(''), {
-        wrapper: createHookDataRouter(),
+        wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBe(actionData.data);
 
       // When
+      vi.mocked(useActionData).mockReturnValue(undefined);
       act(() => {
         result.current.submit(data, options);
       });
@@ -117,8 +100,15 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
+      expect(result.current.isSuccess).toBe(false);
+      expect(result.current.isError).toBe(true);
+      expect(result.current.error).not.toBeUndefined();
 
       // When
+      vi.mocked(useActionData).mockReturnValue(undefined);
       act(() => {
         result.current.submit(data, options);
       });
@@ -136,6 +126,9 @@ describe('useStateSubmit', () => {
       // When
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
+      });
+      act(() => {
+        result.current.submit(data, options);
       });
       const hookData = result.current;
 
@@ -155,6 +148,9 @@ describe('useStateSubmit', () => {
       // When
       const { result } = renderHook(() => useStateSubmit(actionData.data), {
         wrapper: createHookDataRouter(actionData),
+      });
+      act(() => {
+        result.current.submit(data, options);
       });
       const hookData = result.current;
 
@@ -181,6 +177,9 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit({} as TestData), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
       const hookData = result.current;
 
       // Then
@@ -196,6 +195,9 @@ describe('useStateSubmit', () => {
       // When
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
+      });
+      act(() => {
+        result.current.submit(data, options);
       });
 
       // Then
@@ -214,6 +216,9 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
 
       // When
       expect(result.current.isSuccess).toBe(false);
@@ -228,6 +233,9 @@ describe('useStateSubmit', () => {
       // When
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
+      });
+      act(() => {
+        result.current.submit(data, options);
       });
 
       // Then
@@ -295,6 +303,9 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
 
       // Then
       expect(result.current.isError).toBe(true);
@@ -307,6 +318,9 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
 
       // Then
       expect(result.current.isError).toBe(false);
@@ -314,7 +328,7 @@ describe('useStateSubmit', () => {
   });
 
   describe('error', () => {
-    it('Should return undefined on successfull action', () => {
+    it('Should return error on error action', () => {
       // Given
       const actionData = {
         success: false,
@@ -326,17 +340,23 @@ describe('useStateSubmit', () => {
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
       });
+      act(() => {
+        result.current.submit(data, options);
+      });
 
       // Then
       expect(result.current.error).toStrictEqual(actionData.error);
     });
 
-    it('Should return error on error action', () => {
+    it('Should return undefined on successfull action', () => {
       // Given
 
       // When
       const { result } = renderHook(() => useStateSubmit(''), {
         wrapper: createHookDataRouter(actionData),
+      });
+      act(() => {
+        result.current.submit(data, options);
       });
 
       // Then
@@ -516,6 +536,9 @@ describe('useStateSubmit', () => {
         const { result, rerender } = renderHook(() => useStateSubmit(''), {
           wrapper: createHookDataRouter(actionData),
         });
+        act(() => {
+          result.current.submit(data, options);
+        });
         const afterSuccess = result.current;
 
         // Then
@@ -586,6 +609,9 @@ describe('useStateSubmit', () => {
         // When
         const { result, rerender } = renderHook(() => useStateSubmit(''), {
           wrapper: createHookDataRouter(actionData),
+        });
+        act(() => {
+          result.current.submit(data, options);
         });
         const afterSuccess = result.current;
 
@@ -671,6 +697,9 @@ describe('useStateSubmit', () => {
         const { result, rerender } = renderHook(() => useStateSubmit(''), {
           wrapper: createHookDataRouter(actionData),
         });
+        act(() => {
+          result.current.submit(data, options);
+        });
         const afterError = result.current;
 
         // Then
@@ -682,19 +711,16 @@ describe('useStateSubmit', () => {
 
         // STEP2 - action submit
         // Given
-        vi.mocked(useActionData).mockReturnValue({
-          success: false,
-          error,
-        });
+        vi.mocked(useActionData).mockReturnValue(undefined);
         vi.mocked(useNavigation).mockReturnValue({
           state: 'submitting',
         } as Navigation);
 
         // When
-        rerender();
         act(() => {
           result.current.submit(data, options);
         });
+        rerender();
         const afterSubmit = result.current;
 
         // Then
@@ -748,6 +774,9 @@ describe('useStateSubmit', () => {
         // When
         const { result, rerender } = renderHook(() => useStateSubmit(''), {
           wrapper: createHookDataRouter(actionData),
+        });
+        act(() => {
+          result.current.submit(data, options);
         });
         const afterError = result.current;
 

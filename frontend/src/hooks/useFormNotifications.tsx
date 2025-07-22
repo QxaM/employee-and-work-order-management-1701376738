@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { registerModal } from '../store/modalSlice.ts';
 import { useAppDispatch } from './useStore.tsx';
+import { getStringOrDefault } from '../utils/shared.ts';
 
 const defaultSuccess = 'Data have been submitted successfully!';
 const defaultError = 'Error while submitting data!';
@@ -10,6 +11,7 @@ const defaultError = 'Error while submitting data!';
 interface StatusProps {
   status: boolean;
   message?: string;
+  hideTimeout?: number;
   onEvent?: () => void;
 }
 
@@ -30,8 +32,9 @@ export const useFormNotifications = ({
         registerModal({
           id: uuidv4(),
           content: {
-            message: success.message ?? defaultSuccess,
+            message: getStringOrDefault(success.message, defaultSuccess),
             type: 'success',
+            hideTimeout: success.hideTimeout,
           },
         })
       );
@@ -47,8 +50,9 @@ export const useFormNotifications = ({
         registerModal({
           id: uuidv4(),
           content: {
-            message: error.message ?? defaultError,
+            message: getStringOrDefault(error.message, defaultError),
             type: 'error',
+            hideTimeout: error.hideTimeout,
           },
         })
       );

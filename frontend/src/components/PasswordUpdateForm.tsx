@@ -6,6 +6,7 @@ import LoadingSpinner from './shared/LoadingSpinner.tsx';
 import { usePasswordUpdate } from '../api/passwordReset.ts';
 import { useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { getStringOrDefault } from '../utils/shared.ts';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -43,9 +44,10 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     },
     error: {
       status: isError,
-      message:
-        error?.message ??
-        'Something went wrong during password update process. Please try again later.',
+      message: getStringOrDefault(
+        error?.message,
+        'Something went wrong during password update process. Please try again later.'
+      ),
       onEvent: renavigate,
     },
   });

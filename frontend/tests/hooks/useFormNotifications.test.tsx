@@ -32,10 +32,12 @@ describe('useFormNotifications', () => {
       // Then
       const modalState = store.getState().modal;
       expect(modalState.modals).toHaveLength(1);
-      expect(modalState.modals[0].content).toStrictEqual({
-        message: submit.success.message,
-        type: 'success',
-      });
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: submit.success.message,
+          type: 'success',
+        })
+      );
     });
 
     it('Should dispatch success event with default message', () => {
@@ -54,10 +56,12 @@ describe('useFormNotifications', () => {
       // Then
       const modalState = store.getState().modal;
       expect(modalState.modals).toHaveLength(1);
-      expect(modalState.modals[0].content).toStrictEqual({
-        message: defaultSuccess,
-        type: 'success',
-      });
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: defaultSuccess,
+          type: 'success',
+        })
+      );
     });
 
     it('Should run onSuccess if it exists', () => {
@@ -67,8 +71,8 @@ describe('useFormNotifications', () => {
         success: {
           status: true,
           message: 'Test success message',
+          onEvent: mockOnSuccess,
         },
-        onSuccess: mockOnSuccess,
       };
 
       // When
@@ -127,10 +131,12 @@ describe('useFormNotifications', () => {
       // Then
       const modalState = store.getState().modal;
       expect(modalState.modals).toHaveLength(1);
-      expect(modalState.modals[0].content).toStrictEqual({
-        message: submit.error.message,
-        type: 'error',
-      });
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: submit.error.message,
+          type: 'error',
+        })
+      );
     });
 
     it('Should dispatch error event with default message', () => {
@@ -152,10 +158,35 @@ describe('useFormNotifications', () => {
       // Then
       const modalState = store.getState().modal;
       expect(modalState.modals).toHaveLength(1);
-      expect(modalState.modals[0].content).toStrictEqual({
-        message: defaultError,
-        type: 'error',
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: defaultError,
+          type: 'error',
+        })
+      );
+    });
+
+    it('Should run onError if it exists', () => {
+      // Given
+      const mockOnError = vi.fn();
+      const submit = {
+        success: {
+          status: false,
+        },
+        error: {
+          status: true,
+          message: 'Test error message',
+          onEvent: mockOnError,
+        },
+      };
+
+      // When
+      renderHookWithProviders(() => {
+        useFormNotifications(submit);
       });
+
+      // Then
+      expect(mockOnError).toHaveBeenCalledOnce();
     });
   });
 });

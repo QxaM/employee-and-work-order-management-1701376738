@@ -26,6 +26,7 @@ const RegisterConfirmationPage = () => {
     success: {
       status: isSuccess,
       message: 'Verification was successfull - you can now login',
+      hideTimeout: 30_000,
       onEvent: renavigate,
     },
     error: {
