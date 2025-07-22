@@ -5,9 +5,7 @@ const AdminPage = () => {
   return (
     <div className="flex flex-row flex-grow">
       <AdminSidebar />
-      <main className="flex items-center justify-center w-full p-2">
-        <Outlet />
-      </main>
+      <Outlet />
     </div>
   );
 };
