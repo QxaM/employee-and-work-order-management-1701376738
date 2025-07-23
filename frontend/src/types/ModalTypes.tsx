@@ -11,7 +11,7 @@ export interface ModalType {
 
 /**
  * Represents modal data stored in the state. This data will be later provided to render a
- * `Modal` component.
+ * `ModalMessage` component.
  *
  * `onClose` and `index` are Omitted from content, since will be provided by `DialogManager`
  */

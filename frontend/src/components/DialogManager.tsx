@@ -1,13 +1,13 @@
-import Modal from './shared/Modal.tsx';
-import {removeModal} from '../store/modalSlice.ts';
-import {useAppDispatch, useAppSelector} from '../hooks/useStore.tsx';
+import ModalMessage from './shared/ModalMessage.tsx';
+import { removeModal } from '../store/modalSlice.ts';
+import { useAppDispatch, useAppSelector } from '../hooks/useStore.tsx';
 
 /**
  * Manages the rendering of multiple modals in the application.
  *
  * The `DialogManager` component is responsible for managing and displaying a list of modals.
  * It retrieves the modal list from the Redux store, limits the number of visible modals to 5,
- * and maps them into `Modal` components.
+ * and maps them into `ModalMessage` components.
  *
  * @example
  * // Ensure your Redux store contains modal-related logic like an array of modals.
@@ -38,7 +38,7 @@ const DialogManager = () => {
   return (
     <>
       {visibleModals.map((modal, index) => (
-        <Modal
+        <ModalMessage
           key={modal.id}
           index={index}
           message={modal.content.message}

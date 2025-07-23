@@ -54,6 +54,14 @@
     @apply bg-qxam-accent-darker text-qxam-neutral-light;
 }
 
+.btn-neutral-light {
+    @apply bg-qxam-neutral-light-lighter text-qxam-neutral-dark-darkest;
+}
+
+.btn-neutral-light:hover {
+    @apply bg-qxam-neutral-light text-qxam-neutral-dark-extreme-dark;
+}
+
 .btn-destructive {
     @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
 }

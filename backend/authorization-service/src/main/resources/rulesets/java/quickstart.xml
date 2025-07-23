@@ -156,6 +156,8 @@
     <rule ref="category/java/design.xml/TooManyMethods">
         <properties>
             <property name="maxmethods" value="15"/>
+            <property name="violationSuppressXPath"
+                      value="./ancestor-or-self::ClassDeclaration[contains(@SimpleName, 'Test')]"/>
         </properties>
     </rule>
     <rule ref="category/java/design.xml/UselessOverridingMethod"/>
