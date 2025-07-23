@@ -11,7 +11,7 @@ export default tseslint.config(
   { ignores: ['dist', 'eslint.config.js'] },
   // App configuration
   {
-    settings: { react: { version: '18.3' } },
+    settings: { react: { version: 'detect' } },
     extends: [
       js.configs.recommended,
       ...tseslint.configs.strictTypeChecked,
@@ -57,6 +57,7 @@ export default tseslint.config(
   },
   // App configuration
   {
+    settings: { react: { version: 'detect' } },
     extends: [
       js.configs.recommended,
       ...tseslint.configs.strictTypeChecked,

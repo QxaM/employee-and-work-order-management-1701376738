@@ -26,7 +26,7 @@ describe('Modal Page', () => {
     expect(closeButton).toBeInTheDocument();
   });
 
-  it('Should close when clicking on close button', async () => {
+  it('Should close when clicking on close button', () => {
     // Given
     const mockClose = vi.fn();
     render(<ModalPage onClose={mockClose} />);
