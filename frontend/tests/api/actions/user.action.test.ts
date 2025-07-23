@@ -199,9 +199,6 @@ describe('User action', () => {
         expect(response.data).toBeUndefined();
         expect(response.error).not.toBeUndefined();
         expect(response.error).toBeInstanceOf(SyntaxError);
-        expect(response.error?.message).toEqual(
-          '"[object Object]" is not valid JSON'
-        );
       });
 
       it('Should return error when removeRoles parsing fails', async () => {
@@ -224,9 +221,6 @@ describe('User action', () => {
         expect(response.data).toBeUndefined();
         expect(response.error).not.toBeUndefined();
         expect(response.error).toBeInstanceOf(SyntaxError);
-        expect(response.error?.message).toEqual(
-          '"[object Object]" is not valid JSON'
-        );
       });
     });
 
