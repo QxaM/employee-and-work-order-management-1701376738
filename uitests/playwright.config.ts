@@ -24,18 +24,29 @@ export default defineConfig({
 
   projects: [
     {
+      name: "setup",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/setup/*.setup.ts",
+    },
+    {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      testIgnore: "**/setup/*",
+      dependencies: ["setup"],
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
+      testIgnore: "**/setup/*",
+      dependencies: ["setup"],
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+      testIgnore: "**/setup/*",
+      dependencies: ["setup"],
     },
   ],
 });
