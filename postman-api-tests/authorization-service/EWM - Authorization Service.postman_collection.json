@@ -740,6 +740,194 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "GET /me",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Login as operator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('operatorToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{operatorPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{operatorEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get me info",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain email\", () => {\r",
+													"    const operatorEmail = pm.variables.get('operatorEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(operatorEmail);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain roles\", () => {\r",
+													"    const operatorRoleId = pm.variables.get('operatorRoleId');\r",
+													"\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.length.greaterThanOrEqual(1);\r",
+													"    \r",
+													"    pm.expect(response.roles[0]).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.roles[0].id).to.eql(operatorRoleId);\r",
+													"    pm.expect(response.roles[0]).to.haveOwnProperty('name').that.is.a('string');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{operatorToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login/me",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "Fails not authenticated",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Response contains valid message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please')\r",
+													"})\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login/me",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
 				}
 			]
 		},
