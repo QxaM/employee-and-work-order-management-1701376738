@@ -7,7 +7,8 @@ import { AUTHORIZATION_SERVICE_URL, loginApi } from "../utils/api.utils";
 import { Credentials, Token } from "../types/Authorization";
 import { buildContextStorage, ContextState } from "./setup.utils";
 
-const authFile = path.join(__dirname, "../../test-data/auth/admin.json");
+const authDirectory = path.join(__dirname, "../../test-data/auth");
+const authFile = path.join(authDirectory, "admin.json");
 
 let apiContext: APIRequestContext;
 
@@ -27,6 +28,7 @@ test("Authentication - Admin", async ({ playwright, baseURL }) => {
 
   // Save State
   const contextStorage: ContextState = buildContextStorage(baseURL, token);
+  fs.mkdirSync(authDirectory, { recursive: true });
   fs.writeFileSync(authFile, JSON.stringify(contextStorage, null, 2));
 
   await apiContext.dispose();
