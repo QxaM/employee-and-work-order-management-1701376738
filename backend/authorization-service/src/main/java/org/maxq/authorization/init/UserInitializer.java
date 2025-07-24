@@ -37,17 +37,17 @@ public class UserInitializer {
     log.info("Initializing users");
 
 
-    Role roleAdmin = roleService.findByName("ADMIN");
+    Role roleAdmin = roleService.getRoleByName("ADMIN");
     @SuppressWarnings("java:S6437")
     User admin = new User(ADMIN_EMAIL, passwordEncoder.encode(ADMIN_PASSWORD), true);
     admin.getRoles().add(roleAdmin);
 
-    Role roleOperator = roleService.findByName("OPERATOR");
+    Role roleOperator = roleService.getRoleByName("OPERATOR");
     @SuppressWarnings("java:S6437")
     User operator = new User(OPERATOR_EMAIL, passwordEncoder.encode(OPERATOR_PASSWORD), true);
     operator.getRoles().add(roleOperator);
 
-    Role roleDesigner = roleService.findByName("DESIGNER");
+    Role roleDesigner = roleService.getRoleByName("DESIGNER");
     @SuppressWarnings("java:S6437")
     User designer = new User(DESIGNER_EMAIL, passwordEncoder.encode(DESIGNER_PASSWORD), true);
     designer.getRoles().add(roleDesigner);

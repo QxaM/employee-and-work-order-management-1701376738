@@ -1,6 +1,8 @@
-import {Link, NavLink} from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
-import {useAppSelector} from '../../../../hooks/useStore.tsx';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
+import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
+import { logout } from '../../../../store/authSlice.ts';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -24,7 +26,10 @@ const MainNavigationHeader = () => {
     ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
     ' hover:underline hover:text-qxam-primary-darker';
 
+  const dispatch = useAppDispatch();
+
   const token = useAppSelector((state) => state.auth.token);
+  const isAdmin = checkJwtIsAdmin(token);
 
   return (
     <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
@@ -36,6 +41,14 @@ const MainNavigationHeader = () => {
         >
           Home
         </NavLink>
+        {isAdmin && (
+          <NavLink
+            to="/admin"
+            className={({ isActive }) => (isActive ? navActive : navInactive)}
+          >
+            Admin
+          </NavLink>
+        )}
       </nav>
       {!token && (
         <div className="flex justify-center items-center content-auto">
@@ -54,8 +67,16 @@ const MainNavigationHeader = () => {
         </div>
       )}
       {token && (
-        <div className="flex justify-center m-2 text-qxam-neutral-light-lighter items-center content-auto text-xl">
-          Welcome back!
+        <div className="flex flex-row gap-4 justify-center mx-4 items-center content-auto">
+          <p className="text-qxam-neutral-light-lighter text-xl">
+            Welcome back!
+          </p>
+          <button
+            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
+            onClick={() => dispatch(logout())}
+          >
+            Logout
+          </button>
         </div>
       )}
     </header>

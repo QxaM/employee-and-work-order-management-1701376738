@@ -1,14 +1,12 @@
-import {FormEvent, useEffect, useRef} from 'react';
+import { FormEvent, useRef } from 'react';
 
-import {isValidEmail} from '../utils/Validators.ts';
+import { isValidEmail } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import {useResetRequest} from '../api/passwordReset.ts';
+import { useResetRequest } from '../api/passwordReset.ts';
 import ErrorComponent from './shared/ErrorComponent.tsx';
-import {registerModal} from '../store/modalSlice.ts';
-import {v4 as uuidv4} from 'uuid';
-import {useAppDispatch} from '../hooks/useStore.tsx';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 
 /**
  * A user password reset request form component with validation and API interaction.
@@ -25,7 +23,6 @@ const PasswordRequestForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const emailRef = useRef<string>('');
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const {
     isSuccess,
@@ -34,6 +31,16 @@ const PasswordRequestForm = () => {
     error,
     mutate: requestReset,
   } = useResetRequest();
+
+  useFormNotifications({
+    success: {
+      status: isSuccess,
+      message: 'Email was sent if provided email exists in our database.',
+      onEvent: () => {
+        navigate('/');
+      },
+    },
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,26 +60,6 @@ const PasswordRequestForm = () => {
 
     requestReset({ email: emailRef.current });
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: 'Email was sent if provided email exists in our database.',
-            type: 'success',
-          },
-        })
-      );
-    }
-  }, [isSuccess, dispatch]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate('/');
-    }
-  }, [isSuccess, navigate]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>

@@ -37,7 +37,7 @@ public class RegisterController implements RegisterApi {
   public ResponseEntity<Void> register(@RequestBody @Valid UserDto userDto)
       throws DataValidationException, DuplicateEmailException, ElementNotFoundException {
     User user = userMapper.mapToUser(userDto);
-    Role designer = roleService.findByName("DESIGNER");
+    Role designer = roleService.getRoleByName("DESIGNER");
     user.getRoles().add(designer);
     userService.createUser(user);
 

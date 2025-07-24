@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +71,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(ROLE_NAME)).thenReturn(Optional.of(role));
 
     // When
-    Role foundRole = roleService.findByName(ROLE_NAME);
+    Role foundRole = roleService.getRoleByName(ROLE_NAME);
 
     // Then
     assertEquals(role.getName(), foundRole.getName(), "Incorrect role found, name should be equal!");
@@ -82,7 +83,44 @@ class RoleServiceTest {
     when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
 
     // When
-    Executable executable = () -> roleService.findByName("TEST");
+    Executable executable = () -> roleService.getRoleByName("TEST");
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");
+  }
+
+  @Test
+  void shouldReturnAllRoles() {
+    // Given
+    Role role1 = new Role("ROLE1");
+    when(roleRepository.findAll()).thenReturn(List.of(role, role1));
+
+    // When
+    List<Role> foundRoles = roleService.getAllRoles();
+
+    // Then
+    assertEquals(2, foundRoles.size(), "Wrong number of roles found");
+  }
+
+  @Test
+  void shouldReturnRoleById() throws ElementNotFoundException {
+    // Given
+    when(roleRepository.findById(anyLong())).thenReturn(Optional.of(role));
+
+    // When
+    Role foundRole = roleService.getRoleById(1L);
+
+    // Then
+    assertEquals(role.getName(), foundRole.getName(), "Role name should save with equal name");
+  }
+
+  @Test
+  void shouldThrow_When_RoleIdNotFound() {
+    // Given
+    when(roleRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    // When
+    Executable executable = () -> roleService.getRoleById(1L);
 
     // Then
     assertThrows(ElementNotFoundException.class, executable, "Role not found should throw ElementNotFoundException");

@@ -12,10 +12,13 @@ import org.maxq.authorization.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +49,7 @@ class UserRepositoryTest {
   void createUser() {
     role = new Role("admin");
     roleRepository.save(role);
-    user = new User(EMAIL, "test", List.of(role));
+    user = new User(EMAIL, "test", Set.of(role));
   }
 
   @AfterEach
@@ -187,7 +190,77 @@ class UserRepositoryTest {
     assertTrue(foundUser.isPresent(), "User could not be found");
     assertEquals(user.getRoles().size(), foundUser.get().getRoles().size(),
         "User should have exactly one role");
-    assertEquals(user.getRoles().getFirst().getName(), foundUser.get().getRoles().getFirst().getName(),
+    assertTrue(user.getRoles().containsAll(foundUser.get().getRoles()),
         "User should have correct roles fetched from database");
+  }
+
+  @Test
+  void shouldReturnEmpty_When_NoUserExists() {
+    // Given
+    Pageable page = Pageable.ofSize(10).withPage(0);
+
+    // When
+    Page<User> foundUsers = userRepository.findAll(page);
+
+    // Then
+    assertTrue(foundUsers.isEmpty(), "User was found ad should not");
+    assertAll(
+        () -> assertEquals(0, foundUsers.getNumberOfElements(),
+            "Should not return any users on page"),
+        () -> assertEquals(0, foundUsers.getTotalPages(),
+            "Should not return any pages"),
+        () -> assertEquals(0, foundUsers.getTotalElements(),
+            "Should not return any elements")
+    );
+  }
+
+  @Test
+  void shouldReturnFoundUsers() {
+    // Given
+    Pageable page = Pageable.ofSize(10).withPage(0);
+    User user1 = new User("test1@test.com", "test1", Set.of(role));
+    userRepository.save(user);
+    userRepository.save(user1);
+
+    // When
+    Page<User> foundUsers = userRepository.findAll(page);
+
+    // Then
+    assertAll(
+        () -> assertEquals(2, foundUsers.getNumberOfElements(), "Wrong number of users found!"),
+        () -> assertEquals(1, foundUsers.getTotalPages(), "Should return only one page"),
+        () -> assertEquals(2, foundUsers.getTotalElements(), "Should return two users")
+    );
+
+    // Cleanup
+    userRepository.deleteById(user1.getId());
+  }
+
+  @Test
+  void shouldFindById() {
+    // Given
+    userRepository.save(user);
+
+    // When
+    Optional<User> foundUser = userRepository.findById(user.getId());
+
+    // Then
+    assertTrue(foundUser.isPresent(), "Role was not found");
+    assertEquals(user.getEmail(), foundUser.get().getEmail(),
+        "User email should save with equal name");
+    assertEquals(user.getPassword(), foundUser.get().getPassword(),
+        "User password should save with equal name");
+  }
+
+  @Test
+  void shouldNot_FindById_WhenUserDontExist() {
+    // Given
+    Long id = Long.MAX_VALUE;
+
+    // When
+    Optional<User> foundUser = userRepository.findById(id);
+
+    // Then
+    assertFalse(foundUser.isPresent(), "Role was found ad should not");
   }
 }

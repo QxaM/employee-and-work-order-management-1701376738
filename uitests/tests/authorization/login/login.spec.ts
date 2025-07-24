@@ -8,10 +8,11 @@ import {
   loginError,
   welcomeMessage,
 } from "./login.utils";
+import { Credentials } from "../../types/Authorization";
 
 test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   // Given
-  const userCredentials = credentials.admin;
+  const userCredentials = credentials.admin as Credentials;
 
   await openHomePage(page);
   await clickLoginButton(page);

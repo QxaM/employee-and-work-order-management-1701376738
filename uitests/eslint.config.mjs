@@ -4,7 +4,7 @@ import tsParser from "@typescript-eslint/parser";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import playwright from "eslint-plugin-playwright";
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import("eslint").Linter.Config[]} */
 export default [
   { files: ["**/*.{js,mjs,cjs,ts}"] },
   {
@@ -35,6 +35,7 @@ export default [
       "playwright/prefer-to-have-length": "warn",
       "playwright/prefer-to-have-count": "warn",
       "playwright/prefer-web-first-assertions": "warn",
+      "playwright/missing-playwright-await": "off",
     },
   },
 ];

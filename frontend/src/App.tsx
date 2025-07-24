@@ -11,6 +11,10 @@ import LoginPage from './pages/LoginPage.tsx';
 import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
 import PasswordRequestPage from './pages/PasswordRequestPage.tsx';
 import PasswordUpdatePage from './pages/PasswordUpdatePage.tsx';
+import AdminPage from './pages/AdminPage.tsx';
+import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
+import { loadUsers } from './api/loaders/user.loader.ts';
+import { updateRoles } from './api/actions/user.action.ts';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +27,19 @@ const router = createBrowserRouter([
       { path: '/login', element: <LoginPage /> },
       { path: '/password/request', element: <PasswordRequestPage /> },
       { path: '/password/confirm', element: <PasswordUpdatePage /> },
+      {
+        path: '/admin',
+        element: <AdminPage />,
+        children: [
+          { index: true, element: <></> },
+          {
+            path: 'roles-update',
+            element: <RolesUpdate />,
+            loader: loadUsers,
+            action: updateRoles,
+          },
+        ],
+      },
     ],
   },
 ]);

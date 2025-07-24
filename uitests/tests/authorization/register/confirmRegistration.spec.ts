@@ -1,7 +1,7 @@
 import { APIRequestContext, expect, test } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 
-import { AUTHORIZATION_SERVICE_URL } from "../../utils/api.utils";
+import { createApiContext } from "../../utils/api.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
 import {
   expiredTokenMessage,
@@ -15,9 +15,7 @@ test.describe("Confirmation registration tests", () => {
   let password: string;
 
   test.beforeAll(async ({ playwright }) => {
-    apiContext = await playwright.request.newContext({
-      baseURL: AUTHORIZATION_SERVICE_URL,
-    });
+    apiContext = await createApiContext(playwright);
   });
 
   test.beforeEach(async () => {

@@ -41,9 +41,11 @@ class LoginControllerTest {
 
   @BeforeEach
   void securitySetup() {
+
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
         .apply(springSecurity())
         .build();
+
   }
 
   @Test

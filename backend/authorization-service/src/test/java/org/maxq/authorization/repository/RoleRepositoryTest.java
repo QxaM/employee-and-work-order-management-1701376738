@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,6 +81,62 @@ class RoleRepositoryTest {
 
     // When
     Optional<Role> foundRole = roleRepository.findByName(role.getName());
+
+    // Then
+    assertFalse(foundRole.isPresent(), "Role was found ad should not");
+  }
+
+  @Test
+  void shouldReturnEmpty_When_NoRolesSaved() {
+    // Given
+
+    // When
+    List<Role> foundRoles = roleRepository.findAll();
+
+    // Then
+    assertTrue(foundRoles.isEmpty(), "Roles were found ad should not");
+  }
+
+  @Test
+  void shouldReturnAllRoles() {
+    // Given
+    Role role1 = new Role("ROLE1");
+    roleRepository.save(role);
+    roleRepository.save(role1);
+
+    // When
+    List<Role> foundRoles = roleRepository.findAll();
+
+    // Then
+    assertEquals(2, foundRoles.size(), "Wrong number of roles found");
+
+    // Clean up
+    if (role1.getId() != null) {
+      roleRepository.deleteById(role1.getId());
+    }
+  }
+
+  @Test
+  void shouldFindById() {
+    // Given
+    roleRepository.save(role);
+
+    // When
+    Optional<Role> foundRole = roleRepository.findById(role.getId());
+
+    // Then
+    assertTrue(foundRole.isPresent(), "Role was not found");
+    assertEquals(role.getName(), foundRole.get().getName(),
+        "Role name should save with equal name");
+  }
+
+  @Test
+  void shouldNot_FindById_WhenRoleDontExist() {
+    // Given
+    Long id = Long.MAX_VALUE;
+    
+    // When
+    Optional<Role> foundRole = roleRepository.findById(id);
 
     // Then
     assertFalse(foundRole.isPresent(), "Role was found ad should not");

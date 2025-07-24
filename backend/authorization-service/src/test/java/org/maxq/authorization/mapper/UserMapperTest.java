@@ -1,14 +1,22 @@
 package org.maxq.authorization.mapper;
 
 import org.junit.jupiter.api.Test;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
+import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserMapperTest {
@@ -20,7 +28,7 @@ class UserMapperTest {
   private PasswordEncoder passwordEncoder;
 
   @Test
-  void shouldAddToUSer() {
+  void shouldAddToUser() {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
 
@@ -30,5 +38,34 @@ class UserMapperTest {
     // Then
     assertEquals(userDto.getEmail(), user.getEmail(), "Mapper should map to same email!");
     assertTrue(passwordEncoder.matches(userDto.getPassword(), user.getPassword()), "Mapper should map to same password!");
+  }
+
+  @Test
+  void shouldMapToGetUserDtoList() {
+    // Given
+    Role role = new Role(1L, "TEST", Collections.emptyList());
+    User user1 = new User(1L, "test1@test.com", "test1", false, Set.of(role));
+    User user2 = new User(2L, "test2@test.com", "test2", false, Set.of(role));
+    List<User> users = List.of(user1, user2);
+    Pageable page = Pageable.ofSize(10).withPage(0);
+    Page<User> userPage = new PageImpl<>(users, page, users.size());
+
+    // When
+    Page<GetUserDto> getUserDtoPage = userMapper.mapToGetUserDtoPage(userPage);
+
+    // Then
+    assertAll(
+        () -> assertEquals(users.size(), getUserDtoPage.getNumberOfElements(), "Sizes should match after mapping"),
+        () -> assertEquals(users.getFirst().getId(), getUserDtoPage.getContent().getFirst().getId(),
+            "User IDs should match after mapping"),
+        () -> assertEquals(
+            users.getFirst().getRoles().size(),
+            getUserDtoPage.getContent().getFirst().getRoles().size(),
+            "Roles should match after mapping"),
+        () -> assertEquals(userPage.getTotalElements(), getUserDtoPage.getTotalElements(),
+            "Total elements should match after mapping"),
+        () -> assertEquals(userPage.getTotalPages(), getUserDtoPage.getTotalPages(),
+            "Total pages should match after mapping")
+    );
   }
 }

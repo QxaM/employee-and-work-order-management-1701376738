@@ -37,7 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -85,7 +85,7 @@ class RegisterControllerTest {
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
-    when(roleService.findByName(anyString())).thenReturn(role);
+    when(roleService.getRoleByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -103,7 +103,7 @@ class RegisterControllerTest {
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
-    when(roleService.findByName("DESIGNER")).thenReturn(role);
+    when(roleService.getRoleByName("DESIGNER")).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -115,7 +115,7 @@ class RegisterControllerTest {
     verify(eventPublisher, times(1))
         .publishEvent(argThat(event ->
             ((OnRegistrationComplete) event).getUser().getRoles().size() == 1
-                && ((OnRegistrationComplete) event).getUser().getRoles().get(0).getName().equals(role.getName()))
+                && ((OnRegistrationComplete) event).getUser().getRoles().contains(role))
         );
   }
 
@@ -221,7 +221,7 @@ class RegisterControllerTest {
   void shouldConfirmRegistration() throws Exception {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
 
@@ -256,7 +256,7 @@ class RegisterControllerTest {
   void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
@@ -277,7 +277,7 @@ class RegisterControllerTest {
   void shouldThrowExpiredVerification_When_ExpirationBeforeNow() throws Exception {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
 
@@ -301,7 +301,7 @@ class RegisterControllerTest {
   void shouldThrowDataValidation_When_InvalidData() throws Exception {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now(), false);
 

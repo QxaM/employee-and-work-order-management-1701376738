@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +39,7 @@ class VerificationTokenServiceTest {
   @BeforeEach
   void setUp() {
     Role role = new Role(1L, "admin", Collections.emptyList());
-    user = new User(1L, "test@test.com", "test", false, List.of(role));
+    user = new User(1L, "test@test.com", "test", false, Set.of(role));
     token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
   }
 

@@ -1,7 +1,17 @@
 {
   "files": [],
+  "exclude": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "docs/**/*",
+    "coverage/**/*"
+  ],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ]
 }

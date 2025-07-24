@@ -1,10 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
 import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
+import * as jwtModule from '../../../../../src/utils/Jwt.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
@@ -26,6 +27,10 @@ describe('Main Navigation Header', () => {
   });
 
   describe('Navigation', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it('Should contain navigation links', () => {
       // Given
       const navHomeText = 'Home';
@@ -58,9 +63,46 @@ describe('Main Navigation Header', () => {
       // Then
       expect(window.location.pathname).toBe('/');
     });
+
+    it('Should contain Admin navigation link, when is logged as admin', () => {
+      // Given
+      const navAdminText = 'Admin';
+      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+
+      // When
+      const adminLink = screen.getByText(navAdminText, { exact: false });
+
+      // Then
+      expect(adminLink).toBeInTheDocument();
+    });
+
+    it('Should navigate to Admin when admin link is clicked', () => {
+      // Given
+      const navAdminText = 'Admin';
+      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      const adminLink = screen.getByText(navAdminText, { exact: false });
+
+      // When
+      fireEvent.click(adminLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/admin');
+    });
   });
 
-  describe('Login and Register', () => {
+  describe('Login, Register, Logout', () => {
     it('Should contain Register Button', () => {
       // Given
       const registerButtonText = 'Sign up';
@@ -135,8 +177,11 @@ describe('Main Navigation Header', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    it('Should contain welcome message when logged in', () => {
+    it('Should contain welcome message and logout button when logged in', async () => {
       // Given
+      const loginButtonText = 'Login';
+      const logoutButtonText = 'Logout';
+
       const { store } = renderWithProviders(
         <BrowserRouter>
           <MainNavigationHeader />
@@ -148,14 +193,36 @@ describe('Main Navigation Header', () => {
         store.dispatch(login({ token: '12345' }));
       });
 
-      const loginButtonText = 'Login';
       const loginButton = screen.queryByRole('link', {
         name: loginButtonText,
       });
+      const logoutButton = await screen.findByText(logoutButtonText);
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(screen.getByText('Welcome back!')).toBeInTheDocument();
+      expect(logoutButton).toBeInTheDocument();
+    });
+
+    it('Should logout and clear store', async () => {
+      // Given
+      const logoutButtonText = 'Logout';
+      const { store } = renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+      act(() => {
+        store.dispatch(login({ token: '12345' }));
+      });
+
+      const logoutButton = await screen.findByText(logoutButtonText);
+
+      // When
+      fireEvent.click(logoutButton);
+
+      // Then
+      expect(store.getState().auth.token).toBeUndefined();
     });
   });
 });

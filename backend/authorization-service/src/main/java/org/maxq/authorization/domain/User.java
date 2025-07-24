@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
@@ -41,16 +41,16 @@ public class User {
   @JoinTable(name = "USER_ROLE",
       joinColumns = @JoinColumn(name = "USER_ID"),
       inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-  private List<Role> roles;
+  private Set<Role> roles;
 
   public User(String email, String password) {
     this.password = password;
     this.email = email;
     this.enabled = false;
-    this.roles = new ArrayList<>();
+    this.roles = new HashSet<>();
   }
 
-  public User(String email, String password, List<Role> roles) {
+  public User(String email, String password, Set<Role> roles) {
     this.password = password;
     this.email = email;
     this.enabled = false;
@@ -61,6 +61,6 @@ public class User {
     this.password = password;
     this.email = email;
     this.enabled = enabled;
-    this.roles = new ArrayList<>();
+    this.roles = new HashSet<>();
   }
 }

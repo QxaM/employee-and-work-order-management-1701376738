@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -35,7 +35,7 @@ class RegistrationListenerTest {
   void shouldHandleRegistrationEvent() {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
-    User user = new User(1L, "test@test.com", "test", false, List.of(role));
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     OnRegistrationComplete event = new OnRegistrationComplete(user);
 
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);

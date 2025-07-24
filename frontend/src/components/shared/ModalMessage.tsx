@@ -1,17 +1,17 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {AnimatePresence, motion} from 'framer-motion';
-import {createPortal} from 'react-dom';
-import {MODAL_TYPE, ModalType} from '../../types/ModalTypes.tsx';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { MODAL_TYPE, ModalType } from '../../types/ModalTypes.tsx';
 
 /**
  * An animated modal component to display messages with customizable styles and auto-hide
  * functionality. It is used mainly by DialogManager component, but can be used otherwise too.
  *
- * @param {ModalType} props - Props for the Modal component.
+ * @param {ModalType} props - Props for the ModalMessage component.
  * @param {string} props.message - The message to display inside the modal.
  * @param {number} props.index - The index of the modal, used for positioning when multiple modals are rendered.
  * @param {number} [props.hideTimeout=10000] - Time in milliseconds before the modal auto-hides. Defaults to 10 seconds.
- * @param {"info" | "success" | "error"} [props.type='info'] - The type of the modal, which determines its
+ * @param {'info' | 'success' | 'error'} [props.type='info'] - The type of the modal, which determines its
  * style (e.g. "info", "warning").
  * @param {function} props.onClose - Callback function triggered when the modal is closed.
  *
@@ -19,10 +19,10 @@ import {MODAL_TYPE, ModalType} from '../../types/ModalTypes.tsx';
  * import { MODAL_TYPE } from '@/types/ModalTypes.tsx';
  *
  * const handleModalClose = () => {
- *   console.log('Modal closed');
+ *   console.log('ModalMessage closed');
  * };
  *
- * <Modal
+ * <ModalMessage
  *   message="This is an informational modal."
  *   index={1}
  *   hideTimeout={5000}
@@ -31,7 +31,7 @@ import {MODAL_TYPE, ModalType} from '../../types/ModalTypes.tsx';
  * />
  *
  */
-const Modal = ({
+const ModalMessage = ({
   message,
   index,
   hideTimeout = 10_000,
@@ -95,6 +95,6 @@ const Modal = ({
   );
 };
 
-Modal.displayName = 'Modal';
+ModalMessage.displayName = 'ModalMessage';
 
-export default Modal;
+export default ModalMessage;
