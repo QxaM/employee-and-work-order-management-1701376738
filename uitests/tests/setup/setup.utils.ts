@@ -16,14 +16,14 @@ export interface ContextState {
 }
 
 export const buildContextStorage = (
-  baseUrl: string,
+  baseUrl: string | undefined,
   token: Token,
 ): ContextState => {
   return {
     cookies: [],
     origins: [
       {
-        origin: baseUrl,
+        origin: baseUrl ?? "http://localhost:8080",
         localStorage: [
           {
             name: "token",

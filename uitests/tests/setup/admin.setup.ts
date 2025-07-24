@@ -28,4 +28,6 @@ test("Authentication - Admin", async ({ playwright, baseURL }) => {
   // Save State
   const contextStorage: ContextState = buildContextStorage(baseURL, token);
   fs.writeFileSync(authFile, JSON.stringify(contextStorage, null, 2));
+
+  await apiContext.dispose();
 });
