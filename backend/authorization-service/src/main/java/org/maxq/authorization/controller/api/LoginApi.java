@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.authorization.domain.HttpErrorMessage;
+import org.maxq.authorization.domain.dto.MeDto;
 import org.maxq.authorization.domain.dto.TokenDto;
+import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
@@ -27,4 +29,18 @@ public interface LoginApi {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
   ResponseEntity<TokenDto> login(Authentication authentication);
+
+  @Operation(
+      summary = "Authenticated user details",
+      description = "Authenticate user and provide with JWT token in return",
+      security = @SecurityRequirement(name = "JWT")
+  )
+  @ApiResponse(responseCode = "200", description = "Successful authentication", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = MeDto.class))
+  })
+  @ApiResponse(responseCode = "401", description = "Invalid JWT or account disabled",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  ResponseEntity<MeDto> me(Authentication authentication) throws ElementNotFoundException;
 }

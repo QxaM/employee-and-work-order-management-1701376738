@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
+import org.maxq.authorization.domain.dto.MeDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,6 +67,27 @@ class UserMapperTest {
             "Total elements should match after mapping"),
         () -> assertEquals(userPage.getTotalPages(), getUserDtoPage.getTotalPages(),
             "Total pages should match after mapping")
+    );
+  }
+
+  @Test
+  void shouldMapToMeDto() {
+    // Given
+    Role role = new Role(1L, "TEST", Collections.emptyList());
+    User user1 = new User(1L, "test1@test.com", "test1", false, Set.of(role));
+
+    // When
+    MeDto me = userMapper.mapToMeDto(user1);
+
+    // Then
+    assertAll(
+        () -> assertEquals(user1.getEmail(), me.getEmail(),
+            "User emails should match after mapping"),
+        () -> assertEquals(1, me.getRoles().size(), "Roles length not match after mapping"),
+        () -> assertEquals(role.getId(), me.getRoles().getFirst().getId(),
+            "Role ID not match after mapping"),
+        () -> assertEquals(role.getName(), me.getRoles().getFirst().getName(),
+            "Role name not match after mapping")
     );
   }
 }
