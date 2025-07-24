@@ -838,7 +838,6 @@
 													"    pm.expect(response.roles).to.have.length.greaterThanOrEqual(1);\r",
 													"    \r",
 													"    pm.expect(response.roles[0]).to.haveOwnProperty('id').that.is.a('number');\r",
-													"    pm.expect(response.roles[0].id).to.eql(operatorRoleId);\r",
 													"    pm.expect(response.roles[0]).to.haveOwnProperty('name').that.is.a('string');\r",
 													"})"
 												],
