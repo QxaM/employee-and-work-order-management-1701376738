@@ -59,7 +59,7 @@ const LoginForm = () => {
         </h2>
         {isError && (
           <div className="flex justify-center items-center w-full">
-            <ErrorComponent message="Login failed. Invalid email or password." />
+            <ErrorComponent error="Login failed. Invalid email or password." />
           </div>
         )}
         <Input title="email" placeholder="example@example.com" type="email" />

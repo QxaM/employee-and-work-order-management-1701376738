@@ -68,7 +68,7 @@ const PasswordRequestForm = () => {
       </h2>
       {isError && (
         <div className="flex justify-center items-center w-full">
-          <ErrorComponent message={error.message} />
+          <ErrorComponent error={error.message} />
         </div>
       )}
       <Input

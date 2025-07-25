@@ -1,9 +1,17 @@
+import { CustomFetchBaseQueryError } from '../store/api/base.ts';
+import { SerializedError } from '@reduxjs/toolkit';
+
 /**
  * Represents the structure of an API error response.
  */
 export interface ApiErrorType {
   message: string;
 }
+
+export type QueryError =
+  | CustomFetchBaseQueryError
+  | SerializedError
+  | undefined;
 
 /**
  * Represents a pageable resource containing information about the current

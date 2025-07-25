@@ -8,7 +8,7 @@ describe('Error Component', () => {
     const message = 'Test message';
 
     // When
-    render(<ErrorComponent message={message} />);
+    render(<ErrorComponent error={message} />);
 
     // Then
     const errorElement = screen.getByText(message);
