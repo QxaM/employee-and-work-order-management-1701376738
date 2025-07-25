@@ -1,12 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
-import * as requestReset from '../../src/api/passwordReset.ts';
-import { QueryClientProvider, UseMutationResult } from '@tanstack/react-query';
+import * as passwordApiSlice from '../../src/store/api/passwordReset.ts';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { PropsWithChildren, useRef } from 'react';
 import { queryClient } from '../../src/api/base.ts';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import PasswordUpdateForm from '../../src/components/PasswordUpdateForm.tsx';
 import { renderWithProviders } from '../test-utils.tsx';
+import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -46,17 +47,16 @@ describe('Password Update Form', () => {
   beforeEach(() => {
     vi.resetModules();
 
-    vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-      mutate: mockMutate,
-      isSuccess: false,
-      isError: false,
-      isPending: false,
-      error: null,
-    } as unknown as UseMutationResult<
-      void,
-      Error,
-      requestReset.PasswordUpdateRequest
-    >);
+    vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+      mockMutate,
+      {
+        isSuccess: false,
+        isError: false,
+        isLoading: false,
+        error: null,
+        reset: vi.fn(),
+      },
+    ]);
 
     let refValue = '';
     vi.mocked(useRef).mockImplementation(() => ({
@@ -197,17 +197,16 @@ describe('Password Update Form', () => {
   describe('Rendering mutation result elements', () => {
     it('Should render loading spinner when pending', () => {
       // Given
-      vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: false,
-        isError: false,
-        isPending: true,
-        error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        requestReset.PasswordUpdateRequest
-      >);
+      vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: false,
+          isLoading: true,
+          error: null,
+          reset: vi.fn(),
+        },
+      ]);
 
       // When
       renderWithProviders(
@@ -227,17 +226,16 @@ describe('Password Update Form', () => {
 
     it('Should navigate to home when success', () => {
       // Given
-      vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: true,
-        isError: false,
-        isPending: false,
-        error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        requestReset.PasswordUpdateRequest
-      >);
+      vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: true,
+          isError: false,
+          isLoading: false,
+          error: null,
+          reset: vi.fn(),
+        },
+      ]);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);
@@ -256,17 +254,16 @@ describe('Password Update Form', () => {
 
     it('Should register successfull modal when success', () => {
       // Given
-      vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: true,
-        isError: false,
-        isPending: false,
-        error: null,
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        requestReset.PasswordUpdateRequest
-      >);
+      vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: true,
+          isError: false,
+          isLoading: false,
+          error: null,
+          reset: vi.fn(),
+        },
+      ]);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);
@@ -292,17 +289,20 @@ describe('Password Update Form', () => {
 
     it('Should register error modal with error', () => {
       // Given
-      vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: false,
-        isError: true,
-        isPending: false,
-        error: new Error('Test Error'),
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        requestReset.PasswordUpdateRequest
-      >);
+      const errorMessage = 'Test Error';
+      vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: true,
+          isLoading: false,
+          error: {
+            status: 500,
+            message: errorMessage,
+          },
+          reset: vi.fn(),
+        },
+      ]);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);
@@ -319,7 +319,7 @@ describe('Password Update Form', () => {
       expect(store.getState().modal.modals[0]).toEqual(
         expect.objectContaining({
           content: {
-            message: 'Test Error',
+            message: errorMessage,
             type: 'error',
           },
         })
@@ -328,17 +328,19 @@ describe('Password Update Form', () => {
 
     it('Should register error modal with default error message', () => {
       // Given
-      vi.spyOn(requestReset, 'usePasswordUpdate').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: false,
-        isError: true,
-        isPending: false,
-        error: new Error(),
-      } as unknown as UseMutationResult<
-        void,
-        Error,
-        requestReset.PasswordUpdateRequest
-      >);
+      vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: true,
+          isLoading: false,
+          error: {
+            status: 'CUSTOM_ERROR',
+            message: 'Test error',
+          } as CustomFetchBaseQueryError,
+          reset: vi.fn(),
+        },
+      ]);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);

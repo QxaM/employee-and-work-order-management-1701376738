@@ -5,11 +5,14 @@ import { QueryError } from '../types/ApiTypes.ts';
  * If no error is provided or the provided error is not recognized, a default error message is returned.
  *
  * @param {string | QueryError} error - The error input which can be a string message or an object of type QueryError.
+ * @param {string} defaultError
  * @returns {string} The resolved error message.
  */
-export const readErrorMessage = (error: string | QueryError): string => {
-  const defaultError = 'Unknown error, please try again!';
-
+export const readErrorMessage = (
+  error: string | QueryError,
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  defaultError: string = 'Unknown error, please try again!'
+): string => {
   if (!error) {
     return defaultError;
   }
@@ -18,7 +21,7 @@ export const readErrorMessage = (error: string | QueryError): string => {
     return error;
   }
 
-  if ('status' in error) {
+  if ('status' in error && typeof error.status === 'number') {
     return error.message;
   }
 

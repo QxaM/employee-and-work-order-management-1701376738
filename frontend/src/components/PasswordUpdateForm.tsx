@@ -3,10 +3,10 @@ import { FormEvent, useRef } from 'react';
 import Input from './shared/Input';
 import { isValidConfirmPassword, isValidPassword } from '../utils/Validators.ts';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import { usePasswordUpdate } from '../api/passwordReset.ts';
 import { useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
-import { getStringOrDefault } from '../utils/shared.ts';
+import { usePasswordUpdateMutation } from '../store/api/passwordReset.ts';
+import { readErrorMessage } from '../utils/errorUtils.ts';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -24,13 +24,8 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
 
-  const {
-    isSuccess,
-    isPending,
-    isError,
-    error,
-    mutate: updatePassword,
-  } = usePasswordUpdate();
+  const [updatePassword, { isSuccess, isLoading: isPending, isError, error }] =
+    usePasswordUpdateMutation();
 
   const renavigate = () => {
     navigate('/');
@@ -44,8 +39,8 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     },
     error: {
       status: isError,
-      message: getStringOrDefault(
-        error?.message,
+      message: readErrorMessage(
+        error,
         'Something went wrong during password update process. Please try again later.'
       ),
       onEvent: renavigate,
@@ -77,7 +72,7 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
       return;
     }
 
-    updatePassword({
+    void updatePassword({
       token,
       password: data.password as string,
     });
