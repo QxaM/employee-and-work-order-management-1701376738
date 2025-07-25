@@ -3,16 +3,10 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 import {
   confirmRegistration,
   login,
-  register,
   useConfirmRegistration,
   useLoginUser,
-  useRegisterUser,
 } from '../../src/api/auth.ts';
-import {
-  LoginType,
-  RegisterType,
-  TokenType,
-} from '../../src/types/AuthorizationTypes.ts';
+import { LoginType, TokenType } from '../../src/types/AuthorizationTypes.ts';
 import * as baseApiModule from '../../src/api/base.ts';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClientWrapper as queryWrapper } from '../test-utils.tsx';
@@ -33,85 +27,6 @@ describe('Authorization tests', () => {
 
   afterEach(() => {
     vi.resetAllMocks();
-  });
-
-  describe('Registration', () => {
-    const mockData: RegisterType = {
-      email: 'test@test.com',
-      password: 'password123',
-    };
-
-    describe('registerUser', () => {
-      it('Should register successfully', async () => {
-        // Given
-
-        // When
-        await expect(register({ data: mockData })).resolves.not.toThrow();
-
-        // Then
-        expect(mockHandleFetchVoid).toHaveBeenCalledWith(
-          expect.stringContaining('/register'),
-          expect.objectContaining({
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(mockData),
-          }),
-          expect.any(String)
-        );
-      });
-
-      it('Should handle API error with message', async () => {
-        // Given
-        const errorMessage = 'Email already exists';
-        mockHandleFetchVoid.mockRejectedValue(new Error(errorMessage));
-
-        // When
-
-        // Then
-        await expect(register({ data: mockData })).rejects.toThrow(
-          errorMessage
-        );
-      });
-    });
-
-    describe('useRegister hook', () => {
-      it('Should handle successful registration', async () => {
-        // Given
-        mockHandleFetchVoid.mockResolvedValue({});
-
-        // When
-        const { result } = renderHook(() => useRegisterUser(), {
-          wrapper: queryWrapper,
-        });
-        result.current.mutate({ data: mockData });
-
-        // Then
-        await waitFor(() => {
-          expect(result.current.isSuccess).toBe(true);
-        });
-      });
-
-      it('Should handle error in a hook', async () => {
-        // Given
-        const errorMessage = 'Registration failed';
-        mockHandleFetchVoid.mockRejectedValue(new Error(errorMessage));
-
-        // When
-        const { result } = renderHook(() => useRegisterUser(), {
-          wrapper: queryWrapper,
-        });
-
-        // Then
-        await expect(
-          result.current.mutateAsync({ data: mockData })
-        ).rejects.toThrowError(errorMessage);
-        await waitFor(() => {
-          expect(result.current.isError).toBe(true);
-        });
-      });
-    });
   });
 
   describe('Registration Verification', () => {

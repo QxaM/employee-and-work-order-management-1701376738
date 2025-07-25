@@ -1,17 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import { ReactNode, useRef } from 'react';
-import {
-  QueryClient,
-  QueryClientProvider,
-  UseMutationResult,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import RegisterForm from '../../src/components/RegisterForm.tsx';
-import * as register from '../../src/api/auth.ts';
+import * as authApiSlice from '../../src/store/api/auth.ts';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
+import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -53,13 +50,16 @@ describe('Register Form', () => {
   beforeEach(() => {
     vi.resetModules();
 
-    vi.spyOn(register, 'useRegisterUser').mockReturnValue({
-      mutate: mockMutate,
-      isSuccess: false,
-      isError: false,
-      isPending: false,
-      error: null,
-    } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
+    vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
+      mockMutate,
+      {
+        isSuccess: false,
+        isError: false,
+        isLoading: false,
+        error: null,
+        reset: vi.fn(),
+      },
+    ]);
 
     let refValue = '';
     vi.mocked(useRef).mockImplementation(() => ({
@@ -180,10 +180,8 @@ describe('Register Form', () => {
       //Then
       expect(mockMutate).toHaveBeenCalledOnce();
       expect(mockMutate).toHaveBeenCalledWith({
-        data: {
-          email: 'test@test.com',
-          password: 'test123',
-        },
+        email: 'test@test.com',
+        password: 'test123',
       });
     });
 
@@ -230,13 +228,16 @@ describe('Register Form', () => {
   describe('Rendering mutation result elements', () => {
     it('Should render loading spinner when pending', () => {
       // Given
-      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: false,
-        isError: false,
-        isPending: true,
-        error: null,
-      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
+      vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: false,
+          isLoading: true,
+          error: null,
+          reset: vi.fn(),
+        },
+      ]);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
@@ -252,17 +253,24 @@ describe('Register Form', () => {
 
     it('Should render error element when error', () => {
       // Given
-      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: false,
-        isError: true,
-        isPending: false,
-        error: new Error('Test Error'),
-      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
+      const errorMessage = 'Test Error';
+      vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: true,
+          isLoading: false,
+          error: {
+            status: 400,
+            message: errorMessage,
+          } as CustomFetchBaseQueryError,
+          reset: vi.fn(),
+        },
+      ]);
 
       // When
       render(<RegisterForm />, { wrapper: testWrapper });
-      const errorElement = screen.getByText('Test Error');
+      const errorElement = screen.getByText(errorMessage);
 
       // Then
       expect(errorElement).toBeInTheDocument();
@@ -270,13 +278,16 @@ describe('Register Form', () => {
 
     it('Should navigate to home when success', () => {
       // Given
-      vi.spyOn(register, 'useRegisterUser').mockReturnValue({
-        mutate: mockMutate,
-        isSuccess: true,
-        isError: false,
-        isPending: false,
-        error: null,
-      } as unknown as UseMutationResult<void, Error, register.RegisterRequest>);
+      vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: true,
+          isError: false,
+          isLoading: false,
+          error: null,
+          reset: vi.fn(),
+        },
+      ]);
 
       const mockNavigate = vi.fn();
       vi.mocked(useNavigate).mockReturnValue(mockNavigate);

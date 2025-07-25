@@ -1,23 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { apiBaseUrl, handleFetch, handleFetchVoid } from './base.ts';
-import {
-  LoginType,
-  RegisterType,
-  TokenType,
-} from '../types/AuthorizationTypes.ts';
+import { apiBaseUrl, handleFetch } from './base.ts';
+import { LoginType, TokenType } from '../types/AuthorizationTypes.ts';
 
-const REGISTER_API = '/register';
 const VERIFICATION_API = '/register/confirm';
 const LOGIN_API = '/login';
-
-/**
- * Request payload for the register API.
- */
-export interface RegisterRequest {
-  data: RegisterType;
-  signal?: AbortSignal;
-}
 
 /**
  * Request payload for the register/confirm API.
@@ -34,36 +21,6 @@ export interface LoginRequest {
   data: LoginType;
   signal?: AbortSignal;
 }
-
-/**
- * Handles user registration by sending a POST request to Authorization Service
- * /register API
- * Throws an error with a message if the registration fails.
- *
- * @param {RegisterRequest} param0 - Registration payload and optional AbortSignal.
- * @returns {Promise<void>} - Resolves when registration succeeds.
- * @throws {Error} - throws Error when registration fails
- */
-export const register = async ({
-  data,
-  signal,
-}: RegisterRequest): Promise<void> => {
-  const url = apiBaseUrl + REGISTER_API;
-  const defaultErrorMessage = 'Unknown error during registration process!';
-
-  await handleFetchVoid(
-    url,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-      signal,
-    },
-    defaultErrorMessage
-  );
-};
 
 /**
  * Handles user verification by sending a POST request to Authorization Service
@@ -127,14 +84,6 @@ export const login = async ({
     },
     defaultErrorMessage
   );
-};
-
-export const useRegisterUser = () => {
-  return useMutation({
-    mutationKey: ['register'],
-    mutationFn: ({ data, signal }: RegisterRequest) =>
-      register({ data, signal }),
-  });
 };
 
 export const useConfirmRegistration = () => {

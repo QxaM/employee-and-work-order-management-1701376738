@@ -1,12 +1,4 @@
 /**
- * Represents the data required by API for user registration.
- */
-export interface RegisterType {
-  email: string;
-  password: string;
-}
-
-/**
  * Represents the data required by API for user login.
  */
 export interface LoginType {
