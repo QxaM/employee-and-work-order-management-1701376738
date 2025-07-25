@@ -7,7 +7,7 @@ import { Pageable as PageableData } from '../../../types/PageableTypes.ts';
 import ModalPage from '../../../pages/ModalPage.tsx';
 import { useEffect, useState } from 'react';
 import RolesUpdateForm from './RolesUpdateForm.tsx';
-import { useGetRoles } from '../../../api/roles.ts';
+import { useGetRolesQuery } from '../../../store/api/role.ts';
 
 /**
  * The `RolesUpdate` component is responsible for managing and displaying user role updates.
@@ -27,10 +27,10 @@ const RolesUpdate = () => {
   const {
     data: rolesData,
     isSuccess,
-    isPending,
+    isFetching,
     isError,
     error,
-  } = useGetRoles();
+  } = useGetRolesQuery();
   const users = usersData.content;
 
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
@@ -92,7 +92,7 @@ const RolesUpdate = () => {
             roles={{
               data: rolesData,
               isSuccess,
-              isPending,
+              isPending: isFetching,
               isError,
               error,
             }}

@@ -1,10 +1,12 @@
 import { afterEach, beforeAll, beforeEach } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import RolesUpdate from '../../../../src/components/admin/roles-update/RolesUpdate.tsx';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { GetUsersType } from '../../../../src/types/UserTypes.ts';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
 import { Router } from '@remix-run/router';
+import * as roleSlice from '../../../../src/store/api/role.ts';
+import { RoleType } from '../../../../src/types/RoleTypes.ts';
 
 const path = '/admin/roles-update';
 
@@ -37,11 +39,37 @@ const MOCK_DEFAULT_USERS_DATA: GetUsersType = {
   totalElements: 1,
 };
 
+const MOCK_ROLES: RoleType[] = [
+  {
+    id: 14,
+    name: 'OPERATOR',
+  },
+  {
+    id: 15,
+    name: 'DESIGNER',
+  },
+  {
+    id: 16,
+    name: 'ADMIN',
+  },
+];
+
 describe('RolesUpdate', () => {
   let router: Router;
 
+  const mockRoleData = {
+    data: MOCK_ROLES,
+    isSuccess: true,
+    isFetching: false,
+    isError: false,
+    error: undefined,
+    refetch: vi.fn(),
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.spyOn(roleSlice, 'useGetRolesQuery').mockReturnValue(mockRoleData);
 
     router = createDataRouter(path, <RolesUpdate />, () => ({ content: [] }));
   });
@@ -53,7 +81,7 @@ describe('RolesUpdate', () => {
   it('Should render table title', async () => {
     // Given
     const title = 'User Roles Update';
-    render(<RouterProvider router={router} />);
+    renderWithProviders(<RouterProvider router={router} />);
 
     // When
     const titleElement = await screen.findByText(title, { exact: false });
@@ -68,7 +96,7 @@ describe('RolesUpdate', () => {
     const email = 'Email';
     const currentRoles = 'Current Roles';
 
-    render(<RouterProvider router={router} />);
+    renderWithProviders(<RouterProvider router={router} />);
 
     // When
     const idCell = await screen.findByRole('columnheader', { name: id });
@@ -90,7 +118,7 @@ describe('RolesUpdate', () => {
       <RolesUpdate />,
       () => MOCK_DEFAULT_USERS_DATA
     );
-    render(<RouterProvider router={router} />);
+    renderWithProviders(<RouterProvider router={router} />);
 
     // When
     const id = await screen.findByRole('cell', {
@@ -129,7 +157,7 @@ describe('RolesUpdate', () => {
       const mockLoader = vi.fn().mockReturnValue(mockPageData);
 
       const router = createDataRouter(path, <RolesUpdate />, mockLoader);
-      render(<RouterProvider router={router} />);
+      renderWithProviders(<RouterProvider router={router} />);
 
       // When
       const pageable = await screen.findByLabelText(pageableLabel);
@@ -144,7 +172,7 @@ describe('RolesUpdate', () => {
       const mockLoader = vi.fn().mockReturnValue(mockPageData);
 
       const router = createDataRouter(path, <RolesUpdate />, mockLoader);
-      render(<RouterProvider router={router} />);
+      renderWithProviders(<RouterProvider router={router} />);
 
       const nextPage = await screen.findByLabelText(nextPageLabel);
       const nextPageNumber = mockPageData.number + 1;
@@ -223,6 +251,31 @@ describe('RolesUpdate', () => {
 
       // Then
       expect(onDialogId).toBeInTheDocument();
+    });
+
+    it('Should inject correct roles data into dialog', async () => {
+      // Given
+      renderWithProviders(<RouterProvider router={router} />);
+
+      const cell = await screen.findByRole('cell', {
+        name: MOCK_DEFAULT_USERS_DATA.content[0].id.toString(),
+      });
+      const row = cell.parentElement;
+      if (row) {
+        fireEvent.click(row);
+      }
+
+      // When
+      const dialog = await screen.findByRole('dialog');
+      const onDialogRoles: HTMLElement[] = [];
+      for (const role of MOCK_ROLES) {
+        onDialogRoles.push(await within(dialog).findByText(role.name));
+      }
+
+      // Then
+      onDialogRoles.forEach((role) => {
+        expect(role).toBeInTheDocument();
+      });
     });
 
     it('Should update user data after loader data changed', async () => {

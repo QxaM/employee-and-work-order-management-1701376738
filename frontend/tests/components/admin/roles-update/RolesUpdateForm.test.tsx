@@ -48,7 +48,7 @@ const roles = {
   isSuccess: true,
   isPending: false,
   isError: false,
-  error: null,
+  error: undefined,
 };
 
 describe('Roles Update Form', () => {
@@ -171,7 +171,10 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: new Error(error),
+            error: {
+              status: 400,
+              message: error,
+            },
           }}
         />
       );
@@ -197,7 +200,7 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: null,
+            error: undefined,
           }}
         />
       );
@@ -224,7 +227,7 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: null,
+            error: undefined,
           }}
         />
       );
