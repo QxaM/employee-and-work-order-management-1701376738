@@ -10,7 +10,9 @@
       "vite/client",
       "vitest/globals",
       "@testing-library/jest-dom",
-      "node"
+      "node",
+      "@reduxjs/toolkit",
+      "@reduxjs/toolkit/query/react"
     ],
     "module": "ESNext",
     "skipLibCheck": true,

@@ -32,8 +32,8 @@ export const renderWithProviders = (
   };
 };
 
-export const renderHookWithProviders = (
-  render: (initialProps: unknown) => unknown,
+export const renderHookWithProviders = <R, P = unknown>(
+  render: (initialProps: P) => R,
   extendedRenderOptions: ExtendedRenderOptions = {}
 ) => {
   const {

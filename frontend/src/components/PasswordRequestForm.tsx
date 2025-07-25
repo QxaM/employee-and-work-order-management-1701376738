@@ -3,10 +3,10 @@ import { FormEvent, useRef } from 'react';
 import { isValidEmail } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import { useResetRequest } from '../api/passwordReset.ts';
 import ErrorComponent from './shared/ErrorComponent.tsx';
 import { useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { useRequestPasswordResetMutation } from '../store/api/passwordReset.ts';
 
 /**
  * A user password reset request form component with validation and API interaction.
@@ -24,13 +24,8 @@ const PasswordRequestForm = () => {
   const emailRef = useRef<string>('');
   const navigate = useNavigate();
 
-  const {
-    isSuccess,
-    isPending,
-    isError,
-    error,
-    mutate: requestReset,
-  } = useResetRequest();
+  const [requestReset, { isSuccess, isLoading: isPending, isError, error }] =
+    useRequestPasswordResetMutation();
 
   useFormNotifications({
     success: {
@@ -58,7 +53,7 @@ const PasswordRequestForm = () => {
       return;
     }
 
-    requestReset({ email: emailRef.current });
+    void requestReset(emailRef.current);
   };
 
   return (
@@ -68,7 +63,7 @@ const PasswordRequestForm = () => {
       </h2>
       {isError && (
         <div className="flex justify-center items-center w-full">
-          <ErrorComponent error={error.message} />
+          <ErrorComponent error={error} />
         </div>
       )}
       <Input

@@ -9,7 +9,9 @@
     ],
     "types": [
       "node",
-      "vite/client"
+      "vite/client",
+      "@reduxjs/toolkit",
+      "@reduxjs/toolkit/query/react"
     ],
     "module": "ESNext",
     "skipLibCheck": true,
