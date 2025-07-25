@@ -1,21 +1,4 @@
 /**
- * Represents the data required by API for user login.
- */
-export interface LoginType {
-  email: string;
-  password: string;
-}
-
-/**
- * Represents an authentication token API response.
- */
-export interface TokenType {
-  token: string;
-  type: string;
-  expiresIn: number;
-}
-
-/**
  * Represents JWT token returned by authorization.
  */
 export interface JWT {

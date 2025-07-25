@@ -2,9 +2,11 @@ import { api } from '../apiSlice.ts';
 
 const defaultRegisterErrorMessage =
   'Unknown error during registration process!';
+const defaultLoginErrorMessage = 'Unknown error during login process!';
 
 const REGISTER_API = '/register';
 const VERIFICATION_API = '/register/confirm';
+const LOGIN_API = '/login';
 
 /**
  * Represents the data required by API for user registration.
@@ -12,6 +14,23 @@ const VERIFICATION_API = '/register/confirm';
 export interface RegisterType {
   email: string;
   password: string;
+}
+
+/**
+ * Represents the data required by API for user login.
+ */
+export interface LoginType {
+  email: string;
+  password: string;
+}
+
+/**
+ * Represents an authentication token API response.
+ */
+export interface TokenType {
+  token: string;
+  type: string;
+  expiresIn: number;
 }
 
 export const authApi = api.injectEndpoints({
@@ -36,7 +55,22 @@ export const authApi = api.injectEndpoints({
         },
       }),
     }),
+    login: builder.mutation<TokenType, LoginType>({
+      query: (data) => ({
+        url: LOGIN_API,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${btoa(data.email + ':' + data.password)}`,
+        },
+        defaultError: defaultLoginErrorMessage,
+      }),
+    }),
   }),
 });
 
-export const { useRegisterMutation, useConfirmRegistrationMutation } = authApi;
+export const {
+  useRegisterMutation,
+  useConfirmRegistrationMutation,
+  useLoginMutation,
+} = authApi;
