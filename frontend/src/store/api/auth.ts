@@ -4,6 +4,7 @@ const defaultRegisterErrorMessage =
   'Unknown error during registration process!';
 
 const REGISTER_API = '/register';
+const VERIFICATION_API = '/register/confirm';
 
 /**
  * Represents the data required by API for user registration.
@@ -26,7 +27,16 @@ export const authApi = api.injectEndpoints({
         defaultError: defaultRegisterErrorMessage,
       }),
     }),
+    confirmRegistration: builder.mutation<undefined, string>({
+      query: (token) => ({
+        url: VERIFICATION_API + `?token=${token}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
   }),
 });
 
-export const { useRegisterMutation } = authApi;
+export const { useRegisterMutation, useConfirmRegistrationMutation } = authApi;

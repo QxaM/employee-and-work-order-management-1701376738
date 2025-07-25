@@ -2,8 +2,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import { useConfirmRegistration } from '../api/auth.ts';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { useConfirmRegistrationMutation } from '../store/api/auth.ts';
 
 /**
  * Renders the Register Confirmation with a centered `LoadingSpinner` component, Confimration
@@ -21,7 +21,9 @@ const RegisterConfirmationPage = () => {
     navigate('/');
   };
 
-  const { isSuccess, isError, error, mutate } = useConfirmRegistration();
+  const [mutate, { isSuccess, isError, error }] =
+    useConfirmRegistrationMutation();
+
   useFormNotifications({
     success: {
       status: isSuccess,
@@ -37,7 +39,7 @@ const RegisterConfirmationPage = () => {
   });
 
   useEffect(() => {
-    mutate({ token: searchParams.get('token') ?? '' });
+    void mutate(searchParams.get('token') ?? '');
   }, [mutate, searchParams]);
 
   return (
