@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+ 
 import { render, renderHook, RenderOptions } from '@testing-library/react';
 import { AppStore, RootState, setupStore } from '../src/store';
 import { PropsWithChildren, ReactElement, ReactNode } from 'react';

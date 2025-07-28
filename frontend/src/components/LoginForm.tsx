@@ -47,7 +47,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate('/');
+      void navigate('/');
     }
   }, [isSuccess, navigate]);
 

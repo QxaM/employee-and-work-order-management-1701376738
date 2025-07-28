@@ -32,7 +32,7 @@ const PasswordRequestForm = () => {
       status: isSuccess,
       message: 'Email was sent if provided email exists in our database.',
       onEvent: () => {
-        navigate('/');
+        void navigate('/');
       },
     },
   });

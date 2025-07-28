@@ -18,7 +18,7 @@ const RegisterConfirmationPage = () => {
   const navigate = useNavigate();
 
   const renavigate = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   const [mutate, { isSuccess, isError, error }] =

@@ -33,7 +33,7 @@ const RegisterForm = () => {
       message:
         'You have been registered successfully! Please verify your email.',
       onEvent: () => {
-        navigate('/');
+        void navigate('/');
       },
     },
   });

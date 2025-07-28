@@ -67,7 +67,7 @@ export function useStateSubmit<T>(
     setError(undefined);
     setData(correctedInitialData);
     setWasSubmitted(true);
-    submit(data, options);
+    void submit(data, options);
   };
 
   useEffect(() => {

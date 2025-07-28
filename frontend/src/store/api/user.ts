@@ -18,6 +18,7 @@ export const usersApi = api.injectEndpoints({
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     getUsers: builder.query<GetUsersType, PageableRequest | void>({
       query: (params) => {
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         const { page = 0, size = 15 } = params || {};
 
         return {

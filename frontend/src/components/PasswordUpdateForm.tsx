@@ -28,7 +28,7 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     usePasswordUpdateMutation();
 
   const renavigate = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   useFormNotifications({
