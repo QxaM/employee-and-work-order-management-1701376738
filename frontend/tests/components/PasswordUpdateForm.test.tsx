@@ -1,9 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import * as passwordApiSlice from '../../src/store/api/passwordReset.ts';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { PropsWithChildren, useRef } from 'react';
-import { queryClient } from '../../src/api/base.ts';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import PasswordUpdateForm from '../../src/components/PasswordUpdateForm.tsx';
 import { renderWithProviders } from '../test-utils.tsx';
@@ -28,11 +26,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientProvider>
-  );
+  return <BrowserRouter>{children}</BrowserRouter>;
 };
 
 const HEADER_TITLE = 'Enter new password';

@@ -42,7 +42,19 @@ export const usersApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
+    removeRole: builder.mutation<undefined, ModifyRoleRequest>({
+      query: ({ userId, role }) => ({
+        url: USERS_API + `/${userId}/removeRole?role=${role.id}`,
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        defaultError: defaultRoleUpdateErrorMessage,
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 });
 
-export const { useGetUsersQuery, useAddRoleMutation } = usersApi;
+export const { useGetUsersQuery, useAddRoleMutation, useRemoveRoleMutation } =
+  usersApi;

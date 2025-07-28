@@ -3,8 +3,6 @@ import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, it } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
 import LoginForm from '../../src/components/LoginForm.tsx';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../../src/api/base.ts';
 import * as authApiSlice from '../../src/store/api/auth.ts';
 import { TokenType } from '../../src/store/api/auth.ts';
 import { renderWithProviders } from '../test-utils.tsx';
@@ -22,11 +20,7 @@ const PASSWORD_TITLE = 'password';
 const LOGIN_BUTTON_TEXT = 'Sign in';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientProvider>
-  );
+  return <BrowserRouter>{children}</BrowserRouter>;
 };
 
 describe('Login Form', () => {
@@ -119,8 +113,8 @@ describe('Login Form', () => {
     // Then
     expect(mockMutate).toHaveBeenCalledOnce();
     expect(mockMutate).toHaveBeenCalledWith({
-        email: 'test@test.com',
-        password: 'test12345',
+      email: 'test@test.com',
+      password: 'test12345',
     });
   });
 

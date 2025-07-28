@@ -1,5 +1,4 @@
 import { RoleType } from '../../../src/types/RoleTypes.ts';
-import * as userApiModule from '../../../src/api/user.ts';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { updateRoles } from '../../../src/api/actions/user.action.ts';
 import { setupStore } from '../../../src/store';
@@ -30,20 +29,17 @@ const ROLES: RoleType[] = [
   },
 ];
 
-const mockRemoveRole = vi.fn();
-
 describe('User action', () => {
   let store: ReturnType<typeof setupStore>;
 
   beforeEach(() => {
-    mockRemoveRole.mockClear();
+    vi.restoreAllMocks();
 
     store = setupStore();
 
     vi.mocked(customBaseQuery).mockResolvedValue({
       data: undefined,
     });
-    vi.spyOn(userApiModule, 'removeRole').mockImplementation(mockRemoveRole);
   });
 
   afterEach(() => {
@@ -72,7 +68,7 @@ describe('User action', () => {
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
 
-        expect(customBaseQuery).toHaveBeenCalledTimes(2);
+        expect(customBaseQuery).toHaveBeenCalledTimes(4);
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
             url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
@@ -83,6 +79,20 @@ describe('User action', () => {
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
             url: `/users/${data.userId}/addRole?role=${ROLES[1].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
           }),
           expect.any(Object),
           undefined
@@ -130,7 +140,6 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockRemoveRole.mockResolvedValue(undefined);
 
         // When
         const response = await updateRoles(store, { request, params: {} });
@@ -140,13 +149,14 @@ describe('User action', () => {
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
 
-        expect(mockRemoveRole).toHaveBeenCalledOnce();
-        expect(mockRemoveRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[0],
-        });
-
-        expect(customBaseQuery).not.toHaveBeenCalled();
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/removeRole?role=${ROLES[0].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
       });
 
       it('Should call multiple times addRole and removeRole', async () => {
@@ -160,7 +170,6 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockRemoveRole.mockResolvedValue(undefined);
 
         // When
         const response = await updateRoles(store, { request, params: {} });
@@ -169,15 +178,35 @@ describe('User action', () => {
         expect(response.data).not.toBeUndefined();
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
-
-        expect(mockRemoveRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[2],
-        });
-        expect(mockRemoveRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[3],
-        });
+        expect(customBaseQuery).toHaveBeenCalledTimes(4);
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/addRole?role=${ROLES[1].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
       });
     });
 
@@ -286,6 +315,20 @@ describe('User action', () => {
       it('Should return error from removeRole', async () => {
         // Given
         const errorMessage = 'Forbidden';
+        vi.mocked(customBaseQuery).mockImplementation((args) => {
+          if (args.url.includes('/removeRole')) {
+            return {
+              error: {
+                status: 500,
+                message: errorMessage,
+              },
+            };
+          }
+          return {
+            data: undefined,
+          };
+        });
+
         const data = {
           userId: 1,
           addRoles: JSON.stringify(ROLES.slice(0, 2)),
@@ -295,7 +338,6 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockRemoveRole.mockRejectedValue(new Error(errorMessage));
 
         // When
         const response = await updateRoles(store, { request, params: {} });

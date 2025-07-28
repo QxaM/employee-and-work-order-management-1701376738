@@ -1,6 +1,5 @@
 import { ActionFunctionArgs } from 'react-router-dom';
 import { RoleType } from '../../types/RoleTypes.ts';
-import { removeRole } from '../user.ts';
 import { ActionResponse } from '../../types/ActionTypes.ts';
 import { setupStore } from '../../store';
 import { rtkDispatch } from '../baseRtk.ts';
@@ -55,7 +54,13 @@ export const updateRoles = async (
         )
       ),
       ...updateRoles.removeRoles.map((role) =>
-        removeRole({ userId: updateRoles.userId, role })
+        rtkDispatch<undefined>(
+          store,
+          usersApi.endpoints.removeRole.initiate({
+            userId: updateRoles.userId,
+            role,
+          })
+        )
       ),
     ]);
   } catch (error) {

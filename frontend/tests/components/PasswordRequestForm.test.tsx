@@ -1,6 +1,4 @@
 import { PropsWithChildren, useRef } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../../src/api/base.ts';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, vi } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
@@ -30,11 +28,7 @@ const EMAIL_TITLE = 'email';
 const RESET_BUTTON_TEXT = 'Reset Password';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientProvider>
-  );
+  return <BrowserRouter>{children}</BrowserRouter>;
 };
 
 describe('Password Request Form', () => {
