@@ -4,7 +4,6 @@ import RolesUpdate from '../../../../src/components/admin/roles-update/RolesUpda
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { GetUsersType } from '../../../../src/types/UserTypes.ts';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
-import { Router } from '@remix-run/router';
 import * as roleSlice from '../../../../src/store/api/role.ts';
 import * as userSlice from '../../../../src/store/api/user.ts';
 import { RoleType } from '../../../../src/types/RoleTypes.ts';
@@ -56,7 +55,7 @@ const MOCK_ROLES: RoleType[] = [
 ];
 
 describe('RolesUpdate', () => {
-  let router: Router;
+  let router: ReturnType<typeof createDataRouter>;
 
   const mockUsersData = {
     data: MOCK_DEFAULT_USERS_DATA,

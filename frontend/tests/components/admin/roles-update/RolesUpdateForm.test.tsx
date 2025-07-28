@@ -5,7 +5,6 @@ import { RoleType } from '../../../../src/types/RoleTypes.ts';
 import { afterEach, beforeEach, describe } from 'vitest';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
 import { RouterProvider } from 'react-router-dom';
-import { Router } from '@remix-run/router';
 import * as stateSubmitModule from '../../../../src/hooks/useStateSubmit.tsx';
 
 const path = '/admin/roles-update';
@@ -54,7 +53,7 @@ const roles = {
 describe('Roles Update Form', () => {
   const availableRoles = 'Available Roles';
 
-  let router: Router;
+  let router: ReturnType<typeof createDataRouter>;
 
   const mockStateSubmit = {
     submit: vi.fn(),

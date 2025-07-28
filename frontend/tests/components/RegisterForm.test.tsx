@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import { ReactNode, useRef } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import RegisterForm from '../../src/components/RegisterForm.tsx';
@@ -34,12 +33,9 @@ const CONFIRM_PASSWORD_TITLE = 'confirm password';
 const REGISTER_BUTTON_TEXT = 'Sign up';
 
 const testWrapper = ({ children }: { children: ReactNode }) => {
-  const queryClient = new QueryClient();
   return (
     <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };

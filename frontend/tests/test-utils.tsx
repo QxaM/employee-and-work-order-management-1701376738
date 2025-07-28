@@ -3,7 +3,6 @@ import { render, renderHook, RenderOptions } from '@testing-library/react';
 import { AppStore, RootState, setupStore } from '../src/store';
 import { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryRouter, LoaderFunction, RouterProvider } from 'react-router-dom';
 import { ActionResponse } from '../src/types/ActionTypes.ts';
 
@@ -52,22 +51,6 @@ export const renderHookWithProviders = <R, P = unknown>(
   };
 };
 
-export const QueryClientWrapper = ({ children }: PropsWithChildren) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-      mutations: {
-        retry: false,
-      },
-    },
-  });
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
-
 export const createDataRouter = (
   path: string,
   child: ReactNode,
@@ -77,7 +60,7 @@ export const createDataRouter = (
     [
       {
         path,
-        element: <QueryClientWrapper>{child}</QueryClientWrapper>,
+        element: <>{child}</>,
         loader,
       },
     ],

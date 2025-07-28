@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
 import { BrowserRouter } from 'react-router-dom';
@@ -8,12 +7,9 @@ import { render, screen } from '@testing-library/react';
 import PasswordUpdatePage from '../../src/pages/PasswordUpdatePage.tsx';
 
 const testWrapper = ({ children }: { children: ReactNode }) => {
-  const queryClient = new QueryClient();
   return (
     <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };

@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, useNavigate, useSearchParams } from 'react-router-dom';
@@ -20,12 +19,9 @@ vi.mock('react-router-dom', async () => {
 });
 
 const testWrapper = ({ children }: { children: ReactNode }) => {
-  const queryClient = new QueryClient();
   return (
     <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };

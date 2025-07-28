@@ -117,7 +117,7 @@ const RolesUpdateForm = ({
       {!isError && (
         <section
           aria-label="roles update section"
-          className="grid grid-cols-[1fr,max-content,1fr] gap-2"
+          className="grid grid-cols-[1fr_max-content_1fr] gap-2"
         >
           <RolesListSection
             title="Assigned Roles"

@@ -1,11 +1,11 @@
 import {
   SubmitOptions,
+  SubmitTarget,
   useActionData,
   useNavigation,
   useSubmit,
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { SubmitTarget } from 'react-router-dom/dist/dom';
 import { ActionResponse } from '../types/ActionTypes.ts';
 import { NonUndefined } from '../types/SharedTypes.ts';
 import { deepEquals } from '../utils/shared.ts';
@@ -40,7 +40,7 @@ export function useStateSubmit<T>(
   const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
 
   const submit = useSubmit();
-  const actionReturnData = useActionData();
+  const actionReturnData = useActionData<ActionResponse<T>>();
   const navigation = useNavigation();
 
   const isPending =
@@ -55,7 +55,7 @@ export function useStateSubmit<T>(
   };
 
   if (actionReturnData && wasSubmitted) {
-    const actionCast = actionReturnData as ActionResponse<T>;
+    const actionCast = actionReturnData;
     actionData = actionCast.data;
     success = actionCast.success;
     actionError = actionCast.error;

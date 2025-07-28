@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect } from 'vitest';
 import { updateRoles } from '../../../src/api/actions/user.action.ts';
 import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
+import { ActionFunctionArgs } from 'react-router-dom';
 
 vi.mock('../../../src/store/api/base.ts', () => ({
   customBaseQuery: vi.fn(),
@@ -61,7 +62,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.data).not.toBeUndefined();
@@ -112,7 +116,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.data).not.toBeUndefined();
@@ -142,7 +149,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.data).not.toBeUndefined();
@@ -172,7 +182,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.data).not.toBeUndefined();
@@ -218,7 +231,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.success).toBe(false);
@@ -241,7 +257,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.success).toBe(false);
@@ -263,7 +282,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.success).toBe(false);
@@ -302,7 +324,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.success).toBe(false);
@@ -340,7 +365,10 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles(store, { request, params: {} });
+        const response = await updateRoles(store, {
+          request,
+          params: {},
+        } as ActionFunctionArgs);
 
         // Then
         expect(response.success).toBe(false);
