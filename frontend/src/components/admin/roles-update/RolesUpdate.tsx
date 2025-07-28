@@ -1,13 +1,13 @@
-import { useLoaderData } from 'react-router-dom';
-
-import { GetUsersType, UserType } from '../../../types/UserTypes.ts';
+import { UserType } from '../../../types/UserTypes.ts';
 import Table from '../../shared/Table.tsx';
 import Pageable from '../../shared/Pageable.tsx';
 import { Pageable as PageableData } from '../../../types/PageableTypes.ts';
 import ModalPage from '../../../pages/ModalPage.tsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import RolesUpdateForm from './RolesUpdateForm.tsx';
 import { useGetRolesQuery } from '../../../store/api/role.ts';
+import { useGetUsersQuery } from '../../../store/api/user.ts';
+import { useSearchParams } from 'react-router-dom';
 
 /**
  * The `RolesUpdate` component is responsible for managing and displaying user role updates.
@@ -23,7 +23,10 @@ import { useGetRolesQuery } from '../../../store/api/role.ts';
  *
  */
 const RolesUpdate = () => {
-  const usersData: GetUsersType = useLoaderData() as GetUsersType;
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('page') ?? '0';
+  const { data: usersData } = useGetUsersQuery({ page: parseInt(page) });
+
   const {
     data: rolesData,
     isSuccess,
@@ -31,7 +34,7 @@ const RolesUpdate = () => {
     isError,
     error,
   } = useGetRolesQuery();
-  const users = usersData.content;
+  const users = useMemo(() => usersData?.content ?? [], [usersData]);
 
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const closeDialog = () => {
@@ -39,25 +42,23 @@ const RolesUpdate = () => {
   };
 
   const pageable: PageableData = {
-    isFirst: usersData.first,
-    isLast: usersData.last,
-    currentPage: usersData.number,
-    totalPages: usersData.totalPages,
-    currentElements: usersData.numberOfElements,
-    totalElements: usersData.totalElements,
-    pageSize: usersData.size,
+    isFirst: usersData?.first ?? true,
+    isLast: usersData?.last ?? true,
+    currentPage: usersData?.number ?? 0,
+    totalPages: usersData?.totalPages ?? 0,
+    currentElements: usersData?.numberOfElements ?? 0,
+    totalElements: usersData?.totalElements ?? 0,
+    pageSize: usersData?.size ?? 0,
   };
 
   useEffect(() => {
     setSelectedUser((prevUser) => {
       if (prevUser) {
-        return (
-          usersData.content.find((user) => user.id === prevUser.id) ?? null
-        );
+        return users.find((user) => user.id === prevUser.id) ?? null;
       }
       return null;
     });
-  }, [usersData]);
+  }, [users]);
 
   return (
     <>

@@ -1,11 +1,11 @@
-import { RoleType } from '../../../src/types/RoleTypes.ts';
-import { renderHookWithProviders } from '../../test-utils.tsx';
-import { rolesApi, useGetRolesQuery } from '../../../src/store/api/role.ts';
-import { renderHook, waitFor } from '@testing-library/react';
 import {
   customBaseQuery,
   CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
+import { renderHookWithProviders } from '../../test-utils.tsx';
+import { useGetUsersQuery, usersApi } from '../../../src/store/api/user.ts';
+import { renderHook, waitFor } from '@testing-library/react';
+import { expect } from 'vitest';
 import { act, PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
@@ -14,41 +14,72 @@ vi.mock('../../../src/store/api/base.ts', () => ({
   customBaseQuery: vi.fn(),
 }));
 
-const mockData: RoleType[] = [
+const USER_CONTENT = [
   {
-    id: 1,
-    name: 'ROLE_1',
-  },
-  {
-    id: 2,
-    name: 'ROLE_2',
+    id: 589,
+    email: 'operator@maxq.com',
+    enabled: true,
+    roles: [
+      {
+        id: 14,
+        name: 'OPERATOR',
+      },
+    ],
   },
 ];
 
-describe('Role API', () => {
+const MOCK_DEFAULT_USERS_DATA = {
+  content: USER_CONTENT,
+  pageable: {
+    pageNumber: 0,
+    pageSize: 15,
+    sort: {
+      empty: true,
+      sorted: false,
+      unsorted: true,
+    },
+    offset: 0,
+    paged: true,
+    unpaged: false,
+  },
+  last: true,
+  totalElements: 1,
+  totalPages: 1,
+  size: 15,
+  number: 0,
+  sort: {
+    empty: true,
+    sorted: false,
+    unsorted: true,
+  },
+  first: true,
+  numberOfElements: 1,
+  empty: false,
+};
+
+describe('Users API', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
-  describe('useGetRolesQuery hook', () => {
-    const defaultError =
-      'Error while fetching roles data, please try again later.';
+  describe('useGetUsersQuery', () => {
+    const defaultError = 'Unknown error while fetching user data';
 
-    it('should make API call with correct parameters', async () => {
+    it('should make API call with default parameters', async () => {
       // Given
       vi.mocked(customBaseQuery).mockResolvedValue({
-        data: mockData,
+        data: MOCK_DEFAULT_USERS_DATA,
       });
 
       // When
-      renderHookWithProviders(() => useGetRolesQuery());
+      renderHookWithProviders(() => useGetUsersQuery());
 
       // Then
       await waitFor(() => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: '/roles',
+            url: `/users?page=0&size=15`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -61,55 +92,88 @@ describe('Role API', () => {
       });
     });
 
-    it('should return data', async () => {
+    it('should make API call with custom parameters', async () => {
       // Given
+      const page = 1;
+      const size = 10;
       vi.mocked(customBaseQuery).mockResolvedValue({
-        data: mockData,
+        data: MOCK_DEFAULT_USERS_DATA,
       });
 
       // When
-      const { result } = renderHookWithProviders(() => useGetRolesQuery());
+      renderHookWithProviders(() => useGetUsersQuery({ page, size }));
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: `/users?page=${page}&size=${size}`,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            defaultError,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('should return users', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: MOCK_DEFAULT_USERS_DATA,
+      });
+
+      // When
+      const { result } = renderHookWithProviders(() => useGetUsersQuery());
 
       // Then
       await waitFor(() => {
         const currentResult = result.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult.isSuccess).toBe(true);
-        expect(currentResult.data).toStrictEqual(mockData);
+        expect(currentResult.data).toStrictEqual(MOCK_DEFAULT_USERS_DATA);
       });
     });
 
     it('should handle loading state', () => {
       // Given
-      let resolvePromise: (value: { data: RoleType[] }) => void;
-      const controlledPromise = new Promise<{ data: RoleType[] }>((resolve) => {
+      let resolvePromise: (value: {
+        data: typeof MOCK_DEFAULT_USERS_DATA;
+      }) => void;
+      const controlledPromise = new Promise<{
+        data: typeof MOCK_DEFAULT_USERS_DATA;
+      }>((resolve) => {
         resolvePromise = resolve;
       });
 
       vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
 
-      // when
-      const { result } = renderHookWithProviders(() => useGetRolesQuery());
+      // When
+      const { result } = renderHookWithProviders(() => useGetUsersQuery());
 
       // Then
       const currentResult = result.current as ReturnType<
-        typeof useGetRolesQuery
+        typeof useGetUsersQuery
       >;
       expect(currentResult.isLoading).toBe(true);
-      expect(currentResult.data).toBeUndefined();
+      expect(currentResult.data).toBe(undefined);
       expect(currentResult.isSuccess).toBe(false);
       expect(currentResult.isError).toBe(false);
 
-      // Clean up - resolve the promise to avoid hanging
+      // Clean up
       act(() => {
-        resolvePromise({ data: mockData });
+        resolvePromise({ data: MOCK_DEFAULT_USERS_DATA });
       });
     });
 
     it('should handle error state', async () => {
       // Given
-      const errorMessage = 'Error while fetching roles data';
+      const errorMessage = 'Error while fetching users data';
       vi.mocked(customBaseQuery).mockResolvedValue({
         error: {
           status: 500,
@@ -118,12 +182,12 @@ describe('Role API', () => {
       });
 
       // When
-      const { result } = renderHookWithProviders(() => useGetRolesQuery());
+      const { result } = renderHookWithProviders(() => useGetUsersQuery());
 
       // Then
       await waitFor(() => {
         const currentResult = result.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult.isSuccess).toBe(false);
         expect(currentResult.data).toBeUndefined();
@@ -141,7 +205,7 @@ describe('Role API', () => {
     it('should cache request', async () => {
       // Given
       vi.mocked(customBaseQuery).mockResolvedValue({
-        data: mockData,
+        data: MOCK_DEFAULT_USERS_DATA,
       });
 
       const store = setupStore();
@@ -149,40 +213,41 @@ describe('Role API', () => {
         <Provider store={store}>{children}</Provider>
       );
 
-      // when
-      const { result: result1 } = renderHook(() => useGetRolesQuery(), {
+      // When
+      const { result: result1 } = renderHook(() => useGetUsersQuery(), {
         wrapper,
       });
-      const { result: result2 } = renderHook(() => useGetRolesQuery(), {
+      const { result: result2 } = renderHook(() => useGetUsersQuery(), {
         wrapper,
       });
 
       // Then
       await waitFor(() => {
         const currentResult1 = result1.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult1.isSuccess).toBe(true);
+
         const currentResult2 = result2.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult2.isSuccess).toBe(true);
       });
       expect(customBaseQuery).toHaveBeenCalledOnce();
     });
 
-    it('Should allow manual refetches', async () => {
+    it('should allow manual refetches', async () => {
       // Given
       vi.mocked(customBaseQuery).mockResolvedValue({
-        data: mockData,
+        data: MOCK_DEFAULT_USERS_DATA,
       });
 
       // When
-      const { result } = renderHookWithProviders(() => useGetRolesQuery());
-      const { refetch } = result.current as ReturnType<typeof useGetRolesQuery>;
+      const { result } = renderHookWithProviders(() => useGetUsersQuery());
+      const { refetch } = result.current as ReturnType<typeof useGetUsersQuery>;
       await waitFor(() => {
         const currentResult = result.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult.isSuccess).toBe(true);
       });
@@ -194,26 +259,26 @@ describe('Role API', () => {
       });
     });
 
-    it('should provide Roles tag to invalidate cache', async () => {
+    it('should provide Users tag to invalidate cache', async () => {
       // Given
       vi.mocked(customBaseQuery).mockResolvedValue({
-        data: mockData,
+        data: MOCK_DEFAULT_USERS_DATA,
       });
 
       // When
       const { result, store } = renderHookWithProviders(() =>
-        useGetRolesQuery()
+        useGetUsersQuery()
       );
       await waitFor(() => {
         const currentResult = result.current as ReturnType<
-          typeof useGetRolesQuery
+          typeof useGetUsersQuery
         >;
         expect(currentResult.isSuccess).toBe(true);
       });
 
       // Then
       expect(() => {
-        store.dispatch(rolesApi.util.invalidateTags(['Roles']));
+        store.dispatch(usersApi.util.invalidateTags(['Users']));
       }).not.toThrow();
     });
   });

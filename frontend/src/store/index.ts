@@ -24,6 +24,10 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
   });
 };
 
+const storedToken = localStorage.getItem('token');
+const preloadedState = storedToken ? { auth: { token: storedToken } } : {};
+export const store = setupStore(preloadedState);
+
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore['dispatch'];

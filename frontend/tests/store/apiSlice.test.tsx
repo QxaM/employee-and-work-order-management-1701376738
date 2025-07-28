@@ -26,4 +26,14 @@ describe('API Slice', () => {
       api.util.invalidateTags([roleTag]);
     }).not.toThrow();
   });
+
+  it('Should have Users in tagTypes', () => {
+    // Given
+    const roleTag = 'Users';
+
+    // When + Then
+    expect(() => {
+      api.util.invalidateTags([roleTag]);
+    }).not.toThrow();
+  });
 });

@@ -58,25 +58,6 @@ const callFetch = async (
 };
 
 /**
- * An asynchronous function for handling HTTP requests and parsing the response as JSON.
- *
- * @template T The expected type of the response data.
- * @param {string} url The URL to which the fetch request is sent.
- * @param {RequestInit} [requestInit] Optional configuration for the fetch request, such as method, headers, and body.
- * @param {string} [error] Optional custom error message to display in case of a fetch failure.
- * @returns {Promise<T>} A promise resolving to the parsed JSON response of type T.
- * @throws Will propagate any errors or rejections encountered during the fetch request or JSON parsing.
- */
-export const handleFetch = async <T>(
-  url: string,
-  requestInit?: RequestInit,
-  error?: string
-): Promise<T> => {
-  const response = await callFetch(url, requestInit, error);
-  return (await response.json()) as T;
-};
-
-/**
  * An asynchronous function that handles a fetch operation without returning a value.
  *
  * @param {string} url - The URL to be fetched.

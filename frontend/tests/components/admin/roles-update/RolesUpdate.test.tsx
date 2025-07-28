@@ -6,6 +6,7 @@ import { GetUsersType } from '../../../../src/types/UserTypes.ts';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
 import { Router } from '@remix-run/router';
 import * as roleSlice from '../../../../src/store/api/role.ts';
+import * as userSlice from '../../../../src/store/api/user.ts';
 import { RoleType } from '../../../../src/types/RoleTypes.ts';
 
 const path = '/admin/roles-update';
@@ -57,6 +58,15 @@ const MOCK_ROLES: RoleType[] = [
 describe('RolesUpdate', () => {
   let router: Router;
 
+  const mockUsersData = {
+    data: MOCK_DEFAULT_USERS_DATA,
+    isSuccess: true,
+    isFetching: false,
+    isError: false,
+    error: undefined,
+    refetch: vi.fn(),
+  };
+
   const mockRoleData = {
     data: MOCK_ROLES,
     isSuccess: true,
@@ -69,6 +79,7 @@ describe('RolesUpdate', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    vi.spyOn(userSlice, 'useGetUsersQuery').mockReturnValue(mockUsersData);
     vi.spyOn(roleSlice, 'useGetRolesQuery').mockReturnValue(mockRoleData);
 
     router = createDataRouter(path, <RolesUpdate />, () => ({ content: [] }));
@@ -170,6 +181,14 @@ describe('RolesUpdate', () => {
       // Given
       const nextPageLabel = 'next page';
       const mockLoader = vi.fn().mockReturnValue(mockPageData);
+      vi.spyOn(userSlice, 'useGetUsersQuery').mockReturnValue({
+        data: mockPageData,
+        isSuccess: true,
+        isError: false,
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      });
 
       const router = createDataRouter(path, <RolesUpdate />, mockLoader);
       renderWithProviders(<RouterProvider router={router} />);

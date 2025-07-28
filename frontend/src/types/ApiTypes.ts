@@ -35,3 +35,8 @@ export interface Pageable {
   first: boolean;
   last: boolean;
 }
+
+export interface PageableRequest {
+  page?: number;
+  size?: number;
+}
