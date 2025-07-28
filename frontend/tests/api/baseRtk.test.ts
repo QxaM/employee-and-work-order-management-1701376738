@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { baseLoader } from '../../../src/api/loaders/baseRtk.loader';
-import { setupStore } from '../../../src/store';
+import { rtkDispatch } from '../../src/api/baseRtk.ts';
+import { setupStore } from '../../src/store';
 
 interface TestData {
   message: string;
@@ -43,7 +43,7 @@ describe('baseLoader', () => {
     store.dispatch = mockDispatch;
 
     // When
-    const result = await baseLoader<TestData>(store, mockQueryAction);
+    const result = await rtkDispatch<TestData>(store, mockQueryAction);
 
     // Then
     expect(mockDispatch).toHaveBeenCalledOnce();
@@ -71,7 +71,7 @@ describe('baseLoader', () => {
     store.dispatch = mockDispatch;
 
     // When + Then
-    await expect(baseLoader<TestData>(store, mockQueryAction)).rejects.toThrow(
+    await expect(rtkDispatch<TestData>(store, mockQueryAction)).rejects.toThrow(
       'Query failed'
     );
 
@@ -106,7 +106,7 @@ describe('baseLoader', () => {
     });
 
     // When
-    const result = await baseLoader<UsersData>(store, mockQueryAction);
+    const result = await rtkDispatch<UsersData>(store, mockQueryAction);
 
     // Then
     expect(result).toEqual(expectedData);

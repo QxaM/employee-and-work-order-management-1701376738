@@ -1,9 +1,9 @@
-import { setupStore } from '../../store';
+import { setupStore } from '../store';
 import { Action, ThunkAction } from '@reduxjs/toolkit';
 
 interface RTKQueryThunk<T> {
   unwrap: () => Promise<T>;
-  unsubscribe: () => void;
+  unsubscribe?: () => void;
 }
 
 export type RTKQueryInitiateAction<T> = ThunkAction<
@@ -26,7 +26,7 @@ export type RTKQueryInitiateAction<T> = ThunkAction<
  * @param {RTKQueryInitiateAction<T>} query - The RTK Query action to initiate.
  * @returns {Promise<T>} A promise that resolves to the data of the query result.
  */
-export const baseLoader = async <T>(
+export const rtkDispatch = async <T>(
   store: ReturnType<typeof setupStore>,
   query: RTKQueryInitiateAction<T>
 ): Promise<T> => {
@@ -36,7 +36,9 @@ export const baseLoader = async <T>(
   try {
     data = await result.unwrap();
   } finally {
-    result.unsubscribe();
+    if (result.unsubscribe) {
+      result.unsubscribe();
+    }
   }
 
   return data;

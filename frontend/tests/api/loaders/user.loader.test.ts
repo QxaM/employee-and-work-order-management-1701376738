@@ -5,6 +5,7 @@ import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
 import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
 import { UnknownAction } from '@reduxjs/toolkit';
+import { LoaderFunctionArgs } from 'react-router-dom';
 
 vi.mock('../../../src/store/api/base.ts', () => ({
   customBaseQuery: vi.fn(),
@@ -133,7 +134,10 @@ const testUserLoader = async (
       return result;
     });
 
-  const usersData = await loadUsers(store, { params: {}, request });
+  const usersData: GetUsersType = await loadUsers(store, {
+    params: {},
+    request,
+  } as LoaderFunctionArgs<unknown>);
 
   // Then
   expect(customBaseQuery).toHaveBeenCalledOnce();

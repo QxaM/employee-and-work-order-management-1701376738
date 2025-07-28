@@ -3,12 +3,17 @@ import {
   CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
-import { useGetUsersQuery, usersApi } from '../../../src/store/api/user.ts';
+import {
+  useAddRoleMutation,
+  useGetUsersQuery,
+  usersApi,
+} from '../../../src/store/api/user.ts';
 import { renderHook, waitFor } from '@testing-library/react';
 import { expect } from 'vitest';
 import { act, PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
+import { RoleType } from '../../../src/types/RoleTypes.ts';
 
 vi.mock('../../../src/store/api/base.ts', () => ({
   customBaseQuery: vi.fn(),
@@ -280,6 +285,157 @@ describe('Users API', () => {
       expect(() => {
         store.dispatch(usersApi.util.invalidateTags(['Users']));
       }).not.toThrow();
+    });
+  });
+
+  describe('useAddRoleMutation', () => {
+    const userId = 1;
+    const role: RoleType = {
+      id: 1,
+      name: 'ROLE_1',
+    };
+    const defaultRoleUpdateErrorMessage =
+      'Error during role modification, try again later';
+
+    it('should make API call with correct parameters', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() => useAddRoleMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useAddRoleMutation
+      >;
+      const [addRole] = currentResult;
+      act(() => {
+        void addRole({ userId, role });
+      });
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: `/users/${userId}/addRole?role=${role.id}`,
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            defaultError: defaultRoleUpdateErrorMessage,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('should return success', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() => useAddRoleMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useAddRoleMutation
+      >;
+      const [addRole] = currentResult;
+      act(() => {
+        void addRole({ userId, role });
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useAddRoleMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(true);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+    });
+
+    it('should handle loading state', async () => {
+      // Given
+      let resolvePromise: (value: { data: undefined }) => void;
+      const controlledPromise = new Promise<{ data: undefined }>((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
+
+      const { result } = renderHookWithProviders(() => useAddRoleMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useAddRoleMutation
+      >;
+      const [addRole] = currentResult;
+      act(() => {
+        void addRole({ userId, role });
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useAddRoleMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(true);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+
+      // Clean up - resolve the promise to avoid hanging
+      act(() => {
+        resolvePromise({ data: undefined });
+      });
+    });
+
+    it('should handle error state', async () => {
+      // Given
+      const errorMessage = 'Error while fetching roles data';
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        error: {
+          status: 500,
+          message: errorMessage,
+        },
+      });
+
+      const { result } = renderHookWithProviders(() => useAddRoleMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useAddRoleMutation
+      >;
+      const [addRole] = currentResult;
+      act(() => {
+        void addRole({ userId, role });
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useAddRoleMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(true);
+        expect(error).toBeDefined();
+        expect((error as CustomFetchBaseQueryError).status).toStrictEqual(500);
+        expect((error as CustomFetchBaseQueryError).message).toStrictEqual(
+          errorMessage
+        );
+      });
     });
   });
 });

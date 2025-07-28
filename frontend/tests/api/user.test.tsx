@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect } from 'vitest';
-import { addRole, removeRole } from '../../src/api/user.ts';
+import { removeRole } from '../../src/api/user.ts';
 import * as baseApiModule from '../../src/api/base.ts';
 
 const USER_CONTENT = [
@@ -13,17 +13,6 @@ const USER_CONTENT = [
         name: 'OPERATOR',
       },
     ],
-  },
-];
-
-const ROLE_DATA = [
-  {
-    id: 14,
-    name: 'OPERATOR',
-  },
-  {
-    id: 15,
-    name: 'DESIGNER',
   },
 ];
 
@@ -47,51 +36,6 @@ describe('User API', () => {
 
   afterEach(() => {
     vi.resetAllMocks();
-  });
-
-  describe('addRole', () => {
-    it('Should patch add role', async () => {
-      // Given
-      mockHandleFetchVoid.mockResolvedValue(undefined);
-      localStorageMock.getItem.mockReturnValue('tokenValue');
-
-      const userId = USER_CONTENT[0].id;
-      const roles = ROLE_DATA.filter((role) =>
-        USER_CONTENT[0].roles.some((userRole) => userRole.id === role.id)
-      );
-
-      // When
-      await addRole({ userId, role: roles[0] });
-
-      // Then
-      expect(mockHandleFetchVoid).toHaveBeenCalledWith(
-        expect.stringContaining(`/users/${userId}/addRole?role=${roles[0].id}`),
-        expect.objectContaining({
-          method: 'PATCH',
-          headers: {
-            Authorization: 'Bearer tokenValue',
-          },
-        }),
-        expect.any(String)
-      );
-    });
-
-    it('Should throw if error during adding a role', async () => {
-      // Given
-      const error = 'Forbidden';
-      mockHandleFetchVoid.mockRejectedValue(new Error(error));
-      localStorageMock.getItem.mockReturnValue('invalid');
-
-      const userId = USER_CONTENT[0].id;
-      const roles = ROLE_DATA.filter((role) =>
-        USER_CONTENT[0].roles.some((userRole) => userRole.id === role.id)
-      );
-
-      // When + Then
-      await expect(addRole({ userId, role: roles[0] })).rejects.toThrowError(
-        error
-      );
-    });
   });
 
   describe('removeRole', () => {

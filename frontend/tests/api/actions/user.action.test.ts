@@ -1,7 +1,13 @@
 import { RoleType } from '../../../src/types/RoleTypes.ts';
 import * as userApiModule from '../../../src/api/user.ts';
-import { afterEach, beforeEach } from 'vitest';
+import { afterEach, beforeEach, expect } from 'vitest';
 import { updateRoles } from '../../../src/api/actions/user.action.ts';
+import { setupStore } from '../../../src/store';
+import { customBaseQuery } from '../../../src/store/api/base.ts';
+
+vi.mock('../../../src/store/api/base.ts', () => ({
+  customBaseQuery: vi.fn(),
+}));
 
 const mockUrl = 'http://localhost:8080/api/v1';
 
@@ -24,15 +30,19 @@ const ROLES: RoleType[] = [
   },
 ];
 
-const mockAddRole = vi.fn();
 const mockRemoveRole = vi.fn();
 
 describe('User action', () => {
+  let store: ReturnType<typeof setupStore>;
+
   beforeEach(() => {
-    mockAddRole.mockClear();
     mockRemoveRole.mockClear();
 
-    vi.spyOn(userApiModule, 'addRole').mockImplementation(mockAddRole);
+    store = setupStore();
+
+    vi.mocked(customBaseQuery).mockResolvedValue({
+      data: undefined,
+    });
     vi.spyOn(userApiModule, 'removeRole').mockImplementation(mockRemoveRole);
   });
 
@@ -55,12 +65,28 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.data).not.toBeUndefined();
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
+
+        expect(customBaseQuery).toHaveBeenCalledTimes(2);
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/addRole?role=${ROLES[1].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
       });
 
       it('Should return success with addRole only', async () => {
@@ -74,21 +100,23 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockAddRole.mockResolvedValue(undefined);
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.data).not.toBeUndefined();
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
 
-        expect(mockAddRole).toHaveBeenCalledOnce();
-        expect(mockAddRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[0],
-        });
+        expect(customBaseQuery).toHaveBeenCalledTimes(1);
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+          }),
+          expect.any(Object),
+          undefined
+        );
       });
 
       it('Should return success with removeRole only', async () => {
@@ -105,7 +133,7 @@ describe('User action', () => {
         mockRemoveRole.mockResolvedValue(undefined);
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.data).not.toBeUndefined();
@@ -117,6 +145,8 @@ describe('User action', () => {
           userId: 1,
           role: ROLES[0],
         });
+
+        expect(customBaseQuery).not.toHaveBeenCalled();
       });
 
       it('Should call multiple times addRole and removeRole', async () => {
@@ -130,26 +160,16 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockAddRole.mockResolvedValue(undefined);
         mockRemoveRole.mockResolvedValue(undefined);
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.data).not.toBeUndefined();
         expect(response.data).toBeNull();
         expect(response.success).toBe(true);
 
-        expect(mockAddRole).toHaveBeenCalledTimes(2);
-        expect(mockAddRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[0],
-        });
-        expect(mockAddRole).toHaveBeenCalledWith({
-          userId: 1,
-          role: ROLES[1],
-        });
         expect(mockRemoveRole).toHaveBeenCalledWith({
           userId: 1,
           role: ROLES[2],
@@ -169,7 +189,7 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.success).toBe(false);
@@ -192,7 +212,7 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.success).toBe(false);
@@ -214,7 +234,7 @@ describe('User action', () => {
         });
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.success).toBe(false);
@@ -228,6 +248,20 @@ describe('User action', () => {
       it('Should return error from addRole', async () => {
         // Given
         const errorMessage = 'Forbidden';
+        vi.mocked(customBaseQuery).mockImplementation((args) => {
+          if (args.url.includes('/addRole')) {
+            return {
+              error: {
+                status: 500,
+                message: errorMessage,
+              },
+            };
+          }
+          return {
+            data: undefined,
+          };
+        });
+
         const data = {
           userId: 1,
           addRoles: JSON.stringify(ROLES.slice(0, 2)),
@@ -237,10 +271,9 @@ describe('User action', () => {
           method: 'PATCH',
           body: JSON.stringify(data),
         });
-        mockAddRole.mockRejectedValue(new Error(errorMessage));
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.success).toBe(false);
@@ -265,7 +298,7 @@ describe('User action', () => {
         mockRemoveRole.mockRejectedValue(new Error(errorMessage));
 
         // When
-        const response = await updateRoles({ request, params: {} });
+        const response = await updateRoles(store, { request, params: {} });
 
         // Then
         expect(response.success).toBe(false);

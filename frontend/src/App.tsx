@@ -37,7 +37,8 @@ const router = createBrowserRouter([
             element: <RolesUpdate />,
             loader: (loaderFunctionArgs) =>
               loadUsers(store, loaderFunctionArgs),
-            action: updateRoles,
+            action: (loaderFunctionArgs) =>
+              updateRoles(store, loaderFunctionArgs),
           },
         ],
       },
