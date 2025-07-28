@@ -2,6 +2,7 @@ import { LoaderFunctionArgs } from 'react-router-dom';
 import { usersApi } from '../../store/api/user.ts';
 import { setupStore } from '../../store';
 import { GetUsersType } from '../../types/UserTypes.ts';
+import { baseLoader } from './baseRtk.loader.ts';
 
 /**
  * Fetches a list of users based on the current page parameter provided in the request.
@@ -18,14 +19,8 @@ export const loadUsers = async (
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get('page') ?? '0');
 
-  const result = store.dispatch(usersApi.endpoints.getUsers.initiate({ page }));
-
-  let usersData: GetUsersType;
-  try {
-    usersData = await result.unwrap();
-  } finally {
-    result.unsubscribe();
-  }
-
-  return usersData;
+  return await baseLoader<GetUsersType>(
+    store,
+    usersApi.endpoints.getUsers.initiate({ page })
+  );
 };
