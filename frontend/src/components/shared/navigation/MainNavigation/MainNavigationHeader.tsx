@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { logout } from '../../../../store/authSlice.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
+import WelcomeMessage from './WelcomeMessage.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -70,9 +71,7 @@ const MainNavigationHeader = () => {
       )}
       {token && (
         <div className="flex flex-row gap-4 justify-center mx-4 items-center content-auto">
-          <p className="text-qxam-neutral-light-lighter text-xl">
-            Welcome back!
-          </p>
+          <WelcomeMessage me={me} />
           <button
             className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
             onClick={() => dispatch(logout())}

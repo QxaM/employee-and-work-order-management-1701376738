@@ -208,6 +208,19 @@ describe('Main Navigation Header', () => {
       // Given
       const loginButtonText = 'Login';
       const logoutButtonText = 'Logout';
+      vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+        me: {
+          email: 'test@test.com',
+          roles: [
+            {
+              id: 1,
+              name: 'TEST',
+            },
+          ],
+        },
+        isLoading: false,
+        isError: false,
+      });
 
       const { store } = renderWithProviders(
         <BrowserRouter>
@@ -224,10 +237,13 @@ describe('Main Navigation Header', () => {
         name: loginButtonText,
       });
       const logoutButton = await screen.findByText(logoutButtonText);
+      const welcomeMessage = await screen.findByText(
+        `Welcome back, test@test.com!`
+      );
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
-      expect(screen.getByText('Welcome back!')).toBeInTheDocument();
+      expect(welcomeMessage).toBeInTheDocument();
       expect(logoutButton).toBeInTheDocument();
     });
 

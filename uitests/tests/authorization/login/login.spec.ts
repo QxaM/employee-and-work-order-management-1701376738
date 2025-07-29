@@ -25,7 +25,7 @@ test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   await Promise.all([
     await expect(loginError(page)).toBeHidden(),
     await expect(page).toHaveURL(baseURL || ""),
-    await expect(welcomeMessage(page)).toBeVisible(),
+    await expect(welcomeMessage(page, userCredentials.login)).toBeVisible(),
   ]);
 });
 
