@@ -4,8 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import Logo from '../../Logo.tsx';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
-import { isAdmin as checkJwtIsAdmin } from '../../../../utils/Jwt.ts';
+import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { logout } from '../../../../store/authSlice.ts';
+import { useMeData } from '../../../../hooks/useMeData.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -33,9 +34,10 @@ const MobileMainNavigation = () => {
     ' hover:underline hover:text-qxam-primary-darker';
 
   const dispatch = useAppDispatch();
+  const { me } = useMeData();
 
   const token = useAppSelector((state) => state.auth.token);
-  const isAdmin = checkJwtIsAdmin(token);
+  const isAdmin = checkJwtIsAdmin(me);
 
   return (
     <header className="bg-qxam-primary shadow-lg">
