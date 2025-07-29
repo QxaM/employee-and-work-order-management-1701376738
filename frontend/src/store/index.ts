@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import modalReducer from './modalSlice';
-import authSlice from './authSlice';
+import authSlice, { authListenerMiddleware } from './authSlice';
 import { api } from './apiSlice.ts';
 
 const rootReducer = combineReducers({
@@ -20,7 +20,9 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
     reducer: rootReducer,
     preloadedState,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(api.middleware),
+      getDefaultMiddleware()
+        .concat(api.middleware)
+        .concat(authListenerMiddleware.middleware),
   });
 };
 

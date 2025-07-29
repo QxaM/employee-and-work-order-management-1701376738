@@ -5,7 +5,8 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import MobileMainNavigation from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
-import * as jwtModule from '../../../../../src/utils/Jwt.ts';
+import { MeType } from '../../../../../src/store/api/auth.ts';
+import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {
@@ -116,8 +117,20 @@ describe('Main Navigation Header', () => {
 
     describe('Admin navigation buttons', () => {
       beforeEach(() => {
-        vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
         const ariaLabel = 'Toggle navigation menu';
+        const me: MeType = {
+          email: 'test@test.com',
+          roles: [
+            {
+              id: 1,
+              name: 'ADMIN',
+            },
+          ],
+        };
+        vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+          me,
+          isLoading: false,
+        });
 
         renderWithProviders(
           <BrowserRouter>
@@ -147,6 +160,7 @@ describe('Main Navigation Header', () => {
       it('Should navigate to Admin, when admin nav is clicked', async () => {
         // Given
         const navAdminText = 'Admin';
+
         const adminLink = await screen.findByText(navAdminText, {
           exact: false,
         });

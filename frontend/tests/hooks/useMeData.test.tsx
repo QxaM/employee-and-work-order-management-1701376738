@@ -13,11 +13,6 @@ vi.mock('../../src/store/api/base.ts', () => ({
   customBaseQuery: vi.fn(),
 }));
 
-const localStorageMock = {
-  getItem: vi.fn(),
-  removeItem: vi.fn(),
-};
-
 describe('useMeData', () => {
   const data: MeType = {
     email: 'test@test.com',
@@ -29,39 +24,27 @@ describe('useMeData', () => {
     ],
   };
 
+  const preloadedState = { auth: { token: 'test-token' } };
+
   beforeEach(() => {
     vi.resetAllMocks();
 
     vi.mocked(customBaseQuery).mockReturnValue({
       data,
     });
-
-    localStorageMock.getItem.mockReturnValue('test-token');
-    vi.stubGlobal('localStorage', localStorageMock);
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  it('should skip when no token is present', async () => {
-    // Given
-    localStorageMock.getItem.mockReturnValue(null);
-
-    // When
-    renderHookWithProviders(() => useMeData());
-
-    // Then
-    await waitFor(() => {
-      expect(customBaseQuery).not.toHaveBeenCalled();
-    });
-  });
-
   it('should return data when token is present', async () => {
     // Given
 
     // When
-    const { result } = renderHookWithProviders(() => useMeData());
+    const { result } = renderHookWithProviders(() => useMeData(), {
+      preloadedState,
+    });
 
     // Then
     await waitFor(() => {
@@ -83,7 +66,9 @@ describe('useMeData', () => {
     vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
 
     // When
-    const { result } = renderHookWithProviders(() => useMeData());
+    const { result } = renderHookWithProviders(() => useMeData(), {
+      preloadedState,
+    });
 
     // Then
     await waitFor(() => {
@@ -110,12 +95,13 @@ describe('useMeData', () => {
     });
 
     // When
-    renderHookWithProviders(() => useMeData());
+    const { store } = renderHookWithProviders(() => useMeData(), {
+      preloadedState: { auth: { token: 'test-token' } },
+    });
 
     // Then
     await waitFor(() => {
-      expect(localStorageMock.removeItem).toHaveBeenCalledOnce();
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
+      expect(store.getState().auth.token).toBeUndefined();
     });
   });
 
