@@ -91,11 +91,25 @@ export const authApi = api.injectEndpoints({
   }),
 });
 
-export const useMeQuery = () =>
-  authApi.useMeQuery(undefined, { refetchOnMountOrArgChange: 300 });
-
 export const {
   useRegisterMutation,
   useConfirmRegistrationMutation,
   useLoginMutation,
 } = authApi;
+
+export interface UseMeQueryReturnValue {
+  data: MeType | undefined;
+  isSuccess: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  error: unknown;
+  refetch: () => Promise<void>;
+}
+
+export const useMeQuery = (
+  options?: Parameters<typeof authApi.useMeQuery>[1]
+): UseMeQueryReturnValue =>
+  authApi.useMeQuery(undefined, {
+    ...options,
+    refetchOnMountOrArgChange: 300,
+  }) as unknown as UseMeQueryReturnValue;
