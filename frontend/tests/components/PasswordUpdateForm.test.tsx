@@ -291,7 +291,7 @@ describe('Password Update Form', () => {
           isError: true,
           isLoading: false,
           error: {
-            status: 500,
+            status: 422,
             message: errorMessage,
           },
           reset: vi.fn(),
@@ -351,8 +351,7 @@ describe('Password Update Form', () => {
       expect(store.getState().modal.modals[0]).toEqual(
         expect.objectContaining({
           content: expect.objectContaining({
-            message:
-              'Something went wrong during password update process. Please try again later.',
+            message: 'Error during verification process, try again later',
             type: 'error',
           }) as { message: string; type: string },
         })

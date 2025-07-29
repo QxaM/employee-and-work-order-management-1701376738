@@ -189,6 +189,8 @@ describe('RegisterConfirmationPage', () => {
     it('Should show error', async () => {
       // Given
       const errorMessage = 'Test Error';
+      const defaultError = 'Something went wrong. Please try again later.';
+
       vi.spyOn(authApiSlice, 'useConfirmRegistrationMutation').mockReturnValue([
         mockMutate,
         {
@@ -218,7 +220,7 @@ describe('RegisterConfirmationPage', () => {
           expect.objectContaining<Record<string, unknown>>({
             payload: expect.objectContaining<Record<string, unknown>>({
               content: {
-                message: errorMessage,
+                message: defaultError,
                 type: 'error',
               },
             }),
