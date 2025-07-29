@@ -1,12 +1,12 @@
-import { FormEvent, useRef } from 'react';
+import {FormEvent, useRef} from 'react';
 
 import Input from './shared/Input';
-import { isValidConfirmPassword, isValidPassword } from '../utils/Validators.ts';
+import {isValidConfirmPassword, isValidPassword,} from '../utils/Validators.ts';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import { useNavigate } from 'react-router-dom';
-import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
-import { usePasswordUpdateMutation } from '../store/api/passwordReset.ts';
-import { readErrorMessage } from '../utils/errorUtils.ts';
+import {useNavigate} from 'react-router-dom';
+import {useFormNotifications} from '../hooks/useFormNotifications.tsx';
+import {usePasswordUpdateMutation} from '../store/api/passwordReset.ts';
+import {readErrorMessage} from '../utils/errorUtils.ts';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -20,6 +20,9 @@ import { readErrorMessage } from '../utils/errorUtils.ts';
  *
  */
 const PasswordUpdateForm = ({ token }: { token: string }) => {
+  const defaultUpdateError =
+    'Error during verification process, try again later';
+
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
@@ -40,8 +43,10 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     error: {
       status: isError,
       message: readErrorMessage(
-        error,
-        'Something went wrong during password update process. Please try again later.'
+        error && 'status' in error && error.status === 422
+          ? error
+          : defaultUpdateError,
+        defaultUpdateError
       ),
       onEvent: renavigate,
     },

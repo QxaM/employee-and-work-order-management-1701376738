@@ -14,6 +14,9 @@ import { useConfirmRegistrationMutation } from '../store/api/auth.ts';
  * In both cases the Page will navigate to main page.
  */
 const RegisterConfirmationPage = () => {
+  const defaultErrorMessage = 'Something went wrong. Please try again later.';
+  const tokenExpiredMessage = 'Token is expired - sent a new one';
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -33,7 +36,10 @@ const RegisterConfirmationPage = () => {
     },
     error: {
       status: isError,
-      message: error?.message ?? 'Something went wrong',
+      message:
+        error && 'status' in error && error.status === 422
+          ? tokenExpiredMessage
+          : defaultErrorMessage,
       onEvent: renavigate,
     },
   });
