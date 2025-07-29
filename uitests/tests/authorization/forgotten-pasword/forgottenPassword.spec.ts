@@ -110,7 +110,7 @@ test("TC9 - should correctly reset password", async ({
     await Promise.all([
       await expect(loginError(page)).toBeHidden(),
       await expect(page).toHaveURL(baseURL || ""),
-      await expect(welcomeMessage(page)).toBeVisible(),
+      await expect(welcomeMessage(page, email)).toBeVisible(),
     ]);
   });
 });

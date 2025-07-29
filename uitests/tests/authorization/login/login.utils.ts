@@ -14,6 +14,6 @@ export const loginError = (page: Page): Locator => {
   return page.getByText("Login failed. Invalid email or password.");
 };
 
-export const welcomeMessage = (page: Page): Locator => {
-  return page.getByText("Welcome back!");
+export const welcomeMessage = (page: Page, email: string): Locator => {
+  return page.getByText(`Welcome back, ${email}!`);
 };

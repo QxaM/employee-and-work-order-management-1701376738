@@ -80,7 +80,7 @@ test.describe("Confirmation registration tests", () => {
       await Promise.all([
         await expect(loginError(page)).toBeHidden(),
         await expect(page).toHaveURL(baseURL || ""),
-        await expect(welcomeMessage(page)).toBeVisible(),
+        await expect(welcomeMessage(page, email)).toBeVisible(),
       ]);
     });
   });

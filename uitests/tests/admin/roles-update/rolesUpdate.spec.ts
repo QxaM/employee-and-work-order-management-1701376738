@@ -12,7 +12,7 @@ test("TC15 - should navigate to role update list", async ({ adminPage }) => {
   await openHomePage(adminPage);
 
   // When
-  await adminPage.getByText("Admin").click();
+  await adminPage.getByText("Admin", { exact: true }).click();
   await adminPage.getByText("Roles Update").click();
 
   const pageTitle = adminPage.getByText(roleUpdateTitle);
