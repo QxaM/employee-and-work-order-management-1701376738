@@ -36,4 +36,14 @@ describe('API Slice', () => {
       api.util.invalidateTags([roleTag]);
     }).not.toThrow();
   });
+
+  it('Should have Me in tagTypes', () => {
+    // Given
+    const roleTag = 'Me';
+
+    // When + Then
+    expect(() => {
+      api.util.invalidateTags([roleTag]);
+    }).not.toThrow();
+  });
 });
