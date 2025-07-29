@@ -13,6 +13,7 @@ import AdminPage from './pages/AdminPage.tsx';
 import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
 import { loadUsers } from './api/loaders/user.loader.ts';
 import { updateRoles } from './api/actions/user.action.ts';
+import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
 
 const router = createBrowserRouter([
   {
@@ -27,7 +28,11 @@ const router = createBrowserRouter([
       { path: '/password/confirm', element: <PasswordUpdatePage /> },
       {
         path: '/admin',
-        element: <AdminPage />,
+        element: (
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminPage />
+          </ProtectedRoute>
+        ),
         children: [
           { index: true, element: <></> },
           {

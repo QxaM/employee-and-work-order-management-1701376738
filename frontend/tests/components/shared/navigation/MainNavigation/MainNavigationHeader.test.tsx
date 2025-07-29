@@ -80,6 +80,7 @@ describe('Main Navigation Header', () => {
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me,
         isLoading: false,
+        isError: false,
       });
 
       renderWithProviders(
@@ -110,6 +111,7 @@ describe('Main Navigation Header', () => {
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me,
         isLoading: false,
+        isError: false,
       });
 
       renderWithProviders(
