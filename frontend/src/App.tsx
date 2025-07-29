@@ -1,11 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
 
 import RootPage from './pages/RootPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
-import { queryClient } from './api/base.ts';
 import { Provider } from 'react-redux';
-import { setupStore } from './store';
+import { store } from './store';
 import DialogManager from './components/DialogManager.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
@@ -35,8 +33,10 @@ const router = createBrowserRouter([
           {
             path: 'roles-update',
             element: <RolesUpdate />,
-            loader: loadUsers,
-            action: updateRoles,
+            loader: (loaderFunctionArgs) =>
+              loadUsers(store, loaderFunctionArgs),
+            action: (loaderFunctionArgs) =>
+              updateRoles(store, loaderFunctionArgs),
           },
         ],
       },
@@ -45,16 +45,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const storedToken = localStorage.getItem('token');
-  const preloadedState = storedToken ? { auth: { token: storedToken } } : {};
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <Provider store={setupStore(preloadedState)}>
-        <RouterProvider router={router} />
-        <DialogManager />
-      </Provider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      <DialogManager />
+    </Provider>
   );
 }
 

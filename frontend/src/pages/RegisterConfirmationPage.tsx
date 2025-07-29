@@ -2,8 +2,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import { useConfirmRegistration } from '../api/auth.ts';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { useConfirmRegistrationMutation } from '../store/api/auth.ts';
 
 /**
  * Renders the Register Confirmation with a centered `LoadingSpinner` component, Confimration
@@ -14,14 +14,19 @@ import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
  * In both cases the Page will navigate to main page.
  */
 const RegisterConfirmationPage = () => {
+  const defaultErrorMessage = 'Something went wrong. Please try again later.';
+  const tokenExpiredMessage = 'Token is expired - sent a new one';
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const renavigate = () => {
-    navigate('/');
+    void navigate('/');
   };
 
-  const { isSuccess, isError, error, mutate } = useConfirmRegistration();
+  const [mutate, { isSuccess, isError, error }] =
+    useConfirmRegistrationMutation();
+
   useFormNotifications({
     success: {
       status: isSuccess,
@@ -31,13 +36,16 @@ const RegisterConfirmationPage = () => {
     },
     error: {
       status: isError,
-      message: error?.message ?? 'Something went wrong',
+      message:
+        error && 'status' in error && error.status === 422
+          ? tokenExpiredMessage
+          : defaultErrorMessage,
       onEvent: renavigate,
     },
   });
 
   useEffect(() => {
-    mutate({ token: searchParams.get('token') ?? '' });
+    void mutate(searchParams.get('token') ?? '');
   }, [mutate, searchParams]);
 
   return (

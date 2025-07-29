@@ -173,7 +173,7 @@ test("TC10 - should not allow to reuse token", async ({
     await expect(updatePasswordTitle(page)).toBeVisible();
   });
 
-  await test.step("TC9.5 - reset password", async () => {
+  await test.step("TC10.4 - reset password", async () => {
     // Given
     const newPassword = faker.internet.password();
 

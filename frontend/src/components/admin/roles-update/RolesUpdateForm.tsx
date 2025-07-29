@@ -8,6 +8,7 @@ import RolesListSection from './RolesListSection.tsx';
 import RoleControl from './RoleControl.tsx';
 import { useRoleManagement } from '../../../hooks/admin/roles-update/useRoleManagement.tsx';
 import { useFormNotifications } from '../../../hooks/useFormNotifications.tsx';
+import { QueryError } from '../../../types/ApiTypes.ts';
 
 interface RolesUpdateFormProps {
   user: {
@@ -20,7 +21,7 @@ interface RolesUpdateFormProps {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
-    error: Error | null;
+    error: QueryError;
   };
   onClose?: () => void;
 }
@@ -110,13 +111,13 @@ const RolesUpdateForm = ({
 
       {isError && (
         <div className="flex flex-col justify-center items-center">
-          <ErrorComponent message={error?.message ?? defaultRolesError} />
+          <ErrorComponent error={error ?? defaultRolesError} />
         </div>
       )}
       {!isError && (
         <section
           aria-label="roles update section"
-          className="grid grid-cols-[1fr,max-content,1fr] gap-2"
+          className="grid grid-cols-[1fr_max-content_1fr] gap-2"
         >
           <RolesListSection
             title="Assigned Roles"

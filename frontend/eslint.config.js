@@ -5,7 +5,6 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import eslintPrettier from 'eslint-config-prettier';
-import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
   { ignores: ['dist', 'eslint.config.js'] },
@@ -17,7 +16,6 @@ export default tseslint.config(
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
       eslintPrettier,
-      ...pluginQuery.configs['flat/recommended'],
     ],
     files: ['src/**/*.{ts,tsx}', 'vite.config.ts'],
     languageOptions: {
@@ -32,7 +30,6 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       react,
-      '@tanstack/query': pluginQuery,
     },
     rules: {
       ...react.configs.recommended.rules,
@@ -63,7 +60,6 @@ export default tseslint.config(
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
       eslintPrettier,
-      ...pluginQuery.configs['flat/recommended'],
     ],
     files: ['tests/**/*.{ts,tsx}', 'vitest.config.js'],
     languageOptions: {
@@ -78,7 +74,6 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       react,
-      '@tanstack/query': pluginQuery,
     },
     rules: {
       ...react.configs.recommended.rules,
