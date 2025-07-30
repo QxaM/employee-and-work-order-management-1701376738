@@ -33,6 +33,8 @@ project and employees managing easier.
    this will send email to users with password reset.
 2. **Authentication:** Role-base authentication is in place, as default
    three user roles are created - Admin, Operator and Designer.
+3. **Admin:**
+    - Admin can assign or revoke roles for users in Admin settings.
 
 ### Services:
 
@@ -91,9 +93,9 @@ deployment:
 
 To give you a visual overview of the application, here are some screenshots:
 
-### [Feature or Page Name]
+### [Roles update in the Admin's settings page]
 
-![Description of Image](http://link-to-your-image.com/image1.png)
+![Roles update in the Admin's settings page](rolesUpdate.png)
 
 ### [Another Feature or Page Name]
 
