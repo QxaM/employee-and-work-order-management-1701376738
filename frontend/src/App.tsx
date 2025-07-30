@@ -14,11 +14,13 @@ import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
 import { loadUsers } from './api/loaders/user.loader.ts';
 import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
+import ErrorElement from './components/shared/ErrorElement.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootPage />,
+    errorElement: <ErrorElement />,
     children: [
       { index: true, element: <></> },
       { path: '/register', element: <RegisterPage /> },
@@ -38,6 +40,7 @@ const router = createBrowserRouter([
           {
             path: 'roles-update',
             element: <RolesUpdate />,
+            errorElement: <ErrorElement />,
             loader: (loaderFunctionArgs) =>
               loadUsers(store, loaderFunctionArgs),
             action: (loaderFunctionArgs) =>
