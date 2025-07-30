@@ -41,7 +41,7 @@ export const useRoleManagement = (initialRoles: RoleType[]) => {
 
   const onAddRole = () => {
     if (selectedRole) {
-      setCurrentRoles([...currentRoles, selectedRole]);
+      setCurrentRoles(Array.from(new Set([...currentRoles, selectedRole])));
       setSelectedRole(null);
     }
   };
