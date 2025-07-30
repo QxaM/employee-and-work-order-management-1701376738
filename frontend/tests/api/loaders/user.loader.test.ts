@@ -1,12 +1,20 @@
-import { afterEach, beforeEach, describe } from 'vitest';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
 
-import { queryClient } from '../../../src/api/base.ts';
 import { GetUsersType } from '../../../src/types/UserTypes.ts';
 import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
-import * as usersApiModule from '../../../src/api/user.ts';
-import { getUsers } from '../../../src/api/user.ts';
+import { setupStore } from '../../../src/store';
+import { customBaseQuery } from '../../../src/store/api/base.ts';
+import { UnknownAction } from '@reduxjs/toolkit';
+import { LoaderFunctionArgs } from 'react-router-dom';
 
-type QueryFnType = (params: { signal: AbortSignal }) => Promise<unknown>;
+vi.mock('../../../src/store/api/base.ts', () => ({
+  customBaseQuery: vi.fn(),
+}));
+
+interface QueryResult {
+  unwrap: () => Promise<GetUsersType>;
+  unsubscribe: () => void;
+}
 
 const USER_CONTENT = [
   {
@@ -44,16 +52,17 @@ const MOCK_USERS_DATA: GetUsersType = {
   totalElements: 51,
 };
 
-const mockFetchQuery = vi.fn();
+const mockUnwrap = vi.fn();
+const mockUnsubscribe = vi.fn();
 
 describe('Users loader', () => {
   beforeEach(() => {
-    mockFetchQuery.mockClear();
+    vi.resetAllMocks();
 
-    vi.spyOn(queryClient, 'fetchQuery').mockImplementation(mockFetchQuery);
-    vi.spyOn(usersApiModule, 'getUsers').mockResolvedValue(
-      MOCK_DEFAULT_USERS_DATA
-    );
+    vi.mocked(customBaseQuery).mockResolvedValue({
+      data: MOCK_DEFAULT_USERS_DATA,
+    });
+    mockUnwrap.mockResolvedValue(MOCK_DEFAULT_USERS_DATA);
   });
 
   afterEach(() => {
@@ -65,7 +74,10 @@ describe('Users loader', () => {
       // Given
       const defaultPage = 0;
       const request: Request = new Request(`http:/localhost:8000/users`);
-      mockFetchQuery.mockResolvedValue(MOCK_DEFAULT_USERS_DATA);
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: MOCK_DEFAULT_USERS_DATA,
+      });
+      mockUnwrap.mockResolvedValue(MOCK_DEFAULT_USERS_DATA);
 
       // When + Then
       await testUserLoader(request, defaultPage, MOCK_DEFAULT_USERS_DATA);
@@ -77,7 +89,10 @@ describe('Users loader', () => {
       const request: Request = new Request(
         `http:/localhost:8000/users?page=${page}}`
       );
-      mockFetchQuery.mockResolvedValue(MOCK_USERS_DATA);
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: MOCK_USERS_DATA,
+      });
+      mockUnwrap.mockResolvedValue(MOCK_USERS_DATA);
 
       // When + Then
       await testUserLoader(request, page, MOCK_USERS_DATA);
@@ -90,25 +105,61 @@ const testUserLoader = async (
   correctedPage: number,
   expectedUserData: GetUsersType
 ) => {
-  const usersData = await loadUsers({ params: {}, request });
+  const defaultError = 'Unknown error while fetching user data';
+
+  const store = setupStore();
+
+  const originalDispatch = store.dispatch;
+  const spyDispatch = vi
+    .spyOn(store, 'dispatch')
+    .mockImplementation((action: UnknownAction) => {
+      const result = originalDispatch(action);
+
+      const hasQueryMethods = (obj: unknown): obj is QueryResult => {
+        return (
+          obj !== null &&
+          typeof obj === 'object' &&
+          'unwrap' in obj &&
+          'unsubscribe' in obj &&
+          typeof (obj as QueryResult).unwrap === 'function' &&
+          typeof (obj as QueryResult).unsubscribe === 'function'
+        );
+      };
+
+      if (hasQueryMethods(result)) {
+        result.unwrap = mockUnwrap;
+        result.unsubscribe = mockUnsubscribe;
+      }
+
+      return result;
+    });
+
+  const usersData: GetUsersType = await loadUsers(store, {
+    params: {},
+    request,
+  } as LoaderFunctionArgs<unknown>);
 
   // Then
-  expect(mockFetchQuery).toHaveBeenCalledWith(
-    expect.objectContaining({
-      queryKey: ['users-loader', correctedPage],
-    })
+  expect(customBaseQuery).toHaveBeenCalledOnce();
+  expect(customBaseQuery).toHaveBeenCalledWith(
+    {
+      url: `/users?page=${correctedPage}&size=15`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      defaultError,
+    },
+    expect.any(Object),
+    undefined
   );
 
-  const { queryFn } = mockFetchQuery.mock.calls[0][0] as {
-    queryFn: QueryFnType;
-  };
-  const fakeSignal = new AbortController().signal;
-  await queryFn({ signal: fakeSignal });
-  expect(getUsers).toHaveBeenCalledWith(
-    expect.objectContaining({
-      page: correctedPage,
-    })
-  );
+  expect(spyDispatch).toHaveBeenCalledOnce();
+  expect(mockUnwrap).toHaveBeenCalledOnce();
+  expect(mockUnsubscribe).toHaveBeenCalledOnce();
 
   expect(usersData).toStrictEqual(expectedUserData);
+
+  // Clean up
+  spyDispatch.mockRestore();
 };

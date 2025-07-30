@@ -3,11 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { isValidConfirmPassword, isValidEmail, isValidPassword } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
-import { RegisterType } from '../types/AuthorizationTypes.ts';
-import { useRegisterUser } from '../api/auth.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from './shared/ErrorComponent.tsx';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
 
 /**
  * A user register form component with validation and API interaction.
@@ -25,13 +24,8 @@ const RegisterForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
 
-  const {
-    isSuccess,
-    isPending,
-    isError,
-    error,
-    mutate: register,
-  } = useRegisterUser();
+  const [register, { isSuccess, isLoading: isPending, isError, error }] =
+    useRegisterMutation();
 
   useFormNotifications({
     success: {
@@ -39,7 +33,7 @@ const RegisterForm = () => {
       message:
         'You have been registered successfully! Please verify your email.',
       onEvent: () => {
-        navigate('/');
+        void navigate('/');
       },
     },
   });
@@ -75,7 +69,7 @@ const RegisterForm = () => {
       password: data.password as string,
     };
 
-    register({ data: registerData });
+    void register(registerData);
   };
 
   return (
@@ -86,7 +80,7 @@ const RegisterForm = () => {
         </h2>
         {isError && (
           <div className="flex justify-center items-center w-full">
-            <ErrorComponent message={error.message} />
+            <ErrorComponent error={error} />
           </div>
         )}
         <Input

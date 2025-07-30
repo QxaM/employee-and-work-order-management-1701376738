@@ -16,7 +16,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:5173",
     launchOptions: {
-      slowMo: 100,
+      slowMo: 1000,
     },
     trace: "retain-on-first-failure",
     video: "retain-on-failure",

@@ -1,6 +1,10 @@
-import { afterEach, beforeEach, describe } from 'vitest';
+import { afterEach, beforeEach, describe, MockInstance } from 'vitest';
 
 import authReducer, { login, logout } from '../../src/store/authSlice';
+import { api } from '../../src/store/apiSlice.ts';
+import { setupStore } from '../../src/store';
+import { waitFor } from '@testing-library/react';
+import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit';
 
 const localStorageMock = {
   getItem: vi.fn(),
@@ -78,5 +82,43 @@ describe('AuthSlice', () => {
     expect(resultState.token).toBe(undefined);
     expect(localStorageMock.removeItem).toHaveBeenCalledOnce();
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
+  });
+
+  describe('Auth listener', () => {
+    let resetApyStateSpy: MockInstance<
+      ActionCreatorWithoutPayload<`${string}/resetApiState`>
+    >;
+    let store: ReturnType<typeof setupStore>;
+
+    beforeEach(() => {
+      vi.resetAllMocks();
+      resetApyStateSpy = vi.spyOn(api.util, 'resetApiState');
+
+      store = setupStore();
+    });
+
+    it('should dispatch login listener action', async () => {
+      // Given
+
+      // When
+      store.dispatch(login({ token: '12345' }));
+
+      // Then
+      await waitFor(() => {
+        expect(resetApyStateSpy).toHaveBeenCalledOnce();
+      });
+    });
+
+    it('should dispatch login listener action', async () => {
+      // Given
+
+      // When
+      store.dispatch(logout());
+
+      // Then
+      await waitFor(() => {
+        expect(resetApyStateSpy).toHaveBeenCalledOnce();
+      });
+    });
   });
 });

@@ -5,7 +5,6 @@ import { RoleType } from '../../../../src/types/RoleTypes.ts';
 import { afterEach, beforeEach, describe } from 'vitest';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
 import { RouterProvider } from 'react-router-dom';
-import { Router } from '@remix-run/router';
 import * as stateSubmitModule from '../../../../src/hooks/useStateSubmit.tsx';
 
 const path = '/admin/roles-update';
@@ -48,13 +47,13 @@ const roles = {
   isSuccess: true,
   isPending: false,
   isError: false,
-  error: null,
+  error: undefined,
 };
 
 describe('Roles Update Form', () => {
   const availableRoles = 'Available Roles';
 
-  let router: Router;
+  let router: ReturnType<typeof createDataRouter>;
 
   const mockStateSubmit = {
     submit: vi.fn(),
@@ -171,7 +170,10 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: new Error(error),
+            error: {
+              status: 400,
+              message: error,
+            },
           }}
         />
       );
@@ -197,7 +199,7 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: null,
+            error: undefined,
           }}
         />
       );
@@ -224,7 +226,7 @@ describe('Roles Update Form', () => {
             isSuccess: false,
             isPending: false,
             isError: true,
-            error: null,
+            error: undefined,
           }}
         />
       );

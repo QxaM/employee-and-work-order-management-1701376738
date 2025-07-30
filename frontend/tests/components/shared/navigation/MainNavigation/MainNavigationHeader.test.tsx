@@ -5,7 +5,8 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
-import * as jwtModule from '../../../../../src/utils/Jwt.ts';
+import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
+import { MeType } from '../../../../../src/store/api/auth.ts';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
@@ -67,7 +68,20 @@ describe('Main Navigation Header', () => {
     it('Should contain Admin navigation link, when is logged as admin', () => {
       // Given
       const navAdminText = 'Admin';
-      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+      const me: MeType = {
+        email: 'test@test.com',
+        roles: [
+          {
+            id: 1,
+            name: 'ADMIN',
+          },
+        ],
+      };
+      vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+        me,
+        isLoading: false,
+        isError: false,
+      });
 
       renderWithProviders(
         <BrowserRouter>
@@ -85,7 +99,20 @@ describe('Main Navigation Header', () => {
     it('Should navigate to Admin when admin link is clicked', () => {
       // Given
       const navAdminText = 'Admin';
-      vi.spyOn(jwtModule, 'isAdmin').mockReturnValue(true);
+      const me: MeType = {
+        email: 'test@test.com',
+        roles: [
+          {
+            id: 1,
+            name: 'ADMIN',
+          },
+        ],
+      };
+      vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+        me,
+        isLoading: false,
+        isError: false,
+      });
 
       renderWithProviders(
         <BrowserRouter>
@@ -181,6 +208,19 @@ describe('Main Navigation Header', () => {
       // Given
       const loginButtonText = 'Login';
       const logoutButtonText = 'Logout';
+      vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+        me: {
+          email: 'test@test.com',
+          roles: [
+            {
+              id: 1,
+              name: 'TEST',
+            },
+          ],
+        },
+        isLoading: false,
+        isError: false,
+      });
 
       const { store } = renderWithProviders(
         <BrowserRouter>
@@ -197,10 +237,13 @@ describe('Main Navigation Header', () => {
         name: loginButtonText,
       });
       const logoutButton = await screen.findByText(logoutButtonText);
+      const welcomeMessage = await screen.findByText(
+        `Welcome back, test@test.com!`
+      );
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
-      expect(screen.getByText('Welcome back!')).toBeInTheDocument();
+      expect(welcomeMessage).toBeInTheDocument();
       expect(logoutButton).toBeInTheDocument();
     });
 

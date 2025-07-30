@@ -148,6 +148,23 @@ describe('useRoleManagement', () => {
       // Then
       expect(result.current.selectedRole).toBeNull();
     });
+
+    it('Should not duplicate already assigned role', () => {
+      // Given
+      const initialRoles = [roles[0]];
+      const { result } = renderHook(() => useRoleManagement(initialRoles));
+      act(() => {
+        result.current.onRoleClick(roles[0]);
+      });
+
+      // When
+      act(() => {
+        result.current.onAddRole();
+      });
+
+      // Then
+      expect(result.current.currentRoles).toHaveLength(1);
+    });
   });
 
   describe('onRemoveRole', () => {

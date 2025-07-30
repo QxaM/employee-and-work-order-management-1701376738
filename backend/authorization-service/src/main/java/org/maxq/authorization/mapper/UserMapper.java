@@ -3,6 +3,7 @@ package org.maxq.authorization.mapper;
 import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
+import org.maxq.authorization.domain.dto.MeDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,5 +38,12 @@ public class UserMapper {
         )
     ).toList();
     return new PageImpl<>(userDtoList, page, users.getTotalElements());
+  }
+
+  public MeDto mapToMeDto(User user) {
+    return new MeDto(
+        user.getEmail(),
+        roleMapper.mapToRoleDtoList(user.getRoles())
+    );
   }
 }

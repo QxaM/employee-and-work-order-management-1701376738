@@ -8,6 +8,7 @@ import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -57,10 +58,29 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
-    http.authorizeHttpRequests(
+  @Order(1)
+  public SecurityFilterChain filterChainLogin(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+    http.securityMatcher("/login")
+        .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
-                .requestMatchers("/login").authenticated()
+                .requestMatchers("/login").authenticated())
+        .httpBasic(basic -> basic
+            .authenticationEntryPoint(authenticationFailureHandler()))
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint(authenticationFailureHandler())
+            .accessDeniedHandler(accessDeniedHandler()));
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain filterChain(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+    http.securityMatcher("/**")
+        .authorizeHttpRequests(
+            authorizeRequests -> authorizeRequests
+                .requestMatchers("/login/me").authenticated()
                 .requestMatchers("/users/**").hasRole("ADMIN")
                 .requestMatchers("/roles/**").hasRole("ADMIN")
                 .anyRequest().permitAll())
@@ -70,8 +90,6 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(authenticationFailureHandler()))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
-        .httpBasic(basic -> basic
-            .authenticationEntryPoint(authenticationFailureHandler()))
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(authenticationFailureHandler())
             .accessDeniedHandler(accessDeniedHandler()));

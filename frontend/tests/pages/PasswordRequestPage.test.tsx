@@ -1,8 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../../src/api/base.ts';
 import { BrowserRouter } from 'react-router-dom';
 import { describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -11,9 +9,7 @@ import PasswordRequestPage from '../../src/pages/PasswordRequestPage.tsx';
 const testWrapper = ({ children }: PropsWithChildren) => {
   return (
     <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };

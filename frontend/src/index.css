@@ -1,71 +1,47 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-.btn {
+@config '../tailwind.config.js';
+
+@utility btn {
     @apply px-2 py-1.5;
 }
 
-.btn-primary {
+@utility btn-primary {
     @apply bg-qxam-primary text-qxam-neutral-light-lightest;
+    @apply hover:bg-qxam-primary-darker hover:text-qxam-neutral-light
 }
 
-.btn-primary:hover {
-    @apply bg-qxam-primary-darker text-qxam-neutral-light;
-}
-
-.btn-primary-darkest {
+@utility btn-primary-darkest {
     @apply bg-qxam-primary-darkest text-qxam-neutral-light-lightest;
+    @apply hover:bg-qxam-primary-darker hover:text-qxam-neutral-light;
 }
 
-.btn-primary-darkest:hover {
-    @apply bg-qxam-primary-darker text-qxam-neutral-light;
-}
-
-.btn-secondary {
+@utility btn-secondary {
     @apply bg-qxam-secondary text-qxam-neutral-light-lightest;
+    @apply hover:bg-qxam-secondary-darker hover:text-qxam-neutral-light;
 }
 
-.btn-secondary:hover {
-    @apply bg-qxam-secondary-darker text-qxam-neutral-light;
-}
-
-.btn-secondary-lighter {
+@utility btn-secondary-lighter {
     @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
+    @apply hover:bg-qxam-secondary-darker hover:text-qxam-primary-darkest;
 }
 
-.btn-secondary-lighter:hover {
-    @apply bg-qxam-secondary text-qxam-primary-darkest;
-}
-
-.btn-secondary-lightest {
+@utility btn-secondary-lightest {
     @apply bg-qxam-secondary-lightest text-qxam-primary-darker;
+    @apply hover:bg-qxam-secondary-lighter hover:text-qxam-primary-darkest;
 }
 
-.btn-secondary-lightest:hover {
-    @apply bg-qxam-secondary-lighter text-qxam-primary-darkest;
-}
-
-.btn-accent {
+@utility btn-accent {
     @apply bg-qxam-accent text-qxam-neutral-light-lightest;
+    @apply hover:bg-qxam-accent-darker hover:text-qxam-neutral-light;
 }
 
-.btn-accent:hover {
-    @apply bg-qxam-accent-darker text-qxam-neutral-light;
-}
-
-.btn-neutral-light {
+@utility btn-neutral-light {
     @apply bg-qxam-neutral-light-lighter text-qxam-neutral-dark-darkest;
+    @apply hover:bg-qxam-neutral-light hover:text-qxam-neutral-dark;
 }
 
-.btn-neutral-light:hover {
-    @apply bg-qxam-neutral-light text-qxam-neutral-dark-extreme-dark;
-}
-
-.btn-destructive {
+@utility btn-destructive {
     @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
-}
-
-.btn-destructive:hover {
-    @apply bg-qxam-error text-qxam-neutral-dark-darkest;
+    @apply hover:bg-qxam-error hover:text-qxam-neutral-dark-darkest;
 }

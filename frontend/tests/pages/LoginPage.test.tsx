@@ -6,15 +6,11 @@ import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../../src/pages/LoginPage.tsx';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '../../src/api/base.ts';
 
 const testWrapper = ({ children }: PropsWithChildren) => {
   return (
     <Provider store={setupStore()}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };
