@@ -164,3 +164,26 @@ test.describe("Update Roles", () => {
     });
   });
 });
+
+test("TC20 - should show error element when loader fails", async ({
+  adminPage,
+}) => {
+  // Given
+  await adminPage.route("**/users?*", async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: "application/json",
+      body: JSON.stringify({
+        code: "InternalError",
+        message: "Internal Server Error",
+      }),
+    });
+  });
+
+  // When
+  await openRoleUpdatePage(adminPage);
+
+  // Then
+  await expect(adminPage.getByText("Error 500")).toBeVisible();
+  await expect(adminPage.getByText("Internal Server Error")).toBeVisible();
+});
