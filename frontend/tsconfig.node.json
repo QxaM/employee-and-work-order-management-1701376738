@@ -1,18 +1,29 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "types": ["@testing-library/jest-dom"],
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "@testing-library/jest-dom",
+      "node",
+      "@reduxjs/toolkit",
+      "@reduxjs/toolkit/query/react"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
+    "downlevelIteration": true,
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-
+    "jsx": "react-jsx",
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -20,5 +31,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "tests",
+    "vitest.config.js"
+  ]
 }

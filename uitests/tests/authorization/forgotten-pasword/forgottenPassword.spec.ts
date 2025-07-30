@@ -1,5 +1,4 @@
-import { APIRequestContext, expect, test } from "@playwright/test";
-import { AUTHORIZATION_SERVICE_URL } from "../../utils/api.utils";
+import { expect, test } from "../../base/baseTest";
 import { faker } from "@faker-js/faker";
 import {
   clickResetNow,
@@ -29,65 +28,14 @@ import {
   passwordTooShortMessage,
 } from "../register/register.utils";
 
-let email: string;
-let password: string;
-let apiContext: APIRequestContext;
+test("TC9 - should correctly reset password", async ({
+  page,
+  baseURL,
+  registeredUser,
+  apiContext,
+}) => {
+  const { email } = registeredUser;
 
-test.beforeAll(async ({ playwright }) => {
-  apiContext = await playwright.request.newContext({
-    baseURL: AUTHORIZATION_SERVICE_URL,
-  });
-});
-
-test.beforeEach(async () => {
-  await test.step("Prepare user - register", async () => {
-    // Given
-    email = faker.internet.email();
-    password = "test";
-
-    // When
-    const registerResponse = await apiContext.post(`/register`, {
-      data: {
-        email,
-        password,
-      },
-    });
-
-    // Then
-    expect(registerResponse.ok()).toBeTruthy();
-  });
-
-  await test.step("Prepare user - confirm registration", async () => {
-    // Given
-    let token: string = "";
-
-    await expect(async () => {
-      const response = await apiContext.get(`/qa/token`, {
-        params: {
-          email,
-        },
-      });
-      expect(response.ok()).toBeTruthy();
-      token = await response.text();
-    }).toPass();
-
-    // When
-    const verificationResponse = await apiContext.post(`/register/confirm`, {
-      params: {
-        token,
-      },
-    });
-
-    // Then
-    expect(verificationResponse.ok()).toBeTruthy();
-  });
-});
-
-test.afterAll(async () => {
-  await apiContext.dispose();
-});
-
-test("TC9 - should correctly reset password", async ({ page, baseURL }) => {
   await test.step("TC9.1 - open reset password page", async () => {
     // Given
     await openLoginPage(page);
@@ -162,12 +110,18 @@ test("TC9 - should correctly reset password", async ({ page, baseURL }) => {
     await Promise.all([
       await expect(loginError(page)).toBeHidden(),
       await expect(page).toHaveURL(baseURL || ""),
-      await expect(welcomeMessage(page)).toBeVisible(),
+      await expect(welcomeMessage(page, email)).toBeVisible(),
     ]);
   });
 });
 
-test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
+test("TC10 - should not allow to reuse token", async ({
+  page,
+  baseURL,
+  registeredUser,
+  apiContext,
+}) => {
+  const { email } = registeredUser;
   let reusedToken: string;
 
   await test.step("TC10.1 - request password reset", async () => {
@@ -219,7 +173,7 @@ test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
     await expect(updatePasswordTitle(page)).toBeVisible();
   });
 
-  await test.step("TC9.5 - reset password", async () => {
+  await test.step("TC10.4 - reset password", async () => {
     // Given
     const newPassword = faker.internet.password();
 
@@ -239,6 +193,7 @@ test("TC10 - should not allow to reuse token", async ({ page, baseURL }) => {
 test("TC11 - should handle correctly non-existent email", async ({
   page,
   baseURL,
+  apiContext,
 }) => {
   const nonExistentEmail = faker.internet.email();
 
@@ -278,7 +233,9 @@ test("TC11 - should handle correctly non-existent email", async ({
 test("TC12 - should handle correctly invalid token", async ({
   page,
   baseURL,
+  registeredUser,
 }) => {
+  const { email } = registeredUser;
   let newPassword = faker.internet.password();
 
   await test.step("TC12.1 - try to reset password", async () => {

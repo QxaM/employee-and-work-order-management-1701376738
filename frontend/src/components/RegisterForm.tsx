@@ -1,15 +1,12 @@
-import {FormEvent, useEffect, useRef} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import {v4 as uuidv4} from 'uuid';
+import { FormEvent, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import {isValidConfirmPassword, isValidEmail, isValidPassword,} from '../utils/Validators.ts';
+import { isValidConfirmPassword, isValidEmail, isValidPassword } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
-import {RegisterType} from '../types/AuthorizationTypes.ts';
-import {useRegisterUser} from '../api/auth.ts';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from './shared/ErrorComponent.tsx';
-import {useDispatch} from 'react-redux';
-import {registerModal} from '../store/modalSlice.ts';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
 
 /**
  * A user register form component with validation and API interaction.
@@ -26,15 +23,20 @@ const RegisterForm = () => {
   const passwordRef = useRef<string>('');
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const {
-    isSuccess,
-    isPending,
-    isError,
-    error,
-    mutate: register,
-  } = useRegisterUser();
+  const [register, { isSuccess, isLoading: isPending, isError, error }] =
+    useRegisterMutation();
+
+  useFormNotifications({
+    success: {
+      status: isSuccess,
+      message:
+        'You have been registered successfully! Please verify your email.',
+      onEvent: () => {
+        void navigate('/');
+      },
+    },
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,29 +69,8 @@ const RegisterForm = () => {
       password: data.password as string,
     };
 
-    register({ data: registerData });
+    void register(registerData);
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message:
-              'You have been registered successfully! Please verify your email.',
-            type: 'success',
-          },
-        })
-      );
-    }
-  }, [isSuccess, dispatch]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate('/');
-    }
-  }, [isSuccess, navigate]);
 
   return (
     <>
@@ -99,7 +80,7 @@ const RegisterForm = () => {
         </h2>
         {isError && (
           <div className="flex justify-center items-center w-full">
-            <ErrorComponent message={error.message} />
+            <ErrorComponent error={error} />
           </div>
         )}
         <Input

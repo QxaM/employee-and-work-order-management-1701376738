@@ -55,9 +55,8 @@ class TokenServiceTest {
     } else {
       fail("Roles was not part of the UserDetails!");
     }
-    String mappedRole = role.replace("ROLE_", "").toLowerCase();
     String returnedRole = jwt.getClaimAsStringList("roles").getFirst();
-    assertEquals(mappedRole, returnedRole, "Correct role should be returned");
+    assertEquals(role, returnedRole, "Correct role should be returned");
   }
 }
 

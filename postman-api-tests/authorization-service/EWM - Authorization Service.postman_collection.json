@@ -433,7 +433,7 @@
 					"name": "Positive",
 					"item": [
 						{
-							"name": "Login with existing credentials",
+							"name": "Login as admin",
 							"event": [
 								{
 									"listen": "test",
@@ -470,12 +470,140 @@
 									"basic": [
 										{
 											"key": "password",
-											"value": "{{enabledUserPassword}}",
+											"value": "{{adminPassword}}",
 											"type": "string"
 										},
 										{
 											"key": "username",
-											"value": "{{enabledUserEmail}}",
+											"value": "{{adminEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as operator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{operatorPassword}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{operatorEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as designer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{designerPassword}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{designerEmail}}",
 											"type": "string"
 										}
 									]
@@ -610,6 +738,193 @@
 								}
 							},
 							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET /me",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Login as operator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('operatorToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{operatorPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{operatorEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get me info",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain email\", () => {\r",
+													"    const operatorEmail = pm.variables.get('operatorEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(operatorEmail);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain roles\", () => {\r",
+													"    const operatorRoleId = pm.variables.get('operatorRoleId');\r",
+													"\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.length.greaterThanOrEqual(1);\r",
+													"    \r",
+													"    pm.expect(response.roles[0]).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.roles[0]).to.haveOwnProperty('name').that.is.a('string');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{operatorToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login/me",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "Fails not authenticated",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Response contains valid message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please')\r",
+													"})\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login/me",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				}
@@ -3212,6 +3527,3044 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Roles API",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Login as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should containt token\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+											"    pm.collectionVariables.set('adminToken', response.token);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should be correct type\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+											"    pm.expect(response.type).to.eql('Bearer');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should expire in 1h\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+											"    pm.expect(response.expiresIn).to.eql(3600);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{adminPassword}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{adminEmail}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all roles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should contain at least one role\", () => {\r",
+											"    pm.expect(response).to.have.length.greaterThan(0);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should contain valid data in reponse\", () => {\r",
+											"    const role = response[0];\r",
+											"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/roles",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "Forbidden",
+							"item": [
+								{
+									"name": "Login as operator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('operatorToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{operatorPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{operatorEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all roles",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain a message in response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{operatorToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/roles",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users API",
+			"item": [
+				{
+					"name": "GET /users",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Login as admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('adminToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{adminPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{adminEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users - default pagination",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+													"\r",
+													"    const user = response.content[0];\r",
+													"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+													"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users - custom pagination",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"\r",
+													"    pm.expect(response.size).to.eql(1);\r",
+													"    pm.expect(response.number).to.eql(1);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users?page=1&size=1",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "size",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "Forbidden",
+									"item": [
+										{
+											"name": "Login as operator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('operatorToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{operatorPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{operatorEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all users",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 403\", () => {\r",
+															"    pm.response.to.have.status(403);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should contain a message in response\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{operatorToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Add role",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const addRoleEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"addRoleEmail\", addRoleEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{addRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Login as admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('adminToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{adminPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{adminEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+													"\r",
+													"    const user = response.content[0];\r",
+													"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+													"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"})\r",
+													"\r",
+													"const users = response.content;\r",
+													"const newUserEmail = pm.variables.get('addRoleEmail')\r",
+													"const newUser = users.find(user => user.email === newUserEmail);\r",
+													"pm.collectionVariables.set('addRoleUserId', newUser.id);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users?size=1000",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											],
+											"query": [
+												{
+													"key": "size",
+													"value": "1000"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all roles",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain at least one role\", () => {\r",
+													"    pm.expect(response).to.have.length.greaterThan(0);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid data in reponse\", () => {\r",
+													"    const role = response[0];\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"})\r",
+													"\r",
+													"const operatorRole = response.find(role => role.name === 'OPERATOR');\r",
+													"pm.collectionVariables.set('operatorRoleId', operatorRole.id);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/roles",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add role",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users",
+												":addRoleUserId",
+												"addRole"
+											],
+											"query": [
+												{
+													"key": "role",
+													"value": "{{operatorRoleId}}"
+												}
+											],
+											"variable": [
+												{
+													"key": "addRoleUserId",
+													"value": "{{addRoleUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+													"\r",
+													"    const user = response.content[0];\r",
+													"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+													"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"User have correctly updated role\", () => {\r",
+													"    const users = response.content;\r",
+													"    const updatedUser = users.find(user => user.id === pm.variables.get('addRoleUserId'));\r",
+													"\r",
+													"    pm.expect(updatedUser).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(updatedUser.roles).to.have.length(2);\r",
+													"    console.log(updatedUser.roles);\r",
+													"    \r",
+													"    const userRoles = updatedUser.roles;\r",
+													"    const newRole = userRoles.find(role => role.id === pm.variables.get('operatorRoleId'));\r",
+													"    pm.expect(newRole).to.exist;\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users?size=1000",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											],
+											"query": [
+												{
+													"key": "size",
+													"value": "1000"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "User Does Not Exist",
+									"item": [
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all roles",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should contain at least one role\", () => {\r",
+															"    pm.expect(response).to.have.length.greaterThan(0);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid data in reponse\", () => {\r",
+															"    const role = response[0];\r",
+															"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+															"})\r",
+															"\r",
+															"const operatorRole = response.find(role => role.name === 'OPERATOR');\r",
+															"pm.collectionVariables.set('operatorRoleId', operatorRole.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/roles",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 404\", () => {\r",
+															"    pm.response.to.have.status(404);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"User with id '0' does not exist\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":addRoleUserId",
+														"addRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "{{operatorRoleId}}"
+														}
+													],
+													"variable": [
+														{
+															"key": "addRoleUserId",
+															"value": "0"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Role Does Not Exist",
+									"item": [
+										{
+											"name": "Register new user",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const roleNotExistsEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+															"pm.collectionVariables.set(\"roleNotExistsEmail\", roleNotExistsEmail);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 201\", () => {\r",
+															"    pm.response.to.have.status(201);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "noauth"
+												},
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "http://localhost:8081/register",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"register"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all users",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain valid content\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+															"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+															"\r",
+															"    const user = response.content[0];\r",
+															"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+															"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+															"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid pagination data\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+															"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+															"})\r",
+															"\r",
+															"const users = response.content;\r",
+															"const newUserEmail = pm.variables.get('roleNotExistsEmail')\r",
+															"const newUser = users.find(user => user.email === newUserEmail);\r",
+															"pm.collectionVariables.set('roleNotExistsUserId', newUser.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users?size=1000",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users"
+													],
+													"query": [
+														{
+															"key": "size",
+															"value": "1000"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 404\", () => {\r",
+															"    pm.response.to.have.status(404);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"Role with id '0' does not exist\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role=0",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":addRoleUserId",
+														"addRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "0"
+														}
+													],
+													"variable": [
+														{
+															"key": "addRoleUserId",
+															"value": "{{roleNotExistsUserId}}"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Role Already Exists On User",
+									"item": [
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all users",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain valid content\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+															"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+															"\r",
+															"    const user = response.content[0];\r",
+															"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+															"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+															"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid pagination data\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+															"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+															"})\r",
+															"\r",
+															"const users = response.content;\r",
+															"const newUserEmail = pm.variables.get('operatorEmail')\r",
+															"const newUser = users.find(user => user.email === newUserEmail);\r",
+															"pm.collectionVariables.set('operatorUserId', newUser.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users?size=1000",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users"
+													],
+													"query": [
+														{
+															"key": "size",
+															"value": "1000"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all roles",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should contain at least one role\", () => {\r",
+															"    pm.expect(response).to.have.length.greaterThan(0);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid data in reponse\", () => {\r",
+															"    const role = response[0];\r",
+															"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+															"})\r",
+															"\r",
+															"const operatorRole = response.find(role => role.name === 'OPERATOR');\r",
+															"pm.collectionVariables.set('operatorRoleId', operatorRole.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/roles",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 400\", () => {\r",
+															"    pm.response.to.have.status(400);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.contain(\"Role 'OPERATOR' already exists on user:\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":addRoleUserId",
+														"addRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "{{operatorRoleId}}"
+														}
+													],
+													"variable": [
+														{
+															"key": "addRoleUserId",
+															"value": "{{operatorUserId}}"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Forbidden",
+									"item": [
+										{
+											"name": "Login as operator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('operatorToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{operatorPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{operatorEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 403\", () => {\r",
+															"    pm.response.to.have.status(403);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain a message in response\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{operatorToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role=0",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":addRoleUserId",
+														"addRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "0"
+														}
+													],
+													"variable": [
+														{
+															"key": "addRoleUserId",
+															"value": "0"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Remove role",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Register new user",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const removeRoleEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"removeRoleEmail\", removeRoleEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{removeRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8081/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"register"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Login as admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should containt token\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+													"    pm.collectionVariables.set('adminToken', response.token);\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should be correct type\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+													"    pm.expect(response.type).to.eql('Bearer');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should expire in 1h\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+													"    pm.expect(response.expiresIn).to.eql(3600);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "password",
+													"value": "{{adminPassword}}",
+													"type": "string"
+												},
+												{
+													"key": "username",
+													"value": "{{adminEmail}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+													"\r",
+													"    const user = response.content[0];\r",
+													"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+													"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"})\r",
+													"\r",
+													"const users = response.content;\r",
+													"const newUserEmail = pm.variables.get('removeRoleEmail')\r",
+													"const newUser = users.find(user => user.email === newUserEmail);\r",
+													"const removeRoleRoleId = newUser.roles[0].id;\r",
+													"pm.collectionVariables.set('removeRoleUserId', newUser.id);\r",
+													"pm.collectionVariables.set('removeRoleRoleId', removeRoleRoleId);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users?size=1000",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											],
+											"query": [
+												{
+													"key": "size",
+													"value": "1000"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add role",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{removeRoleRoleId}}",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users",
+												":removeRoleUserId",
+												"removeRole"
+											],
+											"query": [
+												{
+													"key": "role",
+													"value": "{{removeRoleRoleId}}"
+												}
+											],
+											"variable": [
+												{
+													"key": "removeRoleUserId",
+													"value": "{{removeRoleUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get all users",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain valid content\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+													"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+													"\r",
+													"    const user = response.content[0];\r",
+													"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+													"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"Should contain valid pagination data\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+													"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+													"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+													"})\r",
+													"\r",
+													"pm.test(\"User have correctly updated role\", () => {\r",
+													"    const users = response.content;\r",
+													"    const updatedUser = users.find(user => user.id === pm.variables.get('removeRoleUserId'));\r",
+													"\r",
+													"    pm.expect(updatedUser).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(updatedUser.roles).to.have.length(0);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8081/users?size=1000",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"users"
+											],
+											"query": [
+												{
+													"key": "size",
+													"value": "1000"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "User Does Not Exist",
+									"item": [
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all roles",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should contain at least one role\", () => {\r",
+															"    pm.expect(response).to.have.length.greaterThan(0);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid data in reponse\", () => {\r",
+															"    const role = response[0];\r",
+															"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+															"})\r",
+															"\r",
+															"const operatorRole = response.find(role => role.name === 'OPERATOR');\r",
+															"pm.collectionVariables.set('operatorRoleId', operatorRole.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/roles",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 404\", () => {\r",
+															"    pm.response.to.have.status(404);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"User with id '0' does not exist\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{operatorRoleId}}",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":removeRoleUserId",
+														"removeRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "{{operatorRoleId}}"
+														}
+													],
+													"variable": [
+														{
+															"key": "removeRoleUserId",
+															"value": "0"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Role Does Not Exist",
+									"item": [
+										{
+											"name": "Register new user",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const roleNotExistsEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+															"pm.collectionVariables.set(\"roleNotExistsEmail\", roleNotExistsEmail);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 201\", () => {\r",
+															"    pm.response.to.have.status(201);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "noauth"
+												},
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "http://localhost:8081/register",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"register"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all users",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain valid content\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+															"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+															"\r",
+															"    const user = response.content[0];\r",
+															"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+															"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+															"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid pagination data\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+															"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+															"})\r",
+															"\r",
+															"const users = response.content;\r",
+															"const newUserEmail = pm.variables.get('roleNotExistsEmail')\r",
+															"const newUser = users.find(user => user.email === newUserEmail);\r",
+															"pm.collectionVariables.set('roleNotExistsUserId', newUser.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users?size=1000",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users"
+													],
+													"query": [
+														{
+															"key": "size",
+															"value": "1000"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 404\", () => {\r",
+															"    pm.response.to.have.status(404);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"Role with id '0' does not exist\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role=0",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":removeRoleUserId",
+														"removeRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "0"
+														}
+													],
+													"variable": [
+														{
+															"key": "removeRoleUserId",
+															"value": "{{roleNotExistsUserId}}"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Role Does Not Exist On User",
+									"item": [
+										{
+											"name": "Login as admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('adminToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{adminPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{adminEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all users",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain valid content\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('content').that.is.an('array');\r",
+															"    pm.expect(response.content).to.have.length.greaterThan(0);\r",
+															"\r",
+															"    const user = response.content[0];\r",
+															"    pm.expect(user).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(user).to.haveOwnProperty('email').that.is.a('string');\r",
+															"    pm.expect(user).to.haveOwnProperty('enabled').that.is.a('boolean');\r",
+															"    pm.expect(user).to.haveOwnProperty('roles').that.is.an('array');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid pagination data\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+															"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+															"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+															"})\r",
+															"\r",
+															"const users = response.content;\r",
+															"const newUserEmail = pm.variables.get('operatorEmail')\r",
+															"const newUser = users.find(user => user.email === newUserEmail);\r",
+															"pm.collectionVariables.set('operatorUserId', newUser.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users?size=1000",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users"
+													],
+													"query": [
+														{
+															"key": "size",
+															"value": "1000"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get all roles",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should contain at least one role\", () => {\r",
+															"    pm.expect(response).to.have.length.greaterThan(0);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should contain valid data in reponse\", () => {\r",
+															"    const role = response[0];\r",
+															"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+															"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+															"})\r",
+															"\r",
+															"const designerRole = response.find(role => role.name === 'DESIGNER');\r",
+															"pm.collectionVariables.set('designerRoleId', designerRole.id);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/roles",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 400\", () => {\r",
+															"    pm.response.to.have.status(400);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should containt valid error message\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.contain(\"Role 'DESIGNER' does not exist on user:\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{adminToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{designerRoleId}}",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":removeRoleUserId",
+														"removeRole"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "{{designerRoleId}}"
+														}
+													],
+													"variable": [
+														{
+															"key": "removeRoleUserId",
+															"value": "{{operatorUserId}}"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Forbidden",
+									"item": [
+										{
+											"name": "Login as operator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test(\"Should containt token\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
+															"    pm.collectionVariables.set('operatorToken', response.token);\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should be correct type\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
+															"    pm.expect(response.type).to.eql('Bearer');\r",
+															"})\r",
+															"\r",
+															"pm.test(\"Should expire in 1h\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
+															"    pm.expect(response.expiresIn).to.eql(3600);\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "{{operatorPassword}}",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "{{operatorEmail}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/login",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"login"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Add role",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 403\", () => {\r",
+															"    pm.response.to.have.status(403);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"pm.test(\"Should contain a message in response\", () => {\r",
+															"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+															"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+															"})"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{operatorToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "http://localhost:8081/users/:removeRoleUserId?role=0",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8081",
+													"path": [
+														"users",
+														":removeRoleUserId"
+													],
+													"query": [
+														{
+															"key": "role",
+															"value": "0"
+														}
+													],
+													"variable": [
+														{
+															"key": "removeRoleUserId",
+															"value": "0"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
 		}
 	],
 	"event": [
@@ -3242,13 +6595,13 @@
 			"value": ""
 		},
 		{
-			"key": "enabledUserEmail",
-			"value": "test@maxq.com",
+			"key": "adminEmail",
+			"value": "admin@maxq.com",
 			"type": "string"
 		},
 		{
-			"key": "enabledUserPassword",
-			"value": "Test12345",
+			"key": "adminPassword",
+			"value": "Admin12345",
 			"type": "string"
 		},
 		{
@@ -3330,6 +6683,74 @@
 		},
 		{
 			"key": "validVerificationToken",
+			"value": ""
+		},
+		{
+			"key": "operatorEmail",
+			"value": "operator@maxq.com",
+			"type": "string"
+		},
+		{
+			"key": "operatorPassword",
+			"value": "Operator12345",
+			"type": "string"
+		},
+		{
+			"key": "designerEmail",
+			"value": "designer@maxq.com",
+			"type": "string"
+		},
+		{
+			"key": "designerPassword",
+			"value": "Designer12345",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": ""
+		},
+		{
+			"key": "operatorToken",
+			"value": ""
+		},
+		{
+			"key": "addRoleEmail",
+			"value": ""
+		},
+		{
+			"key": "addRoleUserId",
+			"value": ""
+		},
+		{
+			"key": "operatorRoleId",
+			"value": ""
+		},
+		{
+			"key": "roleNotExistsEmail",
+			"value": ""
+		},
+		{
+			"key": "roleNotExistsUserId",
+			"value": ""
+		},
+		{
+			"key": "operatorUserId",
+			"value": ""
+		},
+		{
+			"key": "removeRoleEmail",
+			"value": ""
+		},
+		{
+			"key": "removeRoleUserId",
+			"value": ""
+		},
+		{
+			"key": "removeRoleRoleId",
+			"value": ""
+		},
+		{
+			"key": "designerRoleId",
 			"value": ""
 		}
 	]

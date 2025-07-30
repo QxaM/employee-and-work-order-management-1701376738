@@ -2,6 +2,7 @@ package org.maxq.authorization.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.service.UserService;
@@ -30,6 +31,7 @@ public class UserDetailsDbService implements UserDetailsService {
         .withUsername(foundUser.getEmail())
         .password(foundUser.getPassword())
         .disabled(!foundUser.isEnabled())
+        .roles(foundUser.getRoles().stream().map(Role::getName).toArray(String[]::new))
         .build();
   }
 }

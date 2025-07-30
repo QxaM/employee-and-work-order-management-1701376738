@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./setupTests.js'],
-    include: ['./test[s]/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    include: ['tests/**/*.{test,spec}.{js,jsx,ts,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
     coverage: {
       provider: 'v8',
@@ -28,6 +28,9 @@ export default defineConfig({
         'src/store/index.ts',
         './docs',
       ],
+    },
+    env: {
+      VITE_API_BASE_URL: 'http://localhost:3000',
     },
   },
   resolve: {

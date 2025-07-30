@@ -1,11 +1,9 @@
-import {useNavigate, useSearchParams} from 'react-router-dom';
-import {useEffect} from 'react';
-import {v4 as uuidv4} from 'uuid';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import {useAppDispatch} from '../hooks/useStore.tsx';
-import {useConfirmRegistration} from '../api/auth.ts';
-import {registerModal} from '../store/modalSlice.ts';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { useConfirmRegistrationMutation } from '../store/api/auth.ts';
 
 /**
  * Renders the Register Confirmation with a centered `LoadingSpinner` component, Confimration
@@ -16,52 +14,42 @@ import {registerModal} from '../store/modalSlice.ts';
  * In both cases the Page will navigate to main page.
  */
 const RegisterConfirmationPage = () => {
+  const defaultErrorMessage = 'Something went wrong. Please try again later.';
+  const tokenExpiredMessage = 'Token is expired - sent a new one';
+
   const [searchParams] = useSearchParams();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { isSuccess, isError, error, mutate } = useConfirmRegistration();
+  const renavigate = () => {
+    void navigate('/');
+  };
 
-  useEffect(() => {
-    mutate({ token: searchParams.get('token') ?? '' });
-  }, [mutate, searchParams]);
+  const [mutate, { isSuccess, isError, error }] =
+    useConfirmRegistrationMutation();
 
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: 'Verification was successfull - you can now login',
-            type: 'success',
-            hideTimeout: 30_000,
-          },
-        })
-      );
-    }
-
-    if (isError) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: error.message || 'Something went wrong',
-            type: 'error',
-          },
-        })
-      );
-    }
-  }, [dispatch, isSuccess, isError, error]);
-
-  useEffect(() => {
-    if (isSuccess || isError) {
-      navigate('/');
-    }
+  useFormNotifications({
+    success: {
+      status: isSuccess,
+      message: 'Verification was successfull - you can now login',
+      hideTimeout: 30_000,
+      onEvent: renavigate,
+    },
+    error: {
+      status: isError,
+      message:
+        error && 'status' in error && error.status === 422
+          ? tokenExpiredMessage
+          : defaultErrorMessage,
+      onEvent: renavigate,
+    },
   });
+
+  useEffect(() => {
+    void mutate(searchParams.get('token') ?? '');
+  }, [mutate, searchParams]);
 
   return (
     <div className="flex flex-grow items-center justify-center w-full">
-      {searchParams.get('token')}
       <LoadingSpinner size="large" />
     </div>
   );

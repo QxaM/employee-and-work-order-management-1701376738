@@ -14,8 +14,9 @@ import {
 } from "./register.utils";
 
 import credentials from "../../../test-data/credentials.json";
+import { Credentials } from "../../types/Authorization";
 
-const userCredentials = credentials.user;
+const userCredentials = credentials.admin as Credentials;
 
 test("TC3 - should register with valid credentials", async ({
   page,

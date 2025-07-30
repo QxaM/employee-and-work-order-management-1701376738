@@ -8,10 +8,11 @@ import {
   loginError,
   welcomeMessage,
 } from "./login.utils";
+import { Credentials } from "../../types/Authorization";
 
 test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   // Given
-  const userCredentials = credentials.user;
+  const userCredentials = credentials.admin as Credentials;
 
   await openHomePage(page);
   await clickLoginButton(page);
@@ -24,12 +25,12 @@ test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
   await Promise.all([
     await expect(loginError(page)).toBeHidden(),
     await expect(page).toHaveURL(baseURL || ""),
-    await expect(welcomeMessage(page)).toBeVisible(),
+    await expect(welcomeMessage(page, userCredentials.login)).toBeVisible(),
   ]);
 });
 
 test("TC2 - should not login with invalid credentials", async ({ page }) => {
-  const userCredentials = credentials.user;
+  const userCredentials = credentials.admin;
 
   await openHomePage(page);
   await clickLoginButton(page);

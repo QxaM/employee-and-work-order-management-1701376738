@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.maxq.authorization.config.MockitoPublisherConfiguration;
+import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.domain.dto.UserDto;
@@ -18,6 +19,7 @@ import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
 import org.maxq.authorization.mapper.UserMapper;
+import org.maxq.authorization.service.RoleService;
 import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -59,6 +63,8 @@ class RegisterControllerTest {
   @MockBean
   private UserService userService;
   @MockBean
+  private RoleService roleService;
+  @MockBean
   private UserMapper userMapper;
   @MockBean
   private ApplicationEventPublisher eventPublisher;
@@ -77,7 +83,9 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
+    Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(roleService.getRoleByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -93,7 +101,9 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
+    Role role = new Role("TEST");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(roleService.getRoleByName("DESIGNER")).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -103,7 +113,10 @@ class RegisterControllerTest {
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isCreated());
     verify(eventPublisher, times(1))
-        .publishEvent(any(OnRegistrationComplete.class));
+        .publishEvent(argThat(event ->
+            ((OnRegistrationComplete) event).getUser().getRoles().size() == 1
+                && ((OnRegistrationComplete) event).getUser().getRoles().contains(role))
+        );
   }
 
   @ParameterizedTest
@@ -159,7 +172,7 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
-    when(userMapper.mapToUser(userDto)).thenReturn(user);
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DuplicateEmailException("Test message", new Exception())).when(userService).createUser(any());
 
     // When + Then
@@ -177,7 +190,7 @@ class RegisterControllerTest {
     // Given
     UserDto userDto = new UserDto("test@test.com", "test");
     User user = new User("test@test.com", "test");
-    when(userMapper.mapToUser(userDto)).thenReturn(user);
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DataValidationException("Test message", new Exception())).when(userService).createUser(any());
 
     // When + Then
@@ -207,7 +220,8 @@ class RegisterControllerTest {
   @Test
   void shouldConfirmRegistration() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
 
@@ -241,7 +255,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowElementNotFound_When_UserNotFound() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
 
     when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
@@ -261,7 +276,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowExpiredVerification_When_ExpirationBeforeNow() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now().minusMinutes(24 * 60).minusMinutes(1), false);
 
@@ -284,7 +300,8 @@ class RegisterControllerTest {
   @Test
   void shouldThrowDataValidation_When_InvalidData() throws Exception {
     // Given
-    User user = new User(1L, "test@test.com", "test", false);
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
     VerificationToken token = new VerificationToken(1L, "token", user,
         LocalDateTime.now(), false);
 

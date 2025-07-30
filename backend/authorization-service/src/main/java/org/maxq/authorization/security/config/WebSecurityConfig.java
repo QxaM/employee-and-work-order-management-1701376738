@@ -1,5 +1,6 @@
 package org.maxq.authorization.security.config;
 
+import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
 import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
@@ -7,6 +8,7 @@ import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +17,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -22,10 +28,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
   @Value("${frontend.url}")
@@ -50,15 +58,38 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(
+  @Order(1)
+  public SecurityFilterChain filterChainLogin(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+    http.securityMatcher("/login")
+        .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
-                .requestMatchers("/login").authenticated()
-                .anyRequest().permitAll())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(AbstractHttpConfigurer::disable)
+                .requestMatchers("/login").authenticated())
         .httpBasic(basic -> basic
             .authenticationEntryPoint(authenticationFailureHandler()))
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint(authenticationFailureHandler())
+            .accessDeniedHandler(accessDeniedHandler()));
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain filterChain(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+    http.securityMatcher("/**")
+        .authorizeHttpRequests(
+            authorizeRequests -> authorizeRequests
+                .requestMatchers("/login/me").authenticated()
+                .requestMatchers("/users/**").hasRole("ADMIN")
+                .requestMatchers("/roles/**").hasRole("ADMIN")
+                .anyRequest().permitAll())
+        .oauth2ResourceServer(oauth2 ->
+            oauth2.jwt(jwtConfigurer ->
+                    jwtConfigurer.decoder(nimbusJwtDecoder(publicKey)))
+                .authenticationEntryPoint(authenticationFailureHandler()))
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(authenticationFailureHandler())
             .accessDeniedHandler(accessDeniedHandler()));
@@ -82,6 +113,23 @@ public class WebSecurityConfig {
 
     return source;
   }
+
+  @Bean
+  public JwtDecoder nimbusJwtDecoder(RSAPublicKey publicKey) {
+    return NimbusJwtDecoder.withPublicKey(publicKey).build();
+  }
+
+  @Bean
+  public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+    grantedAuthoritiesConverter.setAuthorityPrefix("");
+
+    JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+    authenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+    return authenticationConverter;
+  }
+
 
   @Bean
   public AuthenticationEntryPoint authenticationFailureHandler() {

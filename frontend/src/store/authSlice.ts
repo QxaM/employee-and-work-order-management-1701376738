@@ -1,4 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createListenerMiddleware,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
+import { api } from './apiSlice.ts';
 
 export interface AuthState {
   token: string | undefined;
@@ -37,6 +42,20 @@ const authSlice = createSlice({
       localStorage.removeItem('token');
       state.token = undefined;
     },
+  },
+});
+
+export const authListenerMiddleware = createListenerMiddleware();
+authListenerMiddleware.startListening({
+  actionCreator: authSlice.actions.logout,
+  effect: (_action, listenerApi) => {
+    listenerApi.dispatch(api.util.resetApiState());
+  },
+});
+authListenerMiddleware.startListening({
+  actionCreator: authSlice.actions.login,
+  effect: (_action, listenerApi) => {
+    listenerApi.dispatch(api.util.resetApiState());
   },
 });
 
