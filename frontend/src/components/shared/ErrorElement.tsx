@@ -1,6 +1,13 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import { isQueryError } from '../../utils/errorUtils.ts';
 
+/**
+ * A functional React component that renders a user-friendly error message based on the current routing or query error state.
+ *
+ * The `ErrorElement` component utilizes the `useRouteError` hook to retrieve routing-related error information and determines
+ * the appropriate error status and description to display to the user. If the error is an instance of a general `Error` or
+ * a query-related error, it extracts and displays the relevant details accordingly.
+ */
 const ErrorElement = () => {
   const error = useRouteError();
 
