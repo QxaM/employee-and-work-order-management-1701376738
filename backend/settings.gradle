@@ -1,3 +1,4 @@
 rootProject.name = 'backend'
 include 'authorization-service'
 include 'discovery-service'
+include 'api-gateway-service'
