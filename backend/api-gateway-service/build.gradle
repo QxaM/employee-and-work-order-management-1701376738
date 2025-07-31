@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'pmd'
     id 'org.springframework.boot' version '3.5.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -46,3 +47,11 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+pmd {
+    consoleOutput = true
+    toolVersion = "7.0.0"
+    rulesMinimumPriority = 5
+    ruleSetFiles = files("$projectDir/build/resources/main/rulesets/java/quickstart.xml")
+}
+
