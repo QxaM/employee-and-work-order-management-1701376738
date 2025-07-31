@@ -93,6 +93,10 @@ deployment:
 
 To give you a visual overview of the application, here are some screenshots:
 
-### Roles update in the Admin's settings page
+### [Roles update in the Admin's settings page]
 
 ![Roles update in the Admin's settings page](rolesUpdate.png)
+
+### [Another Feature or Page Name]
+
+![Description of Image](http://link-to-your-image.com/image2.png)
