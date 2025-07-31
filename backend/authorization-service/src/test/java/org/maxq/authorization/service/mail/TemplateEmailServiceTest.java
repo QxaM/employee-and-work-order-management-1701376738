@@ -3,10 +3,10 @@ package org.maxq.authorization.service.mail;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -18,7 +18,7 @@ class TemplateEmailServiceTest {
   @Autowired
   private TemplateEmailService templateEmailService;
 
-  @MockBean
+  @MockitoBean
   private JavaMailSender mailSender;
 
   @Test

@@ -47,7 +47,7 @@ jobs:
           file: ./backend/authorization-service/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/authorization-service:0.0.1
+            ${{ secrets.DOCKER_USERNAME }}/authorization-service:1.0.0
             ${{ secrets.DOCKER_USERNAME }}/authorization-service:latest
           labels: authorization-service
 

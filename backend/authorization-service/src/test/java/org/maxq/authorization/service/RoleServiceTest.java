@@ -9,8 +9,8 @@ import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +27,7 @@ class RoleServiceTest {
   @Autowired
   private RoleService roleService;
 
-  @MockBean
+  @MockitoBean
   private RoleRepository roleRepository;
 
   private Role role;
