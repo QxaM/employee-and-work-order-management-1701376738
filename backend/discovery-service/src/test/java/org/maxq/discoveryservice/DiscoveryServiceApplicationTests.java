@@ -37,6 +37,7 @@ class DiscoveryServiceApplicationTests {
         .getForEntity("http://localhost:" + this.port + "/eureka/apps", String.class);
 
     // Then
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode(),
+        "Eureka is not started correctly, response should be OK");
   }
 }
