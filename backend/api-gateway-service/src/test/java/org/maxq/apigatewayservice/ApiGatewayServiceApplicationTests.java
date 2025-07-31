@@ -8,6 +8,7 @@ class ApiGatewayServiceApplicationTests {
 
   @Test
   void contextLoads() {
+    // Explicitly empty - just test Spring configuration
   }
 
 }

@@ -1,0 +1,61 @@
+name: API Gateway Service CI Pipeline
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  api-gateway-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./backend/gradlew
+
+      - name: Install dependencies
+        run: ./gradlew clean api-gateway-service:build -x test -x check -x assemble -x pmdMain -x pmdTest
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Lint Checks
+        run: ./gradlew api-gateway-service:check
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Unit Tests
+        run: ./gradlew api-gateway-service:test
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Build
+        run: ./gradlew api-gateway-service:assemble
+        env:
+          SPRING_PROFILES_ACTIVE: PROD
+        working-directory: backend
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-gateway-service-tests
+          path: backend/api-gateway-service/build/reports
+
+      - name: Upload JAR file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-gateway-service-jar
+          path: |
+            backend/api-gateway-service/build/libs/api-gateway-service-*.jar
+            !backend/api-gateway-service/build/libs/api-gateway-service-*-plain.jar
