@@ -42,6 +42,8 @@ project and employees managing easier.
    operations. Frontend code documentation can be seen be navigating to .
    /frontend directory and running `npm run docs:serve` command.
 2. **Backend:** Backend is split into multiple microservices
+    * **Discovery Service:** Built using Eureka and responsible for
+      registering microservices in the application.
     * **Authorization Service:** Responsible for all authorization related
       operations - registration, registration verification, login -
       see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html).
@@ -54,6 +56,7 @@ project and employees managing easier.
     * React
     * TailwindCSS
     * React-Router
+    * Redux Toolkit
     * Vite + Vitest
     * React-Testing-Library
     * TypeDoc
@@ -64,6 +67,8 @@ project and employees managing easier.
     * Gradle
     * JUnit
     * Swagger UI (API docs)
+    * Eureka (discovery services)
+    * **Hosting** - Render
 * **API Testing:**
     * Postman
 * **UI Testing:**
@@ -93,10 +98,6 @@ deployment:
 
 To give you a visual overview of the application, here are some screenshots:
 
-### [Roles update in the Admin's settings page]
+### Roles update in the Admin's settings page
 
 ![Roles update in the Admin's settings page](rolesUpdate.png)
-
-### [Another Feature or Page Name]
-
-![Description of Image](http://link-to-your-image.com/image2.png)

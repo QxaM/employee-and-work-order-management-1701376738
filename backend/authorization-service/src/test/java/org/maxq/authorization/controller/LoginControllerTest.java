@@ -13,12 +13,12 @@ import org.maxq.authorization.service.TokenService;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -47,14 +47,14 @@ class LoginControllerTest {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
-  @MockBean
+  @MockitoBean
   private TokenService tokenService;
-  @MockBean
+  @MockitoBean
   private UserService userService;
-  @MockBean
+  @MockitoBean
   private UserMapper userMapper;
 
-  @MockBean
+  @MockitoBean
   private UserDetailsDbService userDetailsDbService;
 
   @BeforeEach

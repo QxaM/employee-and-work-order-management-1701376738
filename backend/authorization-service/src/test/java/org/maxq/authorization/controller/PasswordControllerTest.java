@@ -15,10 +15,10 @@ import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -49,13 +49,13 @@ class PasswordControllerTest {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
-  @MockBean
+  @MockitoBean
   private ApplicationEventPublisher eventPublisher;
-  @MockBean
+  @MockitoBean
   private VerificationTokenService verificationTokenService;
-  @MockBean
+  @MockitoBean
   private UserService userService;
-  @MockBean
+  @MockitoBean
   private PasswordEncoder passwordEncoder;
 
   private String password;
