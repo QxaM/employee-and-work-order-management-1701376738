@@ -1,3 +1,2 @@
 rootProject.name = 'backend'
 include 'authorization-service'
-include 'discovery-service'
