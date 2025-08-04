@@ -29,10 +29,13 @@ jobs:
     needs:
       - authorization-postman-tests
       - discovery-service-ci
+      - api-gateway-service-ci
 
     steps:
       - name: Check previous job status
-        if: ${{ needs.authorization-postman-tests.result == 'success' }}
+        if: ${{ needs.authorization-postman-tests.result == 'success'
+          && needs.discovery-service-ci.result == 'success'
+          && needs.api-gateway-service.result == 'success'}}
         run: echo Backend Integration Successful
       - name: Fail if previous job failed
         if: ${{ needs.authorization-postman-tests.result != 'success' }}
