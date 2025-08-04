@@ -1,0 +1,60 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+frontend:
+  register:
+    confirm:
+      mapping: /register/confirm
+  reset:
+    password:
+      mapping: /password/confirm
+  url: ${FRONTEND_URL:http://localhost:5173}
+
+jwt:
+  issuer: authorization-service
+  private-key-path: classpath:/private_key.pem
+  public-key-path: classpath:/public_key.pem
+
+server:
+  port: ${PORT:8081}
+
+spring:
+  application:
+    name: authorization-service
+  config:
+    activate:
+      on-profile: QA
+  datasource:
+    password: ${AUTHORIZATION_POSTGRES_PASS:password}
+    url: ${POSTGRES_LINK:jdbc:postgresql://localhost:5432/authorization-db?sslmode=disable}
+    username: ${AUTHORIZATION_POSTGRES_USER:local_app}
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mail:
+    host: smtp.gmail.com
+    password: ${MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
+    username: ${MAIL_USERNAME}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: QA
+eureka:
+  client:
+    enabled: false

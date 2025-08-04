@@ -1,0 +1,42 @@
+app:
+  init: false
+
+eureka:
+  client:
+    enabled: false
+
+frontend:
+  register:
+    confirm:
+      mapping: /register/confirm
+  reset:
+    password:
+      mapping: /password/confirm
+  url: http://localhost:5173
+
+jwt:
+  issuer: authorization-service
+  private-key-path: classpath:/private_key.pem
+  public-key-path: classpath:/public_key.pem
+
+management:
+  health:
+    mail:
+      enabled: false
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: ''
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mail:
+    host: disabled
+    password: test
+    port: 0
+    username: test
