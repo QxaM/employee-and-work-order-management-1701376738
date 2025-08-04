@@ -20,6 +20,8 @@ jobs:
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
+  api-gateway-service-ci:
+    uses: ./.github/workflows/api-gateway-service-ci.yml
 
   backend-api-tests:
     runs-on: ubuntu-latest
