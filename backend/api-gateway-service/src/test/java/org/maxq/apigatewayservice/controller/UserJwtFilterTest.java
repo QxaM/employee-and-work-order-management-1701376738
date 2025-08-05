@@ -1,4 +1,4 @@
-package org.maxq.apigatewayservice.route.routing;
+package org.maxq.apigatewayservice.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -26,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
-class AuthorizationServiceRoutingTest {
+class UserJwtFilterTest {
 
   @LocalServerPort
   private int port;
@@ -47,23 +48,8 @@ class AuthorizationServiceRoutingTest {
   }
 
   @Test
-  void shouldCallDownstreamService() {
-    // Given
-    String authUri = "/api/auth";
-
-    // When
-    webTestClient.get()
-        .uri(authUri + "/test")
-        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .exchange()
-        .expectStatus().isOk();
-
-    // Then
-    verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/test")));
-  }
-
-  @Test
-  void shouldAddXGatewayHeader() {
+  @WithMockUser(username = "test", roles = {"OPERATOR"})
+  void shouldAddHeadersWhenTokenExists() {
     // Given
     String authUri = "/api/auth";
 
@@ -76,6 +62,7 @@ class AuthorizationServiceRoutingTest {
 
     // Then
     verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
-        .withHeader("X-Gateway", WireMock.equalTo("api-gateway-service")));
+        .withHeader("X-User", WireMock.equalTo("test"))
+        .withHeader("X-User-Roles", WireMock.equalTo("ROLE_OPERATOR")));
   }
 }

@@ -1,4 +1,4 @@
-package org.maxq.apigatewayservice.route.routing;
+package org.maxq.apigatewayservice.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -26,7 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
-class AuthorizationServiceRoutingTest {
+class RobotJwtFilterTest {
 
   @LocalServerPort
   private int port;
@@ -47,23 +47,7 @@ class AuthorizationServiceRoutingTest {
   }
 
   @Test
-  void shouldCallDownstreamService() {
-    // Given
-    String authUri = "/api/auth";
-
-    // When
-    webTestClient.get()
-        .uri(authUri + "/test")
-        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .exchange()
-        .expectStatus().isOk();
-
-    // Then
-    verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/test")));
-  }
-
-  @Test
-  void shouldAddXGatewayHeader() {
+  void shouldAddRobotToken() {
     // Given
     String authUri = "/api/auth";
 
@@ -76,6 +60,6 @@ class AuthorizationServiceRoutingTest {
 
     // Then
     verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
-        .withHeader("X-Gateway", WireMock.equalTo("api-gateway-service")));
+        .withHeader("Authorization", WireMock.matching("Bearer .+")));
   }
 }
