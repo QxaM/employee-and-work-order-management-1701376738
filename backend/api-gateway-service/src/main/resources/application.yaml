@@ -32,3 +32,17 @@ management:
     web:
       exposure:
         include: health,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.client.discovery: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: QA
+eureka:
+  client:
+    enabled: false
