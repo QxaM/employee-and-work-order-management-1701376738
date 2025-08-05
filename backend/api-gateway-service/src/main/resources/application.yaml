@@ -6,6 +6,43 @@ eureka:
 server:
   port: ${PORT:8080}
 
+
 spring:
   application:
     name: api-gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: authorization-service
+              uri: lb://authorization-service
+              predicates:
+                - Path=/api/auth/**
+                - Method=GET,POST,PATCH
+                - Header=Content-Type, application/json
+              filters:
+                - AddRequestHeader=X-Gateway, api-gateway-service
+                - RewritePath=/api/auth/?(?<segment>.*), /$\{segment}
+management:
+  endpoint:
+    gateway:
+      access: read_only
+  endpoints:
+    web:
+      exposure:
+        include: health,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.client.discovery: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: QA
+eureka:
+  client:
+    enabled: false

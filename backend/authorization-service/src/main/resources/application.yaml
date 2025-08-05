@@ -23,9 +23,6 @@ server:
 spring:
   application:
     name: authorization-service
-  config:
-    activate:
-      on-profile: QA
   datasource:
     password: ${AUTHORIZATION_POSTGRES_PASS:password}
     url: ${POSTGRES_LINK:jdbc:postgresql://localhost:5432/authorization-db?sslmode=disable}
