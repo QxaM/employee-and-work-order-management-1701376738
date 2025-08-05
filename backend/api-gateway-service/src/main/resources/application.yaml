@@ -6,6 +6,11 @@ eureka:
 server:
   port: ${PORT:8080}
 
+jwt:
+  public-key-path: classpath:/user_public_key.pem
+
+frontend:
+  url: ${FRONTEND_URL:http://localhost:5173}
 
 spring:
   application:
