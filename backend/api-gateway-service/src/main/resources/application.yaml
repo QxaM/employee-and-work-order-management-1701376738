@@ -22,7 +22,7 @@ spring:
                 - Method=GET,POST,PATCH
                 - Header=Content-Type, application/json
               filters:
-                - AddRequestHeader=X-Gateway, api-gateway-service.
+                - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/auth/?(?<segment>.*), /$\{segment}
 management:
   endpoint:
