@@ -7,7 +7,10 @@ server:
   port: ${PORT:8080}
 
 jwt:
-  public-key-path: classpath:/user_public_key.pem
+  issuer: 'api-gateway-service'
+  user-public-key-path: classpath:/user_public_key.pem
+  robot-public-key-path: classpath:/robot_public_key.pem
+  robot-private-key-path: classpath:/robot_private_key.pem
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}

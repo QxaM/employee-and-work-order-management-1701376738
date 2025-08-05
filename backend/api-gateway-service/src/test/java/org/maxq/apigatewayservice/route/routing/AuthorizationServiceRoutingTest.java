@@ -78,4 +78,21 @@ class AuthorizationServiceRoutingTest {
     verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
         .withHeader("X-Gateway", WireMock.equalTo("api-gateway-service")));
   }
+
+  @Test
+  void shouldAddRobotToken() {
+    // Given
+    String authUri = "/api/auth";
+
+    // When
+    webTestClient.get()
+        .uri(authUri + "/test")
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk();
+
+    // Then
+    verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
+        .withHeader("Authorization", WireMock.matching("Bearer .+")));
+  }
 }

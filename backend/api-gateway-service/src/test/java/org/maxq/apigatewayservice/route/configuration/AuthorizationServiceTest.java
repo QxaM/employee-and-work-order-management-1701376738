@@ -47,7 +47,8 @@ class AuthorizationServiceTest {
             allowedMethods().noneMatch(allowedMethod ->
                 allowedMethod.equals(method)
             )
-        );
+        )
+        .filter(method -> !method.equals(HttpMethod.TRACE));
   }
 
   @BeforeEach

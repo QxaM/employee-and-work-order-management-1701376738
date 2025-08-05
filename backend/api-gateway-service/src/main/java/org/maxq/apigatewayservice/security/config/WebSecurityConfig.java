@@ -3,6 +3,7 @@ package org.maxq.apigatewayservice.security.config;
 import lombok.RequiredArgsConstructor;
 import org.maxq.apigatewayservice.controller.config.CustomAccessDeniedHandler;
 import org.maxq.apigatewayservice.controller.config.CustomAuthenticationFailureHandler;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
-                                                       RSAPublicKey userPublicKey
+                                                       @Qualifier("user") RSAPublicKey userPublicKey
   ) {
     http.authorizeExchange(exchanges -> exchanges
             .pathMatchers("/api/auth/login/me").authenticated()
@@ -53,7 +54,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public ReactiveJwtDecoder nimbusJwtDecoder(RSAPublicKey publicKey) {
+  public ReactiveJwtDecoder nimbusJwtDecoder(@Qualifier("user") RSAPublicKey publicKey) {
     return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
   }
 
