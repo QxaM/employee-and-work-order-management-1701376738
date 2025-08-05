@@ -6,25 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.maxq.apigatewayservice.ApiGatewayServiceApplication;
+import org.maxq.apigatewayservice.config.AuthorizationServiceLoadBalancerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
-import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
-import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
-import org.springframework.cloud.loadbalancer.support.ServiceInstanceListSuppliers;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
@@ -34,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 
 @SpringBootTest(
-    classes = {AuthorizationServiceTest.Config.class},
+    classes = {AuthorizationServiceLoadBalancerConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @WireMockTest(httpPort = 8081)
@@ -45,8 +34,6 @@ class AuthorizationServiceTest {
 
   @LocalServerPort
   private int port;
-  @MockitoBean
-  private ReactiveDiscoveryClient discoveryClient;
   @Autowired
   private WebTestClient webTestClient;
 
@@ -133,21 +120,5 @@ class AuthorizationServiceTest {
         .header(HttpHeaders.CONTENT_TYPE, invalidContentType)
         .exchange()
         .expectStatus().isNotFound();
-  }
-
-  @Configuration(proxyBeanMethods = false)
-  @EnableAutoConfiguration
-  @LoadBalancerClient(name = "authorization-service", configuration = LoadBalancerConfig.class)
-  @Import(ApiGatewayServiceApplication.class)
-  protected static class Config {
-  }
-
-  protected static class LoadBalancerConfig {
-    @Bean
-    public ServiceInstanceListSupplier fixedServiceInstanceListSupplier(Environment env) {
-      return ServiceInstanceListSuppliers.from("authorization-service",
-          new DefaultServiceInstance("authorization-service-1", "authorization-service",
-              "localhost", 8081, false));
-    }
   }
 }
