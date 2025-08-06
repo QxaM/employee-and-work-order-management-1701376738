@@ -65,4 +65,22 @@ class UserJwtFilterTest {
         .withHeader("X-User", WireMock.equalTo("test"))
         .withHeader("X-User-Roles", WireMock.equalTo("ROLE_OPERATOR")));
   }
+
+  @Test
+  void shouldNotAddHeaders_When_TokenDoesNotExist() {
+    // Given
+    String authUri = "/api/auth";
+
+    // When
+    webTestClient.get()
+        .uri(authUri + "/test")
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk();
+
+    // Then
+    verify(WireMock.exactly(0), WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
+        .withHeader("X-User", WireMock.equalTo("test"))
+        .withHeader("X-User-Roles", WireMock.equalTo("ROLE_OPERATOR")));
+  }
 }

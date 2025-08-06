@@ -25,19 +25,12 @@ public class RSAKeyConfig {
   @Value("${jwt.private-key-path}")
   private String privateKeyPath;
 
-  @Bean
+  @Value("${jwt.robot-public-key-path}")
+  private String robotPublicKeyPath;
+
+  @Bean(name = "user")
   public RSAPublicKey jwtPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-    Resource resource = resourceLoader.getResource(publicKeyPath);
-    String publicKeyContent = new String(resource.getInputStream().readAllBytes())
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "")
-        .replaceAll("\\s", "");
-
-    byte[] decodedPublicKey = Base64.getDecoder().decode(publicKeyContent);
-    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-    X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedPublicKey);
-
-    return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
+    return buildPublicKey(resourceLoader, publicKeyPath);
   }
 
   @Bean
@@ -53,5 +46,24 @@ public class RSAKeyConfig {
     PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(decodedPrivateKey);
 
     return (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
+  }
+
+  @Bean(name = "robot")
+  public RSAPublicKey robotPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    return buildPublicKey(resourceLoader, robotPublicKeyPath);
+  }
+
+  private RSAPublicKey buildPublicKey(ResourceLoader resourceLoader, String keyPath) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    Resource resource = resourceLoader.getResource(keyPath);
+    String publicKeyContent = new String(resource.getInputStream().readAllBytes())
+        .replace("-----BEGIN PUBLIC KEY-----", "")
+        .replace("-----END PUBLIC KEY-----", "")
+        .replaceAll("\\s", "");
+
+    byte[] decodedPublicKey = Base64.getDecoder().decode(publicKeyContent);
+    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+    X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedPublicKey);
+
+    return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
   }
 }
