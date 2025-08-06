@@ -1,4 +1,4 @@
-package org.maxq.apigatewayservice.controller;
+package org.maxq.apigatewayservice.controller.filter;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -10,11 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
+import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
-class UserJwtFilterTest {
+class BasicTokenGatewayFilterFactoryTest {
 
   @LocalServerPort
   private int port;
@@ -43,44 +43,28 @@ class UserJwtFilterTest {
             .baseUrl(baseUri)
             .build();
 
-    stubFor(WireMock.get("/test")
+    stubFor(WireMock.post("/login")
         .willReturn(WireMock.ok()));
   }
 
   @Test
-  @WithMockUser(username = "test", roles = {"OPERATOR"})
-  void shouldAddHeadersWhenTokenExists() {
+  void shouldAddCustomBasicHeader() {
     // Given
+    String basicToken = Base64.getEncoder().encodeToString("test:test".getBytes());
+    String headerToken = "Basic " + basicToken;
     String authUri = "/api/auth";
 
     // When
-    webTestClient.get()
-        .uri(authUri + "/test")
+    webTestClient.post()
+        .uri(authUri + "/login")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .header(HttpHeaders.AUTHORIZATION, headerToken)
         .exchange()
         .expectStatus().isOk();
 
     // Then
-    verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
-        .withHeader("X-User", WireMock.equalTo("test"))
-        .withHeader("X-User-Roles", WireMock.equalTo("ROLE_OPERATOR")));
-  }
-
-  @Test
-  void shouldNotAddHeaders_When_TokenDoesNotExist() {
-    // Given
-    String authUri = "/api/auth";
-
-    // When
-    webTestClient.get()
-        .uri(authUri + "/test")
-        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .exchange()
-        .expectStatus().isOk();
-
-    // Then
-    verify(WireMock.exactly(0), WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
-        .withHeader("X-User", WireMock.equalTo("test"))
-        .withHeader("X-User-Roles", WireMock.equalTo("ROLE_OPERATOR")));
+    verify(WireMock.postRequestedFor(WireMock.urlEqualTo("/login"))
+        .withHeader("X-Basic-Authorization", WireMock.equalTo(basicToken))
+        .withHeader("Authorization", WireMock.matching("Bearer .+")));
   }
 }

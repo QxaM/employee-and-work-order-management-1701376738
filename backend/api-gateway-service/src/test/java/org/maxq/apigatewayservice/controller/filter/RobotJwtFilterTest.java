@@ -1,4 +1,4 @@
-package org.maxq.apigatewayservice.controller;
+package org.maxq.apigatewayservice.controller.filter;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
-import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -27,7 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
-class BasicTokenGatewayFilterFactoryTest {
+class RobotJwtFilterTest {
 
   @LocalServerPort
   private int port;
@@ -43,28 +42,24 @@ class BasicTokenGatewayFilterFactoryTest {
             .baseUrl(baseUri)
             .build();
 
-    stubFor(WireMock.post("/login")
+    stubFor(WireMock.get("/test")
         .willReturn(WireMock.ok()));
   }
 
   @Test
-  void shouldAddCustomBasicHeader() {
+  void shouldAddRobotToken() {
     // Given
-    String basicToken = Base64.getEncoder().encodeToString("test:test".getBytes());
-    String headerToken = "Basic " + basicToken;
     String authUri = "/api/auth";
 
     // When
-    webTestClient.post()
-        .uri(authUri + "/login")
+    webTestClient.get()
+        .uri(authUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .header(HttpHeaders.AUTHORIZATION, headerToken)
         .exchange()
         .expectStatus().isOk();
 
     // Then
-    verify(WireMock.postRequestedFor(WireMock.urlEqualTo("/login"))
-        .withHeader("X-Basic-Authorization", WireMock.equalTo(basicToken))
+    verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
         .withHeader("Authorization", WireMock.matching("Bearer .+")));
   }
 }

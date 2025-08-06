@@ -5,6 +5,9 @@ eureka:
 
 server:
   port: ${PORT:8080}
+local:
+  server:
+    port: ${PORT:8080}
 
 jwt:
   issuer: 'api-gateway-service'
