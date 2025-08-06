@@ -14,6 +14,7 @@ import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -40,12 +42,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 class LoginControllerTest {
 
   private static final String URL = "/login";
-
+  Jwt jwt = Jwt.withTokenValue("test-token")
+      .header("alg", "RS256")
+      .subject("robot")
+      .issuer("api-gateway-service")
+      .claim("type", "access_token")
+      .issuedAt(Instant.now())
+      .expiresAt(Instant.now().plusSeconds(3600))
+      .build();
+  String userEmail = "test@test.com";
+  String password = "test";
+  String basicToken = Base64.getEncoder().encodeToString((userEmail + ":" + password).getBytes());
   private MockMvc mockMvc;
-
   @Autowired
   private WebApplicationContext webApplicationContext;
-
   @MockitoBean
   private TokenService tokenService;
   @MockitoBean
@@ -53,8 +63,9 @@ class LoginControllerTest {
   @MockitoBean
   private UserMapper userMapper;
   @MockitoBean
+  private PasswordEncoder passwordEncoder;
+  @MockitoBean
   private JwtDecoder jwtDecoder;
-
   @MockitoBean
   private UserDetailsDbService userDetailsDbService;
 
@@ -64,29 +75,39 @@ class LoginControllerTest {
         .apply(springSecurity())
         .build();
 
-
+    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
   }
 
   @Test
-  @WithMockUser(username = "test@test.com")
   void shouldLoginWithUser() throws Exception {
     // Given
+    User user = new User(userEmail, password, true);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .post(URL))
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-Basic-Authorization", basicToken))
         .andExpect(MockMvcResultMatchers.status().isOk());
   }
 
   @Test
-  @WithMockUser(username = "test@test.com")
   void shouldReturnToken() throws Exception {
     // Given
+    User user = new User(userEmail, password, true);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
     when(tokenService.generateToken(any())).thenReturn("test-token");
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .post(URL))
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-Basic-Authorization", basicToken))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.token", Matchers.is("test-token")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.expiresIn", Matchers.is(3600)))
@@ -96,18 +117,16 @@ class LoginControllerTest {
   @Test
   void shouldReturn401_WhenDisabled() throws Exception {
     // Given
-    User user = new User("test@test.com", "test");
-    when(userDetailsDbService.loadUserByUsername(user.getEmail())).thenReturn(
-        org.springframework.security.core.userdetails.User
-            .withUsername("test@test.com")
-            .password("test")
-            .disabled(true)
-            .build()
-    );
+    User user = new User(userEmail, password);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .post(URL))
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-Basic-Authorization", basicToken))
         .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isUnauthorized());
   }
@@ -115,11 +134,17 @@ class LoginControllerTest {
   @Test
   void shouldReturn401_WhenUnauthorized() throws Exception {
     // Given
+    User user = new User(userEmail, password);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
+
     String message = "Unauthorized to access this resource, login please";
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .post(URL))
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
   }
@@ -128,20 +153,43 @@ class LoginControllerTest {
   @WithMockUser(username = "test@test.com")
   void shouldReturnMethodNotAllowed_WhenGetRequest() throws Exception {
     // Given
+    User user = new User(userEmail, password, true);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
+
     String message = "Request method GET not supported";
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .get(URL))
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-Basic-Authorization", basicToken))
         .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+  }
+
+  @Test
+  void shouldReturn401_When_RobotTokenNotPresent() throws Exception {
+    // Given
+    User user = new User(userEmail, password, true);
+    when(passwordEncoder.encode(password)).thenReturn(password);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+    when(userService.getUserByEmail(userEmail)).thenReturn(user);
+
+    String message = "Unauthorized to access this resource, login please";
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .header("X-Basic-Authorization", basicToken))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
   }
 
   @Test
   void shouldReturnMeData_WhenAuthorized() throws Exception {
     // Given
-    String userEmail = "test@test.com";
-
     Role role = new Role(1L, "TEST", Collections.emptyList());
     User user = new User(userEmail, "test", Set.of(role));
 
@@ -150,17 +198,6 @@ class LoginControllerTest {
 
     when(userService.getUserByEmail(userEmail)).thenReturn(user);
     when(userMapper.mapToMeDto(any(User.class))).thenReturn(me);
-
-    Jwt jwt = Jwt.withTokenValue("test-token")
-        .header("alg", "RS256")
-        .subject("robot")
-        .issuer("api-gateway-service")
-        .claim("type", "access_token")
-        .issuedAt(Instant.now())
-        .expiresAt(Instant.now().plusSeconds(3600))
-        .build();
-
-    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders.get(URL + "/me")
@@ -178,8 +215,6 @@ class LoginControllerTest {
   @Test
   void shouldReturn401_When_NoRobotToken() throws Exception {
     // Given
-    String userEmail = "test@test.com";
-
     Role role = new Role(1L, "TEST", Collections.emptyList());
     User user = new User(userEmail, "test", Set.of(role));
 
@@ -201,16 +236,6 @@ class LoginControllerTest {
   @Test
   void shouldReturn401_When_NoUserHeaders() throws Exception {
     // Given
-    Jwt jwt = Jwt.withTokenValue("test-token")
-        .header("alg", "RS256")
-        .subject("robot")
-        .issuer("api-gateway-service")
-        .claim("type", "access_token")
-        .issuedAt(Instant.now())
-        .expiresAt(Instant.now().plusSeconds(3600))
-        .build();
-
-    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders.get(URL + "/me")

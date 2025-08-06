@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
 import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
+import org.maxq.authorization.security.authentication.converter.JwtBasicAuthenticationConverter;
 import org.maxq.authorization.security.authentication.converter.JwtHeadersAuthenticationConverter;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -74,13 +75,19 @@ public class WebSecurityConfig {
 
   @Bean
   @Order(1)
-  public SecurityFilterChain filterChainLogin(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChainLogin(HttpSecurity http,
+                                              @Qualifier("robot") RSAPublicKey publicKey,
+                                              JwtBasicAuthenticationConverter jwtBasicAuthenticationConverter) throws Exception {
     http.securityMatcher("/login")
         .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
                 .requestMatchers("/login").authenticated())
-        .httpBasic(basic -> basic
-            .authenticationEntryPoint(authenticationFailureHandler()))
+        .oauth2ResourceServer(oauth2 ->
+            oauth2.jwt(jwtConfigurer ->
+                    jwtConfigurer
+                        .decoder(nimbusJwtDecoder(publicKey))
+                        .jwtAuthenticationConverter(jwtBasicAuthenticationConverter))
+                .authenticationEntryPoint(authenticationFailureHandler()))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
