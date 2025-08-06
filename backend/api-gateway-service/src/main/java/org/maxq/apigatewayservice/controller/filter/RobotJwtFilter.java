@@ -10,7 +10,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
-@Order(2)
+@Order(3)
 @RequiredArgsConstructor
 public class RobotJwtFilter implements GlobalFilter {
 

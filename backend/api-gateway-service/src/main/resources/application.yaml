@@ -23,6 +23,17 @@ spring:
       server:
         webflux:
           routes:
+            - id: authorization-service-login
+              uri: lb://authorization-service
+              predicates:
+                - Path=/api/auth/login
+                - Method=POST
+              filters:
+                - AddRequestHeader=X-Gateway, api-gateway-service
+                - RewritePath=/api/auth/login, /login
+                - name: BasicToken
+                  args:
+                    basicTokenHeader: X-Basic-Authorization
             - id: authorization-service
               uri: lb://authorization-service
               predicates:
