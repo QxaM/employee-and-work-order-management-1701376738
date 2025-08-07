@@ -1,0 +1,12 @@
+services:
+  discovery-service:
+    build: .
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 25
+      start_period: 30s
+      start_interval: 10s

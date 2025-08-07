@@ -1,0 +1,13 @@
+services:
+  api-gateway-service:
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+  authorization-service:
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy

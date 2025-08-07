@@ -1,0 +1,4 @@
+include:
+  - discovery-service/compose.yaml
+  - api-gateway-service/compose.yaml
+  - authorization-service/compose.yaml
