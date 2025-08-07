@@ -15,6 +15,8 @@ import { ApiErrorType } from '../../types/ApiTypes.ts';
  */
 export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
 
+export const authApi = '/auth';
+
 /**
  * A default error message used to indicate an unknown error occurred
  * during an API request. This message serves as a fallback for cases
@@ -32,7 +34,7 @@ export interface CustomFetchBaseQueryError {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: apiBaseUrl,
+  baseUrl: apiBaseUrl + '/api',
   prepareHeaders: (headers) => {
     const token = localStorage.getItem('token');
     if (token) {

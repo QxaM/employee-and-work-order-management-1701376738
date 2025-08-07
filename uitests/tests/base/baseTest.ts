@@ -1,10 +1,11 @@
+/* eslint-disable playwright/no-standalone-expect */
+import { APIRequestContext, expect, Page, test as base } from "@playwright/test";
 import {
-  APIRequestContext,
-  expect,
-  Page,
-  test as base,
-} from "@playwright/test";
-import { createApiContext } from "../utils/api.utils";
+  createApiContext,
+  getTokenApi,
+  registerApi,
+  registerConfirmationApi
+} from "../utils/authorization.api.utils";
 import { faker } from "@faker-js/faker";
 
 interface TestUser {
@@ -37,34 +38,24 @@ export const test = base.extend<Fixture>({
     const password = "test";
 
     // Register user
-    const registerResponse = await apiContext.post(`/register`, {
-      data: {
-        email,
-        password,
-      },
+    await registerApi(apiContext, {
+      login: email,
+      password,
     });
-    expect(registerResponse.ok()).toBeTruthy();
 
-    let token: string = "";
+    let token: string | undefined;
 
     // Confirm registration
     await expect(async () => {
-      const response = await apiContext.get(`/qa/token`, {
-        params: {
-          email,
-        },
-      });
-      expect(response.ok()).toBeTruthy();
-      token = await response.text();
+      try {
+        token = await getTokenApi(apiContext, email);
+      } catch {
+        // Empty to just rerun getTokenApi
+      }
+      expect(token).toBeDefined();
     }).toPass();
 
-    const verificationResponse = await apiContext.post(`/register/confirm`, {
-      params: {
-        token,
-      },
-    });
-    expect(verificationResponse.ok()).toBeTruthy();
-
+    await registerConfirmationApi(apiContext, token!);
     await use({ email, password });
   },
 });

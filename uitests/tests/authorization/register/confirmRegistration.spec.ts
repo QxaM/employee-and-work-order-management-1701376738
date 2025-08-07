@@ -1,7 +1,12 @@
 import { APIRequestContext, expect, test } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 
-import { createApiContext } from "../../utils/api.utils";
+import {
+  createApiContext,
+  expireToken,
+  getTokenApi,
+  registerApi,
+} from "../../utils/authorization.api.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
 import {
   expiredTokenMessage,
@@ -21,13 +26,7 @@ test.describe("Confirmation registration tests", () => {
   test.beforeEach(async () => {
     email = faker.internet.email();
     password = "test";
-    const registerResponse = await apiContext.post(`/register`, {
-      data: {
-        email,
-        password,
-      },
-    });
-    expect(registerResponse.ok()).toBeTruthy();
+    await registerApi(apiContext, { login: email, password });
   });
 
   test.afterAll(async () => {
@@ -51,13 +50,15 @@ test.describe("Confirmation registration tests", () => {
   }) => {
     await test.step("TC7.1 - should confirm registration", async () => {
       // Given
-      const response = await apiContext.get(`/qa/token`, {
-        params: {
-          email,
-        },
-      });
-      expect(response.ok()).toBeTruthy();
-      const token = await response.text();
+      let token: string | undefined;
+      await expect(async () => {
+        try {
+          token = await getTokenApi(apiContext, email);
+        } catch {
+          // Empty - retry request
+        }
+        expect(token).toBeDefined();
+      }).toPass();
 
       // When
       await page.goto(`/register/confirm?token=${token}`);
@@ -86,35 +87,28 @@ test.describe("Confirmation registration tests", () => {
   });
 
   test("TC8 - should not confirm on expiration", async ({ page, baseURL }) => {
-    let token: string;
+    let token: string | undefined;
 
     await test.step("TC-8.1 - expire token", async () => {
       // Given
-      const tokenResponse = await apiContext.get(`/qa/token`, {
-        params: {
-          email,
-        },
-      });
-      expect(tokenResponse.ok()).toBeTruthy();
-      token = await tokenResponse.text();
+      await expect(async () => {
+        try {
+          token = await getTokenApi(apiContext, email);
+        } catch {
+          // Empty - retry request
+        }
+        expect(token).toBeDefined();
+      }).toPass();
 
       const date = new Date();
       const expiredDate = new Date(
         date.setMinutes(date.getMinutes() - 24 * 60 - 1),
       );
-      const expiredDateJavaLocalDateTimeString = expiredDate
-        .toISOString()
-        .replaceAll("Z", "");
 
-      // When
-      const expirationResponse = await apiContext.patch(`/qa/token/${token}`, {
-        params: {
-          creationDate: expiredDateJavaLocalDateTimeString,
-        },
-      });
-
-      // Then
-      expect(expirationResponse.ok()).toBeTruthy();
+      // When + Then
+      await expect(
+        expireToken(apiContext, token!, expiredDate),
+      ).resolves.toBeUndefined();
     });
 
     await test.step("TC8.2 - try confirmation with expired token", async () => {

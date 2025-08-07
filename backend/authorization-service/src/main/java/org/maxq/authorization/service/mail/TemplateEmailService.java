@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Profile("!QA")
+@Profile("!QA & !SIT")
 public class TemplateEmailService implements MailService {
 
   private static final String SENDER = "noreply@maxq.com";

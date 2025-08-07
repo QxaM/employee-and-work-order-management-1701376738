@@ -18,9 +18,13 @@ import { rolesApi } from '../../../src/store/api/role.ts';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 describe('Authorization API', () => {
   beforeEach(() => {
@@ -54,7 +58,7 @@ describe('Authorization API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/register`,
+            url: `/auth/register`,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -196,7 +200,7 @@ describe('Authorization API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/register/confirm?token=${token}`,
+            url: `/auth/register/confirm?token=${token}`,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -342,7 +346,7 @@ describe('Authorization API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/login`,
+            url: `/auth/login`,
             method: 'POST',
             headers: {
               Authorization: `Basic ${btoa(`${email}:${password}`)}`,
@@ -486,7 +490,7 @@ describe('Authorization API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: '/login/me',
+            url: '/auth/login/me',
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

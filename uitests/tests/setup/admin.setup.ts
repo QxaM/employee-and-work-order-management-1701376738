@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 import credentials from "../../test-data/credentials.json";
-import { AUTHORIZATION_SERVICE_URL, loginApi } from "../utils/api.utils";
+import { createApiContext, loginApi } from "../utils/authorization.api.utils";
 import { Credentials, Token } from "../types/Authorization";
 import { buildContextStorage, ContextState } from "./setup.utils";
 
@@ -15,9 +15,7 @@ let apiContext: APIRequestContext;
 test("Authentication - Admin", async ({ playwright, baseURL }) => {
   // Given
   const userCredentials = credentials.admin as Credentials;
-  apiContext = await playwright.request.newContext({
-    baseURL: AUTHORIZATION_SERVICE_URL,
-  });
+  apiContext = await createApiContext(playwright);
 
   // When
   const token: Token = await loginApi(apiContext, userCredentials);

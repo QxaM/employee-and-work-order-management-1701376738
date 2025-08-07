@@ -1,4 +1,5 @@
 import { api } from '../apiSlice.ts';
+import { authApi } from './base.ts';
 import { GetUsersType } from '../../types/UserTypes.ts';
 import { PageableRequest } from '../../types/ApiTypes.ts';
 import { RoleType } from '../../types/RoleTypes.ts';
@@ -22,7 +23,7 @@ export const usersApi = api.injectEndpoints({
         const { page = 0, size = 15 } = params || {};
 
         return {
-          url: USERS_API + `?page=${page}&size=${size}`,
+          url: authApi + USERS_API + `?page=${page}&size=${size}`,
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ export const usersApi = api.injectEndpoints({
     }),
     addRole: builder.mutation<undefined, ModifyRoleRequest>({
       query: ({ userId, role }) => ({
-        url: USERS_API + `/${userId}/addRole?role=${role.id}`,
+        url: authApi + USERS_API + `/${userId}/addRole?role=${role.id}`,
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ export const usersApi = api.injectEndpoints({
     }),
     removeRole: builder.mutation<undefined, ModifyRoleRequest>({
       query: ({ userId, role }) => ({
-        url: USERS_API + `/${userId}/removeRole?role=${role.id}`,
+        url: authApi + USERS_API + `/${userId}/removeRole?role=${role.id}`,
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
