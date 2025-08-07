@@ -1,4 +1,4 @@
-name: Authorization Service Deploy
+name: Discovery Service Deploy
 on:
   workflow_run:
     workflows:
@@ -14,7 +14,7 @@ permissions:
   id-token: write
 
 jobs:
-  authorization-service-deploy:
+  api-gateway-service-deploy:
     runs-on: ubuntu-latest
     if: |
       github.event.workflow_run.conclusion == 'success' && 
@@ -29,8 +29,8 @@ jobs:
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: ui-tests-ci.yml
-          name: authorization-service-jar
-          path: backend/authorization-service/build/libs
+          name: api-gateway-service-jar
+          path: backend/api-gateway-service/build/libs
           github_token: '${{ github.token }}'
 
       - name: Log in to Docker Hub
@@ -43,22 +43,22 @@ jobs:
         id: push
         uses: docker/build-push-action@v6
         with:
-          context: ./backend/authorization-service
-          file: ./backend/authorization-service/Dockerfile
+          context: ./backend/api-gateway-service
+          file: ./backend/api-gateway-service/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/authorization-service:1.0.0
-            ${{ secrets.DOCKER_USERNAME }}/authorization-service:latest
-          labels: authorization-service
+            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:0.0.1
+            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:latest
+          labels: api-gateway-service
 
       - name: Deploy to Render
         run: |
-          curl ${{ secrets.AUTHORIZATION_RENDER_HOOK }}
+          curl ${{ secrets.API_GATEWAY_RENDER_HOOK }}
 
       - name: Wait for application to be ready
         timeout-minutes: 10
         env:
-          HEALTHCHECK_URL: ${{ secrets.AUTHORIZATION_API_URL }}/actuator/health
+          HEALTHCHECK_URL: ${{ secrets.API_GATEWAY_API_URL }}/actuator/health
         run: |
           ATTEMPT=1
           
