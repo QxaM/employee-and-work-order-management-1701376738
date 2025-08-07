@@ -1,5 +1,6 @@
 import { api } from '../apiSlice.ts';
 import { RoleType } from '../../types/RoleTypes.ts';
+import { authApi as AUTH_API } from './base.ts';
 
 const defaultRegisterErrorMessage =
   'Unknown error during registration process!';
@@ -46,7 +47,7 @@ export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     register: builder.mutation<undefined, RegisterType>({
       query: (data) => ({
-        url: REGISTER_API,
+        url: AUTH_API + REGISTER_API,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ export const authApi = api.injectEndpoints({
     }),
     confirmRegistration: builder.mutation<undefined, string>({
       query: (token) => ({
-        url: VERIFICATION_API + `?token=${token}`,
+        url: AUTH_API + VERIFICATION_API + `?token=${token}`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export const authApi = api.injectEndpoints({
     }),
     login: builder.mutation<TokenType, LoginType>({
       query: (data) => ({
-        url: LOGIN_API,
+        url: AUTH_API + LOGIN_API,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ export const authApi = api.injectEndpoints({
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     me: builder.query<MeType, void>({
       query: () => ({
-        url: LOGIN_API + '/me',
+        url: AUTH_API + LOGIN_API + '/me',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
