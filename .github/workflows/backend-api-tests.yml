@@ -5,6 +5,8 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      ROBOT_JWT_PRIVATE_KEY:
+        required: true
       MAIL_USERNAME:
         required: true
       MAIL_PASSWORD:
@@ -25,6 +27,8 @@ jobs:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
     uses: ./.github/workflows/api-gateway-service-ci.yml
+    secrets:
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
 
   backend-api-tests:
     runs-on: ubuntu-latest

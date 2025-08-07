@@ -18,6 +18,7 @@ jobs:
     uses: ./.github/workflows/backend-api-tests.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}

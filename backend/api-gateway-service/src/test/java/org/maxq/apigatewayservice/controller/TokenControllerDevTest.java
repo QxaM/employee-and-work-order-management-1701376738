@@ -18,7 +18,7 @@ import java.time.Duration;
     "eureka.client.enabled=false"
 })
 @ActiveProfiles({"DEV"})
-public class TokenControllerDevTest {
+class TokenControllerDevTest {
 
   @LocalServerPort
   private int port;
