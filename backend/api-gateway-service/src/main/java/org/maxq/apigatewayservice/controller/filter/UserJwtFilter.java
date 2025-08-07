@@ -4,15 +4,13 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Component
 @Order(2)
@@ -21,16 +19,15 @@ public class UserJwtFilter implements GlobalFilter {
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
     return exchange.getPrincipal()
         .map(principal -> {
-          UsernamePasswordAuthenticationToken userToken =
-              (UsernamePasswordAuthenticationToken) principal;
-          User userAuthorities = (User) userToken.getPrincipal();
-          Collection<GrantedAuthority> grantedAuthorities = userAuthorities.getAuthorities();
+          JwtAuthenticationToken userToken =
+              (JwtAuthenticationToken) principal;
+          Jwt userAuthorities = (Jwt) userToken.getPrincipal();
+          List<String> grantedAuthorities = userAuthorities.getClaimAsStringList("roles");
 
           ServerHttpRequest mutatedRequest = exchange.getRequest()
               .mutate()
-              .header("X-User", userAuthorities.getUsername())
-              .header("X-User-Roles",
-                  grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
+              .header("X-User", userAuthorities.getSubject())
+              .header("X-User-Roles", String.join(",", grantedAuthorities))
               .build();
 
           return exchange
