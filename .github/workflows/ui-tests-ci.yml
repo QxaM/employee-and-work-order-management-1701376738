@@ -131,6 +131,10 @@ jobs:
       - name: Wait for services Health Check
         run: sleep 20
 
+      - name: Inject private key
+        run: |
+          echo "ROBOT_TOKEN=${{ secrets.ROBOT_TOKEN }}" > uitests/test-data/private.env
+
       - name: Install tests dependencies
         run: npm ci
         working-directory: uitests
