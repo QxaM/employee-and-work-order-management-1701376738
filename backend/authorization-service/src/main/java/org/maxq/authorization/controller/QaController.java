@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/qa")
 @RequiredArgsConstructor
-@Profile({"QA", "DEV"})
+@Profile({"QA", "DEV", "SIT"})
 public class QaController implements QaApi {
 
   private final UserService userService;

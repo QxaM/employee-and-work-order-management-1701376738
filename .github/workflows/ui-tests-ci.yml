@@ -82,7 +82,19 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build
         env:
-          SPRING_PROFILES_ACTIVE: QA
+          SPRING_PROFILES_ACTIVE: SIT
+        working-directory: backend
+
+      - name: Start Discovery Service
+        run: ./gradlew discovery-service:bootRun &
+        env:
+          SPRING_PROFILES_ACTIVE: SIT
+        working-directory: backend
+
+      - name: Start API Gateway Service
+        run: ./gradlew api-gateway-service:bootRun &
+        env:
+          SPRING_PROFILES_ACTIVE: SIT
         working-directory: backend
 
       - name: Start Authorization Service
@@ -90,7 +102,7 @@ jobs:
         env:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          SPRING_PROFILES_ACTIVE: QA
+          SPRING_PROFILES_ACTIVE: SIT
         working-directory: backend
 
       - name: Wait for application to be ready

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("QA")
+@Profile("QA & SIT")
 @Slf4j
 public class QAEmailService implements MailService {
 
