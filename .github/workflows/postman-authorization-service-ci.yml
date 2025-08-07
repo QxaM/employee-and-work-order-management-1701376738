@@ -9,6 +9,8 @@ on:
         required: true
       MAIL_PASSWORD:
         required: true
+      ROBOT_TOKEN:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -84,7 +86,7 @@ jobs:
           while true; do
             echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
           
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            RESPONSE=$(curl -s $HEALTHCHECK_URL -H "Authorization: Bearer ${{ secrets.ROBOT_TOKEN }}" || true)
             echo "$RESPONSE"
           
             if echo "$RESPONSE" | grep -q '"status":"UP"'; then
@@ -105,7 +107,8 @@ jobs:
         run: |
           newman run "EWM - Authorization Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
-          --reporter-htmlextra-export ./results/report.html
+          --reporter-htmlextra-export ./results/report.html \
+          --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
         working-directory: postman-api-tests/authorization-service
 
       - name: Upload Postman Report

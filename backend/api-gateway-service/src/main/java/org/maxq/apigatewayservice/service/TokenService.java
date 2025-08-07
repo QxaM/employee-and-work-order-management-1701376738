@@ -1,12 +1,11 @@
-package org.maxq.authorization.service;
+package org.maxq.apigatewayservice.service;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class TokenService {
@@ -26,8 +25,8 @@ public class TokenService {
 
   public TokenService(
       @Value("${jwt.issuer}") String issuer,
-      @Qualifier("user") RSAPublicKey publicKey,
-      RSAPrivateKey privateKey
+      @Qualifier("robot") RSAPublicKey publicKey,
+      @Qualifier("robotPrivate") RSAPrivateKey privateKey
   ) {
     this.issuer = issuer;
 
@@ -41,17 +40,25 @@ public class TokenService {
     );
   }
 
-  public String generateToken(UserDetails userDetails) {
-    List<String> roles = userDetails.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .toList();
-
+  public String generateToken() {
     JwtClaimsSet claimsSet = JwtClaimsSet.builder()
         .issuer(issuer)
         .issuedAt(Instant.now())
-        .expiresAt(Instant.now().plusSeconds(3600))
-        .subject(userDetails.getUsername())
-        .claim("roles", roles)
+        .expiresAt(Instant.now().plusSeconds(60))
+        .subject("robot")
+        .claim("type", "access_token")
+        .build();
+
+    return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+  }
+
+  @Profile({"DEV"})
+  public String generateLongLastingToken(int days) {
+    JwtClaimsSet claimsSet = JwtClaimsSet.builder()
+        .issuer(issuer)
+        .issuedAt(Instant.now())
+        .expiresAt(Instant.now().plus(days, ChronoUnit.DAYS))
+        .subject("robot")
         .claim("type", "access_token")
         .build();
 

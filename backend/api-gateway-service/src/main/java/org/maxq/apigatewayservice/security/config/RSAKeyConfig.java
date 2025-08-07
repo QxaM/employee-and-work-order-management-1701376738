@@ -1,4 +1,4 @@
-package org.maxq.authorization.security.config;
+package org.maxq.apigatewayservice.security.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,23 +19,28 @@ import java.util.Base64;
 @Configuration
 public class RSAKeyConfig {
 
-  @Value("${jwt.public-key-path}")
-  private String publicKeyPath;
-
-  @Value("${jwt.private-key-path}")
-  private String privateKeyPath;
+  @Value("${jwt.user-public-key-path}")
+  private String userPublicKey;
 
   @Value("${jwt.robot-public-key-path}")
-  private String robotPublicKeyPath;
+  private String robotPublicKey;
+
+  @Value("${jwt.robot-private-key-path}")
+  private String robotPrivateKey;
 
   @Bean(name = "user")
-  public RSAPublicKey jwtPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-    return buildPublicKey(resourceLoader, publicKeyPath);
+  public RSAPublicKey userJwtPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    return buildPublicKey(resourceLoader, userPublicKey);
   }
 
-  @Bean
+  @Bean(name = "robot")
+  public RSAPublicKey robotJwtPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    return buildPublicKey(resourceLoader, robotPublicKey);
+  }
+
+  @Bean(name = "robotPrivate")
   public RSAPrivateKey jwtPrivateKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-    Resource resource = resourceLoader.getResource(privateKeyPath);
+    Resource resource = resourceLoader.getResource(robotPrivateKey);
     String privateKeyContent = new String(resource.getInputStream().readAllBytes())
         .replace("-----BEGIN PRIVATE KEY-----", "")
         .replace("-----END PRIVATE KEY-----", "")
@@ -48,12 +53,9 @@ public class RSAKeyConfig {
     return (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
   }
 
-  @Bean(name = "robot")
-  public RSAPublicKey robotPublicKey(ResourceLoader resourceLoader) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-    return buildPublicKey(resourceLoader, robotPublicKeyPath);
-  }
-
-  private RSAPublicKey buildPublicKey(ResourceLoader resourceLoader, String keyPath) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+  private RSAPublicKey buildPublicKey(ResourceLoader resourceLoader, String keyPath) throws IOException,
+      NoSuchAlgorithmException,
+      InvalidKeySpecException {
     Resource resource = resourceLoader.getResource(keyPath);
     String publicKeyContent = new String(resource.getInputStream().readAllBytes())
         .replace("-----BEGIN PUBLIC KEY-----", "")

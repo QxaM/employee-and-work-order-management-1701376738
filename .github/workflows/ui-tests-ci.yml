@@ -18,8 +18,10 @@ jobs:
     uses: ./.github/workflows/backend-api-tests.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -67,6 +69,10 @@ jobs:
         run: |
           echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
 
+      - name: Inject robot private key
+        run: |
+          echo "${{ secrets.ROBOT_JWT_PRIVATE_KEY }}" > backend/api-gateway-service/src/main/resources/robot_private_key.pem
+
       - name: Install Frontend Dependencies
         run: npm ci
         working-directory: frontend
@@ -97,7 +103,7 @@ jobs:
           while true; do
             echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
           
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            RESPONSE=$(curl -s $HEALTHCHECK_URL -H "Authorization: Bearer ${{ secrets.ROBOT_TOKEN }}" || true)
             echo "$RESPONSE"
           
             if echo "$RESPONSE" | grep -q '"status":"UP"'; then

@@ -10,6 +10,9 @@ import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,12 +45,24 @@ class QaControllerTest {
   private UserService userService;
   @MockitoBean
   private VerificationTokenService verificationTokenService;
+  @MockitoBean
+  private JwtDecoder jwtDecoder;
 
   @BeforeEach
   void securitySetup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
         .apply(springSecurity())
         .build();
+
+    Jwt jwt = Jwt.withTokenValue("test-token")
+        .header("alg", "RS256")
+        .subject("robot")
+        .issuer("api-gateway-service")
+        .claim("type", "access_token")
+        .issuedAt(Instant.now())
+        .expiresAt(Instant.now().plusSeconds(3600))
+        .build();
+    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
   }
 
   @Test
@@ -60,6 +76,7 @@ class QaControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL + "/token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .queryParam("email", user.getEmail()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(token.getToken())));
@@ -74,6 +91,7 @@ class QaControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL + "/token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("email", "test@test.com"))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
@@ -90,9 +108,26 @@ class QaControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL + "/token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("email", user.getEmail()))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
+  }
+
+  @Test
+  void shouldReturn401_When_TokenNotProvided_When_GetToken() throws Exception {
+    // Given
+    User user = new User("test@test.com", "test");
+    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
+    when(userService.getUserByEmail("test@test.com")).thenReturn(user);
+    when(verificationTokenService.getTokenByUser(any(User.class))).thenReturn(token);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/token")
+            .queryParam("email", user.getEmail()))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -105,6 +140,7 @@ class QaControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/token/" + token.getToken())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("creationDate", newDate.toString()))
         .andExpect(MockMvcResultMatchers.status().isOk());
     verify(verificationTokenService, times(1)).updateCreationDate(token.getToken(), newDate);
@@ -119,8 +155,24 @@ class QaControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/token/test")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("creationDate", LocalDateTime.now().toString()))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test message")));
+  }
+
+  @Test
+  void shouldReturn401_When_TokenNotProvided_When_UpdateToken() throws Exception {
+    // Given
+    User user = new User("test@test.com", "test");
+    VerificationToken token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
+    LocalDateTime newDate = LocalDateTime.now().minusDays(1);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/token/" + token.getToken())
+            .param("creationDate", newDate.toString()))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 }

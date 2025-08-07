@@ -10,9 +10,9 @@ import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.TokenService;
 import org.maxq.authorization.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,9 +37,10 @@ public class LoginController implements LoginApi {
 
   @Override
   @GetMapping("/me")
+  @PreAuthorize("authentication.principal != null")
   public ResponseEntity<MeDto> me(Authentication authentication) throws ElementNotFoundException {
-    Jwt jwt = (Jwt) authentication.getPrincipal();
-    User user = userService.getUserByEmail(jwt.getSubject());
+    String username = (String) authentication.getPrincipal();
+    User user = userService.getUserByEmail(username);
     return ResponseEntity.ok(userMapper.mapToMeDto(user));
   }
 }

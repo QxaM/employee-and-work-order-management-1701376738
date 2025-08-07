@@ -2,6 +2,9 @@ name: API Gateway Service CI Pipeline
 
 on:
   workflow_call:
+    secrets:
+      ROBOT_JWT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -17,6 +20,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
+      - name: Inject private key
+        run: |
+          echo "${{ secrets.ROBOT_JWT_PRIVATE_KEY }}" > backend/api-gateway-service/src/main/resources/robot_private_key.pem
 
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./backend/gradlew

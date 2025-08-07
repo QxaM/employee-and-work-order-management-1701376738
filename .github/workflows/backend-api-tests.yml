@@ -5,9 +5,13 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      ROBOT_JWT_PRIVATE_KEY:
+        required: true
       MAIL_USERNAME:
         required: true
       MAIL_PASSWORD:
+        required: true
+      ROBOT_TOKEN:
         required: true
   workflow_dispatch:
 
@@ -18,10 +22,13 @@ jobs:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
     uses: ./.github/workflows/api-gateway-service-ci.yml
+    secrets:
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
 
   backend-api-tests:
     runs-on: ubuntu-latest

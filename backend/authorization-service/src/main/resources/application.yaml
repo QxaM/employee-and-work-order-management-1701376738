@@ -16,6 +16,7 @@ jwt:
   issuer: authorization-service
   private-key-path: classpath:/private_key.pem
   public-key-path: classpath:/public_key.pem
+  robot-public-key-path: classpath:/robot_public_key.pem
 
 server:
   port: ${PORT:8081}
