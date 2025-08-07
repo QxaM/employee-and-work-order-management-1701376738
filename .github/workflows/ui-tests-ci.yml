@@ -103,7 +103,7 @@ jobs:
           while true; do
             echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
           
-            RESPONSE=$(curl -s $HEALTHCHECK_URL -H "Authorization: Bearer ${{ secrets.ROBOT_TOKEN }} || true)
+            RESPONSE=$(curl -s $HEALTHCHECK_URL -H "Authorization: Bearer ${{ secrets.ROBOT_TOKEN }}" || true)
             echo "$RESPONSE"
           
             if echo "$RESPONSE" | grep -q '"status":"UP"'; then
