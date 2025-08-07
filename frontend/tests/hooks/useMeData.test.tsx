@@ -9,9 +9,13 @@ import { useMeData } from '../../src/hooks/useMeData.tsx';
 import { waitFor } from '@testing-library/react';
 import { act } from 'react';
 
-vi.mock('../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 describe('useMeData', () => {
   const data: MeType = {

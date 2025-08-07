@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { api } from '../apiSlice.ts';
+import { authApi } from './base.ts';
 import { RoleType } from '../../types/RoleTypes.ts';
 
 const ROLES_API = '/roles';
@@ -16,7 +17,7 @@ export const rolesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getRoles: builder.query<RoleType[], void>({
       query: () => ({
-        url: ROLES_API,
+        url: authApi + ROLES_API,
         method: 'GET',
         defaultError:
           'Error while fetching roles data, please try again later.',

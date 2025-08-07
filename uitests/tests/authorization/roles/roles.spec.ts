@@ -4,7 +4,7 @@ import { notAuthorizedMessage, notLoggedInMessage } from "./roles.utils";
 import { buildContextStorage, ContextState } from "../../setup/setup.utils";
 
 import credentials from "../../../test-data/credentials.json";
-import { loginApi } from "../../utils/api.utils";
+import { loginApi } from "../../utils/authorization.api.utils";
 import { Page } from "playwright";
 
 test("TC18 - should navigate to login if user is not logged in", async ({

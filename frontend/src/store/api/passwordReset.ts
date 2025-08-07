@@ -1,4 +1,5 @@
 import { api } from '../apiSlice.ts';
+import { authApi } from './base.ts';
 
 const PASSWORD_RESET_API = '/password/reset';
 
@@ -23,7 +24,7 @@ export const passwordResetApi = api.injectEndpoints({
   endpoints: (builder) => ({
     requestPasswordReset: builder.mutation<undefined, string>({
       query: (email) => ({
-        url: PASSWORD_RESET_API + `?email=${email}`,
+        url: authApi + PASSWORD_RESET_API + `?email=${email}`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,6 +35,7 @@ export const passwordResetApi = api.injectEndpoints({
     passwordUpdate: builder.mutation<undefined, PasswordUpdateRequest>({
       query: (data) => ({
         url:
+          authApi +
           PASSWORD_RESET_API +
           `?token=${data.token}&password=${btoa(data.password)}`,
         method: 'PATCH',

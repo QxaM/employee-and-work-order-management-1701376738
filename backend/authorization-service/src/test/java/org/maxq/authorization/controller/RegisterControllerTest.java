@@ -26,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
@@ -70,12 +74,24 @@ class RegisterControllerTest {
   private ApplicationEventPublisher eventPublisher;
   @MockitoBean
   private VerificationTokenService verificationTokenService;
+  @MockitoBean
+  private JwtDecoder jwtDecoder;
 
   @BeforeEach
   void securitySetup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
         .apply(springSecurity())
         .build();
+
+    Jwt jwt = Jwt.withTokenValue("test-token")
+        .header("alg", "RS256")
+        .subject("robot")
+        .issuer("api-gateway-service")
+        .claim("type", "access_token")
+        .issuedAt(Instant.now())
+        .expiresAt(Instant.now().plusSeconds(3600))
+        .build();
+    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
   }
 
   @Test
@@ -91,6 +107,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -109,6 +126,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -128,6 +146,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andDo(print())
@@ -144,6 +163,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andDo(print())
@@ -160,6 +180,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andDo(print())
@@ -178,6 +199,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andDo(print())
@@ -196,6 +218,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(new Gson().toJson(userDto)))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -210,11 +233,31 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(malformedJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message",
             Matchers.containsString("JSON parse error")));
+  }
+
+  @Test
+  void shouldReturn401_When_NoTokenProvided() throws Exception {
+    // Given
+    UserDto userDto = new UserDto("test@test.com", "test");
+    User user = new User("test@test.com", "test");
+    Role role = new Role("TEST");
+    when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(roleService.getRoleByName(anyString())).thenReturn(role);
+    doNothing().when(eventPublisher).publishEvent(any());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new Gson().toJson(userDto)))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -230,6 +273,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(CONFIRM_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", token.getToken()))
         .andExpect(MockMvcResultMatchers.status().isOk());
@@ -246,6 +290,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(CONFIRM_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -267,6 +312,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(CONFIRM_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -288,6 +334,7 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(CONFIRM_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
@@ -313,9 +360,29 @@ class RegisterControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(CONFIRM_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .contentType(MediaType.APPLICATION_JSON)
             .param("token", "token"))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
+  }
+
+  @Test
+  void shouldReturn401_When_NoTokenProvided_When_ConfirmRegistration() throws Exception {
+    // Given
+    Role role = new Role(1L, "admin", Collections.emptyList());
+    User user = new User(1L, "test@test.com", "test", false, Set.of(role));
+    VerificationToken token = new VerificationToken(1L, "token", user,
+        LocalDateTime.now().minusMinutes(24 * 60).plusMinutes(1), false);
+
+    when(verificationTokenService.getToken(token.getToken())).thenReturn(token);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(CONFIRM_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("token", token.getToken()))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 }
