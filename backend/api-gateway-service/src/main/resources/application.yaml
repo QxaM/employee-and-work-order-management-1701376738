@@ -46,6 +46,15 @@ spring:
               filters:
                 - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/auth/?(?<segment>.*), /$\{segment}
+            - id: eureka-apps
+              uri: ${EUREKA_URL:http://localhost:8761/eureka}
+              predicates:
+                - Path=/service/registered-apps
+                - Method=GET
+              filters:
+                - RemoveRequestHeader=Accept
+                - AddRequestHeader=Accept, application/json
+                - RewritePath=/service/registered-apps, /eureka/apps
 management:
   endpoint:
     gateway:
