@@ -20,7 +20,6 @@ jobs:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
