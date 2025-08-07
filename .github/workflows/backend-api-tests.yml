@@ -9,6 +9,8 @@ on:
         required: true
       MAIL_PASSWORD:
         required: true
+      ROBOT_TOKEN:
+        required: true
   workflow_dispatch:
 
 jobs:
@@ -18,6 +20,7 @@ jobs:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
