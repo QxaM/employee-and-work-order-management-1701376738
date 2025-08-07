@@ -10,9 +10,13 @@ import { act, PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 const mockData: RoleType[] = [
   {
@@ -48,7 +52,7 @@ describe('Role API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: '/roles',
+            url: '/auth/roles',
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

@@ -12,11 +12,15 @@ import {
 } from '../../../src/store/api/passwordReset.ts';
 import { act } from 'react';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
-describe('Users API', () => {
+describe('Password Reset API', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -45,7 +49,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/password/reset?email=${email}`,
+            url: `/auth/password/reset?email=${email}`,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -192,7 +196,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/password/reset?token=${token}&password=${btoa(password)}`,
+            url: `/auth/password/reset?token=${token}&password=${btoa(password)}`,
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',

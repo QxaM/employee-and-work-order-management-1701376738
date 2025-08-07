@@ -16,9 +16,13 @@ import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 import { RoleType } from '../../../src/types/RoleTypes.ts';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 const USER_CONTENT = [
   {
@@ -85,7 +89,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/users?page=0&size=15`,
+            url: `/auth/users?page=0&size=15`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -114,7 +118,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/users?page=${page}&size=${size}`,
+            url: `/auth/users?page=${page}&size=${size}`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -320,7 +324,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/users/${userId}/addRole?role=${role.id}`,
+            url: `/auth/users/${userId}/addRole?role=${role.id}`,
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
@@ -471,7 +475,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/users/${userId}/removeRole?role=${role.id}`,
+            url: `/auth/users/${userId}/removeRole?role=${role.id}`,
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
