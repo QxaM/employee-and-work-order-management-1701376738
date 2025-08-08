@@ -34,6 +34,10 @@ jobs:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'frontend/**'
 
+      - name: Print changed files
+        run: |
+          echo ${{ steps.filter.outputs.all_modified_files }}
+
   frontend-deploy:
     needs: changes
     runs-on: ubuntu-latest

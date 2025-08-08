@@ -20,6 +20,10 @@ jobs:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'frontend/**'
 
+      - name: Print changed files
+        run: |
+          echo ${{ steps.filter.outputs.all_modified_files }}
+
   frontend:
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
