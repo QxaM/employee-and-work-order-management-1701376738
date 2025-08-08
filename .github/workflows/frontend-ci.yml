@@ -8,7 +8,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: $ {{ steps.filter.outputs.frontend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - name: Check changes in Frontend
         uses: dorny/paths-filter@v3.0.2
