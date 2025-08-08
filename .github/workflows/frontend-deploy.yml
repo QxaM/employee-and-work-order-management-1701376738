@@ -26,21 +26,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download build artifact
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: ui-tests-ci.yml
-          name: frontend-build
-          path: frontend/dist
-          github_token: '${{ github.token }}'
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Upload to S3
+      - name: Deploy to Render
         run: |
-          aws s3 sync frontend/dist s3://${{ secrets.S3_BUCKET }} --delete
+          curl ${{ secrets.FRONTEND_RENDER_HOOK }}
+
+      - name: Wait for application to be ready
+        timeout-minutes: 10
+        env:
+          HEALTHCHECK_URL: ${{ secrets.FRONTEND_URL }}
+        run: |
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if $(RESPONSE=200); then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Response: $RESPONSE"
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
