@@ -72,7 +72,7 @@ jobs:
           path: backend/authorization-service/build/libs
 
       - name: Run Compose Containers
-        run: docker compose up --build -d
+        run: docker compose up --build
         working-directory: backend
         env:
           SPRING_PROFILES_ACTIVE: SIT
