@@ -22,7 +22,7 @@ jobs:
               - 'frontend/**'
 
       - name: Skip if no changes in Frontend
-        if: steps.changes.outputs.frontend == 'true'
+        if: steps.changes.outputs.frontend == 'false'
         run: |
           echo "Changes not detected for frontend - skipping build"
           exit 0
