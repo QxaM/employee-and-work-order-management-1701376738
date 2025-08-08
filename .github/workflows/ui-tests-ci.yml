@@ -73,6 +73,7 @@ jobs:
 
       - name: Run Compose Containers
         run: docker compose up --build -d
+        working-directory: backend
         env:
           SPRING_PROFILES_ACTIVE: SIT
 
