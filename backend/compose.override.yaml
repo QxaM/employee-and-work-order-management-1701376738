@@ -1,0 +1,18 @@
+services:
+  discovery-service:
+    environment:
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+  api-gateway-service:
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+  authorization-service:
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+    depends_on:
+      discovery-service:
+        condition: service_healthy
