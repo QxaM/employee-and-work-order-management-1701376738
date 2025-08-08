@@ -1,4 +1,4 @@
-name: Discovery Service Deploy
+name: API Gateway Service Deploy
 on:
   workflow_run:
     workflows:
