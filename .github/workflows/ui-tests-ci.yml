@@ -72,8 +72,10 @@ jobs:
           path: backend/authorization-service/build/libs
 
       - name: Run Compose Containers
-        run: SPRING_PROFILES_ACTIVE=SIT docker compose up --build
+        run: docker compose up --build
         working-directory: backend
+        env:
+          SPRING_PROFILES_ACTIVE: SIT
 
       - name: Install Frontend Dependencies
         run: npm ci
