@@ -18,8 +18,6 @@ jobs:
           filters: |
             frontend:
               - 'frontend/**'
-      - name: Test output
-        run: echo "Output of check changes ${{ steps.filter.outputs }}"
 
   frontend:
     needs: changes
