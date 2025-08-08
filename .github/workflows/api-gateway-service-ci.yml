@@ -11,7 +11,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      api-gateway: ${{ steps.filter.outputs.any_modified }}
+      api-gateway: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
 
       - name: Print changed files
         run: |
-          echo ${{ steps.filter.outputs.all_modified_files }}
+          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
   api-gateway-service:
     needs: changes
