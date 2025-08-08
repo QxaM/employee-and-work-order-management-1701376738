@@ -34,19 +34,8 @@ jobs:
         run: npm run coverage
         working-directory: frontend
 
-      - name: Build Frontend
-        run: npm run build
-        working-directory: frontend
-
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
           path: frontend/coverage
-
-      - name: Upload Build Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/dist
