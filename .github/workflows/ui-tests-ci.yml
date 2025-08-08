@@ -12,8 +12,6 @@ on:
 jobs:
   frontend:
     uses: ./.github/workflows/frontend-ci.yml
-    permissions:
-      pull-requests: read
     secrets: inherit
 
   api-tests:
