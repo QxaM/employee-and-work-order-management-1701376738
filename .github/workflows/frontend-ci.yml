@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check changes in Frontend
         uses: dorny/paths-filter@v3.0.2
-        id: changes
+        id: filter
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           filters: |
