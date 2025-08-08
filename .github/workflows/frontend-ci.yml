@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          token: ${{ github.token }}
 
       - name: Check changes in Frontend
         uses: dorny/paths-filter@v3.0.2
