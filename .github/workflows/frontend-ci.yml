@@ -13,6 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check changes in Frontend
+        uses: dorny/paths-filter@v3.0.2
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+
+      - name: Skip if no changes in Frontend
+        if: steps.changes.outputs.frontend == 'true'
+        run: |
+          echo "Changes not detected for frontend - skipping build"
+          exit 0
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
