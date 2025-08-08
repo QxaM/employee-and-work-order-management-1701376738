@@ -14,7 +14,7 @@ jobs:
         uses: dorny/paths-filter@v3.0.2
         id: filter
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
           filters: |
             frontend:
               - 'frontend/**'
