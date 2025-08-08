@@ -10,8 +10,7 @@ jobs:
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
-      - name: Check changes in Frontend
-        uses: dorny/paths-filter@v3.0.2
+      - uses: dorny/paths-filter@v3.0.2
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
