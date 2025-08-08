@@ -18,15 +18,17 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
+      frontend: ${{ steps.filter.outputs.any_modified }}
     steps:
-      - uses: dorny/paths-filter@v3.0.2
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in frontend
+        uses: tj-actions/changed-files@v46.0.5
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
-          filters: |
-            frontend:
-              - 'frontend/**'
+          files: 'frontend/**'
 
   frontend-deploy:
     needs: changes
