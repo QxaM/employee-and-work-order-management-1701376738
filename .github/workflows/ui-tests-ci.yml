@@ -35,21 +35,6 @@ jobs:
       - frontend
       - api-tests
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: local_app
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: authorization-db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -65,45 +50,38 @@ jobs:
         with:
           node-version: '22.17.1'
 
-      - name: Inject private key
-        run: |
-          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+      - name: Docker Setup Compose
+        uses: docker/setup-compose-action@v1.2.0
 
-      - name: Inject robot private key
-        run: |
-          echo "${{ secrets.ROBOT_JWT_PRIVATE_KEY }}" > backend/api-gateway-service/src/main/resources/robot_private_key.pem
+      - name: Download Discovery Service JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: discovery-service-jar
+          path: backend/discovery-service/build/libs
 
-      - name: Install Frontend Dependencies
-        run: npm ci
-        working-directory: frontend
+      - name: Download API Gateway Service JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: api-gateway-service-jar
+          path: backend/api-gateway-service/build/libs
 
-      - name: Install Backend Dependencies
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean build
-        env:
-          SPRING_PROFILES_ACTIVE: SIT
+      - name: Download Authorization Service JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: authorization-service-jar
+          path: backend/authorization-service/build/libs
+
+      - name: Run Compose Containers
+        run: docker compose up --build -d
         working-directory: backend
-
-      - name: Start Discovery Service
-        run: ./gradlew discovery-service:bootRun &
-        env:
-          SPRING_PROFILES_ACTIVE: SIT
-        working-directory: backend
-
-      - name: Start API Gateway Service
-        run: ./gradlew api-gateway-service:bootRun &
-        env:
-          SPRING_PROFILES_ACTIVE: SIT
-        working-directory: backend
-
-      - name: Start Authorization Service
-        run: ./gradlew authorization-service:bootRun &
         env:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           SPRING_PROFILES_ACTIVE: SIT
-        working-directory: backend
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+        working-directory: frontend
 
       - name: Wait for Discovery Service to be ready
         timeout-minutes: 2
