@@ -19,6 +19,8 @@ services:
       - "8081:8081"
     environment:
       - POSTGRES_LINK=jdbc:postgresql://authorization-database:5432/authorization-db?sslmode=disable
+      - MAIL_USERNAME=$MAIL_USERNAME
+      - MAIL_PASSWORD=$MAIL_PASSWORD
     depends_on:
       authorization-database:
         condition: service_healthy

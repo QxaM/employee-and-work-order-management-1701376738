@@ -75,6 +75,8 @@ jobs:
         run: docker compose up --build -d
         working-directory: backend
         env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           SPRING_PROFILES_ACTIVE: SIT
 
       - name: Install Frontend Dependencies
