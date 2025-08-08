@@ -5,13 +5,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  frontend:
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      frontend: $ {{ steps.filter.outputs.frontend }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Check changes in Frontend
         uses: dorny/paths-filter@v3.0.2
         id: changes
@@ -20,12 +18,14 @@ jobs:
           filters: |
             frontend:
               - 'frontend/**'
+  frontend:
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
 
-      - name: Skip if no changes in Frontend
-        if: steps.changes.outputs.frontend == 'false'
-        run: |
-          echo "Changes not detected for frontend - skipping build"
-          exit 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
