@@ -101,6 +101,7 @@ public class WebSecurityConfig {
     http.securityMatcher("/**")
         .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
+                .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/users/**").hasRole("ADMIN")
                 .requestMatchers("/roles/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
