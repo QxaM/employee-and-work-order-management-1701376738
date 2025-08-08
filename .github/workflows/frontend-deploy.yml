@@ -1,4 +1,4 @@
-name: Deploy frontend to Google Cloud Storage Bucket
+name: Deploy frontend to Render
 
 on:
   workflow_run:
