@@ -54,22 +54,28 @@ jobs:
         uses: docker/setup-compose-action@v1.2.0
 
       - name: Download Discovery Service JAR
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v6
         with:
+          workflow: ui-tests-ci.yml
           name: discovery-service-jar
           path: backend/discovery-service/build/libs
+          github_token: '${{ github.token }}'
 
       - name: Download API Gateway Service JAR
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v6
         with:
+          workflow: ui-tests-ci.yml
           name: api-gateway-service-jar
           path: backend/api-gateway-service/build/libs
+          github_token: '${{ github.token }}'
 
       - name: Download Authorization Service JAR
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v6
         with:
+          workflow: ui-tests-ci.yml
           name: authorization-service-jar
           path: backend/authorization-service/build/libs
+          github_token: '${{ github.token }}'
 
       - name: Run Compose Containers
         run: docker compose up --build -d
