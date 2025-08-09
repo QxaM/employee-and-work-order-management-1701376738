@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "d083ad06-70b5-46e1-ad90-febda2600715",
+		"name": "EWM - Profile Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25751491"
+	},
+	"item": [
+		{
+			"name": "Healthcheck",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{profileServiceUrl}}/actuator/health",
+					"host": [
+						"{{profileServiceUrl}}"
+					],
+					"path": [
+						"actuator",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{robotToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "profileServiceUrl",
+			"value": "http://localhost:8082",
+			"type": "string"
+		}
+	]
+}
