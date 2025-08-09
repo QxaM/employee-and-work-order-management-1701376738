@@ -1,0 +1,104 @@
+name: API Gateway Service Deploy
+on:
+  workflow_run:
+    workflows:
+      - UI Tests Pipeline
+    types:
+      - completed
+    secrets: inherit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api-gateway: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in frontend
+        uses: tj-actions/changed-files@v46.0.5
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: 'backend/api-gateway-service/**'
+
+      - name: Print changed files
+        run: |
+          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
+
+  api-gateway-service-deploy:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push' &&
+      needs.changes.outputs.api-gateway == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ui-tests-ci.yml
+          name: api-gateway-service-jar
+          path: backend/api-gateway-service/build/libs
+          github_token: '${{ github.token }}'
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/api-gateway-service
+          file: ./backend/api-gateway-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:0.0.1
+            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:latest
+          labels: api-gateway-service
+
+      - name: Deploy to Render
+        run: |
+          curl ${{ secrets.API_GATEWAY_RENDER_HOOK }}
+
+      - name: Wait for application to be ready
+        timeout-minutes: 10
+        env:
+          HEALTHCHECK_URL: ${{ secrets.API_GATEWAY_API_URL }}/actuator/health
+        run: |
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1

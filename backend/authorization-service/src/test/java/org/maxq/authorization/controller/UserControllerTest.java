@@ -14,11 +14,13 @@ import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -43,10 +46,12 @@ class UserControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
-  @MockBean
+  @MockitoBean
   private UserService userService;
-  @MockBean
+  @MockitoBean
   private UserMapper userMapper;
+  @MockitoBean
+  private JwtDecoder jwtDecoder;
 
   private Role role;
   private User user1;
@@ -63,10 +68,19 @@ class UserControllerTest {
     user1 = new User(1L, "test1@test.com", "test1", true, Set.of(role));
     user2 = new User(2L, "test2@test.com", "test2", true, Set.of(role));
     users = List.of(user1, user2);
+
+    Jwt jwt = Jwt.withTokenValue("test-token")
+        .header("alg", "RS256")
+        .subject("robot")
+        .issuer("api-gateway-service")
+        .claim("type", "access_token")
+        .issuedAt(Instant.now())
+        .expiresAt(Instant.now().plusSeconds(3600))
+        .build();
+    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldGetAllUsers() throws Exception {
     // Given
     Pageable page = Pageable.ofSize(10).withPage(0);
@@ -82,7 +96,10 @@ class UserControllerTest {
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .get(URL))
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN"))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(2)))
         .andExpect(MockMvcResultMatchers.jsonPath(
@@ -96,19 +113,33 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "OPERATOR")
   void shouldThrow_When_UserIsNotAdmin() throws Exception {
     // Given
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .get(URL))
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_OPERATOR"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_When_TokenIsNotPresent_GetUsers() throws Exception {
+    // Given
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL)
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN"))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+  }
+
+  @Test
   void shouldAddRole() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -117,6 +148,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isOk());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -127,7 +161,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_NotFound_WhenUserNotFound() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenThrow(ElementNotFoundException.class);
@@ -135,6 +168,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isNotFound());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -142,7 +178,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_NotFound_WhenRoleNotFound() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -152,6 +187,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isNotFound());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -162,7 +200,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_RoleExists_WhenRoleExists() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -172,6 +209,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -182,19 +222,36 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "OPERATOR")
   void shouldNotAllowNonAdminRoles() throws Exception {
     // Given
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/addRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_OPERATOR")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isForbidden());
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
+  void shouldThrow_When_TokenIsNotPresent_AddRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doNothing().when(userService).addRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/addRole")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+  }
+
+  @Test
   void shouldRemoveRole() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -203,6 +260,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isOk());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -213,7 +273,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_NotFound_WhenUserNotFound_When_RemoveRole() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenThrow(ElementNotFoundException.class);
@@ -221,6 +280,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isNotFound());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -228,7 +290,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_NotFound_WhenRoleNotFound_When_RemoveRole() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -238,6 +299,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isNotFound());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -248,7 +312,6 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "ADMIN")
   void shouldThrow_RoleNotExists_WhenRoleNotFound() throws Exception {
     // Given
     when(userService.getUserById(anyLong())).thenReturn(user1);
@@ -258,6 +321,9 @@ class UserControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
     verify(userService, times(1)).getUserById(user1.getId());
@@ -268,14 +334,32 @@ class UserControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "test@test.com", roles = "OPERATOR")
   void shouldNotAllowNonAdminRoles_When_RemoveRole() throws Exception {
     // Given
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_OPERATOR")
             .param("role", String.valueOf(role.getId())))
         .andExpect(MockMvcResultMatchers.status().isForbidden());
+  }
+
+  @Test
+  void shouldThrow_When_TokenIsNotPresent_RemoveRole() throws Exception {
+    // Given
+    when(userService.getUserById(anyLong())).thenReturn(user1);
+    doNothing().when(userService).removeRole(any(User.class), anyLong());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + "/" + user1.getId() + "/removeRole")
+            .header("X-User", "test@test.com")
+            .header("X-User-Roles", "ROLE_ADMIN")
+            .param("role", String.valueOf(role.getId())))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 }

@@ -5,9 +5,13 @@ on:
     secrets:
       JWT_PRIVATE_KEY:
         required: true
+      ROBOT_JWT_PRIVATE_KEY:
+        required: true
       MAIL_USERNAME:
         required: true
       MAIL_PASSWORD:
+        required: true
+      ROBOT_TOKEN:
         required: true
   workflow_dispatch:
 
@@ -18,17 +22,31 @@ jobs:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
+  discovery-service-ci:
+    uses: ./.github/workflows/discovery-service-ci.yml
+  api-gateway-service-ci:
+    uses: ./.github/workflows/api-gateway-service-ci.yml
+    secrets:
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
 
   backend-api-tests:
     runs-on: ubuntu-latest
 
     needs:
       - authorization-postman-tests
+      - discovery-service-ci
+      - api-gateway-service-ci
 
     steps:
-      - name: Check previous job status
-        if: ${{ needs.authorization-postman-tests.result == 'success' }}
-        run: echo Backend Integration Successful
-      - name: Fail if previous job failed
-        if: ${{ needs.authorization-postman-tests.result != 'success' }}
+      - name: Fail if Discovery Service failed
+        if: ${{ needs.discovery-service-ci.result != 'success' }}
         run: exit 1
+      - name: Fail if API Gateway Service failed
+        if: ${{ needs.api-gateway-service-ci.result != 'success' }}
+        run: exit 2
+      - name: Fail if Authorization Service failed
+        if: ${{ needs.authorization-postman-tests.result != 'success' }}
+        run: exit 3
+      - name: Check previous job status
+        run: echo Backend Integration Successful

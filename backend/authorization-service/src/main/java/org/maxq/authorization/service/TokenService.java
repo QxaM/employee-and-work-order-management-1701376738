@@ -3,6 +3,7 @@ package org.maxq.authorization.service;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +26,7 @@ public class TokenService {
 
   public TokenService(
       @Value("${jwt.issuer}") String issuer,
-      RSAPublicKey publicKey,
+      @Qualifier("user") RSAPublicKey publicKey,
       RSAPrivateKey privateKey
   ) {
     this.issuer = issuer;

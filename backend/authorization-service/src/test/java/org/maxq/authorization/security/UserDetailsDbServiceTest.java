@@ -8,10 +8,10 @@ import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ class UserDetailsDbServiceTest {
   @Autowired
   private UserDetailsDbService userDetailsDbService;
 
-  @MockBean
+  @MockitoBean
   private UserService userService;
 
   @Test

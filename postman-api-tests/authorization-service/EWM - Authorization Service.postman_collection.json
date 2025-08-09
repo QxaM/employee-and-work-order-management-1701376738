@@ -40,9 +40,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -462,26 +459,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('adminEmail');\r",
+											"const password = pm.variables.get('adminPassword');\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('adminBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{adminPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{adminEmail}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{adminBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -526,26 +528,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('operatorEmail');\r",
+											"const password = pm.variables.get('operatorPassword');\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('operatorBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{operatorPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{operatorEmail}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{operatorBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -590,26 +597,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('designerEmail');\r",
+											"const password = pm.variables.get('designerPassword');\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('designerBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{designerPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{designerEmail}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{designerBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -650,26 +662,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('adminEmail');\r",
+											"const password = '12345';\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('wrongBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "123456",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "unknown@unknown.com",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{wrongBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -705,26 +722,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('registerEmail');\r",
+											"const password = '12345';\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('disabledBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "12345",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{registerEmail}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{disabledBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -747,71 +769,6 @@
 						{
 							"name": "Positive",
 							"item": [
-								{
-									"name": "Login as operator",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"const response = pm.response.json();\r",
-													"\r",
-													"pm.test(\"Should containt token\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-													"    pm.collectionVariables.set('operatorToken', response.token);\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should be correct type\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-													"    pm.expect(response.type).to.eql('Bearer');\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should expire in 1h\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-													"    pm.expect(response.expiresIn).to.eql(3600);\r",
-													"})"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "password",
-													"value": "{{operatorPassword}}",
-													"type": "string"
-												},
-												{
-													"key": "username",
-													"value": "{{operatorEmail}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"url": {
-											"raw": "http://localhost:8081/login",
-											"protocol": "http",
-											"host": [
-												"localhost"
-											],
-											"port": "8081",
-											"path": [
-												"login"
-											]
-										}
-									},
-									"response": []
-								},
 								{
 									"name": "Get me info",
 									"event": [
@@ -847,18 +804,14 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{operatorToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/login/me",
 											"protocol": "http",
@@ -886,15 +839,15 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test(\"Status code is 401\", () => {\r",
-													"    pm.response.to.have.status(401);\r",
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
 													"});\r",
 													"\r",
 													"const response = pm.response.json();\r",
 													"\r",
 													"pm.test(\"Response contains valid message\", () => {\r",
 													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
-													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please')\r",
+													"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\")\r",
 													"})\r",
 													""
 												],
@@ -904,9 +857,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -964,9 +914,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -1026,9 +973,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -1079,9 +1023,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"url": {
@@ -1135,26 +1076,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('confirmEmail');\r",
+											"const password = '12345';\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('confirmBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{confirmEmail}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "12345",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{confirmBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -1205,9 +1151,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -1253,26 +1196,31 @@
 												"type": "text/javascript",
 												"packages": {}
 											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const email = pm.variables.get('disabledEmail');\r",
+													"const password = '12345';\r",
+													"\r",
+													"const basicToken = btoa(`${email}:${password}`);\r",
+													"pm.collectionVariables.set('disabledBasicToken', basicToken);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "username",
-													"value": "{{disabledEmail}}",
-													"type": "string"
-												},
-												{
-													"key": "password",
-													"value": "12345",
-													"type": "string"
-												}
-											]
-										},
 										"method": "POST",
-										"header": [],
+										"header": [
+											{
+												"key": "X-Basic-Authorization",
+												"value": "{{disabledBasicToken}}",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/login",
 											"protocol": "http",
@@ -1321,9 +1269,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -1377,9 +1322,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -1443,9 +1385,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -1482,7 +1421,9 @@
 											"script": {
 												"exec": [
 													"const reuseTokenEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
-													"pm.collectionVariables.set(\"reuseTokenEmail\", reuseTokenEmail);"
+													"pm.collectionVariables.set(\"reuseTokenEmail\", reuseTokenEmail);\r",
+													"\r",
+													""
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -1502,9 +1443,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -1564,9 +1502,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -1617,9 +1552,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -1676,9 +1608,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -1735,9 +1664,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -1796,9 +1722,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -1862,9 +1785,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -1924,9 +1844,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -1977,9 +1894,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"url": {
@@ -2030,9 +1944,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "POST",
 								"header": [],
 								"url": {
@@ -2090,9 +2001,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -2144,9 +2052,6 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "noauth"
-								},
 								"method": "PATCH",
 								"header": [],
 								"url": {
@@ -2204,26 +2109,31 @@
 										"type": "text/javascript",
 										"packages": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const email = pm.variables.get('forgottenPasswordEmail');\r",
+											"const password = pm.variables.get('newPassword');\r",
+											"\r",
+											"const basicToken = btoa(`${email}:${password}`);\r",
+											"pm.collectionVariables.set('newPasswordBasicToken', basicToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{newPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{forgottenPasswordEmail}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "X-Basic-Authorization",
+										"value": "{{newPasswordBasicToken}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/login",
 									"protocol": "http",
@@ -2274,9 +2184,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -2338,9 +2245,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -2397,9 +2301,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -2459,9 +2360,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -2512,9 +2410,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -2565,9 +2460,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -2625,9 +2517,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -2679,9 +2568,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -2743,9 +2629,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -2806,9 +2689,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -2868,9 +2748,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -2921,9 +2798,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -2974,9 +2848,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -3034,9 +2905,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -3090,9 +2958,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -3157,9 +3022,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -3220,9 +3082,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -3282,9 +3141,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "GET",
 										"header": [],
 										"url": {
@@ -3335,9 +3191,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -3388,9 +3241,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"url": {
@@ -3448,9 +3298,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "PATCH",
 										"header": [],
 										"url": {
@@ -3535,71 +3382,6 @@
 					"name": "Positive",
 					"item": [
 						{
-							"name": "Login as admin",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"const response = pm.response.json();\r",
-											"\r",
-											"pm.test(\"Should containt token\", () => {\r",
-											"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-											"    pm.collectionVariables.set('adminToken', response.token);\r",
-											"})\r",
-											"\r",
-											"pm.test(\"Should be correct type\", () => {\r",
-											"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-											"    pm.expect(response.type).to.eql('Bearer');\r",
-											"})\r",
-											"\r",
-											"pm.test(\"Should expire in 1h\", () => {\r",
-											"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-											"    pm.expect(response.expiresIn).to.eql(3600);\r",
-											"})"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{adminPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{adminEmail}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8081/login",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"login"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Get all roles",
 							"event": [
 								{
@@ -3628,18 +3410,19 @@
 								}
 							],
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{adminToken}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{adminEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "ROLE_ADMIN",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "http://localhost:8081/roles",
 									"protocol": "http",
@@ -3662,71 +3445,6 @@
 						{
 							"name": "Forbidden",
 							"item": [
-								{
-									"name": "Login as operator",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"const response = pm.response.json();\r",
-													"\r",
-													"pm.test(\"Should containt token\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-													"    pm.collectionVariables.set('operatorToken', response.token);\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should be correct type\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-													"    pm.expect(response.type).to.eql('Bearer');\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should expire in 1h\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-													"    pm.expect(response.expiresIn).to.eql(3600);\r",
-													"})"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "password",
-													"value": "{{operatorPassword}}",
-													"type": "string"
-												},
-												{
-													"key": "username",
-													"value": "{{operatorEmail}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"url": {
-											"raw": "http://localhost:8081/login",
-											"protocol": "http",
-											"host": [
-												"localhost"
-											],
-											"port": "8081",
-											"path": [
-												"login"
-											]
-										}
-									},
-									"response": []
-								},
 								{
 									"name": "Get all roles",
 									"event": [
@@ -3751,18 +3469,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{operatorToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_OPERATOR",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/roles",
 											"protocol": "http",
@@ -3792,71 +3511,6 @@
 						{
 							"name": "Positive",
 							"item": [
-								{
-									"name": "Login as admin",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"const response = pm.response.json();\r",
-													"\r",
-													"pm.test(\"Should containt token\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-													"    pm.collectionVariables.set('adminToken', response.token);\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should be correct type\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-													"    pm.expect(response.type).to.eql('Bearer');\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should expire in 1h\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-													"    pm.expect(response.expiresIn).to.eql(3600);\r",
-													"})"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "password",
-													"value": "{{adminPassword}}",
-													"type": "string"
-												},
-												{
-													"key": "username",
-													"value": "{{adminEmail}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"url": {
-											"raw": "http://localhost:8081/login",
-											"protocol": "http",
-											"host": [
-												"localhost"
-											],
-											"port": "8081",
-											"path": [
-												"login"
-											]
-										}
-									},
-									"response": []
-								},
 								{
 									"name": "Get all users - default pagination",
 									"event": [
@@ -3893,18 +3547,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users",
 											"protocol": "http",
@@ -3951,18 +3606,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users?page=1&size=1",
 											"protocol": "http",
@@ -3996,71 +3652,6 @@
 									"name": "Forbidden",
 									"item": [
 										{
-											"name": "Login as operator",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('operatorToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{operatorPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{operatorEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
-										{
 											"name": "Get all users",
 											"event": [
 												{
@@ -4084,18 +3675,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{operatorToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{operatorEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_OPERATOR",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users",
 													"protocol": "http",
@@ -4150,9 +3742,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -4173,71 +3762,6 @@
 											"port": "8081",
 											"path": [
 												"register"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Login as admin",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"const response = pm.response.json();\r",
-													"\r",
-													"pm.test(\"Should containt token\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-													"    pm.collectionVariables.set('adminToken', response.token);\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should be correct type\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-													"    pm.expect(response.type).to.eql('Bearer');\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should expire in 1h\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-													"    pm.expect(response.expiresIn).to.eql(3600);\r",
-													"})"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "password",
-													"value": "{{adminPassword}}",
-													"type": "string"
-												},
-												{
-													"key": "username",
-													"value": "{{adminEmail}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"url": {
-											"raw": "http://localhost:8081/login",
-											"protocol": "http",
-											"host": [
-												"localhost"
-											],
-											"port": "8081",
-											"path": [
-												"login"
 											]
 										}
 									},
@@ -4284,18 +3808,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users?size=1000",
 											"protocol": "http",
@@ -4348,18 +3873,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/roles",
 											"protocol": "http",
@@ -4391,18 +3917,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "PATCH",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
 											"protocol": "http",
@@ -4480,18 +4007,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users?size=1000",
 											"protocol": "http",
@@ -4520,71 +4048,6 @@
 								{
 									"name": "User Does Not Exist",
 									"item": [
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
 										{
 											"name": "Get all roles",
 											"event": [
@@ -4617,18 +4080,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/roles",
 													"protocol": "http",
@@ -4666,18 +4130,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
 													"protocol": "http",
@@ -4739,9 +4204,6 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "noauth"
-												},
 												"method": "POST",
 												"header": [],
 												"body": {
@@ -4762,71 +4224,6 @@
 													"port": "8081",
 													"path": [
 														"register"
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
 													]
 												}
 											},
@@ -4873,18 +4270,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users?size=1000",
 													"protocol": "http",
@@ -4928,18 +4326,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role=0",
 													"protocol": "http",
@@ -4973,71 +4372,6 @@
 								{
 									"name": "Role Already Exists On User",
 									"item": [
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
 										{
 											"name": "Get all users",
 											"event": [
@@ -5079,18 +4413,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users?size=1000",
 													"protocol": "http",
@@ -5143,18 +4478,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/roles",
 													"protocol": "http",
@@ -5192,18 +4528,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role={{operatorRoleId}}",
 													"protocol": "http",
@@ -5238,71 +4575,6 @@
 									"name": "Forbidden",
 									"item": [
 										{
-											"name": "Login as operator",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('operatorToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{operatorPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{operatorEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
-										{
 											"name": "Add role",
 											"event": [
 												{
@@ -5325,18 +4597,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{operatorToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{operatorEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_OPERATOR",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:addRoleUserId/addRole?role=0",
 													"protocol": "http",
@@ -5405,9 +4678,6 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
 										"method": "POST",
 										"header": [],
 										"body": {
@@ -5428,71 +4698,6 @@
 											"port": "8081",
 											"path": [
 												"register"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Login as admin",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"const response = pm.response.json();\r",
-													"\r",
-													"pm.test(\"Should containt token\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-													"    pm.collectionVariables.set('adminToken', response.token);\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should be correct type\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-													"    pm.expect(response.type).to.eql('Bearer');\r",
-													"})\r",
-													"\r",
-													"pm.test(\"Should expire in 1h\", () => {\r",
-													"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-													"    pm.expect(response.expiresIn).to.eql(3600);\r",
-													"})"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "basic",
-											"basic": [
-												{
-													"key": "password",
-													"value": "{{adminPassword}}",
-													"type": "string"
-												},
-												{
-													"key": "username",
-													"value": "{{adminEmail}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"url": {
-											"raw": "http://localhost:8081/login",
-											"protocol": "http",
-											"host": [
-												"localhost"
-											],
-											"port": "8081",
-											"path": [
-												"login"
 											]
 										}
 									},
@@ -5541,18 +4746,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users?size=1000",
 											"protocol": "http",
@@ -5590,18 +4796,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "PATCH",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{removeRoleRoleId}}",
 											"protocol": "http",
@@ -5674,18 +4881,19 @@
 										}
 									],
 									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{adminToken}}",
-													"type": "string"
-												}
-											]
-										},
 										"method": "GET",
-										"header": [],
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN",
+												"type": "text"
+											}
+										],
 										"url": {
 											"raw": "http://localhost:8081/users?size=1000",
 											"protocol": "http",
@@ -5714,71 +4922,6 @@
 								{
 									"name": "User Does Not Exist",
 									"item": [
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
 										{
 											"name": "Get all roles",
 											"event": [
@@ -5811,18 +4954,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/roles",
 													"protocol": "http",
@@ -5860,18 +5004,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{operatorRoleId}}",
 													"protocol": "http",
@@ -5933,9 +5078,6 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "noauth"
-												},
 												"method": "POST",
 												"header": [],
 												"body": {
@@ -5956,71 +5098,6 @@
 													"port": "8081",
 													"path": [
 														"register"
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
 													]
 												}
 											},
@@ -6067,18 +5144,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users?size=1000",
 													"protocol": "http",
@@ -6122,18 +5200,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role=0",
 													"protocol": "http",
@@ -6167,71 +5246,6 @@
 								{
 									"name": "Role Does Not Exist On User",
 									"item": [
-										{
-											"name": "Login as admin",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('adminToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{adminPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{adminEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
 										{
 											"name": "Get all users",
 											"event": [
@@ -6273,18 +5287,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users?size=1000",
 													"protocol": "http",
@@ -6337,18 +5352,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "GET",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/roles",
 													"protocol": "http",
@@ -6386,18 +5402,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{adminToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{adminEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_ADMIN",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:removeRoleUserId/removeRole?role={{designerRoleId}}",
 													"protocol": "http",
@@ -6432,71 +5449,6 @@
 									"name": "Forbidden",
 									"item": [
 										{
-											"name": "Login as operator",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", () => {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"const response = pm.response.json();\r",
-															"\r",
-															"pm.test(\"Should containt token\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('token').that.is.a('string');\r",
-															"    pm.collectionVariables.set('operatorToken', response.token);\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should be correct type\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('type').that.is.a('string');\r",
-															"    pm.expect(response.type).to.eql('Bearer');\r",
-															"})\r",
-															"\r",
-															"pm.test(\"Should expire in 1h\", () => {\r",
-															"    pm.expect(response).to.haveOwnProperty('expiresIn').that.is.a('number');\r",
-															"    pm.expect(response.expiresIn).to.eql(3600);\r",
-															"})"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "basic",
-													"basic": [
-														{
-															"key": "password",
-															"value": "{{operatorPassword}}",
-															"type": "string"
-														},
-														{
-															"key": "username",
-															"value": "{{operatorEmail}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "POST",
-												"header": [],
-												"url": {
-													"raw": "http://localhost:8081/login",
-													"protocol": "http",
-													"host": [
-														"localhost"
-													],
-													"port": "8081",
-													"path": [
-														"login"
-													]
-												}
-											},
-											"response": []
-										},
-										{
 											"name": "Add role",
 											"event": [
 												{
@@ -6519,18 +5471,19 @@
 												}
 											],
 											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{operatorToken}}",
-															"type": "string"
-														}
-													]
-												},
 												"method": "PATCH",
-												"header": [],
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{operatorEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_OPERATOR",
+														"type": "text"
+													}
+												],
 												"url": {
 													"raw": "http://localhost:8081/users/:removeRoleUserId?role=0",
 													"protocol": "http",
@@ -6567,6 +5520,16 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{robotToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -6751,6 +5714,39 @@
 		},
 		{
 			"key": "designerRoleId",
+			"value": ""
+		},
+		{
+			"key": "robotJwt",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminBasicToken",
+			"value": ""
+		},
+		{
+			"key": "operatorBasicToken",
+			"value": ""
+		},
+		{
+			"key": "designerBasicToken",
+			"value": ""
+		},
+		{
+			"key": "wrongBasicToken",
+			"value": ""
+		},
+		{
+			"key": "disabledBasicToken",
+			"value": ""
+		},
+		{
+			"key": "confirmBasicToken",
+			"value": ""
+		},
+		{
+			"key": "newPasswordBasicToken",
 			"value": ""
 		}
 	]

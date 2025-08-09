@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
 import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
+import org.maxq.authorization.security.authentication.converter.JwtBasicAuthenticationConverter;
+import org.maxq.authorization.security.authentication.converter.JwtHeadersAuthenticationConverter;
 import org.maxq.authorization.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,18 +21,21 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -40,10 +47,16 @@ public class WebSecurityConfig {
   private String frontendUrl;
 
   @Bean
-  public AuthenticationProvider authenticationProvider(UserService userService) {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+  public AuthenticationManager authenticationManager(
+      DaoAuthenticationProvider daoAuthenticationProvider
+  ) {
+    return new ProviderManager(List.of(daoAuthenticationProvider));
+  }
+
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider(UserService userService) {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService(userService));
     provider.setPasswordEncoder(passwordEncoder());
-    provider.setUserDetailsService(userDetailsService(userService));
     return provider;
   }
 
@@ -59,14 +72,20 @@ public class WebSecurityConfig {
 
   @Bean
   @Order(1)
-  public SecurityFilterChain filterChainLogin(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+  public SecurityFilterChain filterChainLogin(HttpSecurity http,
+                                              @Qualifier("robot") RSAPublicKey publicKey,
+                                              JwtBasicAuthenticationConverter jwtBasicAuthenticationConverter) throws Exception {
     http.securityMatcher("/login")
         .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
                 .requestMatchers("/login").authenticated())
-        .httpBasic(basic -> basic
-            .authenticationEntryPoint(authenticationFailureHandler()))
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .oauth2ResourceServer(oauth2 ->
+            oauth2.jwt(jwtConfigurer ->
+                    jwtConfigurer
+                        .decoder(nimbusJwtDecoder(publicKey))
+                        .jwtAuthenticationConverter(jwtBasicAuthenticationConverter))
+                .authenticationEntryPoint(authenticationFailureHandler()))
+        .cors(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(authenticationFailureHandler())
@@ -76,19 +95,23 @@ public class WebSecurityConfig {
 
   @Bean
   @Order(2)
-  public SecurityFilterChain filterChain(HttpSecurity http, RSAPublicKey publicKey) throws Exception {
+  public SecurityFilterChain filterChainHeaders(HttpSecurity http,
+                                                @Qualifier("robot") RSAPublicKey publicKey,
+                                                JwtHeadersAuthenticationConverter jwtHeadersAuthenticationConverter) throws Exception {
     http.securityMatcher("/**")
         .authorizeHttpRequests(
             authorizeRequests -> authorizeRequests
-                .requestMatchers("/login/me").authenticated()
+                .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/users/**").hasRole("ADMIN")
                 .requestMatchers("/roles/**").hasRole("ADMIN")
-                .anyRequest().permitAll())
+                .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 ->
             oauth2.jwt(jwtConfigurer ->
-                    jwtConfigurer.decoder(nimbusJwtDecoder(publicKey)))
+                    jwtConfigurer
+                        .decoder(nimbusJwtDecoder(publicKey))
+                        .jwtAuthenticationConverter(jwtHeadersAuthenticationConverter))
                 .authenticationEntryPoint(authenticationFailureHandler()))
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .cors(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(authenticationFailureHandler())
@@ -97,39 +120,38 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-    corsConfiguration.setAllowedOriginPatterns(
-        List.of("http://localhost:[*]", frontendUrl)
-    );
-    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-    corsConfiguration.setAllowedHeaders(List.of("*"));
-    corsConfiguration.setExposedHeaders(List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
-    corsConfiguration.setMaxAge(3600L);
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration);
-
-    return source;
+  public RequestContextListener requestContextListener() {
+    return new RequestContextListener();
   }
+
 
   @Bean
-  public JwtDecoder nimbusJwtDecoder(RSAPublicKey publicKey) {
-    return NimbusJwtDecoder.withPublicKey(publicKey).build();
+  public JwtDecoder nimbusJwtDecoder(@Qualifier("robot") RSAPublicKey publicKey) {
+    OAuth2TokenValidator<Jwt> withIssuer
+        = JwtValidators.createDefaultWithIssuer("api-gateway-service");
+
+    OAuth2TokenValidator<Jwt> customValidator = jwt -> {
+      List<OAuth2Error> errors = new ArrayList<>();
+
+      if (!"robot".equals(jwt.getSubject())) {
+        errors.add(new OAuth2Error("invalid_subject", "Subject msy be a 'robot'", null));
+      }
+
+      if (!"access_token".equals(jwt.getClaimAsString("type"))) {
+        errors.add(new OAuth2Error("invalid_type", "Type must be 'access_token'", null));
+      }
+
+      return errors.isEmpty()
+          ? OAuth2TokenValidatorResult.success()
+          : OAuth2TokenValidatorResult.failure(errors.toArray(new OAuth2Error[0]));
+    };
+
+    OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(withIssuer, customValidator);
+
+    NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
+    decoder.setJwtValidator(combinedValidator);
+    return decoder;
   }
-
-  @Bean
-  public JwtAuthenticationConverter jwtAuthenticationConverter() {
-    JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-    grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
-    grantedAuthoritiesConverter.setAuthorityPrefix("");
-
-    JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-    authenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-    return authenticationConverter;
-  }
-
 
   @Bean
   public AuthenticationEntryPoint authenticationFailureHandler() {

@@ -15,10 +15,13 @@ import org.maxq.authorization.service.UserService;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
@@ -49,14 +53,16 @@ class PasswordControllerTest {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
-  @MockBean
+  @MockitoBean
   private ApplicationEventPublisher eventPublisher;
-  @MockBean
+  @MockitoBean
   private VerificationTokenService verificationTokenService;
-  @MockBean
+  @MockitoBean
   private UserService userService;
-  @MockBean
+  @MockitoBean
   private PasswordEncoder passwordEncoder;
+  @MockitoBean
+  private JwtDecoder jwtDecoder;
 
   private String password;
   private String encodedPassword;
@@ -68,12 +74,21 @@ class PasswordControllerTest {
         .apply(springSecurity())
         .build();
 
-
     password = "newPassword";
     encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
     Role role = new Role(1L, "admin", Collections.emptyList());
     User user = new User(1L, "test@test.com", "test", true, Set.of(role));
     token = new VerificationToken(1L, "test", user, LocalDateTime.now(), false);
+
+    Jwt jwt = Jwt.withTokenValue("test-token")
+        .header("alg", "RS256")
+        .subject("robot")
+        .issuer("api-gateway-service")
+        .claim("type", "access_token")
+        .issuedAt(Instant.now())
+        .expiresAt(Instant.now().plusSeconds(3600))
+        .build();
+    when(jwtDecoder.decode("test-token")).thenReturn(jwt);
   }
 
   @Test
@@ -84,11 +99,26 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .post(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("email", "test@test.com"))
         .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk());
     verify(eventPublisher, times(1))
         .publishEvent(any(OnPasswordReset.class));
+  }
+
+  @Test
+  void shouldReturn401_When_NoTokenProvided_ResetPassword() throws Exception {
+    // Given
+    doNothing().when(eventPublisher).publishEvent(any());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL + RESET_URL)
+            .param("email", "test@test.com"))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -101,6 +131,7 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("token", token.getToken())
             .param("password", encodedPassword))
         .andExpect(MockMvcResultMatchers.status().isOk());
@@ -118,6 +149,7 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("token", token.getToken())
             .param("password", encodedPassword))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -134,6 +166,7 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("token", token.getToken())
             .param("password", encodedPassword))
         .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
@@ -152,6 +185,7 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("token", token.getToken())
             .param("password", encodedPassword))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -170,9 +204,22 @@ class PasswordControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .patch(URL + RESET_URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .param("token", token.getToken())
             .param("password", encodedPassword))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Test error")));
+  }
+
+  @Test
+  void shouldReturn401_When_TokenNotProvided_ConfirmReset() throws Exception {
+    // Given
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch(URL + RESET_URL)
+            .param("token", token.getToken())
+            .param("password", encodedPassword))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized());
   }
 }

@@ -7,9 +7,13 @@ import { customBaseQuery } from '../../../src/store/api/base.ts';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { LoaderFunctionArgs } from 'react-router-dom';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 interface QueryResult {
   unwrap: () => Promise<GetUsersType>;
@@ -143,7 +147,7 @@ const testUserLoader = async (
   expect(customBaseQuery).toHaveBeenCalledOnce();
   expect(customBaseQuery).toHaveBeenCalledWith(
     {
-      url: `/users?page=${correctedPage}&size=15`,
+      url: `/auth/users?page=${correctedPage}&size=15`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

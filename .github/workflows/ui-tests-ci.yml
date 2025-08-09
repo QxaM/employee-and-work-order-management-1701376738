@@ -10,6 +10,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      ui-tests: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in frontend
+        uses: tj-actions/changed-files@v46.0.5
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: |
+            backend/**
+            frontend/**
+            uitests/**
+
+      - name: Print changed files
+        run: |
+          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
+
   frontend:
     uses: ./.github/workflows/frontend-ci.yml
     secrets: inherit
@@ -18,8 +40,10 @@ jobs:
     uses: ./.github/workflows/backend-api-tests.yml
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      ROBOT_JWT_PRIVATE_KEY: ${{ secrets.ROBOT_JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -30,23 +54,11 @@ jobs:
         shardTotal: [ 8 ]
 
     needs:
+      - changes
       - frontend
       - api-tests
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: local_app
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: authorization-db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    if: needs.changes.outputs.ui-tests == 'true'
 
     steps:
       - name: Checkout code
@@ -63,31 +75,106 @@ jobs:
         with:
           node-version: '22.17.1'
 
-      - name: Inject private key
-        run: |
-          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+      - name: Docker Setup Compose
+        uses: docker/setup-compose-action@v1.2.0
+
+      - name: Download Discovery Service JAR
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ui-tests-ci.yml
+          name: discovery-service-jar
+          path: backend/discovery-service/build/libs
+          check_artifacts: true
+          search_artifacts: true
+          github_token: '${{ github.token }}'
+
+      - name: Download API Gateway Service JAR
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ui-tests-ci.yml
+          name: api-gateway-service-jar
+          path: backend/api-gateway-service/build/libs
+          check_artifacts: true
+          search_artifacts: true
+          github_token: '${{ github.token }}'
+
+      - name: Download Authorization Service JAR
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ui-tests-ci.yml
+          name: authorization-service-jar
+          path: backend/authorization-service/build/libs
+          check_artifacts: true
+          search_artifacts: true
+          github_token: '${{ github.token }}'
+
+      - name: Run Compose Containers
+        run: docker compose up --build -d
+        working-directory: backend
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: SIT
 
       - name: Install Frontend Dependencies
         run: npm ci
         working-directory: frontend
 
-      - name: Install Backend Dependencies
+      - name: Wait for Discovery Service to be ready
+        timeout-minutes: 2
+        env:
+          HEALTHCHECK_URL: http://localhost:8761/actuator/health
         run: |
-          chmod +x ./gradlew
-          ./gradlew clean build
-        env:
-          SPRING_PROFILES_ACTIVE: QA
-        working-directory: backend
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
 
-      - name: Start Authorization Service
-        run: ./gradlew authorization-service:bootRun &
+      - name: Wait for API Gateway Service to be ready
+        timeout-minutes: 2
         env:
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          SPRING_PROFILES_ACTIVE: QA
-        working-directory: backend
+          HEALTHCHECK_URL: http://localhost:8080/actuator/health
+        run: |
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
 
-      - name: Wait for application to be ready
+      - name: Wait for Authorization Service to be ready
         timeout-minutes: 2
         env:
           HEALTHCHECK_URL: http://localhost:8081/actuator/health
@@ -125,6 +212,10 @@ jobs:
       - name: Wait for services Health Check
         run: sleep 20
 
+      - name: Inject private key
+        run: |
+          echo "ROBOT_TOKEN=${{ secrets.ROBOT_TOKEN }}" > uitests/test-data/private.env
+
       - name: Install tests dependencies
         run: npm ci
         working-directory: uitests
@@ -145,9 +236,34 @@ jobs:
           path: uitests/blob-report
           retention-days: 30
 
-  merge-reports:
-    if: ${{ !cancelled() }}
+  ui-tests-summary:
+    runs-on: ubuntu-latest
     needs:
+      - changes
+      - ui-tests
+    if: always()
+
+    steps:
+      - name: UI Tests Summary
+        run: |
+          if [[ "${{ needs.changes.outputs.ui-tests }}" == "false" ]]; then
+            echo "UI tests were skipped - no relevant changes detected"
+            exit 0
+          elif [[ "${{ needs.ui-tests.result }}" == "success" ]]; then
+            echo "All UI tests passed successfully"
+            exit 0
+          elif [[ "${{ needs.ui-tests.result }}" == "skipped" ]]; then
+            echo "UI tests were skipped"
+            exit 0
+          else
+            echo "UI tests failed"
+            exit 1
+          fi
+
+  merge-reports:
+    if: success() || failure()
+    needs:
+      - ui-tests-summary
       - ui-tests
 
     runs-on: ubuntu-latest

@@ -5,9 +5,13 @@ import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
 import { ActionFunctionArgs } from 'react-router-dom';
 
-vi.mock('../../../src/store/api/base.ts', () => ({
-  customBaseQuery: vi.fn(),
-}));
+vi.mock('../../../src/store/api/base.ts', async () => {
+  const baseApi = await vi.importActual('../../../src/store/api/base.ts');
+  return {
+    ...baseApi,
+    customBaseQuery: vi.fn(),
+  };
+});
 
 const mockUrl = 'http://localhost:8080/api/v1';
 
@@ -75,28 +79,28 @@ describe('User action', () => {
         expect(customBaseQuery).toHaveBeenCalledTimes(4);
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+            url: `/auth/users/${data.userId}/addRole?role=${ROLES[0].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/addRole?role=${ROLES[1].id}`,
+            url: `/auth/users/${data.userId}/addRole?role=${ROLES[1].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
+            url: `/auth/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
+            url: `/auth/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
           }),
           expect.any(Object),
           undefined
@@ -129,7 +133,7 @@ describe('User action', () => {
         expect(customBaseQuery).toHaveBeenCalledTimes(1);
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+            url: `/auth/users/${data.userId}/addRole?role=${ROLES[0].id}`,
           }),
           expect.any(Object),
           undefined
@@ -162,7 +166,7 @@ describe('User action', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/removeRole?role=${ROLES[0].id}`,
+            url: `/auth/users/${data.userId}/removeRole?role=${ROLES[0].id}`,
           }),
           expect.any(Object),
           undefined
@@ -194,28 +198,28 @@ describe('User action', () => {
         expect(customBaseQuery).toHaveBeenCalledTimes(4);
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/addRole?role=${ROLES[0].id}`,
+            url: `/auth/users/${data.userId}/addRole?role=${ROLES[0].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/addRole?role=${ROLES[1].id}`,
+            url: `/auth/users/${data.userId}/addRole?role=${ROLES[1].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
+            url: `/auth/users/${data.userId}/removeRole?role=${ROLES[2].id}`,
           }),
           expect.any(Object),
           undefined
         );
         expect(customBaseQuery).toHaveBeenCalledWith(
           expect.objectContaining({
-            url: `/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
+            url: `/auth/users/${data.userId}/removeRole?role=${ROLES[3].id}`,
           }),
           expect.any(Object),
           undefined
