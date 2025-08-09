@@ -44,6 +44,10 @@ project and employees managing easier.
 2. **Backend:** Backend is split into multiple microservices
     * **Discovery Service:** Built using Eureka and responsible for
       registering microservices in the application.
+    * **API Gateway Service:** Built on Spring Cloud Gateway Webflux to run
+      on instances with low resources. It is used as the gateway to all
+      other microservices and routes traffic using Discovery. It serves as
+      Security Gateway as well.
     * **Authorization Service:** Responsible for all authorization related
       operations - registration, registration verification, login -
       see [API docs here](https://authorization-service-0h7q.onrender.com/swagger-ui.html).
@@ -60,15 +64,16 @@ project and employees managing easier.
     * Vite + Vitest
     * React-Testing-Library
     * TypeDoc
-    * **Hosting** - AWS S3
+    * **Hosting** - Render
 * **Backend:**
     * Java
     * Spring
     * Gradle
     * JUnit
     * Swagger UI (API docs)
-    * Eureka (discovery services)
-    * **Hosting** - Render
+    * Eureka (discovery service)
+    * Spring Cloud Gateway Webflux (API Gateway)
+    * **Hosting** - Render, Docker
 * **API Testing:**
     * Postman
 * **UI Testing:**
@@ -79,7 +84,8 @@ project and employees managing easier.
 ### CI/CD Pipelines
 
 Several pipelines were created to allow automated integration, testing and
-deployment:
+deployment. All pipelines run only on detected changes to speed up checks
+execution.
 
 1. Frontend CI pipeline - installs dependencies, lints, formats, tests and
    builds the application. Two artifacts are provided - test report
