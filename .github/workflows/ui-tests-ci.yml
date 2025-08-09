@@ -237,7 +237,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: ${{ !cancelled() }}
+    if: success() || failure()
     needs:
       - ui-tests
 
