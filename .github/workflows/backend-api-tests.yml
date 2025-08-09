@@ -23,6 +23,10 @@ jobs:
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
+  profile-postman-tests:
+    uses: ./.github/workflows/postman-profile-service-ci.yml
+    secrets:
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
@@ -35,6 +39,7 @@ jobs:
 
     needs:
       - authorization-postman-tests
+      - profile-postman-tests
       - discovery-service-ci
       - api-gateway-service-ci
 
@@ -47,6 +52,9 @@ jobs:
         run: exit 2
       - name: Fail if Authorization Service failed
         if: ${{ needs.authorization-postman-tests.result != 'success' }}
+        run: exit 3
+      - name: Fail if Profile Service failed
+        if: ${{ needs.profile-postman-tests.result != 'success' }}
         run: exit 3
       - name: Check previous job status
         run: echo Backend Integration Successful
