@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs: authorization-service-ci
-    if: needs.authorization-service-ci.outputs.ran == 'success'
+    if: needs.authorization-service-ci.outputs.ran == 'true.'
 
     services:
       postgres:
