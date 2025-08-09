@@ -58,19 +58,23 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Inject private key
-        run: |
-          echo "${{ secrets.JWT_PRIVATE_KEY }}" > backend/authorization-service/src/main/resources/private_key.pem
+      - name: Download Authorization Service JAR
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ui-tests-ci.yml
+          name: authorization-service-jar
+          path: backend/authorization-service/build/libs
+          check_artifacts: true
+          search_artifacts: true
+          github_token: '${{ github.token }}'
 
-      - name: Start Authorization Service
-        run: |
-          chmod +x ./gradlew
-          ./gradlew authorization-service:bootRun &
+      - name: Run Compose Containers
+        run: docker compose up --build -d
+        working-directory: backend/authorization-service
         env:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           SPRING_PROFILES_ACTIVE: QA
-        working-directory: backend
 
       - name: Install Newman
         run: npm install -g newman
