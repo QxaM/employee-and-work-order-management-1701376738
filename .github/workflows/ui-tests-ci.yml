@@ -60,6 +60,7 @@ jobs:
           name: discovery-service-jar
           path: backend/discovery-service/build/libs
           check_artifacts: true
+          search_artifacts: true
           github_token: '${{ github.token }}'
 
       - name: Download API Gateway Service JAR
@@ -69,6 +70,7 @@ jobs:
           name: api-gateway-service-jar
           path: backend/api-gateway-service/build/libs
           check_artifacts: true
+          search_artifacts: true
           github_token: '${{ github.token }}'
 
       - name: Download Authorization Service JAR
@@ -78,6 +80,7 @@ jobs:
           name: authorization-service-jar
           path: backend/authorization-service/build/libs
           check_artifacts: true
+          search_artifacts: true
           github_token: '${{ github.token }}'
 
       - name: Run Compose Containers
