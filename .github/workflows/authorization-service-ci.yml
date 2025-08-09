@@ -15,7 +15,7 @@ on:
         value: ${{ jobs.authorization-service.outputs.ran }}
       success:
         description: "Whether the authorization-service job completed successfully"
-        value: ${{ jobs.authorization-service.result == 'success' }}
+        value: ${{ jobs.authorization-service.outputs.success }}
   workflow_dispatch:
 
 jobs:
@@ -44,6 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ran: ${{ steps.set-output.outputs.ran }}
+      success: ${{ steps.set-output.outputs.success }}
 
     steps:
       - name: Checkout code
@@ -106,4 +107,6 @@ jobs:
       - name: Set Success Output
         id: set-output
         if: success()
-        run: echo "ran=true" >> $GITHUB_OUTPUT
+        run: |
+          echo "ran=true" >> $GITHUB_OUTPUT
+          echo "success=true" >> $GITHUB_OUTPUT

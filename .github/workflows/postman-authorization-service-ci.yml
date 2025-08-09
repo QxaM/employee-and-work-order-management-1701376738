@@ -19,26 +19,14 @@ jobs:
     secrets:
       JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-
-  tests:
-    runs-on: ubuntu-latest
-    needs: authorization-service-ci
-    if: always()
-
-    steps:
-      - name: Debug Print Authorization Service Status
-        run: |
-          echo "Authorization Service Ran: ${{ needs.authorization-service-ci.outputs.ran }}"
-          echo "Authorization Service Success: ${{ needs.authorization-service-ci.outputs.success }}"
-          echo "Authorization Service Result: ${{ needs.authorization-service-ci.result }}"
-
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}git
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
 
     needs: authorization-service-ci
-    if: needs.authorization-service-ci.success == 'true' && needs.authorization-service-ci.outputs.ran == 'true'
+    if: needs.authorization-service-ci.outputs.success == 'true' &&
+      needs.authorization-service-ci.outputs.ran == 'true'
 
     services:
       postgres:
