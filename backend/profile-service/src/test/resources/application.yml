@@ -1,0 +1,6 @@
+app:
+  init: false
+
+eureka:
+  client:
+    enabled: false
