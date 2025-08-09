@@ -3,12 +3,6 @@ name: Postman API Tests for Demo Service
 on:
   workflow_call:
     secrets:
-      JWT_PRIVATE_KEY:
-        required: true
-      MAIL_USERNAME:
-        required: true
-      MAIL_PASSWORD:
-        required: true
       ROBOT_TOKEN:
         required: true
   workflow_dispatch:
@@ -17,7 +11,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      authorization: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      profile: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,28 +22,24 @@ jobs:
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: |
-            backend/authorization-service/**
-            postman-api-tests/authorization-service/**
+            backend/profile-service/**
+            postman-api-tests/profile-service/**
 
       - name: Print changed files
         run: |
           echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
-  authorization-service-ci:
-    uses: ./.github/workflows/authorization-service-ci.yml
-    secrets:
-      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
-      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+  profile-service-ci:
+    uses: ./.github/workflows/profile-service-ci.yml
 
-  postman-tests-authorization-service:
+  postman-tests-profile-service:
     runs-on: ubuntu-latest
 
     needs:
       - changes
-      - authorization-service-ci
+      - profile-service-ci
 
-    if: needs.changes.outputs.authorization == 'true'
+    if: needs.changes.outputs.profile == 'true'
 
     steps:
       - name: Checkout code
@@ -66,22 +56,20 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Download Authorization Service JAR
+      - name: Download profile Service JAR
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: ui-tests-ci.yml
-          name: authorization-service-jar
-          path: backend/authorization-service/build/libs
+          name: profile-service-jar
+          path: backend/profile-service/build/libs
           check_artifacts: true
           search_artifacts: true
           github_token: '${{ github.token }}'
 
       - name: Run Compose Containers
         run: docker compose up --build -d
-        working-directory: backend/authorization-service
+        working-directory: backend/profile-service
         env:
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           SPRING_PROFILES_ACTIVE: QA
 
       - name: Install Newman
@@ -93,7 +81,7 @@ jobs:
       - name: Wait for application to be ready
         timeout-minutes: 2
         env:
-          HEALTHCHECK_URL: http://localhost:8081/actuator/health
+          HEALTHCHECK_URL: http://localhost:8082/actuator/health
         run: |
           ATTEMPT=1
           
@@ -119,15 +107,15 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "EWM - Authorization Service.postman_collection.json" \
+          newman run "EWM - profile Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html \
           --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
-        working-directory: postman-api-tests/authorization-service
+        working-directory: postman-api-tests/profile-service
 
       - name: Upload Postman Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: postman-report-authorization-service
-          path: postman-api-tests/authorization-service/results
+          name: postman-report-profile-service
+          path: postman-api-tests/profile-service/results
