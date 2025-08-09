@@ -27,13 +27,13 @@ jobs:
 
     steps:
       - name: Debug Print
-        run: echo ${{ needs.authorization-service-ci.result }}
+        run: echo ${{ needs.authorization-service-ci.outputs.ran }}
 
   postman-tests-authorization-service:
     runs-on: ubuntu-latest
 
     needs: authorization-service-ci
-    if: success() && !failure() && !cancelled()
+    if: needs.authorization-service-ci.outputs.ran == 'success'
 
     services:
       postgres:

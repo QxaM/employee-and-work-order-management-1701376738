@@ -35,6 +35,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.authorization == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      ran: ${{ job.status }}
 
     steps:
       - name: Checkout code
