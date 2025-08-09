@@ -40,13 +40,13 @@ jobs:
 
     steps:
       - name: Fail if Discovery Service failed
-        if: ${{ needs.discovery-service-ci.result == 'failure' }}
+        if: ${{ needs.discovery-service-ci.result != 'success' }}
         run: exit 1
       - name: Fail if API Gateway Service failed
-        if: ${{ needs.api-gateway-service-ci.result == 'failure' }}
+        if: ${{ needs.api-gateway-service-ci.result != 'success' }}
         run: exit 2
       - name: Fail if Authorization Service failed
-        if: ${{ needs.authorization-postman-tests.result == 'failure' }}
+        if: ${{ needs.authorization-postman-tests.result != 'success' }}
         run: exit 3
       - name: Check previous job status
         run: echo Backend Integration Successful
