@@ -21,6 +21,7 @@ services:
       - POSTGRES_LINK=jdbc:postgresql://authorization-database:5432/authorization-db?sslmode=disable
       - MAIL_USERNAME=$MAIL_USERNAME
       - MAIL_PASSWORD=$MAIL_PASSWORD
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
     depends_on:
       authorization-database:
         condition: service_healthy
