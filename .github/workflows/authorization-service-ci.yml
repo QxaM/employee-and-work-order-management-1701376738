@@ -29,7 +29,7 @@ jobs:
 
       - name: Print changed files
         run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}'
+          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
   authorization-service:
     needs: changes
