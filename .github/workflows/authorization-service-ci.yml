@@ -36,7 +36,7 @@ jobs:
     if: needs.changes.outputs.authorization == 'true'
     runs-on: ubuntu-latest
     outputs:
-      ran: ${{ job.status }}
+      ran: ${{ steps.set-output.conclusion }}
 
     steps:
       - name: Checkout code
@@ -95,3 +95,7 @@ jobs:
           path: |
             backend/authorization-service/build/libs/authorization-service-*.jar
             !backend/authorization-service/build/libs/authorization-service-*-plain.jar
+
+      - name: Set Ran ouputs
+        id: set-output
+        run: echo "Pipeline ran successfully"
