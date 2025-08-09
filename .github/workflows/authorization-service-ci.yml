@@ -9,6 +9,13 @@ on:
         required: true
       MAIL_PASSWORD:
         required: true
+    outputs:
+      ran:
+        description: "Whether the authorization-service job ran successfully"
+        value: ${{ jobs.authorization-service.outputs.ran }}
+      success:
+        description: "Whether the authorization-service job completed successfully"
+        value: ${{ jobs.authorization-service.outputs.success }}
   workflow_dispatch:
 
 jobs:
@@ -35,6 +42,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.authorization == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      ran: ${{ steps.set-output.outputs.ran }}
+      success: ${{ steps.set-output.outputs.success }}
 
     steps:
       - name: Checkout code
@@ -93,3 +103,10 @@ jobs:
           path: |
             backend/authorization-service/build/libs/authorization-service-*.jar
             !backend/authorization-service/build/libs/authorization-service-*-plain.jar
+
+      - name: Set Success Output
+        id: set-output
+        if: success()
+        run: |
+          echo "ran=true" >> $GITHUB_OUTPUT
+          echo "success=true" >> $GITHUB_OUTPUT
