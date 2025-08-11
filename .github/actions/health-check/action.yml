@@ -1,0 +1,51 @@
+name: 'Service Health Check'
+author: Piotr Gliszczyński
+description: 'Wait for service to be ready'
+
+inputs:
+  url:
+    description: 'Service health check URL'
+    required: true
+  timeout_minutes:
+    description: 'Timeout in minutes'
+    required: false
+    default: '2'
+  service_name:
+    description: 'Service name for logging'
+    required: false
+    default: 'Service'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Wait for Discovery Service to be ready
+      shell: bash
+      env:
+        HEALTHCHECK_URL: ${{ inputs.url }}
+        SERVICE_NAME: ${{ inputs.service_name }}
+        TIMEOUT_MINUTES: ${{ inputs.timeout_minutes }}
+      run: |
+        ATTEMPT=1
+        TIMEOUT_SECONDS=$((TIMEOUT_MINUTES * 60))
+        MAX_ATTEMPTS=$((TIMEOUT_SECONDS / 10))  # 10 seconds between attempts
+
+        while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+          echo "Attempt #$ATTEMPT/$MAX_ATTEMPTS: \
+            Checking health endpoint for $SERVICE_NAME at $HEALTHCHECK_URL..."
+
+          RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+          echo "$RESPONSE"
+
+          if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+            echo "$SERVICE_NAME is up and healthy! Health check passed."
+            exit 0
+          else
+            echo "$SERVICE_NAME is not available yet. Waiting 10 seconds before the next attempt..."
+            sleep 10
+          fi
+
+          ATTEMPT=$((ATTEMPT + 1))
+        done
+
+        echo "Health check for $SERVICE_NAME failed to pass within the timeout period."
+        exit 1

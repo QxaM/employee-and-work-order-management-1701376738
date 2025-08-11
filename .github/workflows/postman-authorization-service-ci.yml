@@ -14,26 +14,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  authorization-api-changes:
     runs-on: ubuntu-latest
     outputs:
-      authorization: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      authorization: ${{ steps.filter.outputs.changes_detected }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in API Gateway (sources and tests)
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: |
             backend/authorization-service/**
             postman-api-tests/authorization-service/**
-
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
   authorization-service-ci:
     uses: ./.github/workflows/authorization-service-ci.yml
@@ -46,10 +42,10 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - changes
+      - authorization-api-changes
       - authorization-service-ci
 
-    if: needs.changes.outputs.authorization == 'true'
+    if: needs.authorization-api-changes.outputs.authorization == 'true'
 
     steps:
       - name: Checkout code
@@ -66,24 +62,12 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Try to download JAR from current run
-        id: download-current
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: authorization-service-jar
-          path: backend/authorization-service/build/libs
-
       - name: Download Authorization Service JAR
-        if: steps.download-current.outcome == 'failure'
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: authorization-service-jar
+          artifact_name: authorization-service-jar
           path: backend/authorization-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
 
       - name: Run Compose Containers
         run: docker compose up --build -d
@@ -100,31 +84,9 @@ jobs:
         run: npm install -g newman-reporter-htmlextra
 
       - name: Wait for application to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8081/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8081/actuator/health
 
       - name: Run Postman Tests
         run: |

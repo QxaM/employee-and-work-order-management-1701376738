@@ -14,49 +14,44 @@ permissions:
   id-token: write
 
 jobs:
-  changes:
+  discovery-changes:
     runs-on: ubuntu-latest
     if: |
       github.event.workflow_run.conclusion == 'success' && 
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     outputs:
-      discovery: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      discovery: ${{ steps.filter.outputs.changes_detected }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in Discovery Service
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/discovery-service/**'
 
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
-
   discovery-service-deploy:
-    needs: changes
+    needs: discovery-changes
     runs-on: ubuntu-latest
     if: |
       github.event.workflow_run.conclusion == 'success' && 
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push' &&
-      needs.changes.outputs.discovery == 'true'
+      needs.discovery-changes.outputs.discovery == 'true'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Download build artifact
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: discovery-service-jar
+          artifact_name: discovery-service-jar
           path: backend/discovery-service/build/libs
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -81,28 +76,7 @@ jobs:
           curl ${{ secrets.DISCOVERY_RENDER_HOOK }}
 
       - name: Wait for application to be ready
-        timeout-minutes: 10
-        env:
-          HEALTHCHECK_URL: ${{ secrets.DISCOVERY_API_URL }}/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          timeout_minutes: 10
+          url: ${{ secrets.DISCOVERY_API_URL }}/actuator/health
