@@ -1,6 +1,7 @@
 name: 'Service Health Check'
 author: Piotr Gliszczyński
 description: 'Wait for service to be ready'
+
 inputs:
   url:
     description: 'Service health check URL'

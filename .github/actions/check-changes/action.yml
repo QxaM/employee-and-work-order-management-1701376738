@@ -1,0 +1,38 @@
+name: 'Check Changes'
+author: Piotr Gliszczyński
+description: 'Check for changes in specified files and output the result'
+
+inputs:
+  files:
+    description: 'Files to check for changes'
+    required: true
+  token:
+    description: 'GitHub token'
+    required: true
+
+outputs:
+  changes_detected:
+    description: '`true` when changes in provided files were detected'
+    value: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+  changed_files:
+    description: 'List of changed files'
+    value: ${{ steps.filter.outputs.all_changed_and_modified_files }}
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Check changes in frontend
+      uses: tj-actions/changed-files@v46.0.5
+      id: filter
+      with:
+        token: ${{ inputs.token }}
+        files: ${{ inputs.files }}
+
+    - name: Print changed files
+      shell: bash
+      run: |
+        echo ${{ steps.filter.outputs.all_changed_and_modified_files }}

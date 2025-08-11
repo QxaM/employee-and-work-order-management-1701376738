@@ -13,13 +13,10 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      ui-tests: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      ui-tests: ${{ steps.filter.outputs.changes_detected }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in frontend, backend or uitests
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
@@ -27,10 +24,6 @@ jobs:
             backend/**
             frontend/**
             uitests/**
-
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
   frontend:
     uses: ./.github/workflows/frontend-ci.yml

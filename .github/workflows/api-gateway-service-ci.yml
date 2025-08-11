@@ -8,28 +8,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  api-gateway-changes:
     runs-on: ubuntu-latest
     outputs:
-      api-gateway: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      api-gateway: ${{ steps.filter.outputs.changes_detected }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in API Gateway Service
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/api-gateway-service/**'
 
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
-
   api-gateway-service:
-    needs: changes
-    if: needs.changes.outputs.api-gateway == 'true'
+    needs: api-gateway-changes
+    if: needs.api-gateway-changes.outputs.api-gateway == 'true'
     runs-on: ubuntu-latest
 
     steps:

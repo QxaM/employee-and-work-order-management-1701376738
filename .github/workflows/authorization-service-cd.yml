@@ -14,37 +14,30 @@ permissions:
   id-token: write
 
 jobs:
-  changes:
+  authorization-changes:
     runs-on: ubuntu-latest
     if: |
       github.event.workflow_run.conclusion == 'success' && 
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     outputs:
-      authorization: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      authorization: ${{ steps.filter.outputs.changes_detected }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in Authorization Service
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/authorization-service/**'
 
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
-
   authorization-service-deploy:
-    needs: changes
+    needs: authorization-changes
     runs-on: ubuntu-latest
     if: |
       github.event.workflow_run.conclusion == 'success' && 
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push' &&
-      needs.changes.outputs.authorization == 'true'
+      needs.authorization-changes.outputs.authorization == 'true'
 
     steps:
       - name: Checkout code

@@ -5,28 +5,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  frontend-changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      frontend: ${{ steps.filter.outputs.changes_detected }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'frontend/**'
 
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_modified_files }}
-
   frontend:
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
+    needs: frontend-changes
+    if: needs.frontend-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
 
     steps:
