@@ -22,17 +22,16 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
-
 @SpringBootTest(
     classes = {ServiceLoadBalancerConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-@WireMockTest(httpPort = 8081)
+@WireMockTest(httpPort = 8082)
 @TestPropertySource(properties = {
     "eureka.client.enabled=false",
-    "test.loadbalancer=authorization"
+    "test.loadbalancer=profile"
 })
-class AuthorizationServiceTest {
+class ProfileServiceTest {
 
   @LocalServerPort
   private int port;
@@ -40,9 +39,7 @@ class AuthorizationServiceTest {
   private WebTestClient webTestClient;
 
   protected static Stream<HttpMethod> allowedMethods() {
-    return RequestsUtils.buildAllowedMethods(
-        HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH
-    );
+    return RequestsUtils.buildAllowedMethods(HttpMethod.GET);
   }
 
   protected static Stream<HttpMethod> disallowedMethods() {
@@ -69,11 +66,11 @@ class AuthorizationServiceTest {
   void shouldRouteToAuthorizationServiceHealthEndpoint(
       HttpMethod method) {
     // Given
-    String authUri = "/api/auth";
+    String profileUri = "/api/profile";
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri + "/test")
+        .uri(profileUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .exchange()
         .expectStatus().isOk();
@@ -83,11 +80,11 @@ class AuthorizationServiceTest {
   @MethodSource("disallowedMethods")
   void shouldNotRouteDisallowedMethods(HttpMethod method) {
     // Given
-    String authUri = "/api/auth";
+    String profileUri = "/api/profile";
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri + "/test")
+        .uri(profileUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .exchange()
         .expectStatus().isNotFound();
@@ -96,12 +93,12 @@ class AuthorizationServiceTest {
   @Test
   void shouldNotRouteWithoutContentType() {
     // Given
-    String authUri = "/api/auth";
+    String profileUri = "/api/profile";
     HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri + "/test")
+        .uri(profileUri + "/test")
         .exchange()
         .expectStatus().isNotFound();
   }
@@ -109,13 +106,13 @@ class AuthorizationServiceTest {
   @Test
   void shouldNotRouteWithInvalidContentType() {
     // Given
-    String authUri = "/api/auth";
+    String profileUri = "/api/auth";
     HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
     String invalidContentType = MediaType.TEXT_PLAIN_VALUE;
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri + "/test")
+        .uri(profileUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, invalidContentType)
         .exchange()
         .expectStatus().isNotFound();
