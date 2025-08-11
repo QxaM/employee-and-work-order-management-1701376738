@@ -2,6 +2,7 @@ package org.maxq.profileservice.controller.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.domain.HttpErrorMessage;
+import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -10,12 +11,19 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler(ElementNotFoundException.class)
+  public ResponseEntity<HttpErrorMessage> handleElementNotFoundException(ElementNotFoundException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
+  }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
