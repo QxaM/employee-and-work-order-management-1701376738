@@ -56,7 +56,16 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Try to download JAR from current run
+        id: download-current
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: profile-service-jar
+          path: backend/profile-service/build/libs
+
       - name: Download profile Service JAR
+        if: steps.download-current.outcome == 'failure'
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: ui-tests-ci.yml
@@ -107,7 +116,7 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "EWM - profile Service.postman_collection.json" \
+          newman run "EWM - Profile Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./results/report.html \
           --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"

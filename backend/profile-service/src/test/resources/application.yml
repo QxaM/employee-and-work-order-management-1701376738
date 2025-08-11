@@ -5,6 +5,10 @@ eureka:
   client:
     enabled: false
 
+jwt:
+  robot-public-key-path: classpath:/robot_public_key.pem
+
+
 spring:
   datasource:
     driver-class-name: org.h2.Driver
