@@ -9,6 +9,9 @@ eureka:
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
+app:
+  init: true
+
 spring:
   application:
     name: profile-service
