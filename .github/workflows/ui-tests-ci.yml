@@ -78,6 +78,14 @@ jobs:
       - name: Docker Setup Compose
         uses: docker/setup-compose-action@v1.2.0
 
+      - name: Try to download Discovery JAR from current run
+        id: download-current-discovery
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: discovery-service-jar
+          path: backend/discovery-service/build/libs
+
       - name: Download Discovery Service JAR
         uses: dawidd6/action-download-artifact@v6
         with:
@@ -88,7 +96,16 @@ jobs:
           search_artifacts: true
           github_token: '${{ github.token }}'
 
+      - name: Try to download API Gateway JAR from current run
+        id: download-current-api-gateway
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: api-gateway-service-jar
+          path: backend/api-gateway-service/build/libs
+
       - name: Download API Gateway Service JAR
+        if: steps.download-current-api-gateway.outcome == 'failure'
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: ui-tests-ci.yml
@@ -98,7 +115,16 @@ jobs:
           search_artifacts: true
           github_token: '${{ github.token }}'
 
+      - name: Try to download Authorization JAR from current run
+        id: download-current-authorization
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: authorization-service-jar
+          path: backend/authorization-service/build/libs
+
       - name: Download Authorization Service JAR
+        if: steps.download-current-authorization.outcome == 'failure'
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: ui-tests-ci.yml
