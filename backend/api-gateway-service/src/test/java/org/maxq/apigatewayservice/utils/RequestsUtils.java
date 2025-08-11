@@ -4,7 +4,7 @@ import org.springframework.http.HttpMethod;
 
 import java.util.stream.Stream;
 
-public class RequestsUtils {
+public final class RequestsUtils {
 
   private RequestsUtils() {
   }
@@ -20,6 +20,6 @@ public class RequestsUtils {
                 allowedMethod.equals(method)
             )
         )
-        .filter(method -> !method.equals(org.springframework.http.HttpMethod.TRACE));
+        .filter(method -> !method.equals(HttpMethod.TRACE));
   }
 }

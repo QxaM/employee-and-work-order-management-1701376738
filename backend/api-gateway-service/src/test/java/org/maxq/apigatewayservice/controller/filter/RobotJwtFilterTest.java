@@ -24,7 +24,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 )
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
-    "eureka.client.enabled=false"
+    "eureka.client.enabled=false",
+    "test.loadbalancer=authorization"
 })
 class RobotJwtFilterTest {
 
