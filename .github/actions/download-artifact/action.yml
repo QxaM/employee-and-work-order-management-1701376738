@@ -22,21 +22,21 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Try to download ${{ inputs.artifact-name }} from current run
+    - name: Try to download ${{ inputs.artifact_name }} from current run
       id: download-current
       uses: actions/download-artifact@v4
       continue-on-error: true
       with:
-        name: ${{ inputs.artifact-name }}
+        name: ${{ inputs.artifact_name }}
         path: ${{ inputs.path }}
 
-    - name: Download ${{ inputs.artifact-name }} from previous runs
+    - name: Download ${{ inputs.artifact_name }} from previous runs
       if: steps.download-current.outcome == 'failure'
       uses: dawidd6/action-download-artifact@v6
       with:
         workflow: ${{ inputs.workflow }}
-        name: ${{ inputs.artifact-name }}
+        name: ${{ inputs.artifact_name }}
         path: ${{ inputs.path }}
         check_artifacts: true
         search_artifacts: true
-        github_token: ${{ inputs.github-token }}
+        github_token: ${{ inputs.github_token }}
