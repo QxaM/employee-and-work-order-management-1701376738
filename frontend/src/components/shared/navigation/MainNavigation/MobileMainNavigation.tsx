@@ -8,6 +8,7 @@ import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { logout } from '../../../../store/authSlice.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
+import ProfileCard from './ProfileCard.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -119,6 +120,7 @@ const MobileMainNavigation = () => {
             )}
             {token && (
               <div className="flex flex-row flex-grow gap-4 justify-between mx-4 my-2 w-2/3 items-center">
+                <ProfileCard />
                 <WelcomeMessage me={me} />
                 <button
                   className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"

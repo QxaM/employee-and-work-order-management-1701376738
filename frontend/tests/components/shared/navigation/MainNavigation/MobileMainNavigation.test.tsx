@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MobileMainNavigation from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
+import MobileMainNavigation
+  from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import { MeType } from '../../../../../src/store/api/auth.ts';
@@ -278,10 +279,11 @@ describe('Main Navigation Header', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    it('Should contain welcome message and logout button when logged in', async () => {
+    it('Should contain welcome message, logout button and Profile Card when logged in', async () => {
       // Given
       const loginButtonText = 'Login';
       const logoutButtonText = 'Logout';
+      const dataTestId = 'profile-card';
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me: {
           email: 'test@test.com',
@@ -320,11 +322,13 @@ describe('Main Navigation Header', () => {
       const welcomeMessage = await screen.findByText(
         `Welcome back, test@test.com!`
       );
+      const profileCard = await screen.findByTestId(dataTestId);
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(welcomeMessage).toBeInTheDocument();
       expect(logoutButton).toBeInTheDocument();
+      expect(profileCard).toBeInTheDocument();
     });
 
     it('Should logout and clear store', async () => {

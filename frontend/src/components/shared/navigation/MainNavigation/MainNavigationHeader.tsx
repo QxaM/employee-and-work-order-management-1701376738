@@ -5,6 +5,7 @@ import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { logout } from '../../../../store/authSlice.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
+import ProfileCard from './ProfileCard.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -78,6 +79,7 @@ const MainNavigationHeader = () => {
           >
             Logout
           </button>
+          <ProfileCard />
         </div>
       )}
     </header>

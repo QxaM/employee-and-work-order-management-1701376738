@@ -204,10 +204,11 @@ describe('Main Navigation Header', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    it('Should contain welcome message and logout button when logged in', async () => {
+    it('Should contain welcome message, logout button and ProfileCard when logged in', async () => {
       // Given
       const loginButtonText = 'Login';
       const logoutButtonText = 'Logout';
+      const dataTestId = 'profile-card';
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me: {
           email: 'test@test.com',
@@ -240,11 +241,13 @@ describe('Main Navigation Header', () => {
       const welcomeMessage = await screen.findByText(
         `Welcome back, test@test.com!`
       );
+      const profileCard = await screen.findByTestId(dataTestId);
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(welcomeMessage).toBeInTheDocument();
       expect(logoutButton).toBeInTheDocument();
+      expect(profileCard).toBeInTheDocument();
     });
 
     it('Should logout and clear store', async () => {
