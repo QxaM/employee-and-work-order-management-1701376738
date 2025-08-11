@@ -1,4 +1,4 @@
-package org.maxq.apigatewayservice.controller.filter;
+package org.maxq.apigatewayservice.route.routing;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
-import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -23,11 +22,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
     classes = {ServiceLoadBalancerConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-@WireMockTest(httpPort = 8081)
+@WireMockTest(httpPort = 8082)
 @TestPropertySource(properties = {
-    "eureka.client.enabled=false"
+    "eureka.client.enabled=false",
+    "test.loadbalancer=profile"
 })
-class BasicTokenGatewayFilterFactoryTest {
+class ProfileServiceRoutingTest {
 
   @LocalServerPort
   private int port;
@@ -43,28 +43,40 @@ class BasicTokenGatewayFilterFactoryTest {
             .baseUrl(baseUri)
             .build();
 
-    stubFor(WireMock.post("/login")
+    stubFor(WireMock.get("/test")
         .willReturn(WireMock.ok()));
   }
 
   @Test
-  void shouldAddCustomBasicHeader() {
+  void shouldCallDownstreamService() {
     // Given
-    String basicToken = Base64.getEncoder().encodeToString("test:test".getBytes());
-    String headerToken = "Basic " + basicToken;
-    String authUri = "/api/auth";
+    String profileUri = "/api/profile";
 
     // When
-    webTestClient.post()
-        .uri(authUri + "/login")
+    webTestClient.get()
+        .uri(profileUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .header(HttpHeaders.AUTHORIZATION, headerToken)
         .exchange()
         .expectStatus().isOk();
 
     // Then
-    verify(WireMock.postRequestedFor(WireMock.urlEqualTo("/login"))
-        .withHeader("X-Basic-Authorization", WireMock.equalTo(basicToken))
-        .withHeader("Authorization", WireMock.matching("Bearer .+")));
+    verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/test")));
+  }
+
+  @Test
+  void shouldAddXGatewayHeader() {
+    // Given
+    String profileUri = "/api/profile";
+
+    // When
+    webTestClient.get()
+        .uri(profileUri + "/test")
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk();
+
+    // Then
+    verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/test"))
+        .withHeader("X-Gateway", WireMock.equalTo("api-gateway-service")));
   }
 }
