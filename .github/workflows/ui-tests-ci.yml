@@ -305,9 +305,9 @@ jobs:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-    .      path: uitests/all-blob-reports
-      pattern: blob-report-*
-      merge-multiple: true
+          path: uitests/all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
 
       - name: Merge into HTML Report
         run: npm run report:merge ./all-blob-reports
