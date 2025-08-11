@@ -78,61 +78,33 @@ jobs:
       - name: Docker Setup Compose
         uses: docker/setup-compose-action@v1.2.0
 
-      - name: Try to download Discovery JAR from current run
-        id: download-current-discovery
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: discovery-service-jar
-          path: backend/discovery-service/build/libs
-
       - name: Download Discovery Service JAR
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: discovery-service-jar
+          artifact_name: discovery-service-jar
           path: backend/discovery-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
-
-      - name: Try to download API Gateway JAR from current run
-        id: download-current-api-gateway
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: api-gateway-service-jar
-          path: backend/api-gateway-service/build/libs
+          github_token: ${{ github.token }}
 
       - name: Download API Gateway Service JAR
-        if: steps.download-current-api-gateway.outcome == 'failure'
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: api-gateway-service-jar
+          artifact_name: api-gateway-service-jar
           path: backend/api-gateway-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
-
-      - name: Try to download Authorization JAR from current run
-        id: download-current-authorization
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: authorization-service-jar
-          path: backend/authorization-service/build/libs
+          github_token: ${{ github.token }}
 
       - name: Download Authorization Service JAR
-        if: steps.download-current-authorization.outcome == 'failure'
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: authorization-service-jar
+          artifact_name: authorization-service-jar
           path: backend/authorization-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
+
+      - name: Download profile Service JAR
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: profile-service-jar
+          path: backend/profile-service/build/libs
+          github_token: ${{ github.token }}
 
       - name: Run Compose Containers
         run: docker compose up --build -d
@@ -204,6 +176,33 @@ jobs:
         timeout-minutes: 2
         env:
           HEALTHCHECK_URL: http://localhost:8081/actuator/health
+        run: |
+          ATTEMPT=1
+          
+          while true; do
+            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
+          
+            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
+            echo "$RESPONSE"
+          
+            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+              echo "Service is up and healthy! Health check passed."
+              exit 0
+            else
+              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
+              sleep 10
+            fi
+          
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          
+          echo "Health check failed to pass within the timeout period."
+          exit 1
+
+      - name: Wait for Authorization Service to be ready
+        timeout-minutes: 2
+        env:
+          HEALTHCHECK_URL: http://localhost:8082/actuator/health
         run: |
           ATTEMPT=1
           
@@ -306,9 +305,9 @@ jobs:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: uitests/all-blob-reports
-          pattern: blob-report-*
-          merge-multiple: true
+    .      path: uitests/all-blob-reports
+      pattern: blob-report-*
+      merge-multiple: true
 
       - name: Merge into HTML Report
         run: npm run report:merge ./all-blob-reports

@@ -56,24 +56,12 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Try to download JAR from current run
-        id: download-current
-        uses: actions/download-artifact@v4
-        continue-on-error: true
+      - name: Download Profile Service JAR
+        uses: ./.github/actions/download-artifact
         with:
-          name: profile-service-jar
+          artifact_name: profile-service-jar
           path: backend/profile-service/build/libs
-
-      - name: Download profile Service JAR
-        if: steps.download-current.outcome == 'failure'
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: ui-tests-ci.yml
-          name: profile-service-jar
-          path: backend/profile-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
 
       - name: Run Compose Containers
         run: docker compose up --build -d
