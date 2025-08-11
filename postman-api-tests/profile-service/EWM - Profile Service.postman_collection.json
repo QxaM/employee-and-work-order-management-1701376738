@@ -8,24 +8,275 @@
 	"item": [
 		{
 			"name": "Healthcheck",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{profileServiceUrl}}/actuator/health",
-					"host": [
-						"{{profileServiceUrl}}"
+			"item": [
+				{
+					"name": "Healthcheck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"pm.test('Status should be UP', () => {\r",
+									"    pm.expect(response).to.haveOwnProperty('status').to.be.a('string');\r",
+									"    pm.expect(response.status).to.eql('UP');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
 					],
-					"path": [
-						"actuator",
-						"health"
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{profileServiceUrl}}/actuator/health",
+							"host": [
+								"{{profileServiceUrl}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET /profiles/me",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "GET /profiles/me",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct email', () => {\r",
+											"    const adminEmail = pm.variables.get('adminEmail');\r",
+											"    pm.expect(response).to.haveOwnProperty('email').to.be.a('string');\r",
+											"    pm.expect(response.email).to.eql(adminEmail);\r",
+											"});\r",
+											"\r",
+											"pm.test('Should contain other profile info', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('firstName').to.be.a('string');\r",
+											"    pm.expect(response).to.haveOwnProperty('lastName').to.be.a('string');\r",
+											"\r",
+											"    const middleName = response.middleName;\r",
+											"    pm.expect(typeof middleName === 'string' || middleName === null).to.be.true;\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{adminEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{adminRoles}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "User not authorized",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', () => {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct message', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+											"    pm.expect(response.message)\r",
+											"        .to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "No Robot Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct message', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+											"    pm.expect(response.message)\r",
+											"        .to.eql(\"Unauthorized to access this resource, login please\");\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{adminEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{adminRoles}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Profile does not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct message', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+											"\r",
+											"    const email = pm.variables.get('noProfileEmail');\r",
+											"    pm.expect(response.message)\r",
+											"        .to.eql(`User with email: ${email} does not exist!`);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{noProfileEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{noProfileRole}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
 					]
 				}
-			},
-			"response": []
+			]
 		}
 	],
 	"auth": {
@@ -64,6 +315,26 @@
 		{
 			"key": "profileServiceUrl",
 			"value": "http://localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "adminEmail",
+			"value": "admin@maxq.com",
+			"type": "default"
+		},
+		{
+			"key": "adminRoles",
+			"value": "ROLE_ADMIN",
+			"type": "default"
+		},
+		{
+			"key": "noProfileEmail",
+			"value": "noProfile@test.com",
+			"type": "string"
+		},
+		{
+			"key": "noProfileRole",
+			"value": "ROLE_OPERATOR",
 			"type": "string"
 		}
 	]
