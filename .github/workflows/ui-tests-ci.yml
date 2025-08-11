@@ -119,112 +119,28 @@ jobs:
         working-directory: frontend
 
       - name: Wait for Discovery Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8761/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8761/actuator/health
+          service_name: 'Discovery Service'
 
       - name: Wait for API Gateway Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8080/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8080/actuator/health
+          service_name: 'API Gateway Service'
 
       - name: Wait for Authorization Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8081/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8081/actuator/health
+          service_name: 'Authorization Service'
 
-      - name: Wait for Authorization Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8082/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+      - name: Wait for Profile Service to be ready
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8082/actuator/health
+          service_name: 'Profile Service'
 
       - name: Build Frontend
         run: npm run build
