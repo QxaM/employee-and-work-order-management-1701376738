@@ -67,7 +67,7 @@ jobs:
           file: ./backend/api-gateway-service/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:0.0.1
+            ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:1.0.1
             ${{ secrets.DOCKER_USERNAME }}/api-gateway-service:latest
           labels: api-gateway-service
 
