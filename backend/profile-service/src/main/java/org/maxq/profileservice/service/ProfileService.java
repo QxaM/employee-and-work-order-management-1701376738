@@ -15,7 +15,7 @@ public class ProfileService {
   public Profile getProfileByEmail(String email) throws ElementNotFoundException {
     return profileRepository.findByEmail(email)
         .orElseThrow(() ->
-            new ElementNotFoundException("User with email: " + email + " does not exists!")
+            new ElementNotFoundException("User with email: " + email + " does not exist!")
         );
   }
 }
