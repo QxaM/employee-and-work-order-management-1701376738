@@ -1,6 +1,6 @@
 import * as useMeDataModule from '../../../../../src/hooks/useMeData';
 import { render, screen } from '@testing-library/react';
-import ProfileCard from '../../../../../src/components/shared/navigation/MainNavigation/ProfileCard.tsx';
+import ProfileCard from '../../../../../src/components/shared/navigation/MainNavigation/ProfileCard/ProfileCard.tsx';
 
 describe('ProfileCard', () => {
   it('should display first letter of email on profile-card', () => {
