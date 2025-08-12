@@ -24,7 +24,7 @@ describe('UserSection', () => {
 
   it('Should render user ID', () => {
     // Given
-    const userIdTitle = 'User ID:';
+    const userIdTitle = 'User ID';
     render(<UserSection title={title} userId={user.id} email={user.email} />);
 
     // When
@@ -38,7 +38,7 @@ describe('UserSection', () => {
 
   it('Should render user email', () => {
     // Given
-    const userEmailTitle = 'User email:';
+    const userEmailTitle = 'User email';
     render(<UserSection title={title} userId={user.id} email={user.email} />);
 
     // When

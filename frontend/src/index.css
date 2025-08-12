@@ -7,6 +7,7 @@
 @import "./styles/dark.css";
 @import "./styles/fonts.css";
 
+
 @config '../tailwind.config.js';
 
 @utility btn {

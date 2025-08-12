@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Color, Size } from '../../types/TailwindTypes.ts';
+import { PropsWithChildren } from 'react';
 
 const SpinnerSize: Record<Size, string> = {
   small: 'w-8 h-8 border-[5px]',
@@ -8,6 +9,8 @@ const SpinnerSize: Record<Size, string> = {
 };
 
 const SpinnerColor: Record<Color, string> = {
+  violet: 'border-violet-3 border-t-violet-9',
+  gray: 'border-gray-3 border-t-gray-9',
   primary: 'border-qxam-primary-lightest border-t-qxam-primary',
   secondary: 'border-qxam-secondary-lightest border-t-qxam-secondary',
   accent: 'border-qxam-accent-lightest border-t-qxam-accent',
@@ -22,6 +25,7 @@ const SpinnerColor: Record<Color, string> = {
 interface SpinnerType {
   size?: Size;
   color?: Color;
+  isLoading?: boolean;
 }
 
 /**
@@ -43,20 +47,27 @@ interface SpinnerType {
 
 const LoadingSpinner = ({
   size = 'medium',
-  color = 'primary',
-}: SpinnerType) => {
+  color = 'violet',
+  isLoading,
+  children,
+}: PropsWithChildren<SpinnerType>) => {
   return (
-    <motion.div
-      data-testid="spinner"
-      className={`${SpinnerSize[size]} rounded-full ${SpinnerColor[color]}`}
-      animate={{ rotate: 360 }}
-      transition={{
-        repeat: Infinity,
-        type: 'spring',
-        ease: 'easeInOut',
-        duration: 1,
-      }}
-    />
+    <>
+      {isLoading && (
+        <motion.div
+          data-testid="spinner"
+          className={`${SpinnerSize[size]} rounded-full ${SpinnerColor[color]}`}
+          animate={{ rotate: 360 }}
+          transition={{
+            repeat: Infinity,
+            type: 'spring',
+            ease: 'easeInOut',
+            duration: 1,
+          }}
+        />
+      )}
+      {!isLoading && <>{children}</>}
+    </>
   );
 };
 

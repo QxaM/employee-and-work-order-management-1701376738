@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
 import RolesUpdateForm from '../../../../src/components/admin/roles-update/RolesUpdateForm.tsx';
 import { RoleType } from '../../../../src/types/RoleTypes.ts';
@@ -82,21 +82,6 @@ describe('Roles Update Form', () => {
   });
 
   describe('Components render', () => {
-    it('Should render form title', () => {
-      // Given
-      const formTitle = 'Roles Update Form';
-
-      renderWithProviders(<RouterProvider router={router} />);
-
-      // When
-      const titleElement = screen.getByText(formTitle);
-      const form = screen.getByLabelText(formTitle);
-
-      // Then
-      expect(titleElement).toBeInTheDocument();
-      expect(form).toBeInTheDocument();
-    });
-
     it('Should render user data section', () => {
       // Given
       const userDataTitle = 'User Data';
@@ -110,9 +95,9 @@ describe('Roles Update Form', () => {
       expect(userSection).toBeInTheDocument();
     });
 
-    it('Should render LoadingSpinner when roles fetching is pending', () => {
+    it('Should not render Available Roles when roles fetching is pending', () => {
       // Given
-      const spinnerTestId = 'spinner';
+      const sectionTitle = 'Available Roles';
       const RolesUpdateElement = (
         <RolesUpdateForm
           user={user}
@@ -127,10 +112,12 @@ describe('Roles Update Form', () => {
       renderWithProviders(<RouterProvider router={router} />);
 
       // When
-      const spinnerElement = screen.getByTestId(spinnerTestId);
+      const sectionTitleElement = screen.queryByRole('heading', {
+        name: sectionTitle,
+      });
 
       // Then
-      expect(spinnerElement).toBeInTheDocument();
+      expect(sectionTitleElement).not.toBeInTheDocument();
     });
 
     it('Should render empty table, when success but roles null', () => {
@@ -316,7 +303,7 @@ describe('Roles Update Form', () => {
   describe('Update submission', () => {
     const submitButtonText = 'Update';
 
-    it('Should submit roles to update', () => {
+    it('Should submit roles to update', async () => {
       // Given
       renderWithProviders(<RouterProvider router={router} />);
       const submitButton = screen.getByRole('button', {
@@ -341,10 +328,12 @@ describe('Roles Update Form', () => {
       };
 
       // Then
-      expect(mockStateSubmit.submit).toHaveBeenCalledOnce();
-      expect(mockStateSubmit.submit).toHaveBeenCalledWith(submitData, {
-        method: 'PATCH',
-        encType: 'application/json',
+      await waitFor(() => {
+        expect(mockStateSubmit.submit).toHaveBeenCalledOnce();
+        expect(mockStateSubmit.submit).toHaveBeenCalledWith(submitData, {
+          method: 'PATCH',
+          encType: 'application/json',
+        });
       });
     });
 

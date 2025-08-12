@@ -75,15 +75,14 @@ const LoginForm = () => {
             </Link>
           </p>
           <div className="flex w-20 h-9 justify-center items-center">
-            {!isPending && (
+            <LoadingSpinner size="small" isLoading={isPending}>
               <button
                 type="submit"
                 className="btn-primary rounded w-full h-full"
               >
                 Sign in
               </button>
-            )}
-            {isPending && <LoadingSpinner size="small" />}
+            </LoadingSpinner>
           </div>
         </div>
       </form>

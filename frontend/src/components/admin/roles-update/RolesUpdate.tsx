@@ -37,8 +37,15 @@ const RolesUpdate = () => {
   const users = useMemo(() => usersData?.content ?? [], [usersData]);
 
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
-  const closeDialog = () => {
-    setSelectedUser(null);
+
+  const handleRowClick = (user: UserType) => {
+    setSelectedUser(user);
+  };
+
+  const onOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setSelectedUser(null);
+    }
   };
 
   const pageable: PageableData = {
@@ -75,15 +82,20 @@ const RolesUpdate = () => {
                 user.roles.map((role) => role.name).join(', '),
               ],
               onRowClick: () => {
-                setSelectedUser(user);
+                handleRowClick(user);
               },
             }))}
           ></Table.Body>
         </Table>
         <Pageable pageable={pageable} />
       </main>
-      {selectedUser && (
-        <ModalPage onClose={closeDialog}>
+      <ModalPage
+        title="Roles Update Form"
+        description="Update user roles"
+        open={!!selectedUser}
+        onOpenChange={onOpenChange}
+      >
+        {selectedUser && (
           <RolesUpdateForm
             user={{
               id: selectedUser.id,
@@ -97,10 +109,12 @@ const RolesUpdate = () => {
               isError,
               error,
             }}
-            onClose={closeDialog}
+            onClose={() => {
+              onOpenChange(false);
+            }}
           />
-        </ModalPage>
-      )}
+        )}
+      </ModalPage>
     </>
   );
 };

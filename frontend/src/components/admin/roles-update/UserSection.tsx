@@ -1,4 +1,14 @@
-import DisplayField from '../../shared/DisplayField.tsx';
+import {
+  Code,
+  DataList,
+  Flex,
+  Heading,
+  IconButton,
+  Link,
+  Section,
+} from '@radix-ui/themes';
+import { CopyIcon } from '@radix-ui/react-icons';
+import { copyToClipboard } from '../../../utils/clipboard.ts';
 
 interface UserSectionProps {
   title: string;
@@ -16,31 +26,58 @@ interface UserSectionProps {
  * @param {string} props.title - The title of the section.
  * @param {string} props.userId - The unique identifier of the user.
  * @param {string} props.email - The email address of the user.
- *
- * @returns {JSX.Element} The rendered user section component.
  */
 const UserSection = ({ title, userId: id, email }: UserSectionProps) => {
   return (
-    <section
-      aria-labelledby="roles-update-user-data"
-      className="flex flex-col gap-1 p-2 border border-qxam-primary-lighter rounded"
-    >
-      <h4 id="roles-update-user-data" className="font-bold text-sm uppercase">
-        {title}
-      </h4>
-      <DisplayField
-        title="User ID"
-        value={id}
-        orientation="horizontal"
-        className="mx-2"
-      />
-      <DisplayField
-        title="User email"
-        value={email}
-        orientation="horizontal"
-        className="mx-2"
-      />
-    </section>
+    <Section aria-labelledby="roles-update-user-data" p="0">
+      <Flex
+        direction="column"
+        gap="4"
+        p="2"
+        flexGrow="1"
+        width="100%"
+        height="100%"
+      >
+        <Heading
+          as="h4"
+          size="2"
+          weight="bold"
+          id="roles-update-user-data"
+          className="uppercase"
+        >
+          {title}
+        </Heading>
+        <DataList.Root
+          orientation="horizontal"
+          size="2"
+          className="!gap-y-(--space-2)"
+        >
+          <DataList.Item align="start">
+            <DataList.Label>User ID</DataList.Label>
+            <DataList.Value>
+              <Flex gap="2" justify="center" align="center">
+                <Code variant="ghost">{id}</Code>
+                <IconButton
+                  color="gray"
+                  size="1"
+                  aria-label="Copy user ID"
+                  variant="ghost"
+                  onClick={() => void copyToClipboard(id.toString())}
+                >
+                  <CopyIcon />
+                </IconButton>
+              </Flex>
+            </DataList.Value>
+          </DataList.Item>
+          <DataList.Item align="start">
+            <DataList.Label>User email</DataList.Label>
+            <DataList.Value>
+              <Link href={`mailto:${email}`}>{email}</Link>
+            </DataList.Value>
+          </DataList.Item>
+        </DataList.Root>
+      </Flex>
+    </Section>
   );
 };
 

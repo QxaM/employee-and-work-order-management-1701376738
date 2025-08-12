@@ -1,3 +1,9 @@
+import { Flex, IconButton, Section } from '@radix-ui/themes';
+import {
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from '@radix-ui/react-icons';
+
 interface RoleControlProps {
   onAddRole: () => void;
   onRemoveRole: () => void;
@@ -14,60 +20,36 @@ interface RoleControlProps {
  */
 const RoleControl = ({ onAddRole, onRemoveRole }: RoleControlProps) => {
   return (
-    <section
-      aria-label="role control buttons"
-      className="flex flex-col gap-1 justify-center items-center my-10"
-    >
-      <button
-        type="button"
-        aria-label="add role"
-        className="p-2 border border-qxam-accent-lightest rounded hover:bg-qxam-accent-extreme-light hover:shadow-sm"
-        onClick={onAddRole}
+    <Section aria-label="role control buttons" p="0">
+      <Flex
+        direction="column"
+        justify="center"
+        align="center"
+        gap="1"
+        my="0"
+        height="100%"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="size-6"
+        <IconButton
+          type="button"
+          size="3"
+          variant="outline"
+          aria-label="add role"
+          onClick={onAddRole}
         >
-          <path
-            fillRule="evenodd"
-            d="M10.72 11.47a.75.75 0 0 0 0 1.06l7.5 7.5a.75.75 0 1 0 1.06-1.06L12.31 12l6.97-6.97a.75.75 0 0 0-1.06-1.06l-7.5 7.5Z"
-            clipRule="evenodd"
-          />
-          <path
-            fillRule="evenodd"
-            d="M4.72 11.47a.75.75 0 0 0 0 1.06l7.5 7.5a.75.75 0 1 0 1.06-1.06L6.31 12l6.97-6.97a.75.75 0 0 0-1.06-1.06l-7.5 7.5Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-      <span aria-hidden>-</span>
-      <button
-        type="button"
-        aria-label="remove role"
-        className="p-2 border border-qxam-accent-lightest rounded hover:bg-qxam-accent-extreme-light hover:shadow-sm"
-        onClick={onRemoveRole}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="size-6"
+          <DoubleArrowLeftIcon width={24} height={24} />
+        </IconButton>
+        <span aria-hidden>-</span>
+        <IconButton
+          type="button"
+          size="3"
+          variant="outline"
+          aria-label="remove role"
+          onClick={onRemoveRole}
         >
-          <path
-            fillRule="evenodd"
-            d="M13.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L11.69 12 4.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-            clipRule="evenodd"
-          />
-          <path
-            fillRule="evenodd"
-            d="M19.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06L17.69 12l-6.97-6.97a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-    </section>
+          <DoubleArrowRightIcon width={24} height={24} />
+        </IconButton>
+      </Flex>
+    </Section>
   );
 };
 

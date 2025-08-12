@@ -1,7 +1,7 @@
 import { FormEvent, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { isValidConfirmPassword, isValidEmail, isValidPassword } from '../utils/Validators.ts';
+import { isValidConfirmPassword, isValidEmail, isValidPassword, } from '../utils/Validators.ts';
 import Input from './shared/Input.tsx';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import ErrorComponent from './shared/ErrorComponent.tsx';
@@ -106,15 +106,14 @@ const RegisterForm = () => {
         />
         <div className="flex justify-end mx-4 mt-2">
           <div className="flex w-20 h-9 justify-center items-center">
-            {!isPending && (
+            <LoadingSpinner size="small" isLoading={isPending}>
               <button
                 type="submit"
                 className="btn-primary rounded w-full h-full"
               >
                 Sign up
               </button>
-            )}
-            {isPending && <LoadingSpinner size="small" />}
+            </LoadingSpinner>
           </div>
         </div>
       </form>

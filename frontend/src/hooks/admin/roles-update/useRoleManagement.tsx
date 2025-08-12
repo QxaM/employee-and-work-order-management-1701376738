@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { RoleType } from '../../../types/RoleTypes';
+import {useState} from 'react';
+import {RoleType} from '../../../types/RoleTypes';
 
 /**
  * A custom hook for managing roles in an application. This hook provides state management
@@ -42,7 +42,6 @@ export const useRoleManagement = (initialRoles: RoleType[]) => {
   const onAddRole = () => {
     if (selectedRole) {
       setCurrentRoles(Array.from(new Set([...currentRoles, selectedRole])));
-      setSelectedRole(null);
     }
   };
 
@@ -51,7 +50,6 @@ export const useRoleManagement = (initialRoles: RoleType[]) => {
       setCurrentRoles(
         currentRoles.filter((role) => role.id !== selectedRole.id)
       );
-      setSelectedRole(null);
     }
   };
 

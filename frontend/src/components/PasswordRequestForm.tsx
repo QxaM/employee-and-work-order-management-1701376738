@@ -75,12 +75,11 @@ const PasswordRequestForm = () => {
       />
       <div className="flex justify-end mx-4 mt-2">
         <div className="flex w-32 h-10 justify-center items-center">
-          {!isPending && (
+          <LoadingSpinner size="small" isLoading={isPending}>
             <button type="submit" className="btn-primary rounded w-full h-full">
               Reset Password
             </button>
-          )}
-          {isPending && <LoadingSpinner size="small" />}
+          </LoadingSpinner>
         </div>
       </div>
     </form>

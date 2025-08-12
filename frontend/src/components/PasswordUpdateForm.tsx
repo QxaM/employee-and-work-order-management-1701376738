@@ -1,12 +1,12 @@
-import {FormEvent, useRef} from 'react';
+import { FormEvent, useRef } from 'react';
 
 import Input from './shared/Input';
-import {isValidConfirmPassword, isValidPassword,} from '../utils/Validators.ts';
+import { isValidConfirmPassword, isValidPassword, } from '../utils/Validators.ts';
 import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import {useNavigate} from 'react-router-dom';
-import {useFormNotifications} from '../hooks/useFormNotifications.tsx';
-import {usePasswordUpdateMutation} from '../store/api/passwordReset.ts';
-import {readErrorMessage} from '../utils/errorUtils.ts';
+import { useNavigate } from 'react-router-dom';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { usePasswordUpdateMutation } from '../store/api/passwordReset.ts';
+import { readErrorMessage } from '../utils/errorUtils.ts';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -105,12 +105,11 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
       />
       <div className="flex justify-end mx-4 mt-2">
         <div className="flex w-36 h-10 justify-center items-center">
-          {!isPending && (
+          <LoadingSpinner size="small" isLoading={isPending}>
             <button type="submit" className="btn-primary rounded w-full h-full">
               Update Password
             </button>
-          )}
-          {isPending && <LoadingSpinner size="small" />}
+          </LoadingSpinner>
         </div>
       </div>
     </form>

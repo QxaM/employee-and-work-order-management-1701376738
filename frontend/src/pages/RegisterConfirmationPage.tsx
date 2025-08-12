@@ -50,7 +50,7 @@ const RegisterConfirmationPage = () => {
 
   return (
     <div className="flex flex-grow items-center justify-center w-full">
-      <LoadingSpinner size="large" />
+      <LoadingSpinner size="large" isLoading />
     </div>
   );
 };

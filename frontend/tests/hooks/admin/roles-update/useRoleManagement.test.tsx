@@ -34,6 +34,46 @@ describe('useRoleManagement', () => {
     expect(currentRoles).toContain(initialRoles[0]);
   });
 
+  it('Should select role', () => {
+    // Given
+    const initialRoles = [roles[0]];
+    const { result, rerender } = renderHook(() =>
+      useRoleManagement(initialRoles)
+    );
+
+    // When
+    act(() => {
+      result.current.onRoleClick(roles[1]);
+    });
+    rerender();
+
+    // Then
+    expect(result.current.selectedRole).not.toBeNull();
+    expect(result.current.selectedRole?.id).toBeDefined();
+    expect(result.current.selectedRole?.id).toStrictEqual(roles[1].id);
+  });
+
+  it('Should deselect role', async () => {
+    // Given
+    const initialRoles = [roles[0]];
+    const { result, rerender } = renderHook(() =>
+      useRoleManagement(initialRoles)
+    );
+    act(() => {
+      result.current.onRoleClick(roles[1]);
+    });
+    rerender();
+
+    // When
+    act(() => {
+      result.current.onRoleClick(roles[1]);
+    });
+    rerender();
+
+    // Then
+    expect(result.current.selectedRole).toBeNull();
+  });
+
   it('Should return available roles', () => {
     // Given
     const initialRoles = [roles[0]];
@@ -75,43 +115,6 @@ describe('useRoleManagement', () => {
     expect(rolesToAdd).not.toContain(roles[0]);
   });
 
-  describe('onRoleClick', () => {
-    it('Should select role when not selected', () => {
-      // Given
-      const initialRoles = [roles[0]];
-      const { result } = renderHook(() => useRoleManagement(initialRoles));
-
-      // When
-      act(() => {
-        result.current.onRoleClick(roles[1]);
-      });
-
-      // Then
-      const selectedRole = result.current.selectedRole;
-      expect(selectedRole).not.toBeNull();
-      expect(selectedRole?.id).toStrictEqual(roles[1].id);
-      expect(selectedRole?.name).toStrictEqual(roles[1].name);
-    });
-
-    it('Should deselect role when selected', () => {
-      // Given
-      const initialRoles = [roles[0]];
-      const { result } = renderHook(() => useRoleManagement(initialRoles));
-      act(() => {
-        result.current.onRoleClick(roles[1]);
-      });
-
-      // When
-      act(() => {
-        result.current.onRoleClick(roles[1]);
-      });
-
-      // Then
-      const selectedRole = result.current.selectedRole;
-      expect(selectedRole).toBeNull();
-    });
-  });
-
   describe('onAddRole', () => {
     it('Should add role to current roles', () => {
       // Given
@@ -130,23 +133,6 @@ describe('useRoleManagement', () => {
       const currentRoles = result.current.currentRoles;
       expect(currentRoles).toHaveLength(initialRoles.length + 1);
       expect(currentRoles).toContain(roles[1]);
-    });
-
-    it('Should deselect selected role after adding role', () => {
-      // Given
-      const initialRoles = [roles[0]];
-      const { result } = renderHook(() => useRoleManagement(initialRoles));
-      act(() => {
-        result.current.onRoleClick(roles[1]);
-      });
-
-      // When
-      act(() => {
-        result.current.onAddRole();
-      });
-
-      // Then
-      expect(result.current.selectedRole).toBeNull();
     });
 
     it('Should not duplicate already assigned role', () => {
@@ -185,23 +171,6 @@ describe('useRoleManagement', () => {
       const currentRoles = result.current.currentRoles;
       expect(currentRoles).toHaveLength(initialRoles.length - 1);
       expect(currentRoles).not.toContain(roles[1]);
-    });
-
-    it('Should deselect selected role after removing role', () => {
-      // Given
-      const initialRoles = [roles[0], roles[1]];
-      const { result } = renderHook(() => useRoleManagement(initialRoles));
-      act(() => {
-        result.current.onRoleClick(roles[1]);
-      });
-
-      // When
-      act(() => {
-        result.current.onRemoveRole();
-      });
-
-      // Then
-      expect(result.current.selectedRole).toBeNull();
     });
   });
 });

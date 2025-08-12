@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, beforeEach } from 'vitest';
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import RolesUpdate from '../../../../src/components/admin/roles-update/RolesUpdate.tsx';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { GetUsersType } from '../../../../src/types/UserTypes.ts';
@@ -229,7 +229,7 @@ describe('RolesUpdate', () => {
 
     it('Should open dialog when user clicks on data row', async () => {
       // Given
-      const backdropId = 'backdrop';
+      const title = 'Roles Update Form';
 
       renderWithProviders(<RouterProvider router={router} />);
 
@@ -242,10 +242,38 @@ describe('RolesUpdate', () => {
       if (row) {
         fireEvent.click(row);
       }
-      const backdrop = document.getElementById(backdropId);
+      const dialogTitle = await screen.findByText(title);
 
       // Then
-      expect(backdrop).not.toBeNull();
+      expect(dialogTitle).toBeInTheDocument();
+    });
+
+    it('Should close dialog when user clicks on close', async () => {
+      // Given
+      const title = 'Roles Update Form';
+
+      renderWithProviders(<RouterProvider router={router} />);
+
+      const cell = await screen.findByRole('cell', {
+        name: MOCK_DEFAULT_USERS_DATA.content[0].id.toString(),
+      });
+      const row = cell.parentElement;
+
+      if (row) {
+        fireEvent.click(row);
+      }
+
+      // When
+      const closeButton = await screen.findByRole('button', {
+        name: 'Close',
+      });
+      fireEvent.click(closeButton);
+      const titleElement = screen.queryByText(title, { exact: true });
+
+      // Then
+      await waitFor(() => {
+        expect(titleElement).not.toBeInTheDocument();
+      });
     });
 
     it('Should inject correct user data into dialog', async () => {

@@ -1,11 +1,10 @@
-import SelectableField from '../../shared/SelectableField.tsx';
 import { RoleType } from '../../../types/RoleTypes.ts';
+import { Flex, Heading, Section } from '@radix-ui/themes';
+import { ToggleGroup } from 'radix-ui';
 
 interface RolesListSectionProps {
   title: string;
   roles: RoleType[];
-  selectedRole: RoleType | null;
-  onRoleClick: (role: RoleType) => void;
 }
 
 /**
@@ -14,42 +13,43 @@ interface RolesListSectionProps {
  * @param {Object} props - The properties passed to the component.
  * @param {string} props.title - The title to be displayed for the roles list section.
  * @param {Array<Object>} props.roles - An array of role objects to be displayed within the section. Each role object should contain an `id` and `name` property.
- * @param {Object|null} props.selectedRole - The currently selected role object, or null if no role is selected.
- * @param {Function} props.onRoleClick - A callback function invoked when a role is clicked, passing the clicked role object as an argument.
  */
-const RolesListSection = ({
-  title,
-  roles,
-  selectedRole,
-  onRoleClick,
-}: RolesListSectionProps) => {
-  const rolesContainerClass =
-    'flex flex-col gap-2 px-8 justify-center items-center';
-  const roleButtonClass = 'w-full';
+const RolesListSection = ({ title, roles }: RolesListSectionProps) => {
+  const roleButtonClass =
+    'flex justify-center items-center w-full py-1 rounded shadow-violet-6 shadow-[0_0_0_1px]' +
+    ' hover:bg-violet-3 focus:shadow-[0_0_0_1px] focus:shadow-violet-9 focus:outline-none' +
+    ' data-[state=on]:bg-violet-6 data-[state=on]:text-violet-12';
   const headerId = `roles-header-${title.replaceAll(' ', '')}`;
 
   return (
-    <section
+    <Section
       aria-labelledby={headerId}
-      className="flex flex-col gap-4 p-2 border border-qxam-primary-lighter rounded"
+      className="border border-(--violet-a11) rounded"
+      asChild
     >
-      <h4 id={headerId} className="font-bold text-sm uppercase">
-        {title}
-      </h4>
-      <div className={rolesContainerClass}>
-        {roles.map((role) => (
-          <SelectableField
-            key={role.id}
-            value={role.name}
-            isSelected={role.id === selectedRole?.id}
-            onClick={() => {
-              onRoleClick(role);
-            }}
-            className={roleButtonClass}
-          />
-        ))}
-      </div>
-    </section>
+      <Flex direction="column" gap="4" p="2" flexGrow="1" width="100%">
+        <Heading
+          as="h4"
+          id={headerId}
+          size="2"
+          weight="bold"
+          className="uppercase"
+        >
+          {title}
+        </Heading>
+        <Flex direction="column" gap="3" px="6" justify="center" align="center">
+          {roles.map((role) => (
+            <ToggleGroup.Item
+              key={role.id}
+              value={role.name}
+              className={roleButtonClass}
+            >
+              {role.name}
+            </ToggleGroup.Item>
+          ))}
+        </Flex>
+      </Flex>
+    </Section>
   );
 };
 

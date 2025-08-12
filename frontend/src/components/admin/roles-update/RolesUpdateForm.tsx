@@ -9,6 +9,15 @@ import RoleControl from './RoleControl.tsx';
 import { useRoleManagement } from '../../../hooks/admin/roles-update/useRoleManagement.tsx';
 import { useFormNotifications } from '../../../hooks/useFormNotifications.tsx';
 import { QueryError } from '../../../types/ApiTypes.ts';
+import { Form, ToggleGroup } from 'radix-ui';
+import {
+  Button,
+  Flex,
+  Grid,
+  Section,
+  Separator,
+  Skeleton,
+} from '@radix-ui/themes';
 
 interface RolesUpdateFormProps {
   user: {
@@ -50,7 +59,6 @@ const RolesUpdateForm = ({
 }: RolesUpdateFormProps) => {
   const defaultRolesError = 'Error while fetching roles data, try again later';
   const {
-    selectedRole,
     currentRoles,
     getAvailableRoles,
     getRolesToAdd,
@@ -81,6 +89,13 @@ const RolesUpdateForm = ({
     },
   });
 
+  const handleRoleChange = (roleName: string) => {
+    const foundRole = data?.find((role) => role.name === roleName);
+    if (foundRole) {
+      onRoleClick(foundRole);
+    }
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -99,76 +114,81 @@ const RolesUpdateForm = ({
   };
 
   return (
-    <form
-      aria-labelledby="roles-update-form-title"
-      className="flex flex-col m-2 gap-4"
-      onSubmit={handleSubmit}
-    >
-      <h3 id="roles-update-form-title" className="font-bold text-md">
-        Roles Update Form
-      </h3>
-      <UserSection title="User Data" userId={id} email={email} />
+    <Form.Root onSubmit={handleSubmit}>
+      <Flex direction="column" gap="4" mx="2">
+        <Separator size="4" />
 
-      {isError && (
-        <div className="flex flex-col justify-center items-center">
-          <ErrorComponent error={error ?? defaultRolesError} />
-        </div>
-      )}
-      {!isError && (
-        <section
-          aria-label="roles update section"
-          className="grid grid-cols-[1fr_max-content_1fr] gap-2"
-        >
-          <RolesListSection
-            title="Assigned Roles"
-            roles={currentRoles}
-            selectedRole={selectedRole}
-            onRoleClick={onRoleClick}
-          />
+        <UserSection title="User Data" userId={id} email={email} />
 
-          <RoleControl onAddRole={onAddRole} onRemoveRole={onRemoveRole} />
+        <Separator size="4" />
 
-          {isPending && (
-            <section className="flex flex-col justify-center items-center">
-              <LoadingSpinner color="accent" />
-            </section>
-          )}
-          {isSuccess && (
-            <RolesListSection
-              title="Available Roles"
-              roles={getAvailableRoles(data ?? [])}
-              selectedRole={selectedRole}
-              onRoleClick={onRoleClick}
-            />
-          )}
-        </section>
-      )}
-      <section
-        aria-label="form controls"
-        className="flex flex-row gap-2 justify-end items-center"
-      >
-        {!isError && !submitPending && (
-          <button
-            type="submit"
-            className="btn btn-secondary-lightest text-md min-w-20 border-qxam-neutral-dark-lightest border rounded text-center"
-          >
-            Update
-          </button>
+        {isError && (
+          <Flex dir="col" justify="center" align="center">
+            <ErrorComponent error={error ?? defaultRolesError} />
+          </Flex>
         )}
-        {submitPending && (
-          <div className="min-w-20 flex justify-center items-center">
-            <LoadingSpinner size="small" color="accent" />
-          </div>
+        {!isError && (
+          <Section aria-label="roles update section" p="0">
+            <ToggleGroup.Root
+              type="single"
+              onValueChange={handleRoleChange}
+              asChild
+            >
+              <Grid
+                columns="1fr auto 1fr"
+                gap="2"
+                justify="center"
+                align="stretch"
+                minHeight="250px"
+              >
+                <RolesListSection title="Assigned Roles" roles={currentRoles} />
+
+                <RoleControl
+                  onAddRole={onAddRole}
+                  onRemoveRole={onRemoveRole}
+                />
+
+                <Skeleton loading={isPending}>
+                  <Flex flexGrow="1">
+                    {isSuccess && (
+                      <RolesListSection
+                        title="Available Roles"
+                        roles={getAvailableRoles(data ?? [])}
+                      />
+                    )}
+                  </Flex>
+                </Skeleton>
+              </Grid>
+            </ToggleGroup.Root>
+          </Section>
         )}
-        <button
-          type="button"
-          className="btn btn-neutral-light text-md min-w-20 border-qxam-neutral-dark-lightest border rounded text-center"
-          onClick={onClose}
-        >
-          Close
-        </button>
-      </section>
-    </form>
+        <Section aria-label="form controls" p="0">
+          <Flex direction="row" gap="2" align="center" justify="end">
+            {!isError && (
+              <Flex minWidth="80px" justify="center" align="center">
+                <LoadingSpinner size="small" isLoading={submitPending}>
+                  <Form.Submit asChild>
+                    <Button type="submit" size="3" className="!cursor-pointer">
+                      Update
+                    </Button>
+                  </Form.Submit>
+                </LoadingSpinner>
+              </Flex>
+            )}
+            <Button
+              type="button"
+              size="3"
+              color="gray"
+              variant="soft"
+              className="!cursor-pointer"
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          </Flex>
+        </Section>
+      </Flex>
+    </Form.Root>
   );
 };
 

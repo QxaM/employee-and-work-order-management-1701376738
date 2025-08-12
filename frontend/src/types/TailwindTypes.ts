@@ -6,6 +6,8 @@ export type Color =
   | 'neutralLight'
   | 'success'
   | 'warning'
-  | 'error';
+  | 'error'
+  | 'violet'
+  | 'gray';
 
 export type Size = 'small' | 'medium' | 'large';

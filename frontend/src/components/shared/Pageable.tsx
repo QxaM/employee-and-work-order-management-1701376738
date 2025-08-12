@@ -9,7 +9,7 @@ interface ElementColor {
   activePageButton: string;
 }
 
-const PageableColor: Record<Color, ElementColor> = {
+const PageableColor: Record<Exclude<Color, 'violet' | 'gray'>, ElementColor> = {
   primary: {
     text: 'text-qxam-primary-darker',
     navButton:
@@ -78,7 +78,7 @@ const PageableColor: Record<Color, ElementColor> = {
 
 interface PageableProps {
   pageable: PageableData;
-  color?: Exclude<Color, 'neutralLight'>;
+  color?: Exclude<Color, 'neutralLight' | 'violet' | 'gray'>;
   maxPages?: number;
 }
 
