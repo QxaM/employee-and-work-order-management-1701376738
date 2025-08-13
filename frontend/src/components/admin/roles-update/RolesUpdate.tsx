@@ -8,6 +8,7 @@ import RolesUpdateForm from './RolesUpdateForm.tsx';
 import { useGetRolesQuery } from '../../../store/api/role.ts';
 import { useGetUsersQuery } from '../../../store/api/user.ts';
 import { useSearchParams } from 'react-router-dom';
+import { Flex, Section } from '@radix-ui/themes';
 
 /**
  * The `RolesUpdate` component is responsible for managing and displaying user role updates.
@@ -69,26 +70,35 @@ const RolesUpdate = () => {
 
   return (
     <>
-      <main className="flex flex-col w-full p-2 mx-4 my-2 text-qxam-neutral-dark-extreme-dark">
-        <Table title="User Roles Update">
-          <Table.Header
-            headerColumns={['ID', 'Email', 'Current Roles']}
-          ></Table.Header>
-          <Table.Body
-            rows={users.map((user) => ({
-              data: [
-                user.id,
-                user.email,
-                user.roles.map((role) => role.name).join(', '),
-              ],
-              onRowClick: () => {
-                handleRowClick(user);
-              },
-            }))}
-          ></Table.Body>
-        </Table>
-        <Pageable pageable={pageable} />
-      </main>
+      <Section py="6" asChild>
+        <Flex
+          direction="column"
+          mx="4"
+          my="0"
+          flexGrow="1"
+          className="text-gray-12"
+        >
+          <Table title="User Roles Update">
+            <Table.Header
+              headerColumns={['ID', 'Email', 'Current Roles']}
+            ></Table.Header>
+            <Table.Body
+              rows={users.map((user) => ({
+                data: [
+                  user.id,
+                  user.email,
+                  user.roles.map((role) => role.name).join(', '),
+                ],
+                onRowClick: () => {
+                  handleRowClick(user);
+                },
+              }))}
+            ></Table.Body>
+          </Table>
+          <Pageable pageable={pageable} />
+        </Flex>
+      </Section>
+
       <ModalPage
         title="Roles Update Form"
         description="Update user roles"
