@@ -14,7 +14,7 @@ import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
 import { loadUsers } from './api/loaders/user.loader.ts';
 import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
-import ErrorElement from './components/shared/ErrorElement.tsx';
+import ErrorElement from './components/shared/router/ErrorElement.tsx';
 
 const router = createBrowserRouter([
   {

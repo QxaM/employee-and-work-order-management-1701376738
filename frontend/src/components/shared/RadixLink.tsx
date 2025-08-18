@@ -7,7 +7,7 @@ interface RadixLinkProps extends ButtonProps {
 
 const RadixLink = ({ to, children, ...props }: RadixLinkProps) => {
   return (
-    <Button {...props}>
+    <Button {...props} asChild>
       <Link to={to}>{children}</Link>
     </Button>
   );

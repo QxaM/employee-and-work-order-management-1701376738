@@ -3,7 +3,7 @@ import { FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import ErrorComponent from '../components/shared/ErrorComponent.tsx';
+import ErrorComponent from './shared/ErrorComponent.tsx';
 import { login as loginAction } from '../store/authSlice.ts';
 import { useAppDispatch } from '../hooks/useStore.tsx';
 import { LoginType, useLoginMutation } from '../store/api/auth.ts';

@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
-import { isQueryError } from '../../utils/errorUtils.ts';
+import { isQueryError } from '../../../utils/errorUtils.ts';
+import { Container, Flex, Heading, Section, Text } from '@radix-ui/themes';
 
 /**
  * A functional React component that renders a user-friendly error message based on the current routing or query error state.
@@ -39,42 +40,42 @@ const ErrorElement = () => {
   }
 
   return (
-    <div className="flex justify-center w-full text-qxam-error-extreme-dark">
-      <section className="flex flex-col m-2 px-4 py-8 rounded h-fit w-full gap-4 justify-self-center bg-qxam-error-extreme-light">
-        <header className="flex flex-row items-center gap-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-8"
-          >
-            <path
-              fillRule="evenodd"
-              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <h4 className="text-2xl font-bold">Something went wrong!</h4>
-        </header>
-
-        <article className="flex flex-col gap-8">
-          <p>
+    <Container className="text-(--red-a12)">
+      <Section px="6" className="bg-(--red-a3)">
+        <Heading as="h4" size="6" weight="bold">
+          <Flex gap="4" align="center" mb="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-(--font-size-6)"
+            >
+              <path
+                fillRule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <Text>Something went wrong!</Text>
+          </Flex>
+          <Text as="p" size="3" weight="regular">
             Something went wrong during your request. See details below or try
             again later.
-          </p>
+          </Text>
+        </Heading>
 
-          <section
-            aria-labelledby="error-status"
-            className="flex flex-col gap-2"
-          >
-            <h5 id="error-status" className="text-xl font-medium">
+        <Section pt="8" pb="0">
+          <Flex direction="column" gap="1" align="start">
+            <Heading as="h5" size="5" weight="medium" id="error-status">
               Error {errorStatus}
-            </h5>
-            <p>{errorDescription}</p>
-          </section>
-        </article>
-      </section>
-    </div>
+            </Heading>
+            <Text as="p" size="3" weight="regular">
+              {errorDescription}
+            </Text>
+          </Flex>
+        </Section>
+      </Section>
+    </Container>
   );
 };
 
