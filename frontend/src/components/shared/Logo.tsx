@@ -6,11 +6,11 @@ const Logo = () => {
       <img
         src="/maxq-logo.jpg"
         alt="MaxQ Logo with text panel and synthwave background"
-        height={42}
-        width={42}
+        height={32}
+        width={32}
         className="m-2 shadow-xl"
       />
-      <h1 className="text-qxam-neutral-light-lightest text-xl font-extrabold">
+      <h1 className="text-qxam-neutral-light-lightest text-lg font-extrabold">
         MaxQ Work Manager
       </h1>
     </Link>

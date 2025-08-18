@@ -7,7 +7,6 @@
 @import "./styles/dark.css";
 @import "./styles/fonts.css";
 
-
 @config '../tailwind.config.js';
 
 @utility btn {
@@ -52,4 +51,114 @@
 @utility btn-destructive {
     @apply bg-qxam-error-lighter text-qxam-neutral-dark-darker;
     @apply hover:bg-qxam-error hover:text-qxam-neutral-dark-darkest;
+}
+
+@theme {
+    --animate-scaleIn: scaleIn 200ms ease;
+    --animate-scaleOut: scaleOut 200ms ease;
+    --animate-fadeIn: fadeIn 200ms ease;
+    --animate-fadeOut: fadeOut 200ms ease;
+    --animate-enterFromTop: enterFromTop 250ms ease;
+    --animate-enterFromLeft: enterFromLeft 250ms ease;
+    --animate-enterFromRight: enterFromRight 250ms ease;
+    --animate-exitToLeft: exitToLeft 250ms ease;
+    --animate-exitToRight: exitToRight 250ms ease;
+
+    @keyframes enterFromTop {
+        0% {
+            opacity: 0;
+            transform: translateY(-200px)
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @keyframes enterFromRight {
+        0% {
+            opacity: 0;
+            transform: translateX(200px)
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0)
+        }
+    }
+    @keyframes enterFromLeft {
+        0% {
+            opacity: 0;
+            transform: translateX(-200px)
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0)
+        }
+    }
+    @keyframes exitToTop {
+        0% {
+            opacity: 1;
+            transform: translateY(0)
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-200px)
+        }
+    }
+    @keyframes exitToRight {
+        0% {
+            opacity: 1;
+            transform: translateX(0)
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(200px)
+        }
+    }
+    @keyframes exitToLeft {
+        0% {
+            opacity: 1;
+            transform: translateX(0)
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(-200px)
+        }
+    }
+    @keyframes scaleIn {
+        0% {
+            opacity: 0;
+            transform: rotateX(-10deg) scale(0.9)
+        }
+        100% {
+            opacity: 1;
+            transform: rotateX(0deg) scale(1)
+        }
+    }
+    @keyframes scaleOut {
+        0% {
+            opacity: 1;
+            transform: rotateX(0deg) scale(1)
+        }
+        100% {
+            opacity: 0;
+            transform: rotateX(-10deg) scale(0.95)
+        }
+    }
+    @keyframes fadeIn {
+        0% {
+            opacity: 0
+        }
+        100% {
+            opacity: 1
+        }
+    }
+    @keyframes fadeOut {
+        0% {
+            opacity: 1
+        }
+        100% {
+            opacity: 0
+        }
+    }
 }

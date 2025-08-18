@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import MainNavigationHeader
+  from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
 import { MeType } from '../../../../../src/store/api/auth.ts';
+import { userEvent } from '@testing-library/user-event';
 
 describe('Main Navigation Header', () => {
   it('Should contain Logo component', () => {
@@ -94,6 +96,55 @@ describe('Main Navigation Header', () => {
 
       // Then
       expect(adminLink).toBeInTheDocument();
+    });
+
+    it('Should contain Admin expandable content, when is logged as admin', async () => {
+      // Given
+      const user = userEvent.setup();
+      window.PointerEvent = MouseEvent as typeof PointerEvent;
+      const navAdminText = 'Admin';
+      const navRolesUpdateText = 'Roles update';
+      const rolesDescriptionText = "View and change users' assigned roles";
+      const me: MeType = {
+        email: 'test@test.com',
+        roles: [
+          {
+            id: 1,
+            name: 'ADMIN',
+          },
+        ],
+      };
+      vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+        me,
+        isLoading: false,
+        isError: false,
+      });
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>
+      );
+
+      // When
+      const adminButton = screen.getByRole('button', { name: navAdminText });
+      await user.hover(adminButton);
+
+      const navRoleElement = await screen.findByText(
+        navRolesUpdateText,
+        {
+          exact: false,
+        },
+        { timeout: 2000 }
+      );
+      const navRoleDescriptionElement = await screen.findByText(
+        rolesDescriptionText,
+        { exact: false }
+      );
+
+      // Then
+      expect(navRoleElement).toBeInTheDocument();
+      expect(navRoleDescriptionElement).toBeInTheDocument();
     });
 
     it('Should navigate to Admin when admin link is clicked', () => {

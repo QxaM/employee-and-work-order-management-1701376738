@@ -10,6 +10,7 @@
       "vite/client",
       "vitest/globals",
       "@testing-library/jest-dom",
+      "@testing-library/user-event",
       "node",
       "@reduxjs/toolkit",
       "@reduxjs/toolkit/query/react"

@@ -1,3 +1,6 @@
+import plugin from 'tailwindcss/plugin';
+import { blackA, indigo, mauve, purple } from '@radix-ui/colors';
+
 /** @type {import('tailwindcss').Config} */
 
 export default {
@@ -32,6 +35,10 @@ export default {
         11: 'var(--gray-11)',
         12: 'var(--gray-12)',
       },
+      ...blackA,
+      ...mauve,
+      ...purple,
+      ...indigo,
       'qxam-primary': {
         'extreme-dark': '#0f0811',
         darkest: '#3e1f44',
@@ -106,4 +113,13 @@ export default {
       },
     },
   },
+  plugins: [
+    plugin(({ matchUtilities }) => {
+      matchUtilities({
+        perspective: (value) => ({
+          perspective: value,
+        }),
+      });
+    }),
+  ],
 };

@@ -1,5 +1,6 @@
 import AdminSidebar from '../components/shared/navigation/AdminSidebar.tsx';
 import { Outlet } from 'react-router-dom';
+import { Flex } from '@radix-ui/themes';
 
 /**
  * AdminPage is a functional React component that represents the main
@@ -10,10 +11,10 @@ import { Outlet } from 'react-router-dom';
  */
 const AdminPage = () => {
   return (
-    <div className="flex flex-row flex-grow">
+    <Flex flexGrow="1">
       <AdminSidebar />
       <Outlet />
-    </div>
+    </Flex>
   );
 };
 
