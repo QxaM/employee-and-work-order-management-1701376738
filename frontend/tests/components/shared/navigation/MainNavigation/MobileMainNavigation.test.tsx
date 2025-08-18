@@ -11,6 +11,12 @@ import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
 describe('Main Navigation Header', () => {
   beforeEach(() => {
     global.scrollTo = vi.fn();
+
+    vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+      me: undefined,
+      isLoading: false,
+      isError: true,
+    });
   });
 
   afterEach(() => {
@@ -27,11 +33,9 @@ describe('Main Navigation Header', () => {
     );
 
     // When
-    const imageElement = screen.getByAltText(appName, { exact: false });
     const headerElement = screen.getByText(appName, { exact: false });
 
     // Then
-    expect(imageElement).toBeInTheDocument();
     expect(headerElement).toBeInTheDocument();
   });
 

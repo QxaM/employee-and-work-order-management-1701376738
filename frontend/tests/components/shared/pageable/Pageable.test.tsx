@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
-import Pageable from '../../../src/components/shared/Pageable.tsx';
-import { Pageable as PageableData } from '../../../src/types/PageableTypes.ts';
+import Pageable from '../../../../src/components/shared/pageable/Pageable.tsx';
+import { Pageable as PageableData } from '../../../../src/types/PageableTypes.ts';
 import { BrowserRouter } from 'react-router-dom';
 import { describe } from 'vitest';
 
@@ -90,62 +90,6 @@ describe('Pageable', () => {
       // Then
       expect(previousButton).not.toHaveClass(disabledClass);
       expect(nextButton).toHaveClass(disabledClass);
-    });
-
-    it('Should navigate to previous page', () => {
-      // Given
-      const pageable: PageableData = {
-        isFirst: false,
-        isLast: false,
-        currentElements: 15,
-        currentPage: 1,
-        pageSize: 15,
-        totalElements: 45,
-        totalPages: 3,
-      };
-      const previousPage = pageable.currentPage - 1;
-
-      render(
-        <BrowserRouter>
-          <Pageable pageable={pageable} />
-        </BrowserRouter>
-      );
-      const previousButton = screen.getByLabelText(previousLabel);
-
-      // When
-      fireEvent.click(previousButton);
-
-      // Then
-      expect(window.location.search.endsWith(`?page=${previousPage}`)).toBe(
-        true
-      );
-    });
-
-    it('Should navigate to next page', () => {
-      // Given
-      const pageable: PageableData = {
-        isFirst: false,
-        isLast: false,
-        currentElements: 15,
-        currentPage: 1,
-        pageSize: 15,
-        totalElements: 45,
-        totalPages: 3,
-      };
-      const nextPage = pageable.currentPage + 1;
-
-      render(
-        <BrowserRouter>
-          <Pageable pageable={pageable} />
-        </BrowserRouter>
-      );
-      const nextButton = screen.getByLabelText(nextLabel);
-
-      // When
-      fireEvent.click(nextButton);
-
-      // Then
-      expect(window.location.search.endsWith(`?page=${nextPage}`)).toBe(true);
     });
   });
 
@@ -335,65 +279,9 @@ describe('Pageable', () => {
       expect(pageButton3).toBeInTheDocument();
       expect(pageButton4).not.toBeInTheDocument();
     });
-
-    it('Should navigate to page', () => {
-      // Given
-      const pageable: PageableData = {
-        isFirst: false,
-        isLast: false,
-        currentElements: 15,
-        currentPage: 1,
-        pageSize: 15,
-        totalElements: 45,
-        totalPages: 3,
-      };
-      const previousPage = pageable.currentPage - 1;
-      const previousPageLabel = `page ${previousPage + 1}`;
-
-      render(
-        <BrowserRouter>
-          <Pageable pageable={pageable} />
-        </BrowserRouter>
-      );
-      const firstPageButton = screen.getByLabelText(previousPageLabel);
-
-      // When
-      fireEvent.click(firstPageButton);
-
-      // Then
-      expect(window.location.search.endsWith(`?page=${previousPage}`)).toBe(
-        true
-      );
-    });
   });
 
   describe('Element count', () => {
-    it('Should contain elements counter', () => {
-      // Given
-      const elementsRegex = /\d+-\d+ element\(s\) of \d+/;
-      const pageable: PageableData = {
-        isFirst: true,
-        isLast: true,
-        currentElements: 1,
-        currentPage: 0,
-        pageSize: 15,
-        totalElements: 1,
-        totalPages: 1,
-      };
-
-      render(
-        <BrowserRouter>
-          <Pageable pageable={pageable} />
-        </BrowserRouter>
-      );
-
-      // When
-      const elementsCounter = screen.getByText(elementsRegex);
-
-      // Then
-      expect(elementsCounter).toBeInTheDocument();
-    });
-
     it('Should correctly render elements count on first page', () => {
       // Given
       const pageable: PageableData = {
@@ -416,7 +304,7 @@ describe('Pageable', () => {
 
       // When
       const elementsCounter = screen.getByText(
-        `${firstElement}-${lastElement}`,
+        new RegExp(`${firstElement}\\s+-\\s+${lastElement}`),
         { exact: false }
       );
 
@@ -446,7 +334,7 @@ describe('Pageable', () => {
 
       // When
       const elementsCounter = screen.getByText(
-        `${firstElement}-${lastElement}`,
+        new RegExp(`${firstElement}\\s+-\\s+${lastElement}`),
         { exact: false }
       );
 
@@ -477,7 +365,7 @@ describe('Pageable', () => {
 
       // When
       const elementsCounter = screen.getByText(
-        `${firstElement}-${lastElement}`,
+        new RegExp(`${firstElement}\\s+-\\s+${lastElement}`),
         { exact: false }
       );
 

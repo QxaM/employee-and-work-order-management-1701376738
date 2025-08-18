@@ -6,11 +6,11 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import ErrorElement from '../../../src/components/shared/router/ErrorElement.tsx';
-import { CustomFetchBaseQueryError } from '../../../src/store/api/base.ts';
+import ErrorElement from '../../../../src/components/shared/router/ErrorElement.tsx';
+import { CustomFetchBaseQueryError } from '../../../../src/store/api/base.ts';
 import { SerializedError } from '@reduxjs/toolkit';
-import RolesUpdate from '../../../src/components/admin/roles-update/RolesUpdate.tsx';
-import { renderWithProviders } from '../../test-utils.tsx';
+import RolesUpdate from '../../../../src/components/admin/roles-update/RolesUpdate.tsx';
+import { renderWithProviders } from '../../../test-utils.tsx';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');

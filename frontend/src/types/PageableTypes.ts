@@ -1,3 +1,5 @@
+import { Color } from './TailwindTypes.ts';
+
 /**
  * Represents pagination information for a collection or dataset.
  * This interface is used to describe details about the current page,
@@ -21,3 +23,25 @@ export interface Pageable {
   totalElements: number;
   pageSize: number;
 }
+
+export interface ElementColor {
+  text: string;
+  navButton: string;
+  pageButton: string;
+  activePageButton: string;
+}
+
+export const PageableColor: Record<Color, ElementColor> = {
+  violet: {
+    text: 'text-(--accent-a11)',
+    navButton: 'border-(--accent-3) hover:bg-(--accent-3)',
+    pageButton: 'hover:bg-(--accent-4)',
+    activePageButton: 'bg-(--accent-a11) text-(--accent-3) shadow-(--accent-3)',
+  },
+  gray: {
+    text: 'text-(--gray-a11)',
+    navButton: 'border-(--gray-3) hover:bg-(--gray-3)',
+    pageButton: 'hover:bg-(--gray-4)',
+    activePageButton: 'bg-(--gray-a11) text-(--gray-3) shadow-(--gray-3)',
+  },
+} as const;

@@ -1,14 +1,14 @@
 import { UserType } from '../../../types/UserTypes.ts';
 import Table from '../../shared/Table.tsx';
-import Pageable from '../../shared/Pageable.tsx';
+import Pageable from '../../shared/pageable/Pageable.tsx';
 import { Pageable as PageableData } from '../../../types/PageableTypes.ts';
 import ModalPage from '../../../pages/ModalPage.tsx';
 import { useEffect, useMemo, useState } from 'react';
 import RolesUpdateForm from './RolesUpdateForm.tsx';
 import { useGetRolesQuery } from '../../../store/api/role.ts';
-import { useGetUsersQuery } from '../../../store/api/user.ts';
+import { DEFAULT_USERS_PER_PAGE, useGetUsersQuery, } from '../../../store/api/user.ts';
 import { useSearchParams } from 'react-router-dom';
-import { Flex, Section } from '@radix-ui/themes';
+import { Grid, Section } from '@radix-ui/themes';
 
 /**
  * The `RolesUpdate` component is responsible for managing and displaying user role updates.
@@ -71,14 +71,20 @@ const RolesUpdate = () => {
   return (
     <>
       <Section py="6" asChild>
-        <Flex
-          direction="column"
+        <Grid
+          rows="1fr auto"
+          gap="4"
+          flexGrow="1"
           mx="4"
           my="0"
-          flexGrow="1"
-          className="text-gray-12"
+          style={{
+            height: `calc(var(--table-cell-min-height) * ${DEFAULT_USERS_PER_PAGE + 1})`,
+          }}
         >
-          <Table title="User Roles Update">
+          <Table
+            title="User Roles Update"
+            description="Select user from table below to update their role"
+          >
             <Table.Header
               headerColumns={['ID', 'Email', 'Current Roles']}
             ></Table.Header>
@@ -96,7 +102,7 @@ const RolesUpdate = () => {
             ></Table.Body>
           </Table>
           <Pageable pageable={pageable} />
-        </Flex>
+        </Grid>
       </Section>
 
       <ModalPage

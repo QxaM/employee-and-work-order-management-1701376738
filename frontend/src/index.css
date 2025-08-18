@@ -59,10 +59,12 @@
     --animate-fadeIn: fadeIn 200ms ease;
     --animate-fadeOut: fadeOut 200ms ease;
     --animate-enterFromTop: enterFromTop 250ms ease;
+    --animate-enterFromBottom: enterFromBottom 250ms ease;
     --animate-enterFromLeft: enterFromLeft 250ms ease;
     --animate-enterFromRight: enterFromRight 250ms ease;
     --animate-exitToLeft: exitToLeft 250ms ease;
     --animate-exitToRight: exitToRight 250ms ease;
+    --animate-swipeOut: swipeOut 100ms ease-out;
 
     @keyframes enterFromTop {
         0% {
@@ -74,7 +76,14 @@
             transform: translateY(0)
         }
     }
-
+    @keyframes enterFromBottom {
+        0% {
+            transform: translateY(calc(100% + var(--viewport-padding)))
+        }
+        100% {
+            transform: translateY(0)
+        }
+    }
     @keyframes enterFromRight {
         0% {
             opacity: 0;
@@ -159,6 +168,14 @@
         }
         100% {
             opacity: 0
+        }
+    }
+    @keyframes swipeOut {
+        0% {
+            transform: translateY(calc(100% + var(--viewport-padding)))
+        }
+        100% {
+            transform: translateY(var(--radix-toast-swipe-end-y))
         }
     }
 }

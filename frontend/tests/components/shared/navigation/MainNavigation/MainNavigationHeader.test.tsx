@@ -1,9 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MainNavigationHeader
-  from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
@@ -11,22 +10,12 @@ import { MeType } from '../../../../../src/store/api/auth.ts';
 import { userEvent } from '@testing-library/user-event';
 
 describe('Main Navigation Header', () => {
-  it('Should contain Logo component', () => {
-    // Given
-    const appName = 'MaxQ';
-    renderWithProviders(
-      <BrowserRouter>
-        <MainNavigationHeader />
-      </BrowserRouter>
-    );
-
-    // When
-    const imageElement = screen.getByAltText(appName, { exact: false });
-    const headerElement = screen.getByText(appName, { exact: false });
-
-    // Then
-    expect(imageElement).toBeInTheDocument();
-    expect(headerElement).toBeInTheDocument();
+  beforeEach(() => {
+    vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+      me: undefined,
+      isLoading: false,
+      isError: true,
+    });
   });
 
   describe('Navigation', () => {

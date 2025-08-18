@@ -6,7 +6,9 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import ModalMessage from '../../../src/components/shared/ModalMessage.tsx';
+import ModalMessage from '../../../../src/components/shared/modal/ModalMessage.tsx';
+import ModalProvider from '../../../../src/components/shared/modal/ModalProvider.tsx';
+import { MODAL_TYPE } from '../../../../src/types/ModalTypes.tsx';
 
 const TEST_MESSAGE = 'Test message';
 
@@ -16,13 +18,16 @@ describe('ModalMessage Tests', () => {
     modalRoot.setAttribute('id', 'modal');
     document.body.appendChild(modalRoot);
   });
+
   describe('Rendering', () => {
     it('Opens and displays the message when ModalMessage is created', () => {
       // Given
 
       // When
       render(
-        <ModalMessage index={1} message={TEST_MESSAGE} onClose={vi.fn()} />
+        <ModalProvider>
+          <ModalMessage index={1} message={TEST_MESSAGE} onClose={vi.fn()} />
+        </ModalProvider>
       );
 
       // Then
@@ -33,14 +38,17 @@ describe('ModalMessage Tests', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            onClose={onCloseMock}
+          />
+        </ModalProvider>
       );
 
       // When
-      const closeButtonLabel = '\u2715';
-      const closeButton = screen.getByRole('button', {
-        name: new RegExp(closeButtonLabel, 'i'),
-      });
+      const closeButton = screen.getByRole('button');
       fireEvent.click(closeButton);
 
       // Then
@@ -56,7 +64,13 @@ describe('ModalMessage Tests', () => {
 
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            onClose={onCloseMock}
+          />
+        </ModalProvider>
       );
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
 
@@ -82,12 +96,14 @@ describe('ModalMessage Tests', () => {
 
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage
-          index={1}
-          message={TEST_MESSAGE}
-          hideTimeout={5_000}
-          onClose={onCloseMock}
-        />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            hideTimeout={5_000}
+            onClose={onCloseMock}
+          />
+        </ModalProvider>
       );
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
 
@@ -109,62 +125,74 @@ describe('ModalMessage Tests', () => {
   });
 
   describe('ModalMessage style changes', () => {
+    const dataTestId = 'modal-message';
+
     it('Should apply "info" style by default', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage index={1} message={TEST_MESSAGE} onClose={onCloseMock} />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            onClose={onCloseMock}
+          />
+        </ModalProvider>
       );
 
       // When
-      const dialog = screen.getByRole('dialog');
+      const dialog = screen.getByTestId(dataTestId);
 
       // Then
-      expect(dialog).toHaveClass('bg-qxam-accent-extreme-light');
-      expect(dialog).toHaveClass('text-qxam-accent-neutral-dark');
-      expect(dialog).toHaveClass('border-qxam-accent-lighter');
+      expect(dialog).toHaveClass(MODAL_TYPE.info.background);
+      expect(dialog).toHaveClass(MODAL_TYPE.info.text);
+      expect(dialog).toHaveClass(MODAL_TYPE.info.border);
     });
 
     it('Should apply "success" style', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage
-          index={1}
-          message={TEST_MESSAGE}
-          onClose={onCloseMock}
-          type={'success'}
-        />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            onClose={onCloseMock}
+            type={'success'}
+          />
+        </ModalProvider>
       );
 
       // When
-      const dialog = screen.getByRole('dialog');
+      const dialog = screen.getByTestId(dataTestId);
 
       // Then
-      expect(dialog).toHaveClass('bg-qxam-success-extreme-light');
-      expect(dialog).toHaveClass('text-qxam-success-darkest');
-      expect(dialog).toHaveClass('border-qxam-success-lighter');
+      expect(dialog).toHaveClass(MODAL_TYPE.success.background);
+      expect(dialog).toHaveClass(MODAL_TYPE.success.text);
+      expect(dialog).toHaveClass(MODAL_TYPE.success.border);
     });
 
     it('Should apply "error" style', () => {
       // Given
       const onCloseMock = vi.fn();
       render(
-        <ModalMessage
-          index={1}
-          message={TEST_MESSAGE}
-          onClose={onCloseMock}
-          type={'error'}
-        />
+        <ModalProvider>
+          <ModalMessage
+            index={1}
+            message={TEST_MESSAGE}
+            onClose={onCloseMock}
+            type={'error'}
+          />
+        </ModalProvider>
       );
 
       // When
-      const dialog = screen.getByRole('dialog');
+      const dialog = screen.getByTestId(dataTestId);
 
       // Then
-      expect(dialog).toHaveClass('bg-qxam-error-extreme-light');
-      expect(dialog).toHaveClass('text-qxam-error-darkest');
-      expect(dialog).toHaveClass('border-qxam-error-lighter');
+      expect(dialog).toHaveClass(MODAL_TYPE.error.background);
+      expect(dialog).toHaveClass(MODAL_TYPE.error.text);
+      expect(dialog).toHaveClass(MODAL_TYPE.error.border);
     });
   });
 });

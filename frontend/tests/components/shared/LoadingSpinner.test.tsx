@@ -13,16 +13,18 @@ describe('LoadingSpinner', () => {
     // Then
     const spinnerDiv = screen.getByTestId('spinner');
     expect(spinnerDiv).toBeInTheDocument();
-    expect(spinnerDiv).toHaveClass('border-violet-3 border-t-violet-9', {
+    expect(spinnerDiv).toHaveClass('border-violet-5 border-t-violet-9', {
       exact: false,
     });
-    expect(spinnerDiv).toHaveClass('w-12 h-12 border-[6px]', { exact: false });
+    expect(spinnerDiv).toHaveClass('size-(--space-7) border-[6px]', {
+      exact: false,
+    });
   });
 
   it('Should render custom spinner', () => {
     // Given
     const size = 'small';
-    const color = 'secondary';
+    const color = 'violet';
 
     // When
     render(<LoadingSpinner size={size} color={color} isLoading />);
@@ -30,11 +32,12 @@ describe('LoadingSpinner', () => {
     // Then
     const spinnerDiv = screen.getByTestId('spinner');
     expect(spinnerDiv).toBeInTheDocument();
-    expect(spinnerDiv).toHaveClass(
-      'border-qxam-secondary-lightest border-t-qxam-secondary',
-      { exact: false }
-    );
-    expect(spinnerDiv).toHaveClass('w-8 h-8 border-[5px]', { exact: false });
+    expect(spinnerDiv).toHaveClass('border-violet-5 border-t-violet-9', {
+      exact: false,
+    });
+    expect(spinnerDiv).toHaveClass('size-(--space-5) border-[5px]', {
+      exact: false,
+    });
   });
 
   it('Should not render if not loading', () => {

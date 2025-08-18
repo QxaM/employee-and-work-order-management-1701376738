@@ -1,4 +1,4 @@
-import {Outlet} from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import Footer from '../components/shared/Footer.tsx';
 import useWindowSize from '../hooks/useWindowSize.tsx';
@@ -6,7 +6,7 @@ import MainNavigationHeader
   from '../components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import MobileMainNavigation
   from '../components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
-import {Size} from '../types/WindowTypes.ts';
+import { Size } from '../types/WindowTypes.ts';
 
 /**
  * Renders the root page layout with responsive navigation, a content outlet, and a footer.

@@ -1,7 +1,10 @@
 import { PropsWithChildren } from 'react';
+import { Flex, Heading, Table as RadixTable, Text } from '@radix-ui/themes';
+import clsx from 'clsx/lite';
 
 interface TableProps {
   title: string;
+  description: string;
 }
 
 /**
@@ -10,16 +13,26 @@ interface TableProps {
  * @param {object} props - The properties object.
  * @param {string} props.title - The title to be displayed above the table.
  * @param {React.ReactNode} props.children - The content to be rendered inside the table.
- * @returns {JSX.Element} A styled table component with a title and content.
  */
-const Table = ({ title, children }: PropsWithChildren<TableProps>) => {
+const Table = ({
+  title,
+  description,
+  children,
+}: PropsWithChildren<TableProps>) => {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <h2 className="text-xl mx-4 font-semibold">{title}</h2>
-      <table className="table-auto border-collapse border border-qxam-secondary-lightest w-full text-left text-qxam-neutral-dark-extreme-dark">
+    <Flex direction="column" gap="6" width="100%">
+      <Flex direction="column" gap="1" mx="2">
+        <Heading as="h2" weight="medium">
+          {title}
+        </Heading>
+        <Text as="p" size="2">
+          {description}
+        </Text>
+      </Flex>
+      <RadixTable.Root variant="surface" layout="auto" size="2">
         {children}
-      </table>
-    </div>
+      </RadixTable.Root>
+    </Flex>
   );
 };
 
@@ -28,18 +41,16 @@ interface HeaderProps {
 }
 
 const TableHeader = ({ headerColumns }: HeaderProps) => {
-  const headerCellStyles = 'px-6 py-2 font-semibold';
-
   return (
-    <thead className="bg-qxam-secondary-lightest uppercase">
-      <tr>
+    <RadixTable.Header>
+      <RadixTable.Row>
         {headerColumns.map((column, index) => (
-          <th key={`${index} - ${column}`} className={headerCellStyles}>
+          <RadixTable.ColumnHeaderCell key={`${index} - ${column}`}>
             {column}
-          </th>
+          </RadixTable.ColumnHeaderCell>
         ))}
-      </tr>
-    </thead>
+      </RadixTable.Row>
+    </RadixTable.Header>
   );
 };
 
@@ -51,29 +62,26 @@ interface TableDataProps {
 }
 
 const TableData = ({ rows }: TableDataProps) => {
-  const rowStyles = 'hover:bg-qxam-accent-extreme-light cursor-pointer';
-  const cellStyles = 'px-6 py-3';
+  const getRowClass = (row: (typeof rows)[0]) => {
+    return clsx(row.onRowClick && 'cursor-pointer hover:bg-(--accent-2)');
+  };
 
   return (
-    <tbody>
+    <RadixTable.Body>
       {rows.map((row, index) => (
-        <tr
+        <RadixTable.Row
           key={`${index} - ${row.data[0] as string}`}
-          className={
-            rowStyles +
-            ' ' +
-            (index % 2 === 1 ? 'bg-qxam-secondary-extreme-light' : '')
-          }
+          className={getRowClass(row)}
           onClick={row.onRowClick}
         >
           {row.data.map((cell, index) => (
-            <td key={`${index} - ${cell as string}`} className={cellStyles}>
+            <RadixTable.Cell key={`${index} - ${cell as string}`}>
               {cell as string}
-            </td>
+            </RadixTable.Cell>
           ))}
-        </tr>
+        </RadixTable.Row>
       ))}
-    </tbody>
+    </RadixTable.Body>
   );
 };
 

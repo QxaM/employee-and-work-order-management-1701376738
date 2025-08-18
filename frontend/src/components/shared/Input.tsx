@@ -1,17 +1,14 @@
-import {
-  FormEvent,
-  forwardRef,
-  HTMLInputTypeAttribute,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { FormEvent, forwardRef, useImperativeHandle, useState } from 'react';
 
 import { ValidatorType } from '../../types/ValidatorTypes.ts';
+import { Flex, Text, TextField } from '@radix-ui/themes';
+import { Label } from 'radix-ui';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 interface InputType {
   title: string;
   placeholder: string;
-  type?: HTMLInputTypeAttribute;
+  type?: TextField.RootProps['type'];
   validator?: (value: string) => ValidatorType;
 }
 
@@ -58,14 +55,14 @@ const Input = forwardRef<string, InputType>((props, ref) => {
   };
 
   return (
-    <div className="flex flex-col gap-1 mx-4 my-2">
-      <label
+    <Flex direction="column" gap="1" mx="4" my="2">
+      <Label.Root
         htmlFor={title}
-        className="text-qxam-primary-extreme-dark font-medium ml-2 capitalize"
+        className="text-(--accent-12) font-(--font-weight-medium) ml-(--space-2) capitalize"
       >
         {title}
-      </label>
-      <input
+      </Label.Root>
+      <TextField.Root
         id={title}
         name={title}
         placeholder={placeholder}
@@ -73,27 +70,22 @@ const Input = forwardRef<string, InputType>((props, ref) => {
         type={type}
         onChange={handleChange}
         onInput={handleChange}
-        className="py-1 px-2 border border-qxam-accent rounded bg-qxam-accent-extreme-light focus:outline-none focus:ring-0 focus:border-qxam-accent-darker focus:border-[3px]"
-      ></input>
+      ></TextField.Root>
       {Object.entries(localError).length > 0 && !localError.isValid && (
-        <p className="px-2 py-1 flex items-center gap-1 bg-qxam-error-extreme-light text-qxam-error-darker rounded border border-qxam-error-lightest">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="size-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-              clipRule="evenodd"
-            />
-          </svg>
-
-          {localError.message || 'Input validation error'}
-        </p>
+        <Flex
+          px="2"
+          py="1"
+          gap="2"
+          align="center"
+          className="bg-(--red-a3) text-(--red-11) border border-(--red-a4) rounded-(--radius-1)"
+        >
+          <ExclamationTriangleIcon className="size-(--font-size-3)" />
+          <Text as="p" size="3">
+            {localError.message}
+          </Text>
+        </Flex>
       )}
-    </div>
+    </Flex>
   );
 });
 

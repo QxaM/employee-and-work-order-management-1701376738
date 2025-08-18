@@ -2,8 +2,12 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
 import RolesUpdateForm from '../../../../src/components/admin/roles-update/RolesUpdateForm.tsx';
 import { RoleType } from '../../../../src/types/RoleTypes.ts';
-import { afterEach, beforeEach, describe } from 'vitest';
-import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
+import {
+  createDataRouter,
+  renderWithProviders,
+  renderWithProvidersAndModals,
+} from '../../../test-utils.tsx';
 import { RouterProvider } from 'react-router-dom';
 import * as stateSubmitModule from '../../../../src/hooks/useStateSubmit.tsx';
 
@@ -387,6 +391,107 @@ describe('Roles Update Form', () => {
 
       // Then
       expect(loadingSpinner).toBeInTheDocument();
+    });
+  });
+
+  describe('Dialog renders', () => {
+    it('Should render success dialog on success', async () => {
+      // Given
+      const successMessage = `Successfully updated roles for user ${user.id}`;
+      const mockStateSubmit = {
+        submit: vi.fn(),
+        data: undefined,
+        isSuccess: true,
+        isPending: false,
+        isError: false,
+        error: undefined,
+      };
+      vi.spyOn(stateSubmitModule, 'useStateSubmit').mockReturnValue(
+        mockStateSubmit
+      );
+
+      // When
+      const { store } = renderWithProvidersAndModals(
+        <RouterProvider router={router} />
+      );
+
+      // Then
+      const modals = store.getState().modal.modals;
+      expect(modals).toHaveLength(1);
+      expect(modals[0]).toEqual(
+        expect.objectContaining({
+          content: expect.objectContaining({
+            type: 'success',
+            message: successMessage,
+          }) as unknown,
+        })
+      );
+    });
+
+    it('Should render error dialog on error', () => {
+      // Given
+      const errorMessage = `Test error message`;
+      const mockStateSubmit = {
+        submit: vi.fn(),
+        data: undefined,
+        isSuccess: false,
+        isPending: false,
+        isError: true,
+        error: new Error(errorMessage),
+      };
+      vi.spyOn(stateSubmitModule, 'useStateSubmit').mockReturnValue(
+        mockStateSubmit
+      );
+
+      // When
+      const { store } = renderWithProvidersAndModals(
+        <RouterProvider router={router} />
+      );
+
+      // Then
+      const modals = store.getState().modal.modals;
+      expect(modals).toHaveLength(1);
+      expect(modals[0]).toEqual(
+        expect.objectContaining({
+          content: expect.objectContaining({
+            type: 'error',
+            message: errorMessage,
+          }) as unknown,
+        })
+      );
+    });
+
+    it('Should render default error', () => {
+      // Given
+      const defaultErrorMessage = `Error while updating roles for user ${user.id}`;
+      const mockStateSubmit = {
+        submit: vi.fn(),
+        data: undefined,
+        isSuccess: false,
+        isPending: false,
+        isError: true,
+        error: undefined,
+      };
+      vi.spyOn(stateSubmitModule, 'useStateSubmit').mockReturnValue(
+        mockStateSubmit
+      );
+
+      // When
+      const { store } = renderWithProvidersAndModals(
+        <RouterProvider router={router} />
+      );
+
+      // Then
+      const modals = store.getState().modal.modals;
+      expect(modals).toHaveLength(1);
+      expect(modals[0]).toEqual(
+        expect.objectContaining({
+          content: expect.objectContaining({
+            type: 'error',
+            message: defaultErrorMessage,
+          }) as unknown,
+        })
+      );
     });
   });
 });

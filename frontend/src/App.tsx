@@ -15,6 +15,7 @@ import { loadUsers } from './api/loaders/user.loader.ts';
 import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
 import ErrorElement from './components/shared/router/ErrorElement.tsx';
+import ModalProvider from './components/shared/modal/ModalProvider.tsx';
 
 const router = createBrowserRouter([
   {
@@ -55,8 +56,10 @@ const router = createBrowserRouter([
 function App() {
   return (
     <Provider store={store}>
-      <RouterProvider router={router} />
-      <DialogManager />
+      <ModalProvider>
+        <RouterProvider router={router} />
+        <DialogManager />
+      </ModalProvider>
     </Provider>
   );
 }

@@ -1,10 +1,12 @@
 import { beforeAll, describe, it } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { registerModal } from '../../src/store/modalSlice.ts';
-import { renderWithProviders } from '../test-utils.tsx';
+import { renderWithProvidersAndModals } from '../test-utils.tsx';
 import DialogManager from '../../src/components/DialogManager.tsx';
 
 describe('Dialog Manager', () => {
+  const dataTestId = 'modal-message';
+
   beforeAll(() => {
     const modalRoot = document.createElement('div');
     modalRoot.setAttribute('id', 'modal');
@@ -15,15 +17,15 @@ describe('Dialog Manager', () => {
     // Given
 
     // When
-    renderWithProviders(<DialogManager />);
+    renderWithProvidersAndModals(<DialogManager />);
 
     // Then
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByTestId(dataTestId)).not.toBeInTheDocument();
   });
 
   it('Should render one dialog', async () => {
     // Given
-    const { store } = renderWithProviders(<DialogManager />);
+    const { store } = renderWithProvidersAndModals(<DialogManager />);
 
     // When
     act(() => {
@@ -39,13 +41,13 @@ describe('Dialog Manager', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeInTheDocument();
+      expect(screen.queryByTestId(dataTestId)).toBeInTheDocument();
     });
   });
 
   it('Should deregister dialog when closed', async () => {
     // Given
-    const { store } = renderWithProviders(<DialogManager />);
+    const { store } = renderWithProvidersAndModals(<DialogManager />);
     act(() => {
       store.dispatch(
         registerModal({
@@ -58,10 +60,7 @@ describe('Dialog Manager', () => {
     });
 
     // When
-    const closeButtonLabel = '\u2715';
-    const closeButton = await screen.findByRole('button', {
-      name: new RegExp(closeButtonLabel, 'i'),
-    });
+    const closeButton = await screen.findByRole('button');
     fireEvent.click(closeButton);
 
     // Then
@@ -72,7 +71,7 @@ describe('Dialog Manager', () => {
 
   it('Should render 5 dialogs', async () => {
     // Given
-    const { store } = renderWithProviders(<DialogManager />);
+    const { store } = renderWithProvidersAndModals(<DialogManager />);
 
     // When
     act(() => {
@@ -92,13 +91,13 @@ describe('Dialog Manager', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getAllByRole('dialog')).toHaveLength(5);
+      expect(screen.getAllByTestId(dataTestId)).toHaveLength(5);
     });
   });
 
   it('Should render 5 dialogs if more were registered', async () => {
     // Given
-    const { store } = renderWithProviders(<DialogManager />);
+    const { store } = renderWithProvidersAndModals(<DialogManager />);
 
     // When
     act(() => {
@@ -118,8 +117,8 @@ describe('Dialog Manager', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getAllByRole('dialog')).not.toHaveLength(6);
-      expect(screen.getAllByRole('dialog')).toHaveLength(5);
+      expect(screen.getAllByTestId(dataTestId)).not.toHaveLength(6);
+      expect(screen.getAllByTestId(dataTestId)).toHaveLength(5);
     });
   });
 });

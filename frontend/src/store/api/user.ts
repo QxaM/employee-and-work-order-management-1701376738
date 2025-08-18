@@ -5,6 +5,7 @@ import { PageableRequest } from '../../types/ApiTypes.ts';
 import { RoleType } from '../../types/RoleTypes.ts';
 
 const USERS_API = '/users';
+export const DEFAULT_USERS_PER_PAGE = 15;
 const defaultGetUsersErrorMessage = 'Unknown error while fetching user data';
 const defaultRoleUpdateErrorMessage =
   'Error during role modification, try again later';
@@ -20,7 +21,7 @@ export const usersApi = api.injectEndpoints({
     getUsers: builder.query<GetUsersType, PageableRequest | void>({
       query: (params) => {
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        const { page = 0, size = 15 } = params || {};
+        const { page = 0, size = DEFAULT_USERS_PER_PAGE } = params || {};
 
         return {
           url: authApi + USERS_API + `?page=${page}&size=${size}`,
