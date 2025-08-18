@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 
 import RootPage from './pages/RootPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
@@ -32,11 +32,11 @@ const router = createBrowserRouter([
         path: '/admin',
         element: (
           <ProtectedRoute roles={['ADMIN']}>
-            <AdminPage />
+            <Outlet />
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <></> },
+          { index: true, element: <AdminPage /> },
           {
             path: 'roles-update',
             element: <RolesUpdate />,
