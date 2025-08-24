@@ -4,7 +4,7 @@ import {
   confirmPasswordValidators,
   MINIMUM_PASSWORD_LENGTH,
   passwordValidators,
-} from '../utils/Validators.ts';
+} from '../utils/validators.ts';
 import { useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { usePasswordUpdateMutation } from '../store/api/passwordReset.ts';

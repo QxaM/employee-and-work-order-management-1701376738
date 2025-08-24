@@ -10,7 +10,14 @@ import { useRoleManagement } from '../../../hooks/admin/roles-update/useRoleMana
 import { useFormNotifications } from '../../../hooks/useFormNotifications.tsx';
 import { QueryError } from '../../../types/api/BaseTypes.ts';
 import { Form, ToggleGroup } from 'radix-ui';
-import { Button, Flex, Grid, Section, Separator, Skeleton, } from '@radix-ui/themes';
+import {
+  Button,
+  Flex,
+  Grid,
+  Section,
+  Separator,
+  Skeleton,
+} from '@radix-ui/themes';
 
 interface RolesUpdateFormProps {
   user: {

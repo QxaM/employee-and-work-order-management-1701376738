@@ -5,7 +5,7 @@ import {
   missingLowercaseLetter,
   missingNumber,
   missingUppercaseLetter,
-} from '../../src/utils/Validators.ts';
+} from '../../src/utils/validators.ts';
 
 describe('Validators', () => {
   describe('Missing Lowercase Letter', () => {

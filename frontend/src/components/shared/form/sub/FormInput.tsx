@@ -9,7 +9,7 @@ import {
   createTooLowMessage,
   createTooShortMessage,
   createValueMissingMessage,
-} from '../../../../utils/Validators.ts';
+} from '../../../../utils/validators.ts';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ValidatorType } from '../../../../types/ValidatorTypes.ts';

@@ -5,7 +5,7 @@ import {
   confirmPasswordValidators,
   MINIMUM_PASSWORD_LENGTH,
   passwordValidators,
-} from '../utils/Validators.ts';
+} from '../utils/validators.ts';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';

@@ -5,7 +5,7 @@ import {
   missingLowercaseLetter,
   missingNumber,
   missingUppercaseLetter,
-} from '../../../utils/Validators.ts';
+} from '../../../utils/validators.ts';
 import { Label } from 'radix-ui';
 import clsx from 'clsx';
 
