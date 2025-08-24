@@ -1,6 +1,6 @@
 import { Flex } from '@radix-ui/themes';
 import ErrorComponent from '../../ErrorComponent.tsx';
-import { QueryError } from '../../../../types/ApiTypes.ts';
+import { QueryError } from '../../../../types/api/BaseTypes.ts';
 import { readErrorMessage } from '../../../../utils/errorUtils.ts';
 import { PropsWithChildren } from 'react';
 

@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import ModalMessage from '../../../../src/components/shared/modal/ModalMessage.tsx';
 import ModalProvider from '../../../../src/components/shared/modal/ModalProvider.tsx';
-import { MODAL_TYPE } from '../../../../src/types/ModalTypes.tsx';
+import { MODAL_TYPE } from '../../../../src/types/components/ModalTypes.tsx';
 
 const TEST_MESSAGE = 'Test message';
 

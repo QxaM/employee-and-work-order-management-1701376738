@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Role } from '../../types/AuthorizationTypes.ts';
+import { Role } from '../../types/api/AuthorizationTypes.ts';
 import { useAppDispatch } from '../../hooks/useStore.tsx';
 import { useMeData } from '../../hooks/useMeData.tsx';
 import { registerModal } from '../../store/modalSlice.ts';

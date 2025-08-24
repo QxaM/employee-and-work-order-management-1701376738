@@ -1,5 +1,5 @@
 import { isQueryError, readErrorMessage } from '../../src/utils/errorUtils.ts';
-import { QueryError } from '../../src/types/ApiTypes.ts';
+import { QueryError } from '../../src/types/api/BaseTypes.ts';
 
 const defaultError = 'Unknown error, please try again!';
 

@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
 import RolesUpdateForm from '../../../../src/components/admin/roles-update/RolesUpdateForm.tsx';
-import { RoleType } from '../../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import {
   createDataRouter,

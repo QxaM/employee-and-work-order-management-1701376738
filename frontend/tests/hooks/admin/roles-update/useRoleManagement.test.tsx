@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { RoleType } from '../../../../src/types/RoleTypes';
+import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
 import { useRoleManagement } from '../../../../src/hooks/admin/roles-update/useRoleManagement';
 import { act } from 'react';
 

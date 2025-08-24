@@ -1,4 +1,4 @@
-import { RoleType } from '../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../src/types/api/RoleTypes.ts';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { updateRoles } from '../../../src/api/actions/user.action.ts';
 import { setupStore } from '../../../src/store';

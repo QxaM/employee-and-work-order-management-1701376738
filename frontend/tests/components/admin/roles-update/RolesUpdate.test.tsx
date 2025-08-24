@@ -2,11 +2,11 @@ import { afterEach, beforeAll, beforeEach } from 'vitest';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import RolesUpdate from '../../../../src/components/admin/roles-update/RolesUpdate.tsx';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { GetUsersType } from '../../../../src/types/UserTypes.ts';
+import { GetUsersType } from '../../../../src/types/api/UserTypes.ts';
 import { createDataRouter, renderWithProviders } from '../../../test-utils.tsx';
 import * as roleSlice from '../../../../src/store/api/role.ts';
 import * as userSlice from '../../../../src/store/api/user.ts';
-import { RoleType } from '../../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
 
 const path = '/admin/roles-update';
 

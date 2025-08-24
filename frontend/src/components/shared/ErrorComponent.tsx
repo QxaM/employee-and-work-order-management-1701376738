@@ -1,6 +1,6 @@
-import { QueryError } from '../../types/ApiTypes.ts';
+import { QueryError } from '../../types/api/BaseTypes.ts';
 import { readErrorMessage } from '../../utils/errorUtils.ts';
-import { NonUndefined } from '../../types/SharedTypes.ts';
+import { NonUndefined } from '../../types/BaseTypes.ts';
 import { Callout } from '@radix-ui/themes';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 

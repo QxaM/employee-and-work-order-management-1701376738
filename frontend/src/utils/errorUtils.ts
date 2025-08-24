@@ -1,5 +1,5 @@
-import { QueryError } from '../types/ApiTypes.ts';
-import { NonUndefined } from '../types/SharedTypes.ts';
+import { QueryError } from '../types/api/BaseTypes.ts';
+import { NonUndefined } from '../types/BaseTypes.ts';
 
 /**
  * Retrieves an error message based on the provided error object or string.

@@ -2,7 +2,7 @@ import { Color } from '../../../types/TailwindTypes.ts';
 import {
   Pageable as PageableData,
   PageableColor,
-} from '../../../types/PageableTypes.ts';
+} from '../../../types/components/PageableTypes.ts';
 import { Flex } from '@radix-ui/themes';
 import clsx from 'clsx/lite';
 import PageableNavButton from './PageableNavButton.tsx';

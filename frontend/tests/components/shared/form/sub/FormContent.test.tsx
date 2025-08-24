@@ -1,6 +1,6 @@
 import FormContent from '../../../../../src/components/shared/form/sub/FormContent.tsx';
 import { render, screen } from '@testing-library/react';
-import { QueryError } from '../../../../../src/types/ApiTypes.ts';
+import { QueryError } from '../../../../../src/types/api/BaseTypes.ts';
 
 describe('FormContent', () => {
   it('Should render children', () => {

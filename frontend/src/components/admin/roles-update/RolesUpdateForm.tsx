@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { RoleType } from '../../../types/RoleTypes.ts';
+import { RoleType } from '../../../types/api/RoleTypes.ts';
 import LoadingSpinner from '../../shared/LoadingSpinner.tsx';
 import ErrorComponent from '../../shared/ErrorComponent.tsx';
 import { useStateSubmit } from '../../../hooks/useStateSubmit.tsx';
@@ -8,16 +8,9 @@ import RolesListSection from './RolesListSection.tsx';
 import RoleControl from './RoleControl.tsx';
 import { useRoleManagement } from '../../../hooks/admin/roles-update/useRoleManagement.tsx';
 import { useFormNotifications } from '../../../hooks/useFormNotifications.tsx';
-import { QueryError } from '../../../types/ApiTypes.ts';
+import { QueryError } from '../../../types/api/BaseTypes.ts';
 import { Form, ToggleGroup } from 'radix-ui';
-import {
-  Button,
-  Flex,
-  Grid,
-  Section,
-  Separator,
-  Skeleton,
-} from '@radix-ui/themes';
+import { Button, Flex, Grid, Section, Separator, Skeleton, } from '@radix-ui/themes';
 
 interface RolesUpdateFormProps {
   user: {

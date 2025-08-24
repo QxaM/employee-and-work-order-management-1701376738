@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@radix-ui/themes';
-import { IconType } from '../../../../types/ComponentTypes.ts';
+import { IconType } from '../../../../types/components/BaseTypes.ts';
 
 interface FormHeaderProps {
   title: string;

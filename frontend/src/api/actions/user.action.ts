@@ -1,10 +1,10 @@
 import { ActionFunctionArgs } from 'react-router-dom';
-import { RoleType } from '../../types/RoleTypes.ts';
-import { ActionResponse } from '../../types/ActionTypes.ts';
+import { RoleType } from '../../types/api/RoleTypes.ts';
+import { ActionResponse } from '../../types/store/ActionTypes.ts';
 import { setupStore } from '../../store';
 import { rtkDispatch } from '../baseRtk.ts';
 import { usersApi } from '../../store/api/user.ts';
-import { QueryError } from '../../types/ApiTypes.ts';
+import { QueryError } from '../../types/api/BaseTypes.ts';
 
 interface SubmitUpdateRoleUnserialized {
   userId: number;

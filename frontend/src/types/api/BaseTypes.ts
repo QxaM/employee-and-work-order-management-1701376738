@@ -1,4 +1,4 @@
-import { CustomFetchBaseQueryError } from '../store/api/base.ts';
+import { CustomFetchBaseQueryError } from '../../store/api/base.ts';
 import { SerializedError } from '@reduxjs/toolkit';
 
 /**

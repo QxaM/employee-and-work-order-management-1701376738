@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { MODAL_TYPE, ModalType } from '../../../types/ModalTypes.tsx';
+import { MODAL_TYPE, ModalType, } from '../../../types/components/ModalTypes.tsx';
 import { Toast } from 'radix-ui';
 import clsx from 'clsx/lite';
 import { Button, Flex } from '@radix-ui/themes';

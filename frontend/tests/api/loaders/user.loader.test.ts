@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 
-import { GetUsersType } from '../../../src/types/UserTypes.ts';
+import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
 import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
 import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';

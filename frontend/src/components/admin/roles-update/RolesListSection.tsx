@@ -1,4 +1,4 @@
-import { RoleType } from '../../../types/RoleTypes.ts';
+import { RoleType } from '../../../types/api/RoleTypes.ts';
 import { Flex, Heading, Section } from '@radix-ui/themes';
 import { ToggleGroup } from 'radix-ui';
 

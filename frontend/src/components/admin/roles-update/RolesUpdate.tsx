@@ -1,7 +1,7 @@
-import { UserType } from '../../../types/UserTypes.ts';
+import { UserType } from '../../../types/api/UserTypes.ts';
 import Table from '../../shared/Table.tsx';
 import Pageable from '../../shared/pageable/Pageable.tsx';
-import { Pageable as PageableData } from '../../../types/PageableTypes.ts';
+import { Pageable as PageableData } from '../../../types/components/PageableTypes.ts';
 import ModalPage from '../../../pages/ModalPage.tsx';
 import { useEffect, useMemo, useState } from 'react';
 import RolesUpdateForm from './RolesUpdateForm.tsx';

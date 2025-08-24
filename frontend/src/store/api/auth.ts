@@ -1,5 +1,5 @@
 import { api } from '../apiSlice.ts';
-import { RoleType } from '../../types/RoleTypes.ts';
+import { RoleType } from '../../types/api/RoleTypes.ts';
 import { authApi as AUTH_API } from './base.ts';
 
 const defaultRegisterErrorMessage =

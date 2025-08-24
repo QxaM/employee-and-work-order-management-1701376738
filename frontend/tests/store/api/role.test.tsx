@@ -1,4 +1,4 @@
-import { RoleType } from '../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../src/types/api/RoleTypes.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { rolesApi, useGetRolesQuery } from '../../../src/store/api/role.ts';
 import { renderHook, waitFor } from '@testing-library/react';

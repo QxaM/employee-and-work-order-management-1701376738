@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import { ModalData } from '../../src/types/ModalTypes.tsx';
+import { ModalData } from '../../src/types/components/ModalTypes.tsx';
 import modalReducer, {
   registerModal,
   removeModal,

@@ -1,5 +1,5 @@
-import {useState} from 'react';
-import {RoleType} from '../../../types/RoleTypes';
+import { useState } from 'react';
+import { RoleType } from '../../../types/api/RoleTypes.ts';
 
 /**
  * A custom hook for managing roles in an application. This hook provides state management

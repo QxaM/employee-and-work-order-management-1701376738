@@ -14,7 +14,7 @@ import { expect } from 'vitest';
 import { act, PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
-import { RoleType } from '../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../src/types/api/RoleTypes.ts';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');

@@ -2,7 +2,7 @@ import { beforeEach, describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import RolesListSection from '../../../../src/components/admin/roles-update/RolesListSection.tsx';
-import { RoleType } from '../../../../src/types/RoleTypes.ts';
+import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
 import { ToggleGroup } from 'radix-ui';
 
 const title = 'Assigned Roles';

@@ -1,8 +1,8 @@
 import { api } from '../apiSlice.ts';
 import { authApi } from './base.ts';
-import { GetUsersType } from '../../types/UserTypes.ts';
-import { PageableRequest } from '../../types/ApiTypes.ts';
-import { RoleType } from '../../types/RoleTypes.ts';
+import { GetUsersType } from '../../types/api/UserTypes.ts';
+import { PageableRequest } from '../../types/api/BaseTypes.ts';
+import { RoleType } from '../../types/api/RoleTypes.ts';
 
 const USERS_API = '/users';
 export const DEFAULT_USERS_PER_PAGE = 15;

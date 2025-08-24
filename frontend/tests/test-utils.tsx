@@ -7,7 +7,7 @@ import {
   LoaderFunction,
   RouterProvider,
 } from 'react-router-dom';
-import { ActionResponse } from '../src/types/ActionTypes.ts';
+import { ActionResponse } from '../src/types/store/ActionTypes.ts';
 import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {

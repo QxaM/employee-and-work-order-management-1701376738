@@ -1,5 +1,5 @@
 import { RoleType } from './RoleTypes.ts';
-import { Pageable } from './ApiTypes.ts';
+import { Pageable } from './BaseTypes.ts';
 
 /**
  * Represents a user in the system with associated properties and roles.

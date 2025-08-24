@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { CaretRightIcon } from '@radix-ui/react-icons';
 import { ReactElement, SVGProps } from 'react';
 import clsx from 'clsx/lite';
-import { NonUndefined } from '../../types/SharedTypes.ts';
+import { NonUndefined } from '../../types/BaseTypes.ts';
 
 const cardColors: Record<NonUndefined<AvatarProps['color']>, string> = {
   ruby: 'bg-(--ruby-a3) text-(--ruby-a11)',

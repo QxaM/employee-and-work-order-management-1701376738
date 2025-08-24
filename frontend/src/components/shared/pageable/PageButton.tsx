@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PageableColor } from '../../../types/PageableTypes.ts';
+import { PageableColor } from '../../../types/components/PageableTypes.ts';
 import { Color } from '../../../types/TailwindTypes.ts';
 import clsx from 'clsx/lite';
 import { Flex, Text } from '@radix-ui/themes';

@@ -2,7 +2,7 @@ import { Button, Flex } from '@radix-ui/themes';
 import { Form as RadixForm } from 'radix-ui';
 import LoadingSpinner from '../../LoadingSpinner.tsx';
 import { MarginProps } from '@radix-ui/themes/props';
-import { IconType } from '../../../../types/ComponentTypes.ts';
+import { IconType } from '../../../../types/components/BaseTypes.ts';
 
 interface FormSubmitProps extends MarginProps {
   title: string;

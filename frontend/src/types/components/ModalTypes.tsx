@@ -1,6 +1,6 @@
 import { CheckCircledIcon, ExclamationTriangleIcon, InfoCircledIcon, } from '@radix-ui/react-icons';
 import { Toast } from 'radix-ui';
-import { NonUndefined } from './SharedTypes.ts';
+import { NonUndefined } from '../BaseTypes.ts';
 
 /**
  * Defines the structure of a modal object.
