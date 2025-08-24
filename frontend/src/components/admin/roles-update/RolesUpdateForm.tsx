@@ -168,7 +168,7 @@ const RolesUpdateForm = ({
               <Flex minWidth="80px" justify="center" align="center">
                 <LoadingSpinner size="small" isLoading={submitPending}>
                   <Form.Submit asChild>
-                    <Button type="submit" size="3" className="!cursor-pointer">
+                    <Button type="submit" size="3">
                       Update
                     </Button>
                   </Form.Submit>
@@ -180,7 +180,6 @@ const RolesUpdateForm = ({
               size="3"
               color="gray"
               variant="soft"
-              className="!cursor-pointer"
               onClick={onClose}
             >
               Close

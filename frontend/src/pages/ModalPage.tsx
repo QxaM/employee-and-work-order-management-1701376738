@@ -31,7 +31,7 @@ const ModalPage = ({
       <Dialog.Content>
         <Flex align="center" justify="end" mb="2">
           <Dialog.Close>
-            <IconButton variant="ghost" size="2" className="!cursor-pointer">
+            <IconButton variant="ghost" size="2">
               <AccessibleIcon label="close dialog">
                 <Cross1Icon width={18} height={18} />
               </AccessibleIcon>

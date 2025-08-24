@@ -1,198 +1,139 @@
 import { describe, expect } from 'vitest';
 
 import {
-  isEqual,
-  isValidConfirmPassword,
-  isValidEmail,
   isValidPassword,
+  missingLowercaseLetter,
+  missingNumber,
+  missingUppercaseLetter,
 } from '../../src/utils/Validators.ts';
 
 describe('Validators', () => {
-  describe('Email Validator', () => {
-    const invalidEmailMessage = 'Enter valid email address';
-
-    it('Should return true when valid email', () => {
+  describe('Missing Lowercase Letter', () => {
+    it('Should return true when missing lowercase letter', () => {
       // Given
-      const email = 'test@test.com';
+      const password = 'TEST12345';
 
       // When
-      const isValid = isValidEmail(email);
+      const missing = missingLowercaseLetter(password);
 
       // Then
-      expect(isValid.isValid).toBe(true);
+      expect(missing).toBe(true);
     });
 
-    it('Should return false when nothing in front "@"', () => {
+    it('Should return false when exists lowercase letter', () => {
       // Given
-      const email = '@test.com';
+      const password = 'Test12345';
 
       // When
-      const isValid = isValidEmail(email);
+      const missing = missingLowercaseLetter(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(invalidEmailMessage);
+      expect(missing).toBe(false);
+    });
+  });
+
+  describe('Missing Uppercase Letter', () => {
+    it('Should return true when missing uppercase letter', () => {
+      // Given
+      const password = 'test12345';
+
+      // When
+      const missing = missingUppercaseLetter(password);
+
+      // Then
+      expect(missing).toBe(true);
     });
 
-    it('Should return false when no "@" provided', () => {
+    it('Should return false when exists uppercase letter', () => {
       // Given
-      const email = 'testtest.com';
+      const password = 'Test12345';
 
       // When
-      const isValid = isValidEmail(email);
+      const missing = missingUppercaseLetter(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(invalidEmailMessage);
+      expect(missing).toBe(false);
+    });
+  });
+
+  describe('Missing number', () => {
+    it('Should return true when missing number', () => {
+      // Given
+      const password = 'Test';
+
+      // When
+      const missing = missingNumber(password);
+
+      // Then
+      expect(missing).toBe(true);
     });
 
-    it('Should return false when nothing after "@"', () => {
+    it('Should return false when exists number', () => {
       // Given
-      const email = 'test@.com';
+      const password = 'Test12345';
 
       // When
-      const isValid = isValidEmail(email);
+      const missing = missingNumber(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(invalidEmailMessage);
-    });
-
-    it('Should return false when no dot', () => {
-      // Given
-      const email = 'test@testcom';
-
-      // When
-      const isValid = isValidEmail(email);
-
-      // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(invalidEmailMessage);
-    });
-
-    it('Should return false when domain too short', () => {
-      // Given
-      const email = 'test@test.c';
-
-      // When
-      const isValid = isValidEmail(email);
-
-      // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(invalidEmailMessage);
+      expect(missing).toBe(false);
     });
   });
 
   describe('Passwords Validator', () => {
-    const PASSWORD_TOO_SHORT = 'Enter password with at least 4 characters';
-    const PASSWORD_EMPTY = 'Password cannot be empty';
-
     it('Should return true when valid password', () => {
       // Given
-      const password = '12345';
+      const password = 'Test1235';
 
       // When
       const isValid = isValidPassword(password);
 
       // Then
-      expect(isValid.isValid).toBe(true);
+      expect(isValid).toBe(true);
     });
 
-    it('Should return false and valid message when password empty', () => {
+    it('Should return false when missing a number', () => {
       // Given
-      const password = '';
+      const password = 'Test';
 
       // When
       const isValid = isValidPassword(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(PASSWORD_EMPTY);
+      expect(isValid).toBe(false);
     });
 
-    it('Should return false and valid message when password too short', () => {
+    it('Should return false when missing uppercase letter', () => {
       // Given
-      const password = '12';
+      const password = 'test12345';
 
       // When
       const isValid = isValidPassword(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(PASSWORD_TOO_SHORT);
-    });
-  });
-
-  describe('Confirm Password Validator', () => {
-    const CONFIRM_PASSWORD_EMPTY = 'Enter password confirmation';
-    const CONFIRM_PASSWORD_DIFFERENT = 'Passwords do not match';
-
-    it('Should return true when passwords equals', () => {
-      // Given
-      const password = '12345';
-      const confirmPassword = '12345';
-
-      // When
-      const isValid = isValidConfirmPassword(password, confirmPassword);
-
-      // Then
-      expect(isValid.isValid).toBe(true);
+      expect(isValid).toBe(false);
     });
 
-    it('Should return false and valid message when confirm password empty', () => {
+    it('Should return false when missing lowercase letter', () => {
       // Given
-      const password = '12345';
-      const confirmPassword = '';
+      const password = 'TEST12345';
 
       // When
-      const isValid = isValidConfirmPassword(password, confirmPassword);
+      const isValid = isValidPassword(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(CONFIRM_PASSWORD_EMPTY);
+      expect(isValid).toBe(false);
     });
 
-    it('Should return false and valid message when confirm password different', () => {
+    it('Should return false when too short', () => {
       // Given
-      const password = '12345';
-      const confirmPassword = '1234';
+      const password = 'Te1';
 
       // When
-      const isValid = isValidConfirmPassword(password, confirmPassword);
+      const isValid = isValidPassword(password);
 
       // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(CONFIRM_PASSWORD_DIFFERENT);
-    });
-  });
-
-  describe('Is Equal Validator', () => {
-    it('Should return true when values equals', () => {
-      // Given
-      const value = 'test';
-      const other = 'test';
-      const message = 'Test message';
-
-      // When
-      const isValid = isEqual(value, other, message);
-
-      // Then
-      expect(isValid.isValid).toBe(true);
-      expect(isValid.message).toBe(message);
-    });
-
-    it('Should return false when values different', () => {
-      // Given
-      const value = 'test';
-      const other = 'different';
-      const message = 'Test message';
-
-      // When
-      const isValid = isEqual(value, other, message);
-
-      // Then
-      expect(isValid.isValid).toBe(false);
-      expect(isValid.message).toBe(message);
+      expect(isValid).toBe(false);
     });
   });
 });

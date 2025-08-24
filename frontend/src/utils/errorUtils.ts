@@ -10,7 +10,7 @@ import { NonUndefined } from '../types/SharedTypes.ts';
  * @returns {string} The resolved error message.
  */
 export const readErrorMessage = (
-  error: string | QueryError,
+  error: string | QueryError | Error,
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   defaultError: string = 'Unknown error, please try again!'
 ): string => {
@@ -20,6 +20,10 @@ export const readErrorMessage = (
 
   if (typeof error === 'string') {
     return error;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
   }
 
   if ('status' in error && typeof error.status === 'number') {

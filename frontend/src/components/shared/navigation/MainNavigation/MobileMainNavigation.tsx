@@ -10,7 +10,7 @@ import { Box, Button, Flex } from '@radix-ui/themes';
 import clsx from 'clsx/lite';
 import { NavigationMenu } from 'radix-ui';
 import RadixNavLink from '../RadixNavLink.tsx';
-import RadixLink from '../../RadixLink.tsx';
+import LinkButton from '../../LinkButton.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -112,12 +112,12 @@ const MobileMainNavigation = () => {
               mt="4"
               className="!w-2/3"
             >
-              <RadixLink to="/register" variant="surface" size="3">
+              <LinkButton to="/register" variant="surface" size="3">
                 Sign up
-              </RadixLink>
-              <RadixLink to="/login" size="3">
+              </LinkButton>
+              <LinkButton to="/login" size="3">
                 Login
-              </RadixLink>
+              </LinkButton>
             </Flex>
           )}
           {token && (
@@ -130,11 +130,7 @@ const MobileMainNavigation = () => {
               className="!w-2/3"
             >
               <WelcomeMessage me={me} />
-              <Button
-                size="3"
-                className="!cursor-pointer"
-                onClick={() => dispatch(logout())}
-              >
+              <Button size="3" onClick={() => dispatch(logout())}>
                 Logout
               </Button>
             </Flex>

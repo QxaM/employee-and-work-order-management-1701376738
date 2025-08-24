@@ -39,6 +39,17 @@ describe('Error Utils', () => {
       expect(result).toBe('An error occurred!');
     });
 
+    it('should return message if an Error is provided', () => {
+      // Given
+      const error = new Error('An error occurred!');
+
+      // When
+      const result = readErrorMessage(error);
+
+      // Then
+      expect(result).toBe(error.message);
+    });
+
     it('should return the message property if a QueryError object with status is provided', () => {
       // Given
       const error: QueryError = { status: 404, message: 'Not Found' };

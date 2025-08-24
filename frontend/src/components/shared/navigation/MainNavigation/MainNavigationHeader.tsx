@@ -4,7 +4,7 @@ import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
 import { Button, Flex } from '@radix-ui/themes';
 import { NavigationMenu } from 'radix-ui';
-import RadixLink from '../../RadixLink.tsx';
+import LinkButton from '../../LinkButton.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
 import { logout } from '../../../../store/authSlice.ts';
 import RadixNavLink from '../RadixNavLink.tsx';
@@ -74,22 +74,18 @@ const MainNavigationHeader = () => {
 
       {!token && (
         <Flex justify="center" align="center" content="auto" gap="2" mx="2">
-          <RadixLink to="/register" variant="surface" size="3">
+          <LinkButton to="/register" variant="surface" size="3">
             Sign up
-          </RadixLink>
-          <RadixLink to="/login" size="3">
+          </LinkButton>
+          <LinkButton to="/login" size="3">
             Login
-          </RadixLink>
+          </LinkButton>
         </Flex>
       )}
       {token && (
         <Flex justify="center" align="center" content="auto" gap="2" mx="2">
           <WelcomeMessage me={me} />
-          <Button
-            size="3"
-            className="!cursor-pointer"
-            onClick={() => dispatch(logout())}
-          >
+          <Button size="3" onClick={() => dispatch(logout())}>
             Logout
           </Button>
         </Flex>

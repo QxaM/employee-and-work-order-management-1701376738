@@ -6,6 +6,7 @@ import { BrowserRouter, useNavigate } from 'react-router-dom';
 import PasswordUpdateForm from '../../src/components/PasswordUpdateForm.tsx';
 import { renderWithProviders } from '../test-utils.tsx';
 import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
+import { userEvent } from '@testing-library/user-event';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -29,7 +30,7 @@ const TestWrapper = ({ children }: PropsWithChildren) => {
   return <BrowserRouter>{children}</BrowserRouter>;
 };
 
-const HEADER_TITLE = 'Enter new password';
+const HEADER_TITLE = 'Update Password';
 const PASSWORD_TITLE = 'password';
 const CONFIRM_PASSWORD_TITLE = 'confirm password';
 const UPDATE_BUTTON_TEXT = 'Update Password';
@@ -77,7 +78,7 @@ describe('Password Update Form', () => {
         <PasswordUpdateForm token={TEST_TOKEN} />
       </TestWrapper>
     );
-    const headerElement = screen.getByText(HEADER_TITLE);
+    const headerElement = screen.getByRole('heading', { name: HEADER_TITLE });
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const confirmPasswordElement = screen.getByLabelText(
       CONFIRM_PASSWORD_TITLE
@@ -95,46 +96,56 @@ describe('Password Update Form', () => {
 
   it('Should validate confirm password correctly and throw error when confirm empty', async () => {
     // Given
+    const user = userEvent.setup();
+    const errorMessage = 'confirm password is required';
     renderWithProviders(
       <TestWrapper>
         <PasswordUpdateForm token={TEST_TOKEN} />
       </TestWrapper>
     );
-    const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
-    const confirmPasswordElement = screen.getByLabelText(
-      CONFIRM_PASSWORD_TITLE
-    );
+    const passwordElement = screen.getByLabelText(PASSWORD_TITLE, {
+      exact: true,
+    });
+    const updateButton = screen.getByRole('button', {
+      name: UPDATE_BUTTON_TEXT,
+    });
 
     // When
-    fireEvent.change(passwordElement, { target: { value: 'test123' } });
-    fireEvent.change(confirmPasswordElement, { target: { value: 't' } });
-    fireEvent.change(confirmPasswordElement, { target: { value: '' } });
+    await user.type(passwordElement, 'Test12345');
+    await user.click(updateButton);
 
     // Then
-    const errorElement = await screen.findByText('Enter password confirmation');
+    const errorElement = screen.getByText(errorMessage);
     expect(errorElement).toBeInTheDocument();
   });
 
   it('Should validate confirm password correctly and throw error when confirm different', async () => {
     // Given
+    const user = userEvent.setup();
+    const errorMessage = 'Passwords do not match';
     renderWithProviders(
       <TestWrapper>
         <PasswordUpdateForm token={TEST_TOKEN} />
       </TestWrapper>
     );
-    const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
+    const passwordElement = screen.getByLabelText(PASSWORD_TITLE, {
+      exact: true,
+    });
     const confirmPasswordElement = screen.getByLabelText(
-      CONFIRM_PASSWORD_TITLE
+      CONFIRM_PASSWORD_TITLE,
+      { exact: true }
     );
-
-    // When
-    fireEvent.change(passwordElement, { target: { value: 'test123' } });
-    fireEvent.change(confirmPasswordElement, {
-      target: { value: 'different' },
+    const updateButton = screen.getByRole('button', {
+      name: UPDATE_BUTTON_TEXT,
     });
 
+    // When
+    await user.type(passwordElement, 'Test12345');
+    await user.type(confirmPasswordElement, 'different');
+    await user.click(updateButton);
+
     // Then
-    const errorElement = await screen.findByText('Passwords do not match');
+    const errorElement = screen.getByText(errorMessage);
     expect(errorElement).toBeInTheDocument();
   });
 
@@ -171,6 +182,7 @@ describe('Password Update Form', () => {
 
   it('Should not send request when password is empty', () => {
     // Given
+    const errorMessage = 'confirm password is required';
     renderWithProviders(
       <TestWrapper>
         <PasswordUpdateForm token={TEST_TOKEN} />
@@ -185,7 +197,7 @@ describe('Password Update Form', () => {
 
     // Then
     expect(mockMutate).not.toHaveBeenCalled();
-    expect(screen.getByText('Password cannot be empty')).toBeInTheDocument();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
   describe('Rendering mutation result elements', () => {

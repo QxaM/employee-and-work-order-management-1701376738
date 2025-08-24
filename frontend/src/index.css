@@ -6,6 +6,7 @@
 @import "./styles/light.css";
 @import "./styles/dark.css";
 @import "./styles/fonts.css";
+@import "./styles/cursor.css";
 
 @config '../tailwind.config.js';
 

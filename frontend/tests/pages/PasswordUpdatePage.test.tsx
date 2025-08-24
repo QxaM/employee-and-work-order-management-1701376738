@@ -17,14 +17,14 @@ const testWrapper = ({ children }: { children: ReactNode }) => {
 describe('Password Update Page', () => {
   it('Should contain Password Update Form elements', () => {
     // Given
-    const headerTitle = 'Enter new password';
+    const headerTitle = 'Update Password';
     const passwordTitle = 'password';
     const confirmPasswordTitle = 'confirm password';
     const resetButtonText = 'Update Password';
 
     // When
     render(<PasswordUpdatePage />, { wrapper: testWrapper });
-    const headerElement = screen.getByText(headerTitle);
+    const headerElement = screen.getByRole('heading', { name: headerTitle });
     const passwordElement = screen.getByLabelText(passwordTitle);
     const confirmPasswordElement = screen.getByLabelText(confirmPasswordTitle);
     const resetButton = screen.getByRole('button', { name: resetButtonText });
