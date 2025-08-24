@@ -186,7 +186,7 @@ describe('RegisterConfirmationPage', () => {
       });
     });
 
-    it('Should show error', async () => {
+    it('Should show default error', async () => {
       // Given
       const errorMessage = 'Test Error';
       const defaultError = 'Something went wrong. Please try again later.';
@@ -221,6 +221,49 @@ describe('RegisterConfirmationPage', () => {
             payload: expect.objectContaining<Record<string, unknown>>({
               content: {
                 message: defaultError,
+                type: 'error',
+              },
+            }),
+          })
+        );
+      });
+    });
+
+    it('Should show token error', async () => {
+      // Given
+      const errorMessage = 'Test Error';
+      const tokenError = 'Token is expired - sent a new one';
+
+      vi.spyOn(authApiSlice, 'useConfirmRegistrationMutation').mockReturnValue([
+        mockMutate,
+        {
+          isSuccess: false,
+          isError: true,
+          isLoading: false,
+          error: {
+            status: 422,
+            message: errorMessage,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      render(<RegisterConfirmationPage />, { wrapper: testWrapper });
+
+      // Then
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledOnce();
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'modal/registerModal',
+          })
+        );
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining<Record<string, unknown>>({
+            payload: expect.objectContaining<Record<string, unknown>>({
+              content: {
+                message: tokenError,
                 type: 'error',
               },
             }),

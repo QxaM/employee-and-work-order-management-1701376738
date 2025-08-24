@@ -26,7 +26,7 @@ const FormHeader = ({ title, description, icon: Icon }: FormHeaderProps) => {
         {title}
       </Heading>
       {description && (
-        <Text as="p" size="2">
+        <Text as="p" size="2" align="center">
           {description}
         </Text>
       )}
