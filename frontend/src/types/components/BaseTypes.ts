@@ -4,8 +4,12 @@ import {
   RefAttributes,
   SVGProps,
 } from 'react';
-import { IconProps } from '@radix-ui/themes';
+import { IconProps as RadixIconProps } from '@radix-ui/themes';
 
 export type IconType =
   | ComponentType<SVGProps<SVGSVGElement>>
-  | ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
+  | ForwardRefExoticComponent<RadixIconProps & RefAttributes<SVGSVGElement>>;
+
+export interface IconProps {
+  className?: string;
+}

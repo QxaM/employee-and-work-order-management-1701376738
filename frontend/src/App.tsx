@@ -16,6 +16,7 @@ import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
 import ErrorElement from './components/shared/router/ErrorElement.tsx';
 import ModalProvider from './components/shared/modal/ModalProvider.tsx';
+import HomePage from './pages/HomePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
     element: <RootPage />,
     errorElement: <ErrorElement />,
     children: [
-      { index: true, element: <></> },
+      { index: true, element: <HomePage /> },
       { path: '/register', element: <RegisterPage /> },
       { path: '/register/confirm', element: <RegisterConfirmationPage /> },
       { path: '/login', element: <LoginPage /> },

@@ -1,7 +1,7 @@
 import { IconProps } from '../../types/components/BaseTypes.ts';
 import BaseIcon from './base/BaseIcon.tsx';
 
-const ShieldIcon = ({ className }: IconProps) => {
+const LightbulbIcon = ({ className }: IconProps) => {
   return (
     <BaseIcon className={className}>
       <svg
@@ -12,10 +12,12 @@ const ShieldIcon = ({ className }: IconProps) => {
         strokeWidth={2}
         strokeLinecap="square"
       >
-        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+        <path d="M9 18h6" />
+        <path d="M10 22h4" />
       </svg>
     </BaseIcon>
   );
 };
 
-export default ShieldIcon;
+export default LightbulbIcon;
