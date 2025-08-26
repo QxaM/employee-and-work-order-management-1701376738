@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react';
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (
     <Form.Root>
-      <Form.Field>{children}</Form.Field>
+      <Form.Field name="test">{children}</Form.Field>
     </Form.Root>
   );
 };

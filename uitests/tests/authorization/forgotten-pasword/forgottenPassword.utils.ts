@@ -1,15 +1,15 @@
 import { Locator, Page } from "playwright";
 
 export const passwordResetTitle = (page: Page): Locator => {
-  return page.getByRole("heading", { name: "Enter email to reset password" });
+  return page.getByRole("heading", { name: "Reset Password" });
 };
 
 export const updatePasswordTitle = (page: Page): Locator => {
-  return page.getByRole("heading", { name: "Enter new password" });
+  return page.getByRole("heading", { name: "Update Password" });
 };
 
 export const fillEmail = async (page: Page, email: string) => {
-  await page.getByRole("textbox", { name: "email" }).fill(email);
+  await page.getByRole("textbox", { name: "email address" }).fill(email);
 };
 
 export const fillPassword = async (page: Page, password: string) => {
@@ -26,25 +26,26 @@ export const fillPasswordConfirmation = async (
 };
 
 export const clickResetPassword = async (page: Page) => {
-  await page.getByRole("button", { name: "Reset Password" }).click();
+  await page.getByRole("button", { name: "Send Reset Link" }).click();
 };
 
 export const clickUpdatePassword = async (page: Page) => {
   await page.getByRole("button", { name: "Update Password" }).click();
 };
 
-export const clickResetNow = async (page: Page) => {
-  await page.getByRole("link", { name: "Reset now" }).click();
+export const clickForgotPassword = async (page: Page) => {
+  await page.getByRole("link", { name: "Forgot password?" }).click();
 };
 
 export const resetPasswordSuccessfullMessage = (page: Page): Locator => {
   return page.getByText(
-    "Email was sent if provided email exists in our database",
+    "Email was sent if provided email exists in our database.",
+    { exact: true },
   );
 };
 
 export const updatePasswordSuccessfullMessage = (page: Page): Locator => {
-  return page.getByText("Password was updated successfully!");
+  return page.getByText("Password was updated successfully!", { exact: true });
 };
 
 export const tokenExpiredMessage = (page: Page): Locator => {
