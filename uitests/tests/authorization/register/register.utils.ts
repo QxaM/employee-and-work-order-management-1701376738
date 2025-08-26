@@ -38,11 +38,23 @@ export const successfullRegistrationMessage = (page: Page): Locator => {
 };
 
 export const invalidEmailMessage = (page: Page): Locator => {
-  return page.getByText("Enter valid email address");
+  return page.getByText("Please enter a valid email address");
 };
 
 export const passwordTooShortMessage = (page: Page): Locator => {
-  return page.getByText("Enter password with at least 4 characters");
+  return page.getByText("Password should have at least 4 characters");
+};
+
+export const passwordShouldContainUppercaseMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one uppercase letter");
+};
+
+export const passwordShouldContainLowercaseMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one lowercase letter");
+};
+
+export const passwordShouldContainNumberMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one number");
 };
 
 export const passwordEmptyMessage = (page: Page): Locator => {
@@ -54,7 +66,7 @@ export const passwordMismatchMessage = (page: Page): Locator => {
 };
 
 export const passwordConfirmationEmptyMessage = (page: Page): Locator => {
-  return page.getByText("Enter password confirmation");
+  return page.getByText("Confirm password is required");
 };
 
 export const successfullConfirmationMessage = (page: Page): Locator => {
