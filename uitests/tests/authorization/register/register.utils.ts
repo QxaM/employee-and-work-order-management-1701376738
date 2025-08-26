@@ -26,7 +26,7 @@ export const fillRegistrationDetails = async (
 };
 
 export const clickRegisterButton = async (page: Page) => {
-  await page.getByRole("button", { name: "Sign up" }).click();
+  await page.getByRole("button", { name: "Create Account" }).click();
 };
 
 export const registerError = (page: Page): Locator => {
@@ -34,7 +34,7 @@ export const registerError = (page: Page): Locator => {
 };
 
 export const successfullRegistrationMessage = (page: Page): Locator => {
-  return page.getByText("You have been registered successfully!");
+  return page.getByText(/^You have been registered successfully!/);
 };
 
 export const invalidEmailMessage = (page: Page): Locator => {
