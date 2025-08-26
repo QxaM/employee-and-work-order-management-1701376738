@@ -12,13 +12,11 @@ test("TC15 - should navigate to role update list", async ({ adminPage }) => {
   await openHomePage(adminPage);
 
   // When
-  await adminPage.getByText("Admin", { exact: true }).click();
+  await adminPage.getByText("Admin", { exact: true }).hover();
   await adminPage.getByText("Roles Update").click();
 
   const pageTitle = adminPage.getByText(roleUpdateTitle);
-  const userRow = adminPage
-    .getByRole("cell", { name: credentials.login })
-    .locator("..");
+  const userRow = adminPage.getByRole("link", { name: credentials.login });
 
   // Then
   await expect(pageTitle).toBeVisible();
