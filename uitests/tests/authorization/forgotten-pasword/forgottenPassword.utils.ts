@@ -49,9 +49,13 @@ export const updatePasswordSuccessfullMessage = (page: Page): Locator => {
 };
 
 export const tokenExpiredMessage = (page: Page): Locator => {
-  return page.getByText("Provided verification token was already used");
+  return page.getByText("Provided verification token was already used", {
+    exact: true,
+  });
 };
 
 export const resetPasswordError = (page: Page): Locator => {
-  return page.getByText("Error during verification process, try again later");
+  return page.getByText("Error during verification process, try again later", {
+    exact: true,
+  });
 };

@@ -12,12 +12,12 @@ import {
   resetPasswordSuccessfullMessage,
   tokenExpiredMessage,
   updatePasswordSuccessfullMessage,
-  updatePasswordTitle
+  updatePasswordTitle,
 } from "./forgottenPassword.utils";
 import {
   openLoginPage,
   openResetPasswordPage,
-  openUpdatePasswordPage
+  openUpdatePasswordPage,
 } from "../../utils/navigation.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
 import {
@@ -25,12 +25,12 @@ import {
   passwordConfirmationEmptyMessage,
   passwordEmptyMessage,
   passwordMismatchMessage,
-  passwordTooShortMessage
+  passwordTooShortMessage,
 } from "../register/register.utils";
 import {
   getTokenApi,
   passwordResetApi,
-  passwordUpdateApi
+  passwordUpdateApi,
 } from "../../utils/authorization.api.utils";
 
 test("TC9 - should correctly reset password", async ({
@@ -124,7 +124,7 @@ test("TC10 - should not allow to reuse token", async ({
   baseURL,
   registeredUser,
   apiContext,
-}, testInfo) => {
+}) => {
   const { email } = registeredUser;
   let reusedToken: string | undefined;
 
