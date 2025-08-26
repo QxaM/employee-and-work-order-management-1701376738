@@ -12,7 +12,7 @@ import {
   passwordShouldContainUppercaseMessage,
   passwordTooShortMessage,
   registerError,
-  successfullRegistrationMessage
+  successfullRegistrationMessage,
 } from "./register.utils";
 
 import credentials from "../../../test-data/credentials.json";

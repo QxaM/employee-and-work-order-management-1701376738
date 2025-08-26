@@ -91,7 +91,7 @@ test("TC9 - should correctly reset password", async ({
 
   await test.step("TC9.5 - reset password", async () => {
     // Given
-    newPassword = faker.internet.password();
+    newPassword = faker.internet.password({ prefix: "Tt1" });
 
     // When
     await fillPassword(page, newPassword);
@@ -148,7 +148,7 @@ test("TC10 - should not allow to reuse token", async ({
 
   await test.step("TC10.2 - use token for the first time", async () => {
     // Given
-    const newPassword = faker.internet.password();
+    const newPassword = faker.internet.password({ prefix: "Tt1" });
     await expect(async () => {
       try {
         reusedToken = await getTokenApi(apiContext, email);
@@ -176,7 +176,7 @@ test("TC10 - should not allow to reuse token", async ({
 
   await test.step("TC10.4 - reset password", async () => {
     // Given
-    const newPassword = faker.internet.password();
+    const newPassword = faker.internet.password({ prefix: "Tt1" });
 
     // When
     await fillPassword(page, newPassword);
@@ -229,7 +229,7 @@ test("TC12 - should handle correctly invalid token", async ({
   registeredUser,
 }) => {
   const { email } = registeredUser;
-  let newPassword = faker.internet.password();
+  let newPassword = faker.internet.password({ prefix: "Tt1" });
 
   await test.step("TC12.1 - try to reset password", async () => {
     // Given

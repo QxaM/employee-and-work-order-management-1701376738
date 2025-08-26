@@ -16,7 +16,7 @@ test("TC1 - should login with valid credentials", async ({ page, baseURL }) => {
 
   await openHomePage(page);
   await clickLoginButton(page);
-  await page.getByText("Enter login details").waitFor({ state: "visible" });
+  await page.getByText("Welcome Back").waitFor({ state: "visible" });
 
   // When
   await login(page, userCredentials.login, userCredentials.password);
