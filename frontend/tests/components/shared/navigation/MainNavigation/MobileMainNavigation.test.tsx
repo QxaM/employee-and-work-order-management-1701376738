@@ -10,8 +10,6 @@ import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {
-    global.scrollTo = vi.fn();
-
     vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
       me: undefined,
       isLoading: false,

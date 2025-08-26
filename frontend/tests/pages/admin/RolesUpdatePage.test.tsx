@@ -161,8 +161,6 @@ describe('RolesUpdatePage', () => {
         })
       );
     });
-
-    it('Should render default values', () => {});
   });
 
   describe('Loader data render', () => {
