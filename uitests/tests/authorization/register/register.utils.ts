@@ -70,9 +70,11 @@ export const passwordConfirmationEmptyMessage = (page: Page): Locator => {
 };
 
 export const successfullConfirmationMessage = (page: Page): Locator => {
-  return page.getByText("Verification was successfull - you can now login");
+  return page.getByText("Verification was successfull - you can now login", {
+    exact: true,
+  });
 };
 
 export const expiredTokenMessage = (page: Page): Locator => {
-  return page.getByText("Token is expired - sent a new one");
+  return page.getByText("Token is expired - sent a new one", { exact: true });
 };
