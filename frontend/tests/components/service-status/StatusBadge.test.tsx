@@ -2,7 +2,7 @@ import { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
 import * as gatewayApiModule from '../../../src/store/api/gateway.ts';
 import { afterEach, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
-import StatusBadge from '../../../src/components/serviceStatus/StatusBadge.tsx';
+import StatusBadge from '../../../src/components/service-status/StatusBadge.tsx';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
 

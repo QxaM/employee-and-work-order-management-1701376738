@@ -20,6 +20,8 @@ interface QueryResult {
   unsubscribe: () => void;
 }
 
+const PAGE_SIZE = 6;
+
 const USER_CONTENT = [
   {
     id: 589,
@@ -147,7 +149,7 @@ const testUserLoader = async (
   expect(customBaseQuery).toHaveBeenCalledOnce();
   expect(customBaseQuery).toHaveBeenCalledWith(
     {
-      url: `/auth/users?page=${correctedPage}&size=15`,
+      url: `/auth/users?page=${correctedPage}&size=${PAGE_SIZE}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

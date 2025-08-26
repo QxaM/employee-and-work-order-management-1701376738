@@ -3,9 +3,18 @@ import { authApi } from './base.ts';
 import { GetUsersType } from '../../types/api/UserTypes.ts';
 import { PageableRequest } from '../../types/api/BaseTypes.ts';
 import { RoleType } from '../../types/api/RoleTypes.ts';
+import { store } from '../index.ts';
+import { registerModal } from '../modalSlice.ts';
+import { v4 as uuidv4 } from 'uuid';
+import { getStringOrDefault } from '../../utils/shared.ts';
+import { readErrorMessage } from '../../utils/errorUtils.ts';
+import {
+  addRoleToDraftUser,
+  removeRoleFromDraftUser,
+} from '../../utils/api/cache.ts';
 
 const USERS_API = '/users';
-export const DEFAULT_USERS_PER_PAGE = 15;
+export const DEFAULT_USERS_PER_PAGE = 6;
 const defaultGetUsersErrorMessage = 'Unknown error while fetching user data';
 const defaultRoleUpdateErrorMessage =
   'Error during role modification, try again later';
@@ -43,7 +52,47 @@ export const usersApi = api.injectEndpoints({
         },
         defaultError: defaultRoleUpdateErrorMessage,
       }),
-      invalidatesTags: ['Users'],
+      async onQueryStarted({ userId, role }, { dispatch, queryFulfilled }) {
+        const state = store.getState();
+        const allCached = usersApi.util.selectInvalidatedBy(state, [
+          { type: 'Users' },
+        ]);
+
+        const patchResults = allCached.map((cache) =>
+          dispatch(
+            usersApi.util.updateQueryData(
+              'getUsers',
+              // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+              cache.originalArgs as PageableRequest | void,
+              (draft) => {
+                addRoleToDraftUser(draft, userId, role);
+              }
+            )
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          patchResults.forEach((p) => {
+            p.undo();
+          });
+
+          const message = readErrorMessage(error);
+          store.dispatch(
+            registerModal({
+              id: uuidv4(),
+              content: {
+                message: getStringOrDefault(
+                  message,
+                  defaultRoleUpdateErrorMessage
+                ),
+                type: 'error',
+              },
+            })
+          );
+        }
+      },
     }),
     removeRole: builder.mutation<undefined, ModifyRoleRequest>({
       query: ({ userId, role }) => ({
@@ -54,7 +103,47 @@ export const usersApi = api.injectEndpoints({
         },
         defaultError: defaultRoleUpdateErrorMessage,
       }),
-      invalidatesTags: ['Users'],
+      async onQueryStarted({ userId, role }, { dispatch, queryFulfilled }) {
+        const state = store.getState();
+        const allCached = usersApi.util.selectInvalidatedBy(state, [
+          { type: 'Users' },
+        ]);
+
+        const patchResults = allCached.map((cache) =>
+          dispatch(
+            usersApi.util.updateQueryData(
+              'getUsers',
+              // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+              cache.originalArgs as PageableRequest | void,
+              (draft) => {
+                removeRoleFromDraftUser(draft, userId, role);
+              }
+            )
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          patchResults.forEach((patch) => {
+            patch.undo();
+          });
+
+          const message = readErrorMessage(error);
+          store.dispatch(
+            registerModal({
+              id: uuidv4(),
+              content: {
+                message: getStringOrDefault(
+                  message,
+                  defaultRoleUpdateErrorMessage
+                ),
+                type: 'error',
+              },
+            })
+          );
+        }
+      },
     }),
   }),
 });

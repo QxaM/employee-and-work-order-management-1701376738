@@ -29,7 +29,7 @@ describe('NavCard', () => {
 
   it('should contain SVG element', () => {
     // Given
-    const icon = (
+    const Icon = () => (
       <svg
         role="img"
         xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ describe('NavCard', () => {
     // When
     render(
       <BrowserRouter>
-        <NavCard to={to} title={title} description={description} icon={icon} />
+        <NavCard to={to} title={title} description={description} icon={Icon} />
       </BrowserRouter>
     );
     const svgElement = screen.getByRole('img');

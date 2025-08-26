@@ -9,10 +9,9 @@ import LoginPage from './pages/LoginPage.tsx';
 import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
 import PasswordRequestPage from './pages/PasswordRequestPage.tsx';
 import PasswordUpdatePage from './pages/PasswordUpdatePage.tsx';
-import AdminPage from './pages/AdminPage.tsx';
-import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
+import AdminPage from './pages/admin/AdminPage.tsx';
+import RolesUpdatePage from './pages/admin/RolesUpdatePage.tsx';
 import { loadUsers } from './api/loaders/user.loader.ts';
-import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
 import ErrorElement from './components/shared/router/ErrorElement.tsx';
 import ModalProvider from './components/shared/modal/ModalProvider.tsx';
@@ -41,12 +40,10 @@ const router = createBrowserRouter([
           { index: true, element: <AdminPage /> },
           {
             path: 'roles-update',
-            element: <RolesUpdate />,
+            element: <RolesUpdatePage />,
             errorElement: <ErrorElement />,
             loader: (loaderFunctionArgs) =>
               loadUsers(store, loaderFunctionArgs),
-            action: (loaderFunctionArgs) =>
-              updateRoles(store, loaderFunctionArgs),
           },
         ],
       },

@@ -10,7 +10,7 @@ import {
   usersApi,
 } from '../../../src/store/api/user.ts';
 import { renderHook, waitFor } from '@testing-library/react';
-import { expect } from 'vitest';
+import { beforeEach, expect } from 'vitest';
 import { act, PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
@@ -89,7 +89,7 @@ describe('Users API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/auth/users?page=0&size=15`,
+            url: `/auth/users?page=0&size=6`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
-import ServiceStatusCard from '../../../src/components/serviceStatus/ServiceStatusCard.tsx';
+import ServiceStatusCard from '../../../src/components/service-status/ServiceStatusCard.tsx';
 import { screen } from '@testing-library/react';
 import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { beforeEach } from 'vitest';

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 
-import { renderWithProviders } from '../test-utils.tsx';
-import AdminPage from '../../src/pages/AdminPage.tsx';
+import { renderWithProviders } from '../../test-utils.tsx';
+import AdminPage from '../../../src/pages/admin/AdminPage.tsx';
 import { BrowserRouter } from 'react-router-dom';
 
 describe('AdminPage', () => {

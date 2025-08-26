@@ -61,6 +61,73 @@ describe('Error Utils', () => {
       expect(result).toBe('Not Found');
     });
 
+    it('should return the message property if an object containing QueryError is provided', () => {
+      // Given
+      const error: QueryError = { status: 404, message: 'Not Found' };
+      const errorObject = {
+        error: error,
+      };
+
+      // when
+      const result = readErrorMessage(errorObject);
+
+      // Then
+      expect(result).toBe(error.message);
+    });
+
+    it('should return the default message if an object contained QueryError with string status', () => {
+      // Given
+      const error: QueryError = {
+        status: 'CUSTOM_ERROR',
+        message: 'Not Found',
+      };
+      const errorObject = {
+        error: error,
+      };
+
+      // when
+      const result = readErrorMessage(errorObject);
+
+      // Then
+      expect(result).toBe(defaultError);
+    });
+
+    it('should return defaultError when no message is provided', () => {
+      // Given
+      const error = {
+        status: 404,
+      } as QueryError;
+
+      // when
+      const result = readErrorMessage(error);
+
+      // Then
+      expect(result).toBe(defaultError);
+    });
+
+    it('should return defaultError when error object does not contain error', () => {
+      // Given
+      const errorObject = {
+        error: null,
+      };
+
+      // When
+      const result = readErrorMessage(errorObject);
+
+      // Then
+      expect(result).toBe(defaultError);
+    });
+
+    it('should return default Error if something else was provided', () => {
+      // Given
+
+      // When
+      const result = readErrorMessage(123);
+
+      // Then
+      expect(result).toBe(defaultError);
+    });
+
     it(
       'should return the message property if a QueryError object with status as string is' +
         ' provided',

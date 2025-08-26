@@ -1,6 +1,19 @@
 import { QueryError } from '../types/api/BaseTypes.ts';
 import { NonUndefined } from '../types/BaseTypes.ts';
 
+const extractQueryErrorMessage = (
+  error: NonNullable<unknown>,
+  defaultError: string
+): string => {
+  if ('status' in error && typeof error.status === 'number') {
+    if ('message' in error) {
+      return error.message as string;
+    }
+    return defaultError;
+  }
+  return defaultError;
+};
+
 /**
  * Retrieves an error message based on the provided error object or string.
  * If no error is provided or the provided error is not recognized, a default error message is returned.
@@ -10,7 +23,7 @@ import { NonUndefined } from '../types/BaseTypes.ts';
  * @returns {string} The resolved error message.
  */
 export const readErrorMessage = (
-  error: string | QueryError | Error,
+  error: unknown,
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   defaultError: string = 'Unknown error, please try again!'
 ): string => {
@@ -26,8 +39,18 @@ export const readErrorMessage = (
     return error.message;
   }
 
-  if ('status' in error && typeof error.status === 'number') {
-    return error.message;
+  if (typeof error === 'object') {
+    let message = extractQueryErrorMessage(error, defaultError);
+
+    if ('error' in error && typeof error.error === 'object') {
+      if (!error.error) {
+        return defaultError;
+      }
+
+      message = extractQueryErrorMessage(error.error, defaultError);
+    }
+
+    return message;
   }
 
   return defaultError;

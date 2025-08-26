@@ -1,5 +1,8 @@
 import { beforeEach } from 'vitest';
-import { customBaseQuery, CustomFetchBaseQueryError, } from '../../../src/store/api/base.ts';
+import {
+  customBaseQuery,
+  CustomFetchBaseQueryError,
+} from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { waitFor } from '@testing-library/react';
 import { act } from 'react';

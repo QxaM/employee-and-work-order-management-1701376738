@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import ServicesStatusCard from '../../../src/components/serviceStatus/ServicesStatusCard.tsx';
+import ServicesStatusCard from '../../../src/components/service-status/ServicesStatusCard.tsx';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { APP_SERVICES } from '../../../src/types/components/ServiceStatusTypes.ts';
 import { beforeEach } from 'vitest';

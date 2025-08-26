@@ -1,6 +1,6 @@
 import { Container, Em, Flex, Heading, Section, Text } from '@radix-ui/themes';
 import LinkButton from '../components/shared/LinkButton.tsx';
-import ServicesStatusCard from '../components/serviceStatus/ServicesStatusCard.tsx';
+import ServicesStatusCard from '../components/service-status/ServicesStatusCard.tsx';
 import DemoCallout from '../components/DemoCallout.tsx';
 
 const HomePage = () => {
