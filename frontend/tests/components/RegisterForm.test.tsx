@@ -8,6 +8,7 @@ import * as authApiSlice from '../../src/store/api/auth.ts';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
 import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
+import { userEvent } from '@testing-library/user-event';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');
@@ -27,10 +28,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const EMAIL_TITLE = 'email';
+const EMAIL_TITLE = 'email address';
 const PASSWORD_TITLE = 'password';
 const CONFIRM_PASSWORD_TITLE = 'confirm password';
-const REGISTER_BUTTON_TEXT = 'Sign up';
+const REGISTER_BUTTON_TEXT = 'Create Account';
 
 const testWrapper = ({ children }: { children: ReactNode }) => {
   return (
@@ -75,11 +76,11 @@ describe('Register Form', () => {
 
   it('Should contain necessary elements - title, inputs, button', () => {
     // Given
-    const headerTitle = 'Enter register details';
+    const headerTitle = 'Create Account';
 
     // When
     render(<RegisterForm />, { wrapper: testWrapper });
-    const headerElement = screen.getByText(headerTitle);
+    const headerElement = screen.getByRole('heading', { name: headerTitle });
     const emailElement = screen.getByLabelText(EMAIL_TITLE);
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const confirmPasswordElement = screen.getByLabelText(
@@ -96,7 +97,7 @@ describe('Register Form', () => {
   it('Should have register link and message and navigate to Register page', () => {
     // Given
     const loginText = 'Already have an account?';
-    const loginLinkText = 'Login';
+    const loginLinkText = 'Back to Login';
 
     render(<RegisterForm />, { wrapper: testWrapper });
     expect(screen.getByText(loginText)).toBeInTheDocument();
@@ -111,38 +112,50 @@ describe('Register Form', () => {
 
   it('Should validate confirm password correctly and throw error when confirm empty', async () => {
     // Given
+    const user = userEvent.setup();
+    const errorMessage = 'confirm password is required';
     render(<RegisterForm />, { wrapper: testWrapper });
-    const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
-    const confirmPasswordElement = screen.getByLabelText(
-      CONFIRM_PASSWORD_TITLE
-    );
+
+    const passwordElement = screen.getByLabelText(PASSWORD_TITLE, {
+      exact: true,
+    });
+    const registerButton = screen.getByRole('button', {
+      name: REGISTER_BUTTON_TEXT,
+    });
 
     // When
-    fireEvent.change(passwordElement, { target: { value: 'test123' } });
-    fireEvent.change(confirmPasswordElement, { target: { value: 't' } });
-    fireEvent.change(confirmPasswordElement, { target: { value: '' } });
+    await user.type(passwordElement, 'Test12345');
+    await user.click(registerButton);
 
     // Then
-    const errorElement = await screen.findByText('Enter password confirmation');
+    const errorElement = screen.getByText(errorMessage);
     expect(errorElement).toBeInTheDocument();
   });
 
   it('Should validate confirm password correctly and throw error when confirm different', async () => {
     // Given
+    const user = userEvent.setup();
+    const errorMessage = 'Passwords do not match';
     render(<RegisterForm />, { wrapper: testWrapper });
-    const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
-    const confirmPasswordElement = screen.getByLabelText(
-      CONFIRM_PASSWORD_TITLE
-    );
 
-    // When
-    fireEvent.change(passwordElement, { target: { value: 'test123' } });
-    fireEvent.change(confirmPasswordElement, {
-      target: { value: 'different' },
+    const passwordElement = screen.getByLabelText(PASSWORD_TITLE, {
+      exact: true,
+    });
+    const confirmPasswordElement = screen.getByLabelText(
+      CONFIRM_PASSWORD_TITLE,
+      { exact: true }
+    );
+    const registerButton = screen.getByRole('button', {
+      name: REGISTER_BUTTON_TEXT,
     });
 
+    // When
+    await user.type(passwordElement, 'Test12345');
+    await user.type(confirmPasswordElement, 'different');
+    await user.click(registerButton);
+
     // Then
-    const errorElement = await screen.findByText('Passwords do not match');
+    const errorElement = screen.getByText(errorMessage);
     expect(errorElement).toBeInTheDocument();
   });
 
@@ -207,14 +220,15 @@ describe('Register Form', () => {
       expect(mockMutate).not.toHaveBeenCalledOnce();
     });
 
-    it('Should not register with invalid password confirmation', () => {
+    it('Should not register with invalid password confirmation', async () => {
       // Given
+      const user = userEvent.setup();
 
       // When
-      fireEvent.change(emailElement, { target: { value: 'test@test.com' } });
-      fireEvent.change(passwordElement, { target: { value: 'test' } });
-      fireEvent.change(confirmPasswordElement, { target: { value: '1234' } });
-      fireEvent.click(registerButton);
+      await user.type(emailElement, 'test@test.com');
+      await user.type(passwordElement, 'Test12345');
+      await user.type(confirmPasswordElement, 'different');
+      await user.click(registerButton);
 
       //Then
       expect(mockMutate).not.toHaveBeenCalledOnce();

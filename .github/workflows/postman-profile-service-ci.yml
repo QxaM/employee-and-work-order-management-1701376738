@@ -1,0 +1,92 @@
+name: Postman API Tests for Demo Service
+
+on:
+  workflow_call:
+    secrets:
+      ROBOT_TOKEN:
+        required: true
+  workflow_dispatch:
+
+jobs:
+  profile-api-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.filter.outputs.changes_detected }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in Profile Service (sources and tests)
+        uses: ./.github/actions/check-changes
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: |
+            backend/profile-service/**
+            postman-api-tests/profile-service/**
+
+  profile-service-ci:
+    uses: ./.github/workflows/profile-service-ci.yml
+
+  postman-tests-profile-service:
+    runs-on: ubuntu-latest
+
+    needs:
+      - profile-api-changes
+      - profile-service-ci
+
+    if: needs.profile-api-changes.outputs.profile == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.17.1'
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Download Profile Service JAR
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: profile-service-jar
+          path: backend/profile-service/build/libs
+          github_token: ${{ github.token }}
+
+      - name: Run Compose Containers
+        run: docker compose up --build -d
+        working-directory: backend/profile-service
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install HTMLExtra
+        run: npm install -g newman-reporter-htmlextra
+
+      - name: Wait for application to be ready
+        uses: ./.github/actions/health-check
+        with:
+          url: http://localhost:8082/actuator/health
+
+      - name: Run Postman Tests
+        run: |
+          newman run "EWM - Profile Service.postman_collection.json" \
+          --reporters='cli,htmlextra' \
+          --reporter-htmlextra-export ./results/report.html \
+          --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
+        working-directory: postman-api-tests/profile-service
+
+      - name: Upload Postman Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-report-profile-service
+          path: postman-api-tests/profile-service/results

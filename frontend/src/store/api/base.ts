@@ -4,7 +4,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query';
-import { ApiErrorType } from '../../types/ApiTypes.ts';
+import { ApiErrorType } from '../../types/api/BaseTypes.ts';
 
 /**
  * Base URL for API calls, sourced from .env variables. Different for different environments

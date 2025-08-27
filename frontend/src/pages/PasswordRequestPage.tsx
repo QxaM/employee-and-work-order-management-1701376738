@@ -1,4 +1,5 @@
 import PasswordRequestForm from '../components/PasswordRequestForm.tsx';
+import BasePage from './base/BasePage.tsx';
 
 /**
  * Renders the Password Reset Request Page that contain `PasswordRequestForm`. It will be rendered
@@ -6,11 +7,9 @@ import PasswordRequestForm from '../components/PasswordRequestForm.tsx';
  */
 const PasswordRequestPage = () => {
   return (
-    <div className="flex flex-grow items-center justify-center w-full">
-      <main className="flex flex-col p-2 justify-center lg:w-1/3 w-2/3 rounded border border-qxam-accent-lightest bg-qxam-primary-extreme-light">
-        <PasswordRequestForm />
-      </main>
-    </div>
+    <BasePage>
+      <PasswordRequestForm />
+    </BasePage>
   );
 };
 

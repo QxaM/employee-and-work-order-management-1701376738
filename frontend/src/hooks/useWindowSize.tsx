@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
-import {Size} from '../types/WindowTypes.ts';
+import { Size } from '../types/WindowTypes.ts';
 
 /**
  * Hook to track the current window size.
@@ -8,13 +8,13 @@ import {Size} from '../types/WindowTypes.ts';
  * @returns {Size} - An object containing the current `width` and `height` of the window.
  */
 const useWindowSize = (): Size => {
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
+  const [width, setWidth] = useState(window.screen.width);
+  const [height, setHeight] = useState(window.screen.height);
 
   useEffect(() => {
     function handleResize() {
-      setWidth(window.innerWidth);
-      setHeight(window.innerHeight);
+      setWidth(window.screen.width);
+      setHeight(window.screen.height);
     }
 
     handleResize();

@@ -8,33 +8,70 @@ describe('LoadingSpinner', () => {
     // Given
 
     // When
-    render(<LoadingSpinner />);
+    render(<LoadingSpinner isLoading />);
 
     // Then
     const spinnerDiv = screen.getByTestId('spinner');
     expect(spinnerDiv).toBeInTheDocument();
-    expect(spinnerDiv).toHaveClass(
-      'border-qxam-primary-lightest border-t-qxam-primary',
-      { exact: false }
-    );
-    expect(spinnerDiv).toHaveClass('w-12 h-12 border-[6px]', { exact: false });
+    expect(spinnerDiv).toHaveClass('border-violet-5 border-t-violet-9', {
+      exact: false,
+    });
+    expect(spinnerDiv).toHaveClass('size-(--space-7) border-[6px]', {
+      exact: false,
+    });
   });
 
   it('Should render custom spinner', () => {
     // Given
     const size = 'small';
-    const color = 'secondary';
+    const color = 'violet';
 
     // When
-    render(<LoadingSpinner size={size} color={color} />);
+    render(<LoadingSpinner size={size} color={color} isLoading />);
 
     // Then
     const spinnerDiv = screen.getByTestId('spinner');
     expect(spinnerDiv).toBeInTheDocument();
-    expect(spinnerDiv).toHaveClass(
-      'border-qxam-secondary-lightest border-t-qxam-secondary',
-      { exact: false }
-    );
-    expect(spinnerDiv).toHaveClass('w-8 h-8 border-[5px]', { exact: false });
+    expect(spinnerDiv).toHaveClass('border-violet-5 border-t-violet-9', {
+      exact: false,
+    });
+    expect(spinnerDiv).toHaveClass('size-(--space-5) border-[5px]', {
+      exact: false,
+    });
+  });
+
+  it('Should not render if not loading', () => {
+    // Given
+
+    // When
+    render(<LoadingSpinner isLoading={false} />);
+    const spinnerDiv = screen.queryByTestId('spinner');
+
+    // Then
+    expect(spinnerDiv).not.toBeInTheDocument();
+  });
+
+  it('Should render children if not loading', () => {
+    // Given
+    const text = 'Test text';
+
+    // When
+    render(<LoadingSpinner isLoading={false}>{text}</LoadingSpinner>);
+    const childComponent = screen.getByText(text);
+
+    // Then
+    expect(childComponent).toBeInTheDocument();
+  });
+
+  it('Should not render children if not loading', () => {
+    // Given
+    const text = 'Test text';
+
+    // When
+    render(<LoadingSpinner isLoading={true}>{text}</LoadingSpinner>);
+    const childComponent = screen.queryByText(text);
+
+    // Then
+    expect(childComponent).not.toBeInTheDocument();
   });
 });

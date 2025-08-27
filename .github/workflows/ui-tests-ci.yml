@@ -13,13 +13,13 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      ui-tests: ${{ steps.filter.outputs.any_modified || steps.filter.outputs.any_changed }}
+      ui-tests: ${{ steps.filter.outputs.changes_detected }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check changes in frontend
-        uses: tj-actions/changed-files@v46.0.5
+      - name: Check changes in frontend, backend or uitests
+        uses: ./.github/actions/check-changes
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
@@ -27,10 +27,6 @@ jobs:
             backend/**
             frontend/**
             uitests/**
-
-      - name: Print changed files
-        run: |
-          echo ${{ steps.filter.outputs.all_changed_and_modified_files }}
 
   frontend:
     uses: ./.github/workflows/frontend-ci.yml
@@ -79,34 +75,32 @@ jobs:
         uses: docker/setup-compose-action@v1.2.0
 
       - name: Download Discovery Service JAR
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: discovery-service-jar
+          artifact_name: discovery-service-jar
           path: backend/discovery-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
 
       - name: Download API Gateway Service JAR
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: api-gateway-service-jar
+          artifact_name: api-gateway-service-jar
           path: backend/api-gateway-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
 
       - name: Download Authorization Service JAR
-        uses: dawidd6/action-download-artifact@v6
+        uses: ./.github/actions/download-artifact
         with:
-          workflow: ui-tests-ci.yml
-          name: authorization-service-jar
+          artifact_name: authorization-service-jar
           path: backend/authorization-service/build/libs
-          check_artifacts: true
-          search_artifacts: true
-          github_token: '${{ github.token }}'
+          github_token: ${{ github.token }}
+
+      - name: Download profile Service JAR
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: profile-service-jar
+          path: backend/profile-service/build/libs
+          github_token: ${{ github.token }}
 
       - name: Run Compose Containers
         run: docker compose up --build -d
@@ -121,85 +115,28 @@ jobs:
         working-directory: frontend
 
       - name: Wait for Discovery Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8761/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8761/actuator/health
+          service_name: 'Discovery Service'
 
       - name: Wait for API Gateway Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8080/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8080/actuator/health
+          service_name: 'API Gateway Service'
 
       - name: Wait for Authorization Service to be ready
-        timeout-minutes: 2
-        env:
-          HEALTHCHECK_URL: http://localhost:8081/actuator/health
-        run: |
-          ATTEMPT=1
-          
-          while true; do
-            echo "Attempt #$ATTEMPT: Checking health endpoint at $HEALTHCHECK_URL..."
-          
-            RESPONSE=$(curl -s $HEALTHCHECK_URL || true)
-            echo "$RESPONSE"
-          
-            if echo "$RESPONSE" | grep -q '"status":"UP"'; then
-              echo "Service is up and healthy! Health check passed."
-              exit 0
-            else
-              echo "Service is not available yet. Waiting 10 seconds before the next attempt..."
-              sleep 10
-            fi
-          
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-          
-          echo "Health check failed to pass within the timeout period."
-          exit 1
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8081/actuator/health
+          service_name: 'Authorization Service'
+
+      - name: Wait for Profile Service to be ready
+        uses: './.github/actions/health-check'
+        with:
+          url: http://localhost:8082/actuator/health
+          service_name: 'Profile Service'
 
       - name: Build Frontend
         run: npm run build

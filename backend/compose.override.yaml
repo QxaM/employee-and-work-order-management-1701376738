@@ -16,3 +16,10 @@ services:
     depends_on:
       discovery-service:
         condition: service_healthy
+  profile-service:
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+    depends_on:
+      discovery-service:
+        condition: service_healthy

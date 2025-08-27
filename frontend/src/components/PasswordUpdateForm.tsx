@@ -1,12 +1,18 @@
-import {FormEvent, useRef} from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 
-import Input from './shared/Input';
-import {isValidConfirmPassword, isValidPassword,} from '../utils/Validators.ts';
-import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import {useNavigate} from 'react-router-dom';
-import {useFormNotifications} from '../hooks/useFormNotifications.tsx';
-import {usePasswordUpdateMutation} from '../store/api/passwordReset.ts';
-import {readErrorMessage} from '../utils/errorUtils.ts';
+import {
+  confirmPasswordValidators,
+  MINIMUM_PASSWORD_LENGTH,
+  passwordValidators,
+} from '../utils/validators.ts';
+import { useNavigate } from 'react-router-dom';
+import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
+import { usePasswordUpdateMutation } from '../store/api/passwordReset.ts';
+import { readErrorMessage } from '../utils/errorUtils.ts';
+import Form from './shared/form/Form.tsx';
+import { ArrowRightIcon, LockClosedIcon } from '@radix-ui/react-icons';
+import ShieldIcon from './icons/ShieldIcon.tsx';
+import PasswordRequirements from './shared/form/PasswordRequirements.tsx';
 
 /**
  * A user password update request form component with validation and API interaction.
@@ -23,8 +29,11 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
   const defaultUpdateError =
     'Error during verification process, try again later';
 
-  const passwordRef = useRef<string>('');
-  const formRef = useRef<HTMLFormElement>(null);
+  const [password, setPassword] = useState('');
+  const confirmValidators = useMemo(
+    () => confirmPasswordValidators(password),
+    [password]
+  );
   const navigate = useNavigate();
 
   const [updatePassword, { isSuccess, isLoading: isPending, isError, error }] =
@@ -58,25 +67,6 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
 
-    if (
-      !isValidPassword(data.password as string).isValid ||
-      !isValidConfirmPassword(
-        data.password as string,
-        data['confirm password'] as string
-      ).isValid
-    ) {
-      if (formRef.current?.elements) {
-        Array.from(formRef.current.elements).forEach((element) => {
-          const blurEvent = new Event('input', {
-            bubbles: true,
-            cancelable: true,
-          });
-          element.dispatchEvent(blurEvent);
-        });
-      }
-      return;
-    }
-
     void updatePassword({
       token,
       password: data.password as string,
@@ -84,36 +74,39 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
-      <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
-        Enter new password
-      </h2>
-      <Input
-        title="password"
-        placeholder="Enter password"
-        type="password"
-        validator={isValidPassword}
-        ref={passwordRef}
+    <Form handleSubmit={handleSubmit}>
+      <Form.Header
+        title="Update Password"
+        description="Create a new password for your account"
+        icon={ShieldIcon}
       />
-      <Input
-        title="confirm password"
-        placeholder="Confirm password"
-        type="password"
-        validator={(value) =>
-          isValidConfirmPassword(passwordRef.current, value)
-        }
+      <Form.Content>
+        <Form.Input
+          name="password"
+          placeholder="Enter password"
+          type="password"
+          icon={LockClosedIcon}
+          minLength={MINIMUM_PASSWORD_LENGTH}
+          validators={passwordValidators()}
+          onValueChange={setPassword}
+        />
+        <Form.Input
+          name="confirm password"
+          placeholder="Confirm password"
+          type="password"
+          icon={LockClosedIcon}
+          required
+          validators={confirmValidators}
+        />
+        <PasswordRequirements password={password} />
+      </Form.Content>
+      <Form.Submit
+        title="Update Password"
+        isServerPending={isPending}
+        icon={ArrowRightIcon}
+        mt="5"
       />
-      <div className="flex justify-end mx-4 mt-2">
-        <div className="flex w-36 h-10 justify-center items-center">
-          {!isPending && (
-            <button type="submit" className="btn-primary rounded w-full h-full">
-              Update Password
-            </button>
-          )}
-          {isPending && <LoadingSpinner size="small" />}
-        </div>
-      </div>
-    </form>
+    </Form>
   );
 };
 

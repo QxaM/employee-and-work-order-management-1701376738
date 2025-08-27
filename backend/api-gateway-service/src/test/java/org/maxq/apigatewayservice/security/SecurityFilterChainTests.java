@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.maxq.apigatewayservice.config.AuthorizationServiceLoadBalancerConfig;
+import org.maxq.apigatewayservice.config.ServiceLoadBalancerConfig;
 import org.maxq.apigatewayservice.security.config.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,12 +26,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(
-    classes = {AuthorizationServiceLoadBalancerConfig.class, WebSecurityConfig.class},
+    classes = {ServiceLoadBalancerConfig.class, WebSecurityConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
-    "eureka.client.enabled=false"
+    "eureka.client.enabled=false",
+    "test.loadbalancer=authorization"
 })
 class SecurityFilterChainTests {
 
