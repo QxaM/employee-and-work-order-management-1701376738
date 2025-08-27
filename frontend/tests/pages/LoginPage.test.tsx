@@ -18,8 +18,8 @@ const testWrapper = ({ children }: PropsWithChildren) => {
 describe('Login Page', () => {
   it('Should contain Login Form elements', () => {
     // Given
-    const headerTitle = 'Enter login details';
-    const emailTitle = 'email';
+    const headerTitle = 'Welcome Back';
+    const emailTitle = 'email address';
     const passwordTitle = 'password';
     const loginButtonText = 'Sign in';
 

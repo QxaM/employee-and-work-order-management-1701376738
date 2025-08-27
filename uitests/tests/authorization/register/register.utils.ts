@@ -26,7 +26,7 @@ export const fillRegistrationDetails = async (
 };
 
 export const clickRegisterButton = async (page: Page) => {
-  await page.getByRole("button", { name: "Sign up" }).click();
+  await page.getByRole("button", { name: "Create Account" }).click();
 };
 
 export const registerError = (page: Page): Locator => {
@@ -34,15 +34,27 @@ export const registerError = (page: Page): Locator => {
 };
 
 export const successfullRegistrationMessage = (page: Page): Locator => {
-  return page.getByText("You have been registered successfully!");
+  return page.getByText(/^You have been registered successfully!/);
 };
 
 export const invalidEmailMessage = (page: Page): Locator => {
-  return page.getByText("Enter valid email address");
+  return page.getByText("Please enter a valid email address");
 };
 
 export const passwordTooShortMessage = (page: Page): Locator => {
-  return page.getByText("Enter password with at least 4 characters");
+  return page.getByText("Password should have at least 4 characters");
+};
+
+export const passwordShouldContainUppercaseMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one uppercase letter");
+};
+
+export const passwordShouldContainLowercaseMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one lowercase letter");
+};
+
+export const passwordShouldContainNumberMessage = (page: Page): Locator => {
+  return page.getByText("Password must contain at least one number");
 };
 
 export const passwordEmptyMessage = (page: Page): Locator => {
@@ -54,13 +66,15 @@ export const passwordMismatchMessage = (page: Page): Locator => {
 };
 
 export const passwordConfirmationEmptyMessage = (page: Page): Locator => {
-  return page.getByText("Enter password confirmation");
+  return page.getByText("Confirm password is required");
 };
 
 export const successfullConfirmationMessage = (page: Page): Locator => {
-  return page.getByText("Verification was successfull - you can now login");
+  return page.getByText("Verification was successfull - you can now login", {
+    exact: true,
+  });
 };
 
 export const expiredTokenMessage = (page: Page): Locator => {
-  return page.getByText("Token is expired - sent a new one");
+  return page.getByText("Token is expired - sent a new one", { exact: true });
 };

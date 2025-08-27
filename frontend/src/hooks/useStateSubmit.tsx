@@ -6,8 +6,8 @@ import {
   useSubmit,
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ActionResponse } from '../types/ActionTypes.ts';
-import { NonUndefined } from '../types/SharedTypes.ts';
+import { ActionResponse } from '../types/store/ActionTypes.ts';
+import { NonUndefined } from '../types/BaseTypes.ts';
 import { deepEquals } from '../utils/shared.ts';
 
 interface SubmitReturnType<T> {

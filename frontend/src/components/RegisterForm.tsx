@@ -1,12 +1,18 @@
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { isValidConfirmPassword, isValidEmail, isValidPassword } from '../utils/Validators.ts';
-import Input from './shared/Input.tsx';
-import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import ErrorComponent from './shared/ErrorComponent.tsx';
+import {
+  confirmPasswordValidators,
+  MINIMUM_PASSWORD_LENGTH,
+  passwordValidators,
+} from '../utils/validators.ts';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
+import Form from './shared/form/Form.tsx';
+import PersonPlusIcon from './icons/PersonPlusIcon.tsx';
+import { EnvelopeClosedIcon, LockClosedIcon } from '@radix-ui/react-icons';
+import { Link as RadixLink, Text } from '@radix-ui/themes';
+import PasswordRequirements from './shared/form/PasswordRequirements.tsx';
 
 /**
  * A user register form component with validation and API interaction.
@@ -20,8 +26,11 @@ import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
  *
  */
 const RegisterForm = () => {
-  const passwordRef = useRef<string>('');
-  const formRef = useRef<HTMLFormElement>(null);
+  const [password, setPassword] = useState('');
+  const confirmValidators = useMemo(
+    () => confirmPasswordValidators(password),
+    [password]
+  );
   const navigate = useNavigate();
 
   const [register, { isSuccess, isLoading: isPending, isError, error }] =
@@ -44,28 +53,8 @@ const RegisterForm = () => {
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
 
-    if (
-      !isValidEmail(data.email as string).isValid ||
-      !isValidPassword(data.password as string).isValid ||
-      !isValidConfirmPassword(
-        data.password as string,
-        data['confirm password'] as string
-      ).isValid
-    ) {
-      if (formRef.current?.elements) {
-        Array.from(formRef.current.elements).forEach((element) => {
-          const blurEvent = new Event('input', {
-            bubbles: true,
-            cancelable: true,
-          });
-          element.dispatchEvent(blurEvent);
-        });
-      }
-      return;
-    }
-
     const registerData: RegisterType = {
-      email: data.email as string,
+      email: data['email address'] as string,
       password: data.password as string,
     };
 
@@ -73,63 +62,49 @@ const RegisterForm = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
-        <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
-          Enter register details
-        </h2>
-        {isError && (
-          <div className="flex justify-center items-center w-full">
-            <ErrorComponent error={error} />
-          </div>
-        )}
-        <Input
-          title="email"
+    <Form handleSubmit={handleSubmit}>
+      <Form.Header
+        title="Create Account"
+        description="Enter your details below and join our site"
+        icon={PersonPlusIcon}
+      />
+      <Form.Content isServerError={isError} serverError={error}>
+        <Form.Input
+          name="email address"
           placeholder="example@example.com"
           type="email"
-          validator={isValidEmail}
+          required
+          icon={EnvelopeClosedIcon}
         />
-        <Input
-          title="password"
+        <Form.Input
+          name="password"
           placeholder="Enter password"
           type="password"
-          validator={isValidPassword}
-          ref={passwordRef}
+          icon={LockClosedIcon}
+          minLength={MINIMUM_PASSWORD_LENGTH}
+          validators={passwordValidators()}
+          onValueChange={setPassword}
         />
-        <Input
-          title="confirm password"
+        <Form.Input
+          name="confirm password"
           placeholder="Confirm password"
           type="password"
-          validator={(value) =>
-            isValidConfirmPassword(passwordRef.current, value)
-          }
+          icon={LockClosedIcon}
+          required
+          validators={confirmValidators}
         />
-        <div className="flex justify-end mx-4 mt-2">
-          <div className="flex w-20 h-9 justify-center items-center">
-            {!isPending && (
-              <button
-                type="submit"
-                className="btn-primary rounded w-full h-full"
-              >
-                Sign up
-              </button>
-            )}
-            {isPending && <LoadingSpinner size="small" />}
-          </div>
-        </div>
-      </form>
-      <div className="mt-4 text-sm">
-        <p className="text-center">
+        <PasswordRequirements password={password} />
+      </Form.Content>
+      <Form.Submit title="Create Account" mt="5" isServerPending={isPending} />
+      <Form.Footer>
+        <Text as="div" size="1" align="center" className="w-full">
           Already have an account?{' '}
-          <Link
-            to="/login"
-            className="text-qxam-secondary-darker hover:underline"
-          >
-            Login
-          </Link>
-        </p>
-      </div>
-    </>
+          <RadixLink asChild>
+            <Link to="/login">Back to Login</Link>
+          </RadixLink>
+        </Text>
+      </Form.Footer>
+    </Form>
   );
 };
 

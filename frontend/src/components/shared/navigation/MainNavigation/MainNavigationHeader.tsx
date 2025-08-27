@@ -1,10 +1,19 @@
-import { Link, NavLink } from 'react-router-dom';
 import Logo from '../../Logo';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
-import { logout } from '../../../../store/authSlice.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
+import { Button, Flex } from '@radix-ui/themes';
+import { NavigationMenu } from 'radix-ui';
+import LinkButton from '../../LinkButton.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
+import { logout } from '../../../../store/authSlice.ts';
+import RadixNavLink from '../RadixNavLink.tsx';
+import RadixExpandableNavLink from '../RadixExpandableNavLink.tsx';
+import RadixNavContent from '../RadixNavContent.tsx';
+import RadixIndicator from '../RadixIndicator.tsx';
+import RadixViewport from '../RadixViewport.tsx';
+import RadixNavContentItem from '../RadixNavContentItem.tsx';
+import { useMemo } from 'react';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -18,69 +27,70 @@ import WelcomeMessage from './WelcomeMessage.tsx';
  * - Displays a welcome message for authenticated users.
  */
 const MainNavigationHeader = () => {
-  const navShared = 'text-lg py-1 px-2 m-2 rounded';
-  const navInactive =
-    navShared +
-    ' text-qxam-neutral-light-lightest hover:underline hover:shadow-md' +
-    ' hover:text-qxam-primary-darkest hover:bg-qxam-primary-lightest';
-  const navActive =
-    navShared +
-    ' shadow-md text-qxam-primary-darkest bg-qxam-primary-lightest' +
-    ' hover:underline hover:text-qxam-primary-darker';
-
   const dispatch = useAppDispatch();
   const { me } = useMeData();
 
   const token = useAppSelector((state) => state.auth.token);
-  const isAdmin = checkJwtIsAdmin(me);
+  const isAdmin = useMemo(() => checkJwtIsAdmin(me), [me]);
 
   return (
-    <header className="bg-qxam-primary flex justify-between items-center shadow-lg">
+    <Flex
+      justify="between"
+      align="center"
+      content="auto"
+      gap="2"
+      px="2"
+      className="text-(--accent-contrast) bg-(--accent-9) rounded-(--radius-3) shadow-[0_2px_10px] shadow-gray-8"
+    >
       <Logo />
-      <nav className="flex items-center justify-center">
-        <NavLink
-          to="/"
-          className={({ isActive }) => (isActive ? navActive : navInactive)}
-        >
-          Home
-        </NavLink>
-        {isAdmin && (
-          <NavLink
-            to="/admin"
-            className={({ isActive }) => (isActive ? navActive : navInactive)}
-          >
-            Admin
-          </NavLink>
-        )}
-      </nav>
+
+      <NavigationMenu.Root className="relative z-10 flex justify-center">
+        <NavigationMenu.List className="center m-0 flex list-none justify-center items-center gap-(--space-2)">
+          <NavigationMenu.Item>
+            <RadixNavLink to={'/'}>Home</RadixNavLink>
+          </NavigationMenu.Item>
+
+          {isAdmin && (
+            <NavigationMenu.Item>
+              <RadixExpandableNavLink to={'/admin'}>
+                Admin
+              </RadixExpandableNavLink>
+              <RadixNavContent width="1">
+                <RadixNavContentItem
+                  title="Roles Update"
+                  to="/admin/roles-update"
+                >
+                  View and change users&apos; assigned roles
+                </RadixNavContentItem>
+              </RadixNavContent>
+            </NavigationMenu.Item>
+          )}
+
+          <RadixIndicator />
+        </NavigationMenu.List>
+
+        <RadixViewport />
+      </NavigationMenu.Root>
+
       {!token && (
-        <div className="flex justify-center items-center content-auto">
-          <Link
-            to="/register"
-            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
-          >
+        <Flex justify="center" align="center" content="auto" gap="2" mx="2">
+          <LinkButton to="/register" variant="surface" size="3">
             Sign up
-          </Link>
-          <Link
-            to="/login"
-            className="btn btn-primary-darkest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lighter border rounded shadow text-center"
-          >
+          </LinkButton>
+          <LinkButton to="/login" size="3">
             Login
-          </Link>
-        </div>
+          </LinkButton>
+        </Flex>
       )}
       {token && (
-        <div className="flex flex-row gap-4 justify-center mx-4 items-center content-auto">
+        <Flex justify="center" align="center" content="auto" gap="2" mx="2">
           <WelcomeMessage me={me} />
-          <button
-            className="btn btn-secondary-lightest text-lg mr-2 min-w-20 border-qxam-neutral-dark-lightest border rounded shadow text-center"
-            onClick={() => dispatch(logout())}
-          >
+          <Button size="3" onClick={() => dispatch(logout())}>
             Logout
-          </button>
-        </div>
+          </Button>
+        </Flex>
       )}
-    </header>
+    </Flex>
   );
 };
 

@@ -1,4 +1,5 @@
 import { MeType } from '../../../../store/api/auth.ts';
+import { Text } from '@radix-ui/themes';
 
 interface WelcomeMessageProps {
   me?: MeType;
@@ -18,9 +19,9 @@ const WelcomeMessage = ({ me }: WelcomeMessageProps) => {
   const welcomeMessage = 'Welcome back' + (me ? `, ${me.email}` : '') + '!';
 
   return (
-    <p id="welcome-message" className="text-qxam-neutral-light-lighter text-xl">
+    <Text as="p" id="welcome-message" size="3">
       {welcomeMessage}
-    </p>
+    </Text>
   );
 };
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 
-import { GetUsersType } from '../../../src/types/UserTypes.ts';
+import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
 import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
 import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
@@ -19,6 +19,8 @@ interface QueryResult {
   unwrap: () => Promise<GetUsersType>;
   unsubscribe: () => void;
 }
+
+const PAGE_SIZE = 6;
 
 const USER_CONTENT = [
   {
@@ -147,7 +149,7 @@ const testUserLoader = async (
   expect(customBaseQuery).toHaveBeenCalledOnce();
   expect(customBaseQuery).toHaveBeenCalledWith(
     {
-      url: `/auth/users?page=${correctedPage}&size=15`,
+      url: `/auth/users?page=${correctedPage}&size=${PAGE_SIZE}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { useConfirmRegistrationMutation } from '../store/api/auth.ts';
+import { Flex } from '@radix-ui/themes';
 
 /**
  * Renders the Register Confirmation with a centered `LoadingSpinner` component, Confimration
@@ -49,9 +50,9 @@ const RegisterConfirmationPage = () => {
   }, [mutate, searchParams]);
 
   return (
-    <div className="flex flex-grow items-center justify-center w-full">
-      <LoadingSpinner size="large" />
-    </div>
+    <Flex justify="center" align="center" flexGrow="1" width="100%">
+      <LoadingSpinner size="large" isLoading />
+    </Flex>
   );
 };
 

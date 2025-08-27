@@ -1,4 +1,4 @@
-import {Outlet} from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import Footer from '../components/shared/Footer.tsx';
 import useWindowSize from '../hooks/useWindowSize.tsx';
@@ -6,7 +6,8 @@ import MainNavigationHeader
   from '../components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
 import MobileMainNavigation
   from '../components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
-import {Size} from '../types/WindowTypes.ts';
+import { Size } from '../types/WindowTypes.ts';
+import { Flex } from '@radix-ui/themes';
 
 /**
  * Renders the root page layout with responsive navigation, a content outlet, and a footer.
@@ -20,14 +21,14 @@ const RootPage = () => {
   const isMobile = width < 768;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <Flex direction="column" minHeight="100vh">
       {!isMobile && <MainNavigationHeader />}
       {isMobile && <MobileMainNavigation />}
-      <div className="flex flex-grow">
+      <Flex flexGrow="1">
         <Outlet />
-      </div>
+      </Flex>
       <Footer />
-    </div>
+    </Flex>
   );
 };
 
