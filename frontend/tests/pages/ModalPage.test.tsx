@@ -4,7 +4,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import ModalPage from '../../src/pages/ModalPage.tsx';
 
 describe('Modal Page', () => {
-  const backdropId = 'backdrop';
+  const title = 'Test title';
+  const description = 'Test description';
   const closeButtonLabel = 'close dialog';
 
   beforeAll(() => {
@@ -13,39 +14,45 @@ describe('Modal Page', () => {
     document.body.appendChild(modalRoot);
   });
 
-  it('Should contain correct elements', () => {
+  it('Should contain correct elements - title, description, close button and children', () => {
     // Given
-    render(<ModalPage onClose={vi.fn()} />);
+    const children = 'Test children';
+    render(
+      <ModalPage
+        title={title}
+        description={description}
+        open
+        onOpenChange={vi.fn()}
+      >
+        {children}
+      </ModalPage>
+    );
 
     // When
-    const backdrop = document.querySelector(`#${backdropId}`);
-    const closeButton = screen.getByLabelText(closeButtonLabel);
+    const titleElement = screen.getByText(title, { exact: true });
+    const descriptionElement = screen.getByText(description, { exact: true });
+    const childrenElement = screen.getByText(children, { exact: true });
+    const closeButton = screen.getByText(closeButtonLabel);
 
     // Then
-    expect(backdrop).not.toBeNull();
+    expect(titleElement).toBeInTheDocument();
+    expect(descriptionElement).toBeInTheDocument();
+    expect(childrenElement).toBeInTheDocument();
     expect(closeButton).toBeInTheDocument();
   });
 
   it('Should close when clicking on close button', () => {
     // Given
     const mockClose = vi.fn();
-    render(<ModalPage onClose={mockClose} />);
-    const backdrop = document.querySelector(`#${backdropId}`);
-
-    // When
-    if (backdrop) {
-      fireEvent.click(backdrop);
-    }
-
-    // Then
-    expect(mockClose).toHaveBeenCalledOnce();
-  });
-
-  it('Should close when clicking on backdrop', () => {
-    // Given
-    const mockClose = vi.fn();
-    render(<ModalPage onClose={mockClose} />);
-    const closeButton = screen.getByLabelText(closeButtonLabel);
+    render(
+      <ModalPage
+        title={title}
+        description={description}
+        open
+        onOpenChange={mockClose}
+      />
+    );
+    const closeButton = screen.getByText(closeButtonLabel);
 
     // When
     fireEvent.click(closeButton);

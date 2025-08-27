@@ -1,27 +1,22 @@
-import { motion } from 'framer-motion';
 import { Color, Size } from '../../types/TailwindTypes.ts';
+import { PropsWithChildren } from 'react';
+import clsx from 'clsx/lite';
 
 const SpinnerSize: Record<Size, string> = {
-  small: 'w-8 h-8 border-[5px]',
-  medium: 'w-12 h-12 border-[6px]',
-  large: 'w-16 h-16 border-[7px]',
+  small: 'size-(--space-5) border-[5px]',
+  medium: 'size-(--space-7) border-[6px]',
+  large: 'size-(--space-9) border-[7px]',
 };
 
 const SpinnerColor: Record<Color, string> = {
-  primary: 'border-qxam-primary-lightest border-t-qxam-primary',
-  secondary: 'border-qxam-secondary-lightest border-t-qxam-secondary',
-  accent: 'border-qxam-accent-lightest border-t-qxam-accent',
-  neutralDark: 'border-qxam-neutral-dark-lightest border-t-qxam-neutral-dark',
-  neutralLight:
-    'border-qxam-neutral-light-lightest border-t-qxam-neutral-light',
-  success: 'border-qxam-success-lightest border-t-qxam-success',
-  warning: 'border-qxam-warning-lightest border-t-qxam-warning',
-  error: 'border-qxam-error-lightest border-t-qxam-error',
+  violet: 'border-violet-5 border-t-violet-9',
+  gray: 'border-gray-5 border-t-gray-9',
 };
 
 interface SpinnerType {
   size?: Size;
   color?: Color;
+  isLoading?: boolean;
 }
 
 /**
@@ -43,20 +38,22 @@ interface SpinnerType {
 
 const LoadingSpinner = ({
   size = 'medium',
-  color = 'primary',
-}: SpinnerType) => {
+  color = 'violet',
+  isLoading,
+  children,
+}: PropsWithChildren<SpinnerType>) => {
+  const spinnerClasses = clsx(
+    SpinnerSize[size],
+    SpinnerColor[color],
+    'rounded-full',
+    'transition-all duration-1000 ease-in-out animate-spin'
+  );
+
   return (
-    <motion.div
-      data-testid="spinner"
-      className={`${SpinnerSize[size]} rounded-full ${SpinnerColor[color]}`}
-      animate={{ rotate: 360 }}
-      transition={{
-        repeat: Infinity,
-        type: 'spring',
-        ease: 'easeInOut',
-        duration: 1,
-      }}
-    />
+    <>
+      {isLoading && <div data-testid="spinner" className={spinnerClasses} />}
+      {!isLoading && <>{children}</>}
+    </>
   );
 };
 

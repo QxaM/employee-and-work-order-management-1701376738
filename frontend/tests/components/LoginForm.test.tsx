@@ -15,7 +15,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const EMAIL_TITLE = 'email';
+const EMAIL_TITLE = 'email address';
 const PASSWORD_TITLE = 'password';
 const LOGIN_BUTTON_TEXT = 'Sign in';
 
@@ -42,7 +42,7 @@ describe('Login Form', () => {
 
   it('Should contain necessary elements - title, inputs, button', () => {
     // Given
-    const headerTitle = 'Enter login details';
+    const headerTitle = 'Welcome Back';
 
     // When
     renderWithProviders(
@@ -249,7 +249,7 @@ describe('Login Form', () => {
 
   it('Should navigate to password reset', () => {
     // Given
-    const resetNowText = 'Reset now';
+    const resetNowText = 'Forgot password?';
     renderWithProviders(
       <TestWrapper>
         <LoginForm />

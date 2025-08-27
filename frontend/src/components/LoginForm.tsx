@@ -1,12 +1,11 @@
-import Input from './shared/Input.tsx';
 import { FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
-import LoadingSpinner from '../components/shared/LoadingSpinner.tsx';
-import ErrorComponent from '../components/shared/ErrorComponent.tsx';
 import { login as loginAction } from '../store/authSlice.ts';
 import { useAppDispatch } from '../hooks/useStore.tsx';
 import { LoginType, useLoginMutation } from '../store/api/auth.ts';
+import Form from './shared/form/Form.tsx';
+import { EnvelopeClosedIcon, LockClosedIcon } from '@radix-ui/react-icons';
+import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';
 
 /**
  * A user login form component with API interaction, and Redux integration.
@@ -32,7 +31,7 @@ const LoginForm = () => {
     const data = Object.fromEntries(fd.entries());
 
     const loginData: LoginType = {
-      email: data.email as string,
+      email: data['email address'] as string,
       password: data.password as string,
     };
 
@@ -52,53 +51,52 @@ const LoginForm = () => {
   }, [isSuccess, navigate]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
-          Enter login details
-        </h2>
-        {isError && (
-          <div className="flex justify-center items-center w-full">
-            <ErrorComponent error="Login failed. Invalid email or password." />
-          </div>
-        )}
-        <Input title="email" placeholder="example@example.com" type="email" />
-        <Input title="password" placeholder="Enter password" type="password" />
-        <div className="flex justify-between mx-4 mt-2 items-center">
-          <p>
-            Don&apos;t remember password?{' '}
-            <Link
-              to="/password/request"
-              className="text-qxam-secondary-darker hover:underline"
-            >
-              Reset now
-            </Link>
-          </p>
-          <div className="flex w-20 h-9 justify-center items-center">
-            {!isPending && (
-              <button
-                type="submit"
-                className="btn-primary rounded w-full h-full"
-              >
-                Sign in
-              </button>
-            )}
-            {isPending && <LoadingSpinner size="small" />}
-          </div>
-        </div>
-      </form>
-      <div className="mt-4 text-sm">
-        <p className="text-center">
+    <Form handleSubmit={handleSubmit}>
+      <Form.Header
+        title="Welcome Back"
+        description="Sign in to your account"
+        icon={LockClosedIcon}
+      />
+      <Form.Content
+        isServerError={isError}
+        serverError="Login failed. Invalid email or password."
+      >
+        <Form.Input
+          name="email address"
+          type="email"
+          required
+          placeholder="example@example.com"
+          icon={EnvelopeClosedIcon}
+        />
+        <Form.Input
+          name="password"
+          type="password"
+          required
+          placeholder="Enter password"
+          icon={LockClosedIcon}
+        />
+        <Flex
+          justify="end"
+          align="center"
+          width="100%"
+          mt="2"
+          className="text-(length:--font-size-2)"
+        >
+          <RadixLink asChild>
+            <Link to="/password/request">Forgot password?</Link>
+          </RadixLink>
+        </Flex>
+      </Form.Content>
+      <Form.Submit title="Sign in" isServerPending={isPending} />
+      <Form.Footer>
+        <Text as="div" size="1" align="center" className="w-full">
           Don&apos;t have an account?{' '}
-          <Link
-            to="/register"
-            className="text-qxam-secondary-darker hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
-      </div>
-    </>
+          <RadixLink asChild>
+            <Link to="/register">Sign up</Link>
+          </RadixLink>
+        </Text>
+      </Form.Footer>
+    </Form>
   );
 };
 

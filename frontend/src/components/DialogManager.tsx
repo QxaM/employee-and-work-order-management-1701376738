@@ -1,4 +1,4 @@
-import ModalMessage from './shared/ModalMessage.tsx';
+import ModalMessage from './shared/modal/ModalMessage.tsx';
 import { removeModal } from '../store/modalSlice.ts';
 import { useAppDispatch, useAppSelector } from '../hooks/useStore.tsx';
 
@@ -44,6 +44,7 @@ const DialogManager = () => {
           message={modal.content.message}
           hideTimeout={modal.content.hideTimeout}
           type={modal.content.type}
+          sensitivity={modal.content.sensitivity}
           onClose={() => dispatch(removeModal(modal.id))}
         />
       ))}

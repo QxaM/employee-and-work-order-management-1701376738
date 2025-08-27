@@ -1,7 +1,7 @@
 import { expect, test } from "../../base/baseTest";
 import { faker } from "@faker-js/faker";
 import {
-  clickResetNow,
+  clickForgotPassword,
   clickResetPassword,
   clickUpdatePassword,
   fillEmail,
@@ -12,25 +12,27 @@ import {
   resetPasswordSuccessfullMessage,
   tokenExpiredMessage,
   updatePasswordSuccessfullMessage,
-  updatePasswordTitle,
+  updatePasswordTitle
 } from "./forgottenPassword.utils";
 import {
   openLoginPage,
   openResetPasswordPage,
-  openUpdatePasswordPage,
+  openUpdatePasswordPage
 } from "../../utils/navigation.utils";
 import { login, loginError, welcomeMessage } from "../login/login.utils";
 import {
   invalidEmailMessage,
   passwordConfirmationEmptyMessage,
-  passwordEmptyMessage,
   passwordMismatchMessage,
-  passwordTooShortMessage,
+  passwordShouldContainLowercaseMessage,
+  passwordShouldContainNumberMessage,
+  passwordShouldContainUppercaseMessage,
+  passwordTooShortMessage
 } from "../register/register.utils";
 import {
   getTokenApi,
   passwordResetApi,
-  passwordUpdateApi,
+  passwordUpdateApi
 } from "../../utils/authorization.api.utils";
 
 test("TC9 - should correctly reset password", async ({
@@ -46,7 +48,7 @@ test("TC9 - should correctly reset password", async ({
     await openLoginPage(page);
 
     // When
-    await clickResetNow(page);
+    await clickForgotPassword(page);
 
     // Then
     await expect(passwordResetTitle(page)).toBeVisible();
@@ -89,7 +91,7 @@ test("TC9 - should correctly reset password", async ({
 
   await test.step("TC9.5 - reset password", async () => {
     // Given
-    newPassword = faker.internet.password();
+    newPassword = faker.internet.password({ prefix: "Tt1" });
 
     // When
     await fillPassword(page, newPassword);
@@ -124,7 +126,7 @@ test("TC10 - should not allow to reuse token", async ({
   baseURL,
   registeredUser,
   apiContext,
-}, testInfo) => {
+}) => {
   const { email } = registeredUser;
   let reusedToken: string | undefined;
 
@@ -146,7 +148,7 @@ test("TC10 - should not allow to reuse token", async ({
 
   await test.step("TC10.2 - use token for the first time", async () => {
     // Given
-    const newPassword = faker.internet.password();
+    const newPassword = faker.internet.password({ prefix: "Tt1" });
     await expect(async () => {
       try {
         reusedToken = await getTokenApi(apiContext, email);
@@ -174,7 +176,7 @@ test("TC10 - should not allow to reuse token", async ({
 
   await test.step("TC10.4 - reset password", async () => {
     // Given
-    const newPassword = faker.internet.password();
+    const newPassword = faker.internet.password({ prefix: "Tt1" });
 
     // When
     await fillPassword(page, newPassword);
@@ -227,7 +229,7 @@ test("TC12 - should handle correctly invalid token", async ({
   registeredUser,
 }) => {
   const { email } = registeredUser;
-  let newPassword = faker.internet.password();
+  let newPassword = faker.internet.password({ prefix: "Tt1" });
 
   await test.step("TC12.1 - try to reset password", async () => {
     // Given
@@ -297,21 +299,58 @@ test("TC14 - should validate password during password registration", async ({
     ]);
   });
 
-  await test.step("TC14.2 - should validate invalid password (empty)", async () => {
+  await test.step("TC14.2 - should validate invalid password (no lowercase)", async () => {
     // Given
     await openUpdatePasswordPage(page, "invalidToken");
+    const invalidPassword = "TEST12345";
 
     // When
+    await fillPassword(page, invalidPassword);
+    await fillPasswordConfirmation(page, invalidPassword);
     await clickUpdatePassword(page);
 
     // Then
     await Promise.all([
       await expect(page).not.toHaveURL(baseURL || ""),
-      await expect(passwordEmptyMessage(page)).toBeVisible(),
+      await expect(passwordShouldContainLowercaseMessage(page)).toBeVisible(),
     ]);
   });
 
-  await test.step("TC14.3 - should validate password confirmation (mismatch)", async () => {
+  await test.step("TC14.3 - should validate invalid password (no uppercase)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+    const invalidPassword = "test12345";
+
+    // When
+    await fillPassword(page, invalidPassword);
+    await fillPasswordConfirmation(page, invalidPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordShouldContainUppercaseMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC14.4 - should validate invalid password (no number)", async () => {
+    // Given
+    await openUpdatePasswordPage(page, "invalidToken");
+    const invalidPassword = "Test";
+
+    // When
+    await fillPassword(page, invalidPassword);
+    await fillPasswordConfirmation(page, invalidPassword);
+    await clickUpdatePassword(page);
+
+    // Then
+    await Promise.all([
+      await expect(page).not.toHaveURL(baseURL || ""),
+      await expect(passwordShouldContainNumberMessage(page)).toBeVisible(),
+    ]);
+  });
+
+  await test.step("TC14.5 - should validate password confirmation (mismatch)", async () => {
     // Given
     await openUpdatePasswordPage(page, "invalidToken");
     const validPassword = "1234";
@@ -328,10 +367,10 @@ test("TC14 - should validate password during password registration", async ({
     ]);
   });
 
-  await test.step("TC14.4 - should validate password confirmation (empty)", async () => {
+  await test.step("TC14.6 - should validate password confirmation (empty)", async () => {
     // Given
     await openUpdatePasswordPage(page, "invalidToken");
-    const validPassword = "1234";
+    const validPassword = "Test12345";
 
     // When
     await fillPassword(page, validPassword);

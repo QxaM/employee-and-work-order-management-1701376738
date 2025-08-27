@@ -1,18 +1,23 @@
 import { Link } from 'react-router-dom';
+import { Avatar, Heading } from '@radix-ui/themes';
 
 const Logo = () => {
   return (
-    <Link to="/" className="flex items-center" reloadDocument>
-      <img
+    <Link
+      to="/"
+      className="flex items-center text-(--accent-contrast)"
+      reloadDocument
+    >
+      <Avatar
         src="/maxq-logo.jpg"
         alt="MaxQ Logo with text panel and synthwave background"
-        height={42}
-        width={42}
-        className="m-2 shadow-xl"
+        size="3"
+        m="1"
+        fallback="M"
       />
-      <h1 className="text-qxam-neutral-light-lightest text-xl font-extrabold">
+      <Heading as="h1" weight="bold" size="5">
         MaxQ Work Manager
-      </h1>
+      </Heading>
     </Link>
   );
 };
