@@ -3,34 +3,28 @@ import { act, renderHook } from '@testing-library/react';
 import useWindowSize from '../../src/hooks/useWindowSize.tsx';
 
 describe('useWindowSize', () => {
-  const originalInnerWidth = window.innerWidth;
-  const originalInnerHeight = window.innerHeight;
+  const originalInnerWidth = window.screen.width;
+  const originalInnerHeight = window.screen.height;
 
   beforeEach(() => {
-    Object.defineProperty(window, 'innerWidth', {
+    Object.defineProperty(window, 'screen', {
       writable: true,
       configurable: true,
-      value: 1024,
-    });
-
-    Object.defineProperty(window, 'innerHeight', {
-      writable: true,
-      configurable: true,
-      value: 768,
+      value: {
+        width: 900,
+        height: 500,
+      },
     });
   });
 
   afterEach(() => {
-    Object.defineProperty(window, 'innerWidth', {
+    Object.defineProperty(window, 'screen', {
       writable: true,
       configurable: true,
-      value: originalInnerWidth,
-    });
-
-    Object.defineProperty(window, 'innerHeight', {
-      writable: true,
-      configurable: true,
-      value: originalInnerHeight,
+      value: {
+        width: originalInnerWidth,
+        height: originalInnerHeight,
+      },
     });
   });
 
@@ -40,23 +34,20 @@ describe('useWindowSize', () => {
     const { result } = renderHook(() => useWindowSize());
 
     // Then
-    expect(result.current.width).toEqual(1024);
-    expect(result.current.height).toEqual(768);
+    expect(result.current.width).toEqual(900);
+    expect(result.current.height).toEqual(500);
   });
 
   it('Should correctly update dimensions when window is resized', () => {
     // Given
     const resizeObject = () => {
-      Object.defineProperty(window, 'innerWidth', {
+      Object.defineProperty(window, 'screen', {
         writable: true,
         configurable: true,
-        value: 1440,
-      });
-
-      Object.defineProperty(window, 'innerHeight', {
-        writable: true,
-        configurable: true,
-        value: 900,
+        value: {
+          width: 1440,
+          height: 900,
+        },
       });
 
       window.dispatchEvent(new Event('resize'));

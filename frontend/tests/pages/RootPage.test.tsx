@@ -7,7 +7,7 @@ import { Size } from '../../src/types/WindowTypes.ts';
 import { renderWithProviders } from '../test-utils.tsx';
 
 const mockWindowSize = vi.fn(() => ({}) as Size);
-vi.mock('@/hooks/useWindowSize.tsx', () => ({
+vi.mock('../../src/hooks/useWindowSize.tsx', () => ({
   default: (): Size => mockWindowSize(),
 }));
 
@@ -67,7 +67,7 @@ describe('Root Page', () => {
         <RootPage />
       </BrowserRouter>
     );
-    const menuButton = screen.queryByRole('button', {
+    const menuButton = screen.getByRole('button', {
       name: new RegExp(ariaLabel, 'i'),
     });
 

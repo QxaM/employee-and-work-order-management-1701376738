@@ -2,10 +2,14 @@ import { Container, Em, Flex, Heading, Section, Text } from '@radix-ui/themes';
 import LinkButton from '../components/shared/LinkButton.tsx';
 import ServicesStatusCard from '../components/service-status/ServicesStatusCard.tsx';
 import DemoCallout from '../components/DemoCallout.tsx';
+import useWindowSize from '../hooks/useWindowSize.tsx';
 
 const HomePage = () => {
+  const { width } = useWindowSize();
+  const containerWidth = width * 0.4;
+
   return (
-    <Container align="center" height="100%" width="40%">
+    <Container align="center" height="100%" width={`${containerWidth}px`}>
       <Section height="100%">
         <Flex
           direction="column"
