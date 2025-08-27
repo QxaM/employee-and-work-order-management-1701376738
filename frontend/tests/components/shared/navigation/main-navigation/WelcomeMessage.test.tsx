@@ -1,5 +1,5 @@
 import { MeType } from '../../../../../src/store/api/auth.ts';
-import WelcomeMessage from '../../../../../src/components/shared/navigation/MainNavigation/WelcomeMessage.tsx';
+import WelcomeMessage from '../../../../../src/components/shared/navigation/main-navigation/WelcomeMessage.tsx';
 import { render, screen } from '@testing-library/react';
 
 describe('Welcome Message', () => {

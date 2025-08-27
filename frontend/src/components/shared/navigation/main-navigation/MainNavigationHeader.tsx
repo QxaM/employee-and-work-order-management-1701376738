@@ -1,12 +1,11 @@
 import Logo from '../../Logo';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
-import { Button, Flex } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes';
 import { NavigationMenu } from 'radix-ui';
 import LinkButton from '../../LinkButton.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
-import { logout } from '../../../../store/authSlice.ts';
 import RadixNavLink from '../RadixNavLink.tsx';
 import RadixExpandableNavLink from '../RadixExpandableNavLink.tsx';
 import RadixNavContent from '../RadixNavContent.tsx';
@@ -14,6 +13,7 @@ import RadixIndicator from '../RadixIndicator.tsx';
 import RadixViewport from '../RadixViewport.tsx';
 import RadixNavContentItem from '../RadixNavContentItem.tsx';
 import { useMemo } from 'react';
+import ProfileCard from './profile-card/ProfileCard.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -27,7 +27,6 @@ import { useMemo } from 'react';
  * - Displays a welcome message for authenticated users.
  */
 const MainNavigationHeader = () => {
-  const dispatch = useAppDispatch();
   const { me } = useMeData();
 
   const token = useAppSelector((state) => state.auth.token);
@@ -83,11 +82,9 @@ const MainNavigationHeader = () => {
         </Flex>
       )}
       {token && (
-        <Flex justify="center" align="center" content="auto" gap="2" mx="2">
+        <Flex justify="center" align="center" content="auto" gap="4" mx="2">
           <WelcomeMessage me={me} />
-          <Button size="3" onClick={() => dispatch(logout())}>
-            Logout
-          </Button>
+          <ProfileCard />
         </Flex>
       )}
     </Flex>

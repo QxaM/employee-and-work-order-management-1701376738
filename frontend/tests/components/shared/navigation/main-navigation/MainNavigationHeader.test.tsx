@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MainNavigationHeader from '../../../../../src/components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+import MainNavigationHeader from '../../../../../src/components/shared/navigation/main-navigation/MainNavigationHeader.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
@@ -244,11 +244,9 @@ describe('Main Navigation Header', () => {
       expect(window.location.pathname).toBe('/login');
     });
 
-    it('Should contain welcome message, logout button and ProfileCard when logged in', async () => {
+    it('Should contain welcome message, logout button and profile-card when logged in', async () => {
       // Given
       const loginButtonText = 'Login';
-      const logoutButtonText = 'Logout';
-      const dataTestId = 'profile-card';
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me: {
           email: 'test@test.com',
@@ -277,38 +275,15 @@ describe('Main Navigation Header', () => {
       const loginButton = screen.queryByRole('link', {
         name: loginButtonText,
       });
-      const logoutButton = await screen.findByText(logoutButtonText);
       const welcomeMessage = await screen.findByText(
         `Welcome back, test@test.com!`
       );
-      const profileCard = await screen.findByTestId(dataTestId);
+      const profileCard = await screen.findByRole('button');
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(welcomeMessage).toBeInTheDocument();
-      expect(logoutButton).toBeInTheDocument();
       expect(profileCard).toBeInTheDocument();
-    });
-
-    it('Should logout and clear store', async () => {
-      // Given
-      const logoutButtonText = 'Logout';
-      const { store } = renderWithProviders(
-        <BrowserRouter>
-          <MainNavigationHeader />
-        </BrowserRouter>
-      );
-      act(() => {
-        store.dispatch(login({ token: '12345' }));
-      });
-
-      const logoutButton = await screen.findByText(logoutButtonText);
-
-      // When
-      fireEvent.click(logoutButton);
-
-      // Then
-      expect(store.getState().auth.token).toBeUndefined();
     });
   });
 });

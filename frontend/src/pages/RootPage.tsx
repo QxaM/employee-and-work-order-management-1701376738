@@ -3,9 +3,9 @@ import { Outlet } from 'react-router-dom';
 import Footer from '../components/shared/Footer.tsx';
 import useWindowSize from '../hooks/useWindowSize.tsx';
 import MainNavigationHeader
-  from '../components/shared/navigation/MainNavigation/MainNavigationHeader.tsx';
+  from '../components/shared/navigation/main-navigation/MainNavigationHeader.tsx';
 import MobileMainNavigation
-  from '../components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
+  from '../components/shared/navigation/main-navigation/MobileMainNavigation.tsx';
 import { Size } from '../types/WindowTypes.ts';
 import { Flex } from '@radix-ui/themes';
 

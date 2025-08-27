@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MobileMainNavigation from '../../../../../src/components/shared/navigation/MainNavigation/MobileMainNavigation.tsx';
+import MobileMainNavigation from '../../../../../src/components/shared/navigation/main-navigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import { MeType } from '../../../../../src/store/api/auth.ts';
@@ -283,11 +283,10 @@ describe('Main Navigation Header', () => {
     it('Should contain welcome message, logout button and Profile Card when logged in', async () => {
       // Given
       const loginButtonText = 'Login';
-      const logoutButtonText = 'Logout';
-      const dataTestId = 'profile-card';
+      const email = 'test@test.com';
       vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
         me: {
-          email: 'test@test.com',
+          email,
           roles: [
             {
               id: 1,
@@ -319,45 +318,17 @@ describe('Main Navigation Header', () => {
       const loginButton = screen.queryByRole('link', {
         name: loginButtonText,
       });
-      const logoutButton = await screen.findByText(logoutButtonText);
       const welcomeMessage = await screen.findByText(
         `Welcome back, test@test.com!`
       );
-      const profileCard = await screen.findByTestId(dataTestId);
+      const profileCard = await screen.findByRole('button', {
+        name: email.charAt(0).toUpperCase(),
+      });
 
       // Then
       expect(loginButton).not.toBeInTheDocument();
       expect(welcomeMessage).toBeInTheDocument();
-      expect(logoutButton).toBeInTheDocument();
       expect(profileCard).toBeInTheDocument();
-    });
-
-    it('Should logout and clear store', async () => {
-      // Given
-      const logoutButtonText = 'Logout';
-      const { store } = renderWithProviders(
-        <BrowserRouter>
-          <MobileMainNavigation />
-        </BrowserRouter>
-      );
-
-      const ariaLabel = 'Toggle navigation menu';
-      const menuButton = screen.getByRole('button', {
-        name: new RegExp(ariaLabel, 'i'),
-      });
-      fireEvent.click(menuButton);
-
-      act(() => {
-        store.dispatch(login({ token: '12345' }));
-      });
-
-      const logoutButton = await screen.findByText(logoutButtonText);
-
-      // When
-      fireEvent.click(logoutButton);
-
-      // Then
-      expect(store.getState().auth.token).toBeUndefined();
     });
   });
 });

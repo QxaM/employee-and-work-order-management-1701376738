@@ -1,9 +1,8 @@
 import { useState } from 'react';
 
 import Logo from '../../Logo.tsx';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/useStore.tsx';
+import { useAppSelector } from '../../../../hooks/useStore.tsx';
 import { isAdmin as checkJwtIsAdmin } from '../../../../utils/authUtils.ts';
-import { logout } from '../../../../store/authSlice.ts';
 import { useMeData } from '../../../../hooks/useMeData.tsx';
 import WelcomeMessage from './WelcomeMessage.tsx';
 import { Box, Button, Flex } from '@radix-ui/themes';
@@ -11,6 +10,7 @@ import clsx from 'clsx/lite';
 import { NavigationMenu } from 'radix-ui';
 import RadixNavLink from '../RadixNavLink.tsx';
 import LinkButton from '../../LinkButton.tsx';
+import ProfileCard from './profile-card/ProfileCard.tsx';
 
 /**
  * Renders the main navigation header with links and conditional content
@@ -36,7 +36,6 @@ const MobileMainNavigation = () => {
     'transition-all animate-enterFromTop'
   );
 
-  const dispatch = useAppDispatch();
   const { me } = useMeData();
 
   const token = useAppSelector((state) => state.auth.token);
@@ -49,44 +48,47 @@ const MobileMainNavigation = () => {
     >
       <Flex justify="between" align="center" className="z-50">
         <Logo />
-        <Button
-          variant="outline"
-          aria-label="Toggle navigation menu"
-          className="transform transition-all duration-300 ease-in-out"
-          onClick={() => {
-            setIsOpen((prevOpen) => !prevOpen);
-          }}
-        >
-          <Flex
-            width="20px"
-            height="20px"
-            direction="column"
-            justify="between"
-            align="center"
+        <Flex direction="row" justify="end" align="center" gap="2">
+          {token && <ProfileCard />}
+          <Button
+            variant="outline"
+            aria-label="Toggle navigation menu"
+            className="transform transition-all duration-300 ease-in-out"
+            onClick={() => {
+              setIsOpen((prevOpen) => !prevOpen);
+            }}
           >
-            {/* First line */}
-            <span
-              className={clsx(
-                hamburgerLineShared,
-                isOpen ? 'rotate-45 translate-y-[9px]' : ''
-              )}
-            />
-            {/* Middle line */}
-            <span
-              className={clsx(
-                hamburgerLineShared,
-                isOpen ? 'opacity-0' : 'opacity-100'
-              )}
-            />
-            {/* Bottom line */}
-            <span
-              className={clsx(
-                hamburgerLineShared,
-                isOpen ? '-rotate-45 -translate-y-[9px]' : ''
-              )}
-            />
-          </Flex>
-        </Button>
+            <Flex
+              width="20px"
+              height="20px"
+              direction="column"
+              justify="between"
+              align="center"
+            >
+              {/* First line */}
+              <span
+                className={clsx(
+                  hamburgerLineShared,
+                  isOpen ? 'rotate-45 translate-y-[9px]' : ''
+                )}
+              />
+              {/* Middle line */}
+              <span
+                className={clsx(
+                  hamburgerLineShared,
+                  isOpen ? 'opacity-0' : 'opacity-100'
+                )}
+              />
+              {/* Bottom line */}
+              <span
+                className={clsx(
+                  hamburgerLineShared,
+                  isOpen ? '-rotate-45 -translate-y-[9px]' : ''
+                )}
+              />
+            </Flex>
+          </Button>
+        </Flex>
       </Flex>
       {isOpen && (
         <NavigationMenu.Root
@@ -130,9 +132,6 @@ const MobileMainNavigation = () => {
               className="!w-2/3"
             >
               <WelcomeMessage me={me} />
-              <Button size="3" onClick={() => dispatch(logout())}>
-                Logout
-              </Button>
             </Flex>
           )}
         </NavigationMenu.Root>
