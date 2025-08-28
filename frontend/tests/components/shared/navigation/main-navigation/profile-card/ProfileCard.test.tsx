@@ -5,6 +5,7 @@ import { renderWithProviders } from '../../../../../test-utils.tsx';
 import ProfileCard from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileCard.tsx';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('ProfileCard', () => {
   const mockEmail = 'test@test.com';
@@ -27,7 +28,11 @@ describe('ProfileCard', () => {
   it('Should contain avatar', async () => {
     // Given
     const firstLetter = mockEmail.charAt(0).toUpperCase();
-    renderWithProviders(<ProfileCard />);
+    renderWithProviders(
+      <BrowserRouter>
+        <ProfileCard />
+      </BrowserRouter>
+    );
 
     // When
     const avatarElement = await screen.findByText(firstLetter);
@@ -41,7 +46,11 @@ describe('ProfileCard', () => {
     const logoutTitle = 'Logout';
     const user = userEvent.setup();
 
-    renderWithProviders(<ProfileCard />);
+    renderWithProviders(
+      <BrowserRouter>
+        <ProfileCard />
+      </BrowserRouter>
+    );
 
     const firstLetter = mockEmail.charAt(0).toUpperCase();
     const avatarElement = await screen.findByText(firstLetter);
