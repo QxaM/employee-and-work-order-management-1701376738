@@ -24,6 +24,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_PROFILE_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_PROFILE_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
 
 ---
 
@@ -31,6 +36,8 @@ spring:
   config:
     activate:
       on-profile: QA
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 eureka:
   client:
     enabled: false
