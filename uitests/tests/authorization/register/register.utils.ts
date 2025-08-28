@@ -1,6 +1,9 @@
 import { Locator, Page } from "playwright";
 
 export interface RegisterDetails {
+  firstName: string;
+  middleName?: string;
+  lastName: string;
   email: string;
   password: string;
   passwordConfirmation: string;
@@ -14,6 +17,15 @@ export const fillRegistrationDetails = async (
   page: Page,
   registerDetails: RegisterDetails,
 ) => {
+  await page
+    .getByRole("textbox", { name: "first name" })
+    .fill(registerDetails.firstName);
+  await page
+    .getByRole("textbox", { name: "middle name" })
+    .fill(registerDetails.middleName ?? "");
+  await page
+    .getByRole("textbox", { name: "last name" })
+    .fill(registerDetails.lastName);
   await page
     .getByRole("textbox", { name: "email" })
     .fill(registerDetails.email);
@@ -37,6 +49,14 @@ export const successfullRegistrationMessage = (page: Page): Locator => {
   return page.getByText(/^You have been registered successfully!/);
 };
 
+export const firstNameEmptyMessage = (page: Page): Locator => {
+  return page.getByText("First name is required");
+};
+
+export const lastNameEmptyMessage = (page: Page): Locator => {
+  return page.getByText("Last name is required");
+};
+
 export const invalidEmailMessage = (page: Page): Locator => {
   return page.getByText("Please enter a valid email address");
 };
@@ -55,10 +75,6 @@ export const passwordShouldContainLowercaseMessage = (page: Page): Locator => {
 
 export const passwordShouldContainNumberMessage = (page: Page): Locator => {
   return page.getByText("Password must contain at least one number");
-};
-
-export const passwordEmptyMessage = (page: Page): Locator => {
-  return page.getByText("Password cannot be empty");
 };
 
 export const passwordMismatchMessage = (page: Page): Locator => {

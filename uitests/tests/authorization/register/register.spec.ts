@@ -4,7 +4,9 @@ import { openHomePage } from "../../utils/navigation.utils";
 import {
   clickRegisterButton,
   fillRegistrationDetails,
+  firstNameEmptyMessage,
   invalidEmailMessage,
+  lastNameEmptyMessage,
   openRegisterPage,
   passwordMismatchMessage,
   passwordShouldContainLowercaseMessage,
@@ -12,7 +14,7 @@ import {
   passwordShouldContainUppercaseMessage,
   passwordTooShortMessage,
   registerError,
-  successfullRegistrationMessage,
+  successfullRegistrationMessage
 } from "./register.utils";
 
 import credentials from "../../../test-data/credentials.json";
@@ -25,6 +27,8 @@ test("TC3 - should register with valid credentials", async ({
   baseURL,
 }) => {
   // Given
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
   const email = faker.internet.email();
   const password = "Test12345";
   await openHomePage(page);
@@ -32,6 +36,8 @@ test("TC3 - should register with valid credentials", async ({
 
   // When
   await fillRegistrationDetails(page, {
+    firstName,
+    lastName,
     email,
     password,
     passwordConfirmation: password,
@@ -48,6 +54,8 @@ test("TC3 - should register with valid credentials", async ({
 
 test("TC4 - should validate register fields", async ({ page }) => {
   // Given
+  const correctFirstName = faker.person.firstName();
+  const correctLastName = faker.person.lastName();
   const correctEmail = faker.internet.email();
   const correctPassword = "Test12345";
   await openHomePage(page);
@@ -59,6 +67,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: invalidEmail,
       password: correctPassword,
       passwordConfirmation: correctPassword,
@@ -74,6 +84,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: invalidEmail,
       password: correctPassword,
       passwordConfirmation: correctPassword,
@@ -89,6 +101,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: invalidEmail,
       password: correctPassword,
       passwordConfirmation: correctPassword,
@@ -104,6 +118,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: correctEmail,
       password: invalidPassword,
       passwordConfirmation: correctPassword,
@@ -119,6 +135,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: correctEmail,
       password: invalidPassword,
       passwordConfirmation: correctPassword,
@@ -134,6 +152,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: correctEmail,
       password: invalidPassword,
       passwordConfirmation: correctPassword,
@@ -149,6 +169,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: correctEmail,
       password: invalidPassword,
       passwordConfirmation: correctPassword,
@@ -164,6 +186,8 @@ test("TC4 - should validate register fields", async ({ page }) => {
 
     // When
     await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: correctLastName,
       email: correctEmail,
       password: correctPassword,
       passwordConfirmation: invalidPassword,
@@ -173,15 +197,57 @@ test("TC4 - should validate register fields", async ({ page }) => {
     // Then
     await expect(passwordMismatchMessage(page)).toBeVisible();
   });
+
+  await test.step("TC4.9 - should validate empty first name", async () => {
+    // Given
+    const invalidFirstName = "";
+
+    // When
+    await fillRegistrationDetails(page, {
+      firstName: invalidFirstName,
+      lastName: correctLastName,
+      email: correctEmail,
+      password: correctPassword,
+      passwordConfirmation: correctPassword,
+    });
+    await clickRegisterButton(page);
+
+    // Then
+    await expect(firstNameEmptyMessage(page)).toBeVisible();
+  });
+
+  await test.step("TC4.10 - should validate empty last name", async () => {
+    // Given
+    const invalidLastName = "";
+
+    // When
+    await fillRegistrationDetails(page, {
+      firstName: correctFirstName,
+      lastName: invalidLastName,
+      email: correctEmail,
+      password: correctPassword,
+      passwordConfirmation: correctPassword,
+    });
+    await clickRegisterButton(page);
+
+    // Then
+    await expect(lastNameEmptyMessage(page)).toBeVisible();
+  });
 });
 
-test("TC5 - should not register with invalid credentials", async ({ page }) => {
+test("TC5 - should not register with existing credentials", async ({
+  page,
+}) => {
   // Given
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
   await openHomePage(page);
   await openRegisterPage(page);
 
   // When
   await fillRegistrationDetails(page, {
+    firstName,
+    lastName,
     email: userCredentials.login,
     password: userCredentials.password,
     passwordConfirmation: userCredentials.password,
