@@ -5,17 +5,20 @@ import { renderWithProviders } from '../../../../../test-utils.tsx';
 import ProfileContextMenu from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileContextMenu.tsx';
 import { screen } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
 
 const openContext = 'Open context';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <Button>{openContext}</Button>
-      </DropdownMenu.Trigger>
-      {children}
-    </DropdownMenu.Root>
+    <BrowserRouter>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Button>{openContext}</Button>
+        </DropdownMenu.Trigger>
+        {children}
+      </DropdownMenu.Root>
+    </BrowserRouter>
   );
 };
 
@@ -44,6 +47,24 @@ describe('ProfileContextMenu', () => {
 
       // Then
       expect(profileElement).toBeInTheDocument();
+    });
+
+    it('Should navigate to profile page', async () => {
+      // Given
+      renderWithProviders(
+        <TestWrapper>
+          <ProfileContextMenu />
+        </TestWrapper>
+      );
+      const triggerButton = screen.getByText(openContext);
+      await user.click(triggerButton);
+
+      // When
+      const profileElement = await screen.findByText(profileTitle);
+      await user.click(profileElement);
+
+      // Then
+      expect(window.location.pathname).toContain('/profile');
     });
   });
 
