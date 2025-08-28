@@ -1,7 +1,4 @@
-import {
-  customBaseQuery,
-  CustomFetchBaseQueryError,
-} from '../../../src/store/api/base.ts';
+import { customBaseQuery, CustomFetchBaseQueryError, } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { act, PropsWithChildren } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -139,7 +136,10 @@ describe('Authorization API', () => {
 
   describe('useRegisterMutation', () => {
     const registerData: RegisterType = {
+      firstName: 'Test',
+      lastName: 'User',
       email: 'test@test.com',
+
       password: '12345',
     };
     const defaultRegisterErrorMessage =
