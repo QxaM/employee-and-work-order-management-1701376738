@@ -13,8 +13,12 @@ services:
     environment:
       - EUREKA_URL=http://discovery-service:8761/eureka
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+      - AUTHORIZATION_PROFILE_RABBITMQ_HOST=authorization-profile-rabbitmq
+      - AUTHORIZATION_PROFILE_RABBITMQ_PORT=5672
     depends_on:
       discovery-service:
+        condition: service_healthy
+      authorization-profile-rabbitmq:
         condition: service_healthy
   profile-service:
     environment:
@@ -22,4 +26,6 @@ services:
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
     depends_on:
       discovery-service:
+        condition: service_healthy
+      authorization-profile-rabbitmq:
         condition: service_healthy
