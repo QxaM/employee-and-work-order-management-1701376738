@@ -4,7 +4,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query';
-import { ApiErrorType } from '../../types/ApiTypes.ts';
+import { ApiErrorType } from '../../types/api/BaseTypes.ts';
 
 /**
  * Base URL for API calls, sourced from .env variables. Different for different environments
@@ -16,6 +16,7 @@ import { ApiErrorType } from '../../types/ApiTypes.ts';
 export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
 
 export const authApi = '/auth';
+export const profileApi = '/profile';
 
 /**
  * A default error message used to indicate an unknown error occurred

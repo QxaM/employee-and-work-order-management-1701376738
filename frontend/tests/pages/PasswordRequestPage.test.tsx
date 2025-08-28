@@ -17,19 +17,19 @@ const testWrapper = ({ children }: PropsWithChildren) => {
 describe('Password Request Page', () => {
   it('Should contain Password Request Form elements', () => {
     // Given
-    const headerTitle = 'Enter email to reset password';
-    const emailTitle = 'email';
-    const loginButtonText = 'Reset Password';
+    const headerTitle = 'Reset Password';
+    const emailTitle = 'email address';
+    const buttonText = 'Send Reset Link';
 
     // When
     render(<PasswordRequestPage />, { wrapper: testWrapper });
     const headerElement = screen.getByText(headerTitle);
     const emailElement = screen.getByLabelText(emailTitle);
-    const loginButton = screen.getByRole('button', { name: loginButtonText });
+    const buttonElement = screen.getByRole('button', { name: buttonText });
 
     // Then
     expect(headerElement).toBeInTheDocument();
     expect(emailElement).toBeInTheDocument();
-    expect(loginButton).toBeInTheDocument();
+    expect(buttonElement).toBeInTheDocument();
   });
 });

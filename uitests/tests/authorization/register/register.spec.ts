@@ -6,8 +6,10 @@ import {
   fillRegistrationDetails,
   invalidEmailMessage,
   openRegisterPage,
-  passwordEmptyMessage,
   passwordMismatchMessage,
+  passwordShouldContainLowercaseMessage,
+  passwordShouldContainNumberMessage,
+  passwordShouldContainUppercaseMessage,
   passwordTooShortMessage,
   registerError,
   successfullRegistrationMessage,
@@ -96,24 +98,9 @@ test("TC4 - should validate register fields", async ({ page }) => {
     await expect(invalidEmailMessage(page)).toBeVisible();
   });
 
-  await test.step(`TC4.4 - should validate invalid email (without TLD)`, async () => {
+  await test.step(`TC4.4 - should validate invalid password (too short)`, async () => {
     // Given
-    const invalidEmail = "test@maxq";
-
-    // When
-    await fillRegistrationDetails(page, {
-      email: invalidEmail,
-      password: correctPassword,
-      passwordConfirmation: correctPassword,
-    });
-
-    // Then
-    await expect(invalidEmailMessage(page)).toBeVisible();
-  });
-
-  await test.step(`TC4.5 - should validate invalid password (too short)`, async () => {
-    // Given
-    const invalidPassword = "tes";
+    const invalidPassword = "Te1";
 
     // When
     await fillRegistrationDetails(page, {
@@ -126,9 +113,9 @@ test("TC4 - should validate register fields", async ({ page }) => {
     await expect(passwordTooShortMessage(page)).toBeVisible();
   });
 
-  await test.step(`TC4.6 - should validate invalid password (empty password)`, async () => {
+  await test.step(`TC4.5 - should validate invalid password (missing lowercase)`, async () => {
     // Given
-    const invalidPassword = "";
+    const invalidPassword = "TEST12345";
 
     // When
     await fillRegistrationDetails(page, {
@@ -138,10 +125,40 @@ test("TC4 - should validate register fields", async ({ page }) => {
     });
 
     // Then
-    await expect(passwordEmptyMessage(page)).toBeVisible();
+    await expect(passwordShouldContainLowercaseMessage(page)).toBeVisible();
   });
 
-  await test.step(`TC4.7 - should validate invalid confirm password (password mismatch)`, async () => {
+  await test.step(`TC4.6 - should validate invalid password (missing uppercase)`, async () => {
+    // Given
+    const invalidPassword = "test12345";
+
+    // When
+    await fillRegistrationDetails(page, {
+      email: correctEmail,
+      password: invalidPassword,
+      passwordConfirmation: correctPassword,
+    });
+
+    // Then
+    await expect(passwordShouldContainUppercaseMessage(page)).toBeVisible();
+  });
+
+  await test.step(`TC4.7 - should validate invalid password (missing number)`, async () => {
+    // Given
+    const invalidPassword = "Test";
+
+    // When
+    await fillRegistrationDetails(page, {
+      email: correctEmail,
+      password: invalidPassword,
+      passwordConfirmation: correctPassword,
+    });
+
+    // Then
+    await expect(passwordShouldContainNumberMessage(page)).toBeVisible();
+  });
+
+  await test.step(`TC4.8 - should validate invalid confirm password (password mismatch)`, async () => {
     // Given
     const invalidPassword = "tes";
 
@@ -151,6 +168,7 @@ test("TC4 - should validate register fields", async ({ page }) => {
       password: correctPassword,
       passwordConfirmation: invalidPassword,
     });
+    await clickRegisterButton(page);
 
     // Then
     await expect(passwordMismatchMessage(page)).toBeVisible();

@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { usersApi } from '../../store/api/user.ts';
 import { setupStore } from '../../store';
-import { GetUsersType } from '../../types/UserTypes.ts';
+import { GetUsersType } from '../../types/api/UserTypes.ts';
 import { rtkDispatch } from '../baseRtk.ts';
 
 /**

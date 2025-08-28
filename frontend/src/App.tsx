@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 
 import RootPage from './pages/RootPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
@@ -9,12 +9,14 @@ import LoginPage from './pages/LoginPage.tsx';
 import RegisterConfirmationPage from './pages/RegisterConfirmationPage.tsx';
 import PasswordRequestPage from './pages/PasswordRequestPage.tsx';
 import PasswordUpdatePage from './pages/PasswordUpdatePage.tsx';
-import AdminPage from './pages/AdminPage.tsx';
-import RolesUpdate from './components/admin/roles-update/RolesUpdate.tsx';
+import AdminPage from './pages/admin/AdminPage.tsx';
+import RolesUpdatePage from './pages/admin/RolesUpdatePage.tsx';
 import { loadUsers } from './api/loaders/user.loader.ts';
-import { updateRoles } from './api/actions/user.action.ts';
 import ProtectedRoute from './components/shared/ProtectedRoute.tsx';
-import ErrorElement from './components/shared/ErrorElement.tsx';
+import ErrorElement from './components/shared/router/ErrorElement.tsx';
+import ModalProvider from './components/shared/modal/ModalProvider.tsx';
+import HomePage from './pages/HomePage.tsx';
+import ProfilePage from './pages/ProfilePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -22,29 +24,28 @@ const router = createBrowserRouter([
     element: <RootPage />,
     errorElement: <ErrorElement />,
     children: [
-      { index: true, element: <></> },
+      { index: true, element: <HomePage /> },
       { path: '/register', element: <RegisterPage /> },
       { path: '/register/confirm', element: <RegisterConfirmationPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/password/request', element: <PasswordRequestPage /> },
       { path: '/password/confirm', element: <PasswordUpdatePage /> },
+      { path: '/profile', element: <ProfilePage /> },
       {
         path: '/admin',
         element: (
           <ProtectedRoute roles={['ADMIN']}>
-            <AdminPage />
+            <Outlet />
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <></> },
+          { index: true, element: <AdminPage /> },
           {
             path: 'roles-update',
-            element: <RolesUpdate />,
+            element: <RolesUpdatePage />,
             errorElement: <ErrorElement />,
             loader: (loaderFunctionArgs) =>
               loadUsers(store, loaderFunctionArgs),
-            action: (loaderFunctionArgs) =>
-              updateRoles(store, loaderFunctionArgs),
           },
         ],
       },
@@ -55,8 +56,10 @@ const router = createBrowserRouter([
 function App() {
   return (
     <Provider store={store}>
-      <RouterProvider router={router} />
-      <DialogManager />
+      <ModalProvider>
+        <RouterProvider router={router} />
+        <DialogManager />
+      </ModalProvider>
     </Provider>
   );
 }

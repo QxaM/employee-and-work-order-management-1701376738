@@ -8,6 +8,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import {
   MeType,
   RegisterType,
+  useAuthHealthcheckQuery,
   useConfirmRegistrationMutation,
   useLoginMutation,
   useMeQuery,
@@ -29,6 +30,111 @@ vi.mock('../../../src/store/api/base.ts', async () => {
 describe('Authorization API', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+  });
+
+  describe('useAuthHealthcheckQuery', () => {
+    it('Should make API call with correct parameters', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({ data: undefined });
+
+      // When
+      renderHookWithProviders(() => useAuthHealthcheckQuery());
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: '/auth/actuator/health',
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('Should handle success state', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({ data: undefined });
+
+      // When
+      const { result } = renderHookWithProviders(() =>
+        useAuthHealthcheckQuery()
+      );
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current;
+        expect(currentResult.isSuccess).toBe(true);
+        expect(currentResult.data).toBeUndefined();
+        expect(currentResult.isLoading).toBe(false);
+        expect(currentResult.isError).toBe(false);
+      });
+    });
+
+    it('Should handle loading state', () => {
+      // Given
+      let resolvePromise: (
+        value: PromiseLike<{ data: undefined }> | { data: undefined }
+      ) => void;
+      const controlledPromise = new Promise<{ data: undefined }>((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
+
+      // When
+      const { result } = renderHookWithProviders(() =>
+        useAuthHealthcheckQuery()
+      );
+
+      // Then
+      const currentResult = result.current;
+      expect(currentResult.isLoading).toBe(true);
+      expect(currentResult.data).toBeUndefined();
+      expect(currentResult.isSuccess).toBe(false);
+      expect(currentResult.isError).toBe(false);
+
+      // Clean up - resolve the promise to avoid hanging
+      act(() => {
+        resolvePromise({ data: undefined });
+      });
+    });
+
+    it('Should handle error state', async () => {
+      // Given
+      const errorMessage = 'Server unavailable';
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        error: {
+          status: 503,
+          message: errorMessage,
+        },
+      });
+
+      // When
+      const { result } = renderHookWithProviders(() =>
+        useAuthHealthcheckQuery()
+      );
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current;
+        expect(currentResult.isSuccess).toBe(false);
+        expect(currentResult.data).toBeUndefined();
+        expect(currentResult.isError).toBe(true);
+        expect(currentResult.error).toBeDefined();
+        expect(
+          (currentResult.error as CustomFetchBaseQueryError).status
+        ).toStrictEqual(503);
+        expect(
+          (currentResult.error as CustomFetchBaseQueryError).message
+        ).toStrictEqual(errorMessage);
+      });
+    });
   });
 
   describe('useRegisterMutation', () => {

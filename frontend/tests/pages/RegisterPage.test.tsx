@@ -18,15 +18,15 @@ const testWrapper = ({ children }: { children: ReactNode }) => {
 describe('Register Page', () => {
   it('Should contain Register Form elements', () => {
     // Given
-    const headerTitle = 'Enter register details';
-    const emailTitle = 'email';
+    const headerTitle = 'Create Account';
+    const emailTitle = 'email address';
     const passwordTitle = 'password';
     const confirmPasswordTitle = 'confirm password';
-    const signupButtonText = 'Sign up';
+    const signupButtonText = 'Create Account';
 
     // When
     render(<RegisterPage />, { wrapper: testWrapper });
-    const headerElement = screen.getByText(headerTitle);
+    const headerElement = screen.getByRole('heading', { name: headerTitle });
     const emailElement = screen.getByLabelText(emailTitle);
     const passwordElement = screen.getByLabelText(passwordTitle);
     const confirmPasswordElement = screen.getByLabelText(confirmPasswordTitle);

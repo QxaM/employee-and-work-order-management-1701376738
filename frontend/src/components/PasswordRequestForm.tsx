@@ -1,12 +1,10 @@
-import { FormEvent, useRef } from 'react';
-
-import { isValidEmail } from '../utils/Validators.ts';
-import Input from './shared/Input.tsx';
-import LoadingSpinner from './shared/LoadingSpinner.tsx';
-import ErrorComponent from './shared/ErrorComponent.tsx';
-import { useNavigate } from 'react-router-dom';
+import { FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { useRequestPasswordResetMutation } from '../store/api/passwordReset.ts';
+import Form from './shared/form/Form.tsx';
+import { Link as RadixLink, Text } from '@radix-ui/themes';
+import { ArrowRightIcon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 
 /**
  * A user password reset request form component with validation and API interaction.
@@ -20,8 +18,6 @@ import { useRequestPasswordResetMutation } from '../store/api/passwordReset.ts';
  *
  */
 const PasswordRequestForm = () => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const emailRef = useRef<string>('');
   const navigate = useNavigate();
 
   const [requestReset, { isSuccess, isLoading: isPending, isError, error }] =
@@ -40,50 +36,43 @@ const PasswordRequestForm = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!isValidEmail(emailRef.current).isValid) {
-      if (formRef.current?.elements) {
-        Array.from(formRef.current.elements).forEach((element) => {
-          const blurEvent = new Event('input', {
-            bubbles: true,
-            cancelable: true,
-          });
-          element.dispatchEvent(blurEvent);
-        });
-      }
-      return;
-    }
+    const fd = new FormData(event.currentTarget);
+    const data = Object.fromEntries(fd.entries());
 
-    void requestReset(emailRef.current);
+    void requestReset(data['email address'] as string);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col" ref={formRef}>
-      <h2 className="text-lg text-qxam-primary-extreme-dark font-semibold mx-4 mt-1 mb-2">
-        Enter email to reset password
-      </h2>
-      {isError && (
-        <div className="flex justify-center items-center w-full">
-          <ErrorComponent error={error} />
-        </div>
-      )}
-      <Input
-        ref={emailRef}
-        title="email"
-        placeholder="example@example.com"
-        type="email"
-        validator={isValidEmail}
+    <Form handleSubmit={handleSubmit}>
+      <Form.Header
+        title="Reset Password"
+        description="Enter your email and we will send you a link to reset your password"
+        icon={EnvelopeClosedIcon}
       />
-      <div className="flex justify-end mx-4 mt-2">
-        <div className="flex w-32 h-10 justify-center items-center">
-          {!isPending && (
-            <button type="submit" className="btn-primary rounded w-full h-full">
-              Reset Password
-            </button>
-          )}
-          {isPending && <LoadingSpinner size="small" />}
-        </div>
-      </div>
-    </form>
+      <Form.Content isServerError={isError} serverError={error}>
+        <Form.Input
+          name="email address"
+          placeholder="example@example.com"
+          type="email"
+          required
+          icon={EnvelopeClosedIcon}
+        />
+      </Form.Content>
+      <Form.Submit
+        title="Send Reset Link"
+        isServerPending={isPending}
+        mt="5"
+        icon={ArrowRightIcon}
+      />
+      <Form.Footer>
+        <Text as="div" size="1" align="center" className="w-full">
+          Remember your password?{' '}
+          <RadixLink asChild>
+            <Link to="/login">Back to Login</Link>
+          </RadixLink>
+        </Text>
+      </Form.Footer>
+    </Form>
   );
 };
 

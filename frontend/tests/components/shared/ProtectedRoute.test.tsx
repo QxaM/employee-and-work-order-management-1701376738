@@ -89,7 +89,7 @@ describe('Protected Route', () => {
     );
 
     // Then
-    expect(container.firstChild).toBeNull();
+    expect(container.firstChild).toBeEmptyDOMElement();
   });
 
   it('should navigate to login if not logged in', () => {

@@ -31,7 +31,8 @@ import static org.mockito.Mockito.when;
 )
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
-    "eureka.client.enabled=false"
+    "eureka.client.enabled=false",
+    "test.loadbalancer=authorization"
 })
 class SecurityFilterChainTests {
 

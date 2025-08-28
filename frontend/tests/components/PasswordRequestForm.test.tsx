@@ -24,8 +24,8 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const EMAIL_TITLE = 'email';
-const RESET_BUTTON_TEXT = 'Reset Password';
+const EMAIL_TITLE = 'email address';
+const RESET_BUTTON_TEXT = 'Send Reset Link';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return <BrowserRouter>{children}</BrowserRouter>;
@@ -69,7 +69,7 @@ describe('Password Request Form', () => {
 
   it('Should contain necessary elements - title, input, button', () => {
     // Given
-    const headerTitle = 'Enter email to reset password';
+    const headerTitle = 'Reset Password';
 
     // When
     renderWithProviders(
@@ -126,6 +126,7 @@ describe('Password Request Form', () => {
 
   it('Should not send request when email is empty', () => {
     // Given
+    const message = 'email address is required';
     renderWithProviders(
       <TestWrapper>
         <PasswordRequestForm />
@@ -138,7 +139,7 @@ describe('Password Request Form', () => {
 
     // Then
     expect(mockMutate).not.toHaveBeenCalled();
-    expect(screen.getByText('Enter valid email address')).toBeInTheDocument();
+    expect(screen.getByText(message)).toBeInTheDocument();
   });
 
   describe('Rendering mutation result elements', () => {

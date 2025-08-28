@@ -1,5 +1,5 @@
 import { api } from '../apiSlice.ts';
-import { RoleType } from '../../types/RoleTypes.ts';
+import { RoleType } from '../../types/api/RoleTypes.ts';
 import { authApi as AUTH_API } from './base.ts';
 
 const defaultRegisterErrorMessage =
@@ -9,6 +9,7 @@ const defaultLoginErrorMessage = 'Unknown error during login process!';
 const REGISTER_API = '/register';
 const VERIFICATION_API = '/register/confirm';
 const LOGIN_API = '/login';
+const HEALTHCHECK_API = '/actuator/health';
 
 /**
  * Represents the data required by API for user registration.
@@ -45,6 +46,16 @@ export interface MeType {
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    authHealthcheck: builder.query<undefined, void>({
+      query: () => ({
+        url: AUTH_API + HEALTHCHECK_API,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
     register: builder.mutation<undefined, RegisterType>({
       query: (data) => ({
         url: AUTH_API + REGISTER_API,
@@ -93,6 +104,7 @@ export const authApi = api.injectEndpoints({
 });
 
 export const {
+  useAuthHealthcheckQuery,
   useRegisterMutation,
   useConfirmRegistrationMutation,
   useLoginMutation,
