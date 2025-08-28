@@ -10,7 +10,7 @@ const BasePage = ({
   className,
   children,
 }: PropsWithChildren<BasePageProps>) => {
-  const classes = clsx('lg:w-1/3 w-2/3', className);
+  const classes = clsx(className ?? 'lg:w-1/3 w-2/3');
 
   return (
     <Container align="center" height="100%">

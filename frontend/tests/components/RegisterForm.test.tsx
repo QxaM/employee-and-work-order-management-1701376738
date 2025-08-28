@@ -28,6 +28,9 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+const FIRST_NAME_TITLE = 'first name';
+const MIDDLE_NAME_TITLE = 'middle name';
+const LAST_NAME_TITLE = 'last name';
 const EMAIL_TITLE = 'email address';
 const PASSWORD_TITLE = 'password';
 const CONFIRM_PASSWORD_TITLE = 'confirm password';
@@ -81,6 +84,9 @@ describe('Register Form', () => {
     // When
     render(<RegisterForm />, { wrapper: testWrapper });
     const headerElement = screen.getByRole('heading', { name: headerTitle });
+    const firstNameElement = screen.getByLabelText(FIRST_NAME_TITLE);
+    const middleNameElement = screen.getByLabelText(MIDDLE_NAME_TITLE);
+    const lastNameElement = screen.getByLabelText(LAST_NAME_TITLE);
     const emailElement = screen.getByLabelText(EMAIL_TITLE);
     const passwordElement = screen.getByLabelText(PASSWORD_TITLE);
     const confirmPasswordElement = screen.getByLabelText(
@@ -88,6 +94,9 @@ describe('Register Form', () => {
     );
 
     // Then
+    expect(firstNameElement).toBeInTheDocument();
+    expect(middleNameElement).toBeInTheDocument();
+    expect(lastNameElement).toBeInTheDocument();
     expect(headerElement).toBeInTheDocument();
     expect(emailElement).toBeInTheDocument();
     expect(passwordElement).toBeInTheDocument();
@@ -160,6 +169,9 @@ describe('Register Form', () => {
   });
 
   describe('Sing up logic', () => {
+    let firstNameElement: HTMLElement;
+    let middleNameElement: HTMLElement;
+    let lastNameElement: HTMLElement;
     let emailElement: HTMLElement;
     let passwordElement: HTMLElement;
     let confirmPasswordElement: HTMLElement;
@@ -167,6 +179,9 @@ describe('Register Form', () => {
 
     beforeEach(() => {
       render(<RegisterForm />, { wrapper: testWrapper });
+      firstNameElement = screen.getByLabelText(FIRST_NAME_TITLE);
+      middleNameElement = screen.getByLabelText(MIDDLE_NAME_TITLE);
+      lastNameElement = screen.getByLabelText(LAST_NAME_TITLE);
       emailElement = screen.getByLabelText(EMAIL_TITLE);
       passwordElement = screen.getByLabelText(PASSWORD_TITLE);
       confirmPasswordElement = screen.getByLabelText(CONFIRM_PASSWORD_TITLE);
@@ -179,6 +194,9 @@ describe('Register Form', () => {
       // Given
 
       // When
+      fireEvent.change(firstNameElement, { target: { value: 'John' } });
+      fireEvent.change(middleNameElement, { target: { value: 'Jack' } });
+      fireEvent.change(lastNameElement, { target: { value: 'Doe' } });
       fireEvent.change(emailElement, { target: { value: 'test@test.com' } });
       fireEvent.change(passwordElement, { target: { value: 'test123' } });
       fireEvent.change(confirmPasswordElement, {
