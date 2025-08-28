@@ -53,7 +53,12 @@ const RegisterForm = () => {
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
 
+    const middleName: string = data['middle name'] as string;
+
     const registerData: RegisterType = {
+      firstName: data['first name'] as string,
+      middleName: middleName.length > 0 ? middleName : undefined,
+      lastName: data['last name'] as string,
       email: data['email address'] as string,
       password: data.password as string,
     };

@@ -207,6 +207,32 @@ describe('Register Form', () => {
       //Then
       expect(mockMutate).toHaveBeenCalledOnce();
       expect(mockMutate).toHaveBeenCalledWith({
+        firstName: 'John',
+        middleName: 'Jack',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        password: 'test123',
+      });
+    });
+
+    it('Should register without middle name', () => {
+      // Given
+
+      // When
+      fireEvent.change(firstNameElement, { target: { value: 'John' } });
+      fireEvent.change(lastNameElement, { target: { value: 'Doe' } });
+      fireEvent.change(emailElement, { target: { value: 'test@test.com' } });
+      fireEvent.change(passwordElement, { target: { value: 'test123' } });
+      fireEvent.change(confirmPasswordElement, {
+        target: { value: 'test123' },
+      });
+      fireEvent.click(registerButton);
+
+      //Then
+      expect(mockMutate).toHaveBeenCalledOnce();
+      expect(mockMutate).toHaveBeenCalledWith({
+        firstName: 'John',
+        lastName: 'Doe',
         email: 'test@test.com',
         password: 'test123',
       });
