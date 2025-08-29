@@ -5,11 +5,13 @@ import org.maxq.authorization.event.message.RabbitmqMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("DEV")
 class RabbitmqMessageServiceTest {
 
   @Autowired
