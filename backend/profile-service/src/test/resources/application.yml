@@ -8,6 +8,12 @@ eureka:
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
+profile:
+  queue:
+    create: "authorization-profile-create-queue"
+  exchange: "authorization-profile-exchange"
+  topic:
+    create: "profile.create"
 
 spring:
   datasource:
@@ -20,3 +26,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    listener:
+      direct:
+        auto-startup: false
+      simple:
+        auto-startup: false
