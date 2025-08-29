@@ -3,6 +3,7 @@ package org.maxq.authorization.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.api.RegisterApi;
+import org.maxq.authorization.domain.Profile;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
@@ -11,7 +12,9 @@ import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
+import org.maxq.authorization.event.OnRegisterVerificationFail;
 import org.maxq.authorization.event.OnRegistrationComplete;
+import org.maxq.authorization.mapper.ProfileMapper;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.RoleService;
 import org.maxq.authorization.service.UserService;
@@ -30,6 +33,7 @@ public class RegisterController implements RegisterApi {
   private final RoleService roleService;
   private final VerificationTokenService verificationTokenService;
   private final UserMapper userMapper;
+  private final ProfileMapper profileMapper;
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
@@ -37,11 +41,13 @@ public class RegisterController implements RegisterApi {
   public ResponseEntity<Void> register(@RequestBody @Valid UserDto userDto)
       throws DataValidationException, DuplicateEmailException, ElementNotFoundException {
     User user = userMapper.mapToUser(userDto);
+    Profile profile = profileMapper.mapToProfile(userDto);
+
     Role designer = roleService.getRoleByName("DESIGNER");
     user.getRoles().add(designer);
     userService.createUser(user);
 
-    eventPublisher.publishEvent(new OnRegistrationComplete(user));
+    eventPublisher.publishEvent(new OnRegistrationComplete(user, profile));
 
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -55,7 +61,7 @@ public class RegisterController implements RegisterApi {
     try {
       verificationTokenService.validateToken(foundToken);
     } catch (ExpiredVerificationToken e) {
-      eventPublisher.publishEvent(new OnRegistrationComplete(foundToken.getUser()));
+      eventPublisher.publishEvent(new OnRegisterVerificationFail(foundToken.getUser()));
       throw e;
     }
 

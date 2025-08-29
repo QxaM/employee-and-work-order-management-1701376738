@@ -1,4 +1,4 @@
-import { APIRequestContext, expect, test } from "@playwright/test";
+import { expect, test } from "../../base/baseTest";
 import { faker } from "@faker-js/faker";
 
 import {
@@ -12,6 +12,7 @@ import {
   expiredTokenMessage,
   successfullConfirmationMessage,
 } from "./register.utils";
+import { APIRequestContext } from "@playwright/test";
 
 let apiContext: APIRequestContext;
 
@@ -23,10 +24,13 @@ test.describe("Confirmation registration tests", () => {
     apiContext = await createApiContext(playwright);
   });
 
+  // Custom registration, since the registeredUser fixture performs confirmation
   test.beforeEach(async () => {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
     email = faker.internet.email();
     password = "test";
-    await registerApi(apiContext, { login: email, password });
+    await registerApi(apiContext, { firstName, lastName, email, password });
   });
 
   test.afterAll(async () => {

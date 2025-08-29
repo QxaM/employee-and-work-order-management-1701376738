@@ -44,7 +44,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{registerEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{registerEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -104,7 +104,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{registerEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{registerEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -126,7 +126,7 @@
 							"response": []
 						},
 						{
-							"name": "Cannot register without email",
+							"name": "Cannot register without first name",
 							"event": [
 								{
 									"listen": "test",
@@ -140,8 +140,9 @@
 											"\r",
 											"pm.test(\"Response should have correct message\", () => {\r",
 											"    pm.expect(response).to.haveOwnProperty(\"message\").that.is.a(\"string\");\r",
-											"    pm.expect(response.message).to.include(\"Email cannot be empty\");\r",
-											"});"
+											"    pm.expect(response.message).to.include(\"First name cannot be empty\");\r",
+											"});\r",
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -153,7 +154,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -214,7 +215,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"test@test.com\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"test@test.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -275,7 +276,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": null,\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": null,\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -336,7 +337,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": null\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": null\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -398,7 +399,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"12\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"12\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -918,7 +919,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{confirmEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{confirmEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1155,7 +1156,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{disabledEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{disabledEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1447,7 +1448,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{reuseTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{reuseTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1668,7 +1669,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1789,7 +1790,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{forgottenPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+									"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{forgottenPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2305,7 +2306,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{reusedPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{reusedPasswordEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2693,7 +2694,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{expiredPasswordTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{expiredPasswordTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3086,7 +3087,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{invalidTokenEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3746,7 +3747,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{addRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{addRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4208,7 +4209,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+													"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -4682,7 +4683,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"email\": \"{{removeRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+											"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{removeRoleEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -5082,7 +5083,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
+													"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"email\": \"{{roleNotExistsEmail}}\",\r\n    \"password\": \"12345\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"

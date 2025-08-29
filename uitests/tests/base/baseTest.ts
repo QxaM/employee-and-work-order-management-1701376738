@@ -34,12 +34,16 @@ export const test = base.extend<Fixture>({
   },
 
   registeredUser: async ({ apiContext }, use) => {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
     const email = faker.internet.email();
     const password = "test";
 
     // Register user
     await registerApi(apiContext, {
-      login: email,
+      firstName,
+      lastName,
+      email,
       password,
     });
 

@@ -1,6 +1,7 @@
 import { APIRequestContext } from "@playwright/test";
 
 import { Credentials, Token } from "../types/Authorization";
+import { RegisterDetails } from "../authorization/register/register.utils";
 
 export const AUTHORIZATION_SERVICE_URL = "http://localhost:8081";
 
@@ -37,14 +38,17 @@ export const loginApi = async (
 
 export const registerApi = async (
   apiContext: APIRequestContext,
-  credentials: Credentials,
+  registerData: Omit<RegisterDetails, "passwordConfirmation">,
 ): Promise<void> => {
   const response = await apiContext.post(
     AUTHORIZATION_SERVICE_URL + `/register`,
     {
       data: {
-        email: credentials.login,
-        password: credentials.password,
+        firstName: registerData.firstName,
+        middleName: registerData.middleName,
+        lastName: registerData.lastName,
+        email: registerData.email,
+        password: registerData.password,
       },
     },
   );
