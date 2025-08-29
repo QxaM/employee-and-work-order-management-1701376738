@@ -54,7 +54,7 @@ class RegistrationListenerTest {
     verify(verificationTokenService, times(1)).createToken(any(User.class));
     verify(templateEmailService, times(1)).sendVerificationEmail(token.getToken(), user.getEmail());
     verify(messageService, times(1))
-        .sendMessage(argThat(message -> message.getTopic().equals("profile.create")));
+        .sendMessage(argThat(message -> "profile.create".equals(message.getTopic())));
     verify(messageService, times(1)).sendMessage(any(RabbitmqMessage.class));
   }
 }
