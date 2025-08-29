@@ -1,4 +1,4 @@
-package org.maxq.authorization.controller.config;
+package org.maxq.authorization.config.controller;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

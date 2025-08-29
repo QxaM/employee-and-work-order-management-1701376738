@@ -1,4 +1,4 @@
-package org.maxq.authorization.controller.config;
+package org.maxq.authorization.config.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.domain.HttpErrorMessage;

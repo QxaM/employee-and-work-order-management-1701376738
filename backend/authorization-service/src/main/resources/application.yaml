@@ -21,6 +21,12 @@ jwt:
 server:
   port: ${PORT:8081}
 
+profile:
+  queue: "authorization-profile-queue"
+  exchange: "authorization-profile-exchange"
+  topic:
+    create: "profile.create"
+
 spring:
   application:
     name: authorization-service
@@ -58,8 +64,10 @@ spring:
   config:
     activate:
       on-profile: QA
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+management:
+  health:
+    rabbit:
+      enabled: false
 eureka:
   client:
     enabled: false

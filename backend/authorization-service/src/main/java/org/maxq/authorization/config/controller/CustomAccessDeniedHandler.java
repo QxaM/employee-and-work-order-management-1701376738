@@ -1,4 +1,4 @@
-package org.maxq.authorization.controller.config;
+package org.maxq.authorization.config.controller;
 
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
