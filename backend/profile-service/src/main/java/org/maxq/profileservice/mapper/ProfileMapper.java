@@ -15,4 +15,13 @@ public class ProfileMapper {
         profile.getLastName()
     );
   }
+
+  public Profile mapToProfile(ProfileDto profileDto) {
+    return new Profile(
+        profileDto.getEmail(),
+        profileDto.getFirstName(),
+        profileDto.getMiddleName(),
+        profileDto.getLastName()
+    );
+  }
 }

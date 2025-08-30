@@ -1,8 +1,8 @@
-package org.maxq.profileservice.security.config;
+package org.maxq.profileservice.config.security;
 
 import lombok.RequiredArgsConstructor;
-import org.maxq.profileservice.controller.config.CustomAccessDeniedHandler;
-import org.maxq.profileservice.controller.config.CustomAuthenticationFailureHandler;
+import org.maxq.profileservice.config.controller.CustomAccessDeniedHandler;
+import org.maxq.profileservice.config.controller.CustomAuthenticationFailureHandler;
 import org.maxq.profileservice.security.authentication.converter.JwtHeadersAuthenticationConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

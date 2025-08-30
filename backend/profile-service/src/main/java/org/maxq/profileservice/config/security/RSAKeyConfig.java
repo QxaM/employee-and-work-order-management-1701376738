@@ -1,4 +1,4 @@
-package org.maxq.profileservice.security.config;
+package org.maxq.profileservice.config.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

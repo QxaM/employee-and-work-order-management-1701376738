@@ -2,17 +2,21 @@ package org.maxq.profileservice.service;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.exception.DataValidationException;
+import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ProfileServiceTest {
@@ -54,5 +58,39 @@ class ProfileServiceTest {
     assertThrows(ElementNotFoundException.class,
         () -> profileService.getProfileByEmail(profile.getEmail())
     );
+  }
+
+  @Test
+  void shouldSave_When_CorrectProfile() {
+    // Given
+    when(profileRepository.save(profile)).thenReturn(profile);
+
+    // When + Then
+    assertDoesNotThrow(() -> profileService.createProfile(profile));
+    verify(profileRepository, times(1)).save(profile);
+  }
+
+  @Test
+  void shouldThrow_When_TransactionException() {
+    // Given
+    doThrow(new TransactionSystemException("Test error")).when(profileRepository).save(profile);
+
+    // When + Then
+    assertThrows(DataValidationException.class,
+        () -> profileService.createProfile(profile)
+    );
+    verify(profileRepository, times(1)).save(profile);
+  }
+
+  @Test
+  void shouldThrow_When_DataIntegrityViolationException() {
+    // Given
+    doThrow(new DataIntegrityViolationException("Test error")).when(profileRepository).save(profile);
+
+    // When + Then
+    assertThrows(DuplicateEmailException.class,
+        () -> profileService.createProfile(profile)
+    );
+    verify(profileRepository, times(1)).save(profile);
   }
 }

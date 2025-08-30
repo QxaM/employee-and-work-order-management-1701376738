@@ -1,4 +1,4 @@
-package org.maxq.profileservice.controller.config;
+package org.maxq.profileservice.config.controller;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;

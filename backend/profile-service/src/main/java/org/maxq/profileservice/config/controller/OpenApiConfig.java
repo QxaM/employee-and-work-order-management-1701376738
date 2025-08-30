@@ -1,4 +1,4 @@
-package org.maxq.profileservice.controller.config;
+package org.maxq.profileservice.config.controller;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
