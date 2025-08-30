@@ -68,6 +68,19 @@ management:
   health:
     rabbit:
       enabled: false
+    mail:
+      enabled: false
 eureka:
   client:
     enabled: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: SIT
+management:
+  health:
+    mail:
+      enabled: false
