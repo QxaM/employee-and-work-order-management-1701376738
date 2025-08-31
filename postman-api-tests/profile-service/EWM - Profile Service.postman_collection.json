@@ -330,14 +330,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{profileServiceUrl}}/qa/profiles/create",
+									"raw": "{{profileServiceUrl}}/qa/profiles",
 									"host": [
 										"{{profileServiceUrl}}"
 									],
 									"path": [
 										"qa",
-										"profiles",
-										"create"
+										"profiles"
 									]
 								}
 							},
