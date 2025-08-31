@@ -1,10 +1,10 @@
-package org.maxq.profileservice.controller.config;
+package org.maxq.authorization.config.controller;
 
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.maxq.profileservice.domain.HttpErrorMessage;
+import org.maxq.authorization.domain.HttpErrorMessage;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;

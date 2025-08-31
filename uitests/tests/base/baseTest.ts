@@ -9,6 +9,9 @@ import {
 import { faker } from "@faker-js/faker";
 
 interface TestUser {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   email: string;
   password: string;
 }
@@ -34,12 +37,16 @@ export const test = base.extend<Fixture>({
   },
 
   registeredUser: async ({ apiContext }, use) => {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
     const email = faker.internet.email();
     const password = "test";
 
     // Register user
     await registerApi(apiContext, {
-      login: email,
+      firstName,
+      lastName,
+      email,
       password,
     });
 
@@ -56,7 +63,7 @@ export const test = base.extend<Fixture>({
     }).toPass();
 
     await registerConfirmationApi(apiContext, token!);
-    await use({ email, password });
+    await use({ firstName, lastName, email, password });
   },
 });
 

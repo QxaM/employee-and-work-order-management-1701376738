@@ -59,6 +59,7 @@ project and employees managing easier.
     * Typescript
     * React
     * TailwindCSS
+    * Radix Themes/Primitives (UI components libraries)
     * React-Router
     * Redux Toolkit
     * Vite + Vitest

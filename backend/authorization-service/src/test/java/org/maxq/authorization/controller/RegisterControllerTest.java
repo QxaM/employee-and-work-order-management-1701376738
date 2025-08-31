@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.maxq.authorization.config.MockitoPublisherConfiguration;
+import org.maxq.authorization.domain.Profile;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
@@ -17,7 +18,9 @@ import org.maxq.authorization.domain.exception.DataValidationException;
 import org.maxq.authorization.domain.exception.DuplicateEmailException;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.ExpiredVerificationToken;
+import org.maxq.authorization.event.OnRegisterVerificationFail;
 import org.maxq.authorization.event.OnRegistrationComplete;
+import org.maxq.authorization.mapper.ProfileMapper;
 import org.maxq.authorization.mapper.UserMapper;
 import org.maxq.authorization.service.RoleService;
 import org.maxq.authorization.service.UserService;
@@ -55,6 +58,8 @@ class RegisterControllerTest {
 
   private static final String URL = "/register";
   private static final String CONFIRM_URL = "/register/confirm";
+  private static final String EMPTY_FIRST_NAME_MESSAGE = "First name cannot be empty";
+  private static final String EMPTY_LAST_NAME_MESSAGE = "Last name cannot be empty";
   private static final String EMPTY_EMAIL_MESSAGE = "Email cannot be empty";
   private static final String EMPTY_PASSWORD_MESSAGE = "Password cannot be empty";
   private static final String PASSWORD_TOO_SHORT_MESSAGE =
@@ -70,6 +75,8 @@ class RegisterControllerTest {
   private RoleService roleService;
   @MockitoBean
   private UserMapper userMapper;
+  @MockitoBean
+  private ProfileMapper profileMapper;
   @MockitoBean
   private ApplicationEventPublisher eventPublisher;
   @MockitoBean
@@ -97,10 +104,12 @@ class RegisterControllerTest {
   @Test
   void shouldRegisterUser() throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
+    Profile profile = new Profile(user.getEmail(), "Test", null, "User");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(profileMapper.mapToProfile(any(UserDto.class))).thenReturn(profile);
     when(roleService.getRoleByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
@@ -116,11 +125,13 @@ class RegisterControllerTest {
   @Test
   void shouldPublishRegistrationEvent() throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
+    Profile profile = new Profile(user.getEmail(), "Test", null, "User");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     when(roleService.getRoleByName("DESIGNER")).thenReturn(role);
+    when(profileMapper.mapToProfile(any(UserDto.class))).thenReturn(profile);
     doNothing().when(eventPublisher).publishEvent(any());
 
     // When + Then
@@ -135,13 +146,16 @@ class RegisterControllerTest {
             ((OnRegistrationComplete) event).getUser().getRoles().size() == 1
                 && ((OnRegistrationComplete) event).getUser().getRoles().contains(role))
         );
+    verify(eventPublisher, times(1)).publishEvent(
+        argThat(event -> ((OnRegistrationComplete) event).getProfile().getEmail().equals(profile.getEmail()))
+    );
   }
 
   @ParameterizedTest
   @NullAndEmptySource
   void shouldReturnValidationError_WhenEmailEmptyOrNull(String email) throws Exception {
     // Given
-    UserDto userDto = new UserDto(email, "test");
+    UserDto userDto = new UserDto("Test", null, "User", email, "test");
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -155,10 +169,45 @@ class RegisterControllerTest {
   }
 
   @ParameterizedTest
+  @NullAndEmptySource
+  void shouldReturnValidationError_WhenFirstNameEmptyOrNull(String firstName) throws Exception {
+    // Given
+    UserDto userDto = new UserDto(firstName, null, "User", "test@test.com", "test");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new Gson().toJson(userDto)))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(EMPTY_FIRST_NAME_MESSAGE)));
+  }
+
+  @ParameterizedTest
+  @NullAndEmptySource
+  void shouldReturnValidationError_WhenLastNameEmptyOrNull(String lastName) throws Exception {
+    // Given
+    UserDto userDto = new UserDto("Test", null, lastName, "test@test.com", "test");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .post(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new Gson().toJson(userDto)))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+            Matchers.is(EMPTY_LAST_NAME_MESSAGE)));
+  }
+
+  @ParameterizedTest
   @NullSource
   void shouldReturnValidationError_WhenPasswordNull(String password) throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", password);
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", password);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -175,7 +224,7 @@ class RegisterControllerTest {
   @ValueSource(strings = {"1"})
   void shouldReturnValidationError_WhenPasswordTooShort(String password) throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", password);
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", password);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -191,7 +240,7 @@ class RegisterControllerTest {
   @Test
   void shouldReturnDuplicationError_WhenUserAlreadyExists() throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
     User user = new User("test@test.com", "test");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DuplicateEmailException("Test message", new Exception())).when(userService).createUser(any());
@@ -210,7 +259,7 @@ class RegisterControllerTest {
   @Test
   void shouldReturnValidationError_WhenDBValidationError() throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
     User user = new User("test@test.com", "test");
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
     doThrow(new DataValidationException("Test message", new Exception())).when(userService).createUser(any());
@@ -244,10 +293,13 @@ class RegisterControllerTest {
   @Test
   void shouldReturn401_When_NoTokenProvided() throws Exception {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
     User user = new User("test@test.com", "test");
     Role role = new Role("TEST");
+    Profile profile = new Profile(user.getEmail(), "Test", null, "User");
+
     when(userMapper.mapToUser(any(UserDto.class))).thenReturn(user);
+    when(profileMapper.mapToProfile(any(UserDto.class))).thenReturn(profile);
     when(roleService.getRoleByName(anyString())).thenReturn(role);
     doNothing().when(eventPublisher).publishEvent(any());
 
@@ -341,7 +393,7 @@ class RegisterControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath(
             "$.message", Matchers.containsString("Test error"))
         );
-    verify(eventPublisher, times(1)).publishEvent(any(OnRegistrationComplete.class));
+    verify(eventPublisher, times(1)).publishEvent(any(OnRegisterVerificationFail.class));
   }
 
   @Test

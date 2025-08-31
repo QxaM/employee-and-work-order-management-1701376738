@@ -1,4 +1,4 @@
-package org.maxq.authorization.security.config;
+package org.maxq.authorization.config.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

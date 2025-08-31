@@ -6,16 +6,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Profile("QA | SIT")
-@Slf4j
+@Slf4j(topic = "Email Service Stub")
 public class QAEmailService implements MailService {
 
   @Override
   public void sendVerificationEmail(String token, String email) {
-    log.info("Email Service Stub - sending verification email to {} with token {}", email, token);
+    log.info("Sending verification email to {} with token {}", email, token);
   }
 
   @Override
   public void sendPasswordReset(String email, String token) {
-    log.info("Email Service Stub - sending password reset email to {} with token {}", email, token);
+    log.info("Sending password reset email to {} with token {}", email, token);
   }
 }

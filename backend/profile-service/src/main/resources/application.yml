@@ -12,6 +12,13 @@ jwt:
 app:
   init: true
 
+profile:
+  queue:
+    create: "authorization-profile-create-queue"
+  exchange: "authorization-profile-exchange"
+  topic:
+    create: "profile.create"
+
 spring:
   application:
     name: profile-service
@@ -24,6 +31,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_PROFILE_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_PROFILE_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
+    virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
 
 ---
 
@@ -31,6 +44,10 @@ spring:
   config:
     activate:
       on-profile: QA
+management:
+  health:
+    rabbit:
+      enabled: false
 eureka:
   client:
     enabled: false

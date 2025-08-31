@@ -55,4 +55,53 @@ class ProfileMapperTest {
             "Profile should map equal last name")
     );
   }
+
+  @Test
+  void shouldMapToProfile() {
+    // Given
+    ProfileDto profileDto = new ProfileDto(
+        "test@test.com",
+        "test",
+        "testMiddleName",
+        "testLastName");
+
+    // When
+    Profile profile = profileMapper.mapToProfile(profileDto);
+
+    // Then
+    assertAll(
+        () -> assertEquals(profileDto.getEmail(), profile.getEmail(),
+            "Profile should map equal email"),
+        () -> assertEquals(profileDto.getFirstName(), profile.getFirstName(),
+            "Profile should map equal first name"),
+        () -> assertEquals(profileDto.getMiddleName(), profile.getMiddleName(),
+            "Profile should map equal middle name"),
+        () -> assertEquals(profileDto.getLastName(), profile.getLastName(),
+            "Profile should map equal last name")
+    );
+  }
+
+  @Test
+  void shouldMapToProfile_When_MiddleNameNull() {
+    // Given
+    ProfileDto profileDto = new ProfileDto(
+        "test@test.com",
+        "test",
+        null,
+        "testLastName");
+
+    // When
+    Profile profile = profileMapper.mapToProfile(profileDto);
+
+    // Then
+    assertAll(
+        () -> assertEquals(profileDto.getEmail(), profile.getEmail(),
+            "Profile should map equal email"),
+        () -> assertEquals(profileDto.getFirstName(), profile.getFirstName(),
+            "Profile should map equal first name"),
+        () -> assertNull(profileDto.getMiddleName(), "Profile should map null when middle name is null"),
+        () -> assertEquals(profileDto.getLastName(), profile.getLastName(),
+            "Profile should map equal last name")
+    );
+  }
 }

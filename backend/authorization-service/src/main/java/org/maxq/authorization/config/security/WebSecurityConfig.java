@@ -1,8 +1,8 @@
-package org.maxq.authorization.security.config;
+package org.maxq.authorization.config.security;
 
 import lombok.RequiredArgsConstructor;
-import org.maxq.authorization.controller.config.CustomAccessDeniedHandler;
-import org.maxq.authorization.controller.config.CustomAuthenticationFailureHandler;
+import org.maxq.authorization.config.controller.CustomAccessDeniedHandler;
+import org.maxq.authorization.config.controller.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
 import org.maxq.authorization.security.authentication.converter.JwtBasicAuthenticationConverter;
 import org.maxq.authorization.security.authentication.converter.JwtHeadersAuthenticationConverter;

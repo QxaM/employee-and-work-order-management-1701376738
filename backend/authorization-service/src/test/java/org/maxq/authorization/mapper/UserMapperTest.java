@@ -31,7 +31,7 @@ class UserMapperTest {
   @Test
   void shouldAddToUser() {
     // Given
-    UserDto userDto = new UserDto("test@test.com", "test");
+    UserDto userDto = new UserDto("Test", null, "User", "test@test.com", "test");
 
     // When
     User user = userMapper.mapToUser(userDto);

@@ -277,6 +277,78 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Create Profile",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create Profile",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const createProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"createProfileEmail\", createProfileEmail);\r",
+											"\r",
+											"const createProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+											"pm.collectionVariables.set(\"createProfileFirstName\", createProfileFirstName);\r",
+											"\r",
+											"const createProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+											"pm.collectionVariables.set(\"createProfileLastName\", createProfileLastName);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{createProfileEmail}}\",\r\n    \"firstName\": \"{{createProfileFirstName}}\",\r\n    \"lastName\": \"{{createProfileLastName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{profileServiceUrl}}/qa/profiles",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"profiles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -336,6 +408,26 @@
 			"key": "noProfileRole",
 			"value": "ROLE_OPERATOR",
 			"type": "string"
+		},
+		{
+			"key": "createProfileEmail",
+			"value": ""
+		},
+		{
+			"key": "createProfileFirstName",
+			"value": ""
+		},
+		{
+			"key": "createProfileLastName",
+			"value": ""
+		},
+		{
+			"key": "duplicateProfileFirstName",
+			"value": ""
+		},
+		{
+			"key": "duplicateProfileLastName",
+			"value": ""
 		}
 	]
 }

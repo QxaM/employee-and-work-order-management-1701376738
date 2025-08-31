@@ -1,11 +1,11 @@
-package org.maxq.authorization.controller.config;
+package org.maxq.profileservice.config.controller;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.maxq.authorization.domain.HttpErrorMessage;
+import org.maxq.profileservice.domain.HttpErrorMessage;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
