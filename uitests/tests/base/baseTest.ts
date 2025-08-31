@@ -9,6 +9,9 @@ import {
 import { faker } from "@faker-js/faker";
 
 interface TestUser {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   email: string;
   password: string;
 }
@@ -60,7 +63,7 @@ export const test = base.extend<Fixture>({
     }).toPass();
 
     await registerConfirmationApi(apiContext, token!);
-    await use({ email, password });
+    await use({ firstName, lastName, email, password });
   },
 });
 
