@@ -9,13 +9,14 @@ import FormFooter from './sub/FormFooter.tsx';
 
 interface FormProps {
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  className?: string;
 }
 
 const Form = (props: PropsWithChildren<FormProps>) => {
-  const { handleSubmit, children } = props;
+  const { handleSubmit, className, children } = props;
 
   return (
-    <RadixForm.Root onSubmit={handleSubmit}>
+    <RadixForm.Root onSubmit={handleSubmit} className={className}>
       <Flex
         direction="column"
         justify="center"

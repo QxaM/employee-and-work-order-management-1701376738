@@ -1,4 +1,4 @@
-import { Button, Flex } from '@radix-ui/themes';
+import { Button, ButtonProps, Flex } from '@radix-ui/themes';
 import { Form as RadixForm } from 'radix-ui';
 import LoadingSpinner from '../../LoadingSpinner.tsx';
 import { MarginProps } from '@radix-ui/themes/props';
@@ -8,21 +8,25 @@ interface FormSubmitProps extends MarginProps {
   title: string;
   isServerPending?: boolean;
   icon?: IconType;
+  color?: ButtonProps['color'];
+  width?: string;
 }
 
 const FormSubmit = ({
   isServerPending,
   title,
   icon: Icon,
+  color,
+  width = '100%',
   ...props
 }: FormSubmitProps) => {
   const { ...marginProps } = props;
 
   return (
-    <Flex justify="center" align="center" width="100%" my="3" {...marginProps}>
+    <Flex justify="center" align="center" width={width} my="3" {...marginProps}>
       <LoadingSpinner size="small" isLoading={isServerPending}>
         <RadixForm.Submit asChild>
-          <Button size="4" className="!w-full">
+          <Button size="4" color={color} className="!w-full">
             {title}
             {Icon && (
               <Icon
