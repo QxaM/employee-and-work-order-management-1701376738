@@ -9,6 +9,7 @@ public class ProfileMapper {
 
   public ProfileDto mapToProfileDto(Profile profile) {
     return new ProfileDto(
+        profile.getId(),
         profile.getEmail(),
         profile.getFirstName(),
         profile.getMiddleName(),
@@ -18,6 +19,7 @@ public class ProfileMapper {
 
   public Profile mapToProfile(ProfileDto profileDto) {
     return new Profile(
+        profileDto.getId(),
         profileDto.getEmail(),
         profileDto.getFirstName(),
         profileDto.getMiddleName(),
