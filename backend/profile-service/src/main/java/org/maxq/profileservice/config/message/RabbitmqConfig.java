@@ -17,8 +17,12 @@ public class RabbitmqConfig {
   private String topicExchangeName;
   @Value("${profile.queue.create}")
   private String createQueueName;
+  @Value("${profile.queue.update}")
+  private String updateQueueName;
   @Value("${profile.topic.create}")
   private String createTopicName;
+  @Value("${profile.topic.update}")
+  private String updateTopicName;
 
   @Bean
   public TopicExchange topicExchange() {
@@ -31,8 +35,18 @@ public class RabbitmqConfig {
   }
 
   @Bean
+  public Queue updateQueue() {
+    return new Queue(updateQueueName, false);
+  }
+
+  @Bean
   public Binding createProfileBinding(Queue createQueue, TopicExchange topicExchange) {
     return BindingBuilder.bind(createQueue).to(topicExchange).with(createTopicName);
+  }
+
+  @Bean
+  public Binding updateProfileBinding(Queue updateQueue, TopicExchange topicExchange) {
+    return BindingBuilder.bind(updateQueue).to(topicExchange).with(updateTopicName);
   }
 
   @Bean
