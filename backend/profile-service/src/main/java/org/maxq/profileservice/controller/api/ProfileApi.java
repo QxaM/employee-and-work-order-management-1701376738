@@ -42,4 +42,28 @@ public interface ProfileApi {
       })
   ResponseEntity<ProfileDto> getMyProfile(Authentication authentication)
       throws ElementNotFoundException;
+
+  @Operation(
+      summary = "Update profile information",
+      description = "Allows to update profile data"
+  )
+  @ApiResponse(responseCode = "200", description = "User information properly returned")
+  @ApiResponse(responseCode = "401",
+      description = "Unauthenticated - only request with Robot Token are passed",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "403",
+      description = "Unauthorized - only logged in users can access this resource, or tried to " +
+          "access profile of other user",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "404",
+      description = "Not found - profile does not exist",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  ResponseEntity<Void> updateProfile(Authentication authentication, ProfileDto profileDto)
+      throws ElementNotFoundException;
 }

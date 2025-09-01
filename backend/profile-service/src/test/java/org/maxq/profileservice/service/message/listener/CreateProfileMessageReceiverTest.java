@@ -22,7 +22,7 @@ class CreateProfileMessageReceiverTest {
   @Test
   void shouldReceiveMessage() {
     // Given
-    ProfileDto profileDto = new ProfileDto("test@test.com", "Test", null, "User");
+    ProfileDto profileDto = new ProfileDto(1L, "test@test.com", "Test", null, "User");
 
     // When
     messageReceiver.receiveCreateMessage(profileDto);

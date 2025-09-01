@@ -29,7 +29,7 @@ class RabbitmqMessageServiceTest {
     // Given
     String exchangeName = "exchange";
     String topicName = "exchange.topic";
-    ProfileDto profileDto = new ProfileDto("test@test.com", "Test", null, "User");
+    ProfileDto profileDto = new ProfileDto(1L, "test@test.com", "Test", null, "User");
     RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDto, topicName);
 
     when(topicExchange.getName()).thenReturn(exchangeName);
