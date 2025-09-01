@@ -19,7 +19,7 @@ const ProfileSection = ({
             {title}
           </Heading>
         </Flex>
-        <DataList.Root orientation="vertical" mt="4">
+        <DataList.Root orientation="vertical" mt="5">
           {children}
         </DataList.Root>
       </Box>

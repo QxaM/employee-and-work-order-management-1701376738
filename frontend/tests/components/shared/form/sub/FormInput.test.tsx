@@ -7,15 +7,46 @@ import { afterEach, beforeEach } from 'vitest';
 describe('FormInput', () => {
   const label = 'Test label';
 
-  it('Should render label', () => {
-    // Given
+  describe('Label', () => {
+    it('Should render label', () => {
+      // Given
 
-    // When
-    render(<FormInput name={label} />, { wrapper: Form.Root });
-    const labelElement = screen.getByText(label);
+      // When
+      render(<FormInput name={label} />, { wrapper: Form.Root });
+      const labelElement = screen.getByText(label);
+      const textboxElement = screen.getByRole('textbox');
 
-    // Then
-    expect(labelElement).toBeInTheDocument();
+      // Then
+      expect(labelElement).toBeInTheDocument();
+      expect(textboxElement).toHaveAttribute('name', label);
+    });
+
+    it('Should not render label and name as id', () => {
+      // Given
+
+      // When
+      render(<FormInput id={label} />, { wrapper: Form.Root });
+      const labelElement = screen.queryByText(label);
+      const textboxElement = screen.getByRole('textbox');
+
+      // Then
+      expect(labelElement).not.toBeInTheDocument();
+      expect(textboxElement).toHaveAttribute('name', label);
+    });
+
+    it('Should not render label and default name', () => {
+      // Given
+      const defaultField = 'field';
+
+      // When
+      render(<FormInput />, { wrapper: Form.Root });
+      const labelElement = screen.queryByText(defaultField);
+      const textboxElement = screen.getByRole('textbox');
+
+      // Then
+      expect(labelElement).not.toBeInTheDocument();
+      expect(textboxElement).toHaveAttribute('name', defaultField);
+    });
   });
 
   describe('Render input elements', () => {
