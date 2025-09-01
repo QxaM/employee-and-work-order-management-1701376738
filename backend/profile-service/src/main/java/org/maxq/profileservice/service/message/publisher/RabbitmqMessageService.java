@@ -1,8 +1,8 @@
-package org.maxq.authorization.service.message;
+package org.maxq.profileservice.service.message.publisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.maxq.authorization.event.message.RabbitmqMessage;
+import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;

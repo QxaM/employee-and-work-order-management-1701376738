@@ -1,4 +1,4 @@
-package org.maxq.profileservice.service.handler;
+package org.maxq.profileservice.service.message.handler;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
@@ -7,7 +7,6 @@ import org.maxq.profileservice.domain.exception.DataValidationException;
 import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
-import org.maxq.profileservice.service.message.handler.CreateProfileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;

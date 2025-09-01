@@ -1,9 +1,8 @@
-package org.maxq.profileservice.service.message;
+package org.maxq.profileservice.service.message.listener;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.service.message.handler.CreateProfileHandler;
-import org.maxq.profileservice.service.message.listener.CreateProfileMessageReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
