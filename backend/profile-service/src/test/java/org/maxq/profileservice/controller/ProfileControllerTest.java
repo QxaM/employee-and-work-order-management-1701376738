@@ -36,6 +36,8 @@ import static org.mockito.Mockito.*;
 class ProfileControllerTest {
 
   private static final String URL = "/profiles";
+  private static final Gson GSON = new Gson();
+
   Jwt jwt = Jwt.withTokenValue("test-token")
       .header("alg", "RS256")
       .subject("robot")
@@ -44,15 +46,12 @@ class ProfileControllerTest {
       .issuedAt(Instant.now())
       .expiresAt(Instant.now().plusSeconds(3600))
       .build();
-
   String email = "test@test.com";
   String roles = "ROLE_TEST";
   Profile profile
       = new Profile(1L, email, "TestName", "testMiddleName", "TestLastName");
   ProfileDto profileDto
       = new ProfileDto(1L, email, profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
-  Gson GSON = new Gson();
-
   private MockMvc mockMvc;
 
   @Autowired
