@@ -2,7 +2,7 @@ import * as profileApiModule from '../../../src/store/api/profile.ts';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { ProfileType } from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
 
 const profileData: ProfileType = {
@@ -82,5 +82,80 @@ describe('Profile', () => {
 
     // Then
     expect(emailElement).toBeInTheDocument();
+  });
+
+  describe('Editability', () => {
+    const editButton = 'Edit profile';
+
+    it('Should contain Edit profile button', () => {
+      // Given
+      renderWithProviders(<Profile />);
+
+      // When
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+
+      // Then
+      expect(editButtonElement).toBeInTheDocument();
+    });
+
+    it('Should start editing profile, when edit clicked', () => {
+      // Given
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+
+      // When
+      fireEvent.click(editButtonElement);
+      const textboxElements = screen.getAllByRole('textbox');
+
+      // Then
+      expect(textboxElements.length).toBeGreaterThan(0);
+      textboxElements.forEach((textbox) => {
+        expect(textbox).toBeInTheDocument();
+      });
+    });
+
+    it('Should contain Update and Cancel buttons', () => {
+      // Given
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+
+      // When
+      fireEvent.click(editButtonElement);
+      const updateButtonElement = screen.getByRole('button', {
+        name: 'Save changes',
+      });
+      const cancelButtonElement = screen.getByRole('button', {
+        name: 'Cancel',
+      });
+
+      // Then
+      expect(updateButtonElement).toBeInTheDocument();
+      expect(cancelButtonElement).toBeInTheDocument();
+    });
+
+    it('Should stop editing profile, when cancel clicked', () => {
+      // Given
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+      fireEvent.click(editButtonElement);
+
+      // When
+      const cancelButtonElement = screen.getByRole('button', {
+        name: 'Cancel',
+      });
+      fireEvent.click(cancelButtonElement);
+      const textboxElements = screen.queryAllByRole('textbox');
+
+      // then
+      expect(textboxElements).toHaveLength(0);
+    });
   });
 });
