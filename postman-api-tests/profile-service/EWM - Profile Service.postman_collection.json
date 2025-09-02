@@ -341,12 +341,360 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "GET /profiles/me",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct email', () => {\r",
+											"    const adminEmail = pm.variables.get('createProfileEmail');\r",
+											"    pm.expect(response).to.haveOwnProperty('email').to.be.a('string');\r",
+											"    pm.expect(response.email).to.eql(adminEmail);\r",
+											"});\r",
+											"\r",
+											"pm.test('Should contain other profile info', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('firstName').to.be.a('string');\r",
+											"    pm.expect(response).to.haveOwnProperty('lastName').to.be.a('string');\r",
+											"\r",
+											"    const middleName = response.middleName;\r",
+											"    pm.expect(typeof middleName === 'string' || middleName === null).to.be.true;\r",
+											"})\r",
+											"\r",
+											"pm.test('Should contain correct first name and last name', () => {\r",
+											"    const firstName = pm.variables.get('createProfileFirstName');\r",
+											"    const lastName = pm.variables.get('createProfileLastName');\r",
+											"\r",
+											"    pm.expect(response.firstName).to.eql(firstName);\r",
+											"    pm.expect(response.lastName).to.eql(lastName);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{createProfileEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "ROLE_OPERATOR",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
 				{
 					"name": "Negative",
-					"item": []
+					"item": [
+						{
+							"name": "Create Duplicate Profile",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const duplicateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+											"pm.collectionVariables.set(\"duplicateProfileFirstName\", duplicateProfileFirstName);\r",
+											"\r",
+											"const duplicateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+											"pm.collectionVariables.set(\"duplicateProfileLastName\", duplicateProfileLastName);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{adminEmail}}\",\r\n    \"firstName\": \"{{duplicateProfileFirstName}}\",\r\n    \"lastName\": \"{{duplicateProfileLastName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{profileServiceUrl}}/qa/profiles",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"profiles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /profiles/me",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('Should contain correct email', () => {\r",
+											"    const adminEmail = pm.variables.get('adminEmail');\r",
+											"    pm.expect(response).to.haveOwnProperty('email').to.be.a('string');\r",
+											"    pm.expect(response.email).to.eql(adminEmail);\r",
+											"});\r",
+											"\r",
+											"pm.test('Should contain other profile info', () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"    pm.expect(response).to.haveOwnProperty('firstName').to.be.a('string');\r",
+											"    pm.expect(response).to.haveOwnProperty('lastName').to.be.a('string');\r",
+											"\r",
+											"    const middleName = response.middleName;\r",
+											"    pm.expect(typeof middleName === 'string' || middleName === null).to.be.true;\r",
+											"})\r",
+											"\r",
+											"pm.test('Should contain correct first name and last name', () => {\r",
+											"    const firstName = pm.variables.get('duplicateProfileFirstName');\r",
+											"    const lastName = pm.variables.get('duplicateProfileLastName');\r",
+											"\r",
+											"    pm.expect(response.firstName).not.to.eql(firstName);\r",
+											"    pm.expect(response.lastName).not.to.eql(lastName);\r",
+											"})\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{adminEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{adminRoles}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{profileServiceUrl}}/profiles/me",
+									"host": [
+										"{{profileServiceUrl}}"
+									],
+									"path": [
+										"profiles",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Update Profile",
+			"item": [
+				{
+					"name": "Publisher",
+					"item": [
+						{
+							"name": "Positive",
+							"item": []
+						},
+						{
+							"name": "Negative",
+							"item": []
+						}
+					]
+				},
+				{
+					"name": "Subscriber",
+					"item": [
+						{
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Existing Profile",
+									"item": []
+								},
+								{
+									"name": "New Profile",
+									"item": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Create Profile",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const updateProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+									"pm.collectionVariables.set(\"updateProfileEmail\", updateProfileEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{profileServiceUrl}}/qa/profiles",
+							"host": [
+								"{{profileServiceUrl}}"
+							],
+							"path": [
+								"qa",
+								"profiles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update profile",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+									"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+									"\r",
+									"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+									"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-User",
+								"value": "{{updateProfileEmail}}",
+								"type": "text"
+							},
+							{
+								"key": "X-User-Roles",
+								"value": "ROLE_OPERATOR",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{profileServiceUrl}}/profiles/me",
+							"host": [
+								"{{profileServiceUrl}}"
+							],
+							"path": [
+								"profiles",
+								"me"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -427,6 +775,18 @@
 		},
 		{
 			"key": "duplicateProfileLastName",
+			"value": ""
+		},
+		{
+			"key": "updateProfileEmail",
+			"value": ""
+		},
+		{
+			"key": "updateProfileFirstName",
+			"value": ""
+		},
+		{
+			"key": "updateProfileLastName",
 			"value": ""
 		}
 	]
