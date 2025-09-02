@@ -9,11 +9,15 @@ import { act, PropsWithChildren } from 'react';
 import {
   useMyProfileQuery,
   useProfileHealthcheckQuery,
+  useUpdateMyProfileMutation,
 } from '../../../src/store/api/profile.ts';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 import { rolesApi } from '../../../src/store/api/role.ts';
-import { ProfileType } from '../../../src/types/api/ProfileTypes.ts';
+import {
+  ProfileType,
+  UpdateProfileType,
+} from '../../../src/types/api/ProfileTypes.ts';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');
@@ -309,6 +313,165 @@ describe('Profiles API', () => {
       expect(() => {
         store.dispatch(rolesApi.util.invalidateTags(['MyProfile']));
       }).not.toThrow();
+    });
+  });
+
+  describe('useUpdateMyProfileMutation', () => {
+    const updatedProfile: UpdateProfileType = {
+      firstName: 'UpdatedFirstName',
+      lastName: 'UpdatedLastName',
+    };
+    const defaultUpdateErrorMessage =
+      'Unknown error while updating profile data';
+
+    it('Should make API call with correct parameters', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileMutation
+      >;
+      const [updateProfile] = currentResult;
+      act(() => {
+        void updateProfile(updatedProfile);
+      });
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: `/profile/profiles/me`,
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedProfile),
+            defaultError: defaultUpdateErrorMessage,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('Should return success state', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileMutation
+      >;
+      const [updateProfile] = currentResult;
+      act(() => {
+        void updateProfile(updatedProfile);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(true);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+    });
+
+    it('Should handle loading state', async () => {
+      // Given
+      let resolvePromise: (value: { data: undefined }) => void;
+      const controlledPromise = new Promise<{ data: undefined }>((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileMutation
+      >;
+      const [updateProfile] = currentResult;
+      act(() => {
+        void updateProfile(updatedProfile);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(true);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+
+      // Clean up - resolve the promise to avoid hanging
+      act(() => {
+        resolvePromise({ data: undefined });
+      });
+    });
+
+    it('Should handle error state', async () => {
+      // Given
+      const errorMessage = 'Error while fetching roles data';
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        error: {
+          status: 500,
+          message: errorMessage,
+        },
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileMutation
+      >;
+      const [updateProfile] = currentResult;
+      act(() => {
+        void updateProfile(updatedProfile);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(true);
+        expect(error).toBeDefined();
+        expect((error as CustomFetchBaseQueryError).status).toStrictEqual(500);
+        expect((error as CustomFetchBaseQueryError).message).toStrictEqual(
+          errorMessage
+        );
+      });
     });
   });
 });

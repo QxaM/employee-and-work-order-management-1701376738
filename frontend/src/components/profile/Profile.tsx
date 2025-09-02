@@ -7,16 +7,21 @@ import {
   Link,
   Separator,
 } from '@radix-ui/themes';
-import { useMyProfileQuery } from '../../store/api/profile.ts';
+import {
+  useMyProfileQuery,
+  useUpdateMyProfileMutation,
+} from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
 import ProfileItem from './ProfileItem.tsx';
 import { FormEvent, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
+import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
   const [isEdited, setIsEdited] = useState(false);
+  const [updateProfile] = useUpdateMyProfileMutation();
 
   const firstNameFirstLetter = profileData?.firstName.charAt(0) ?? 'M';
   const lastNameFirstLetter = profileData?.lastName.charAt(0) ?? 'Q';
@@ -32,6 +37,17 @@ const Profile = () => {
   };
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const fd = new FormData(event.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+
+    const profile: UpdateProfileType = {
+      firstName: data['first name'] as string,
+      middleName: data['middle name'] as string,
+      lastName: data['last name'] as string,
+    };
+    void updateProfile(profile);
+    setIsEdited(false);
   };
 
   return (
@@ -59,14 +75,15 @@ const Profile = () => {
               <ProfileItem
                 isEdited={isEdited}
                 isLoading={!profileData}
-                title="First name"
+                title="first name"
+                required
               >
                 {profileData?.firstName ?? ''}
               </ProfileItem>
               <ProfileItem
                 isEdited={isEdited}
                 isLoading={!profileData}
-                title="Middle name"
+                title="middle name"
               >
                 {profileData?.middleName ?? ''}
               </ProfileItem>
@@ -74,14 +91,15 @@ const Profile = () => {
                 <ProfileItem
                   isEdited={isEdited}
                   isLoading={!profileData}
-                  title="Last name"
+                  title="last name"
+                  required
                 >
                   {profileData?.lastName ?? ''}
                 </ProfileItem>
               </Box>
             </Grid>
           </ProfileSection>
-          <ProfileSection title="Email Address">
+          <ProfileSection title="email address">
             <ProfileItem isEdited={false} isLoading={!profileData}>
               <Link href={`mailto:${profileData?.email}`}>
                 {profileData?.email ?? ''}

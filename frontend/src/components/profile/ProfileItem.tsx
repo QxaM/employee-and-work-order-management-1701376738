@@ -1,10 +1,12 @@
 import { DataList, Skeleton } from '@radix-ui/themes';
 import { PropsWithChildren } from 'react';
 import { textContent } from '../../utils/reactChildren.ts';
-import FormInput from '../shared/form/sub/FormInput.tsx';
+import FormInput, {
+  RadixFormInputProps,
+} from '../shared/form/sub/FormInput.tsx';
 import clsx from 'clsx/lite';
 
-interface ProfileItemProps {
+interface ProfileItemProps extends RadixFormInputProps {
   isEdited: boolean;
   isLoading: boolean;
   title?: string;
@@ -15,6 +17,7 @@ const ProfileItem = ({
   isLoading,
   title,
   children,
+  ...rest
 }: PropsWithChildren<ProfileItemProps>) => {
   const itemClasses = clsx(
     title && 'py-(--space-3)',
@@ -31,6 +34,7 @@ const ProfileItem = ({
       )}
       {isEdited && (
         <FormInput
+          {...rest}
           id={title}
           placeholder={title}
           defaultValue={textContent(children)}
