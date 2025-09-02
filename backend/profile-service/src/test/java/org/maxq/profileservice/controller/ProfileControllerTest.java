@@ -161,7 +161,7 @@ class ProfileControllerTest {
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .put(URL)
+            .put(URL + "/me")
             .contentType(MediaType.APPLICATION_JSON)
             .content(GSON.toJson(updatedProfile))
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
@@ -184,7 +184,7 @@ class ProfileControllerTest {
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .put(URL)
+            .put(URL + "/me")
             .contentType(MediaType.APPLICATION_JSON)
             .content(GSON.toJson(updatedProfile))
             .header("X-User", email)
@@ -204,30 +204,9 @@ class ProfileControllerTest {
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
-            .put(URL)
+            .put(URL + "/me")
             .contentType(MediaType.APPLICATION_JSON)
             .content(GSON.toJson(updatedProfile))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
-        .andExpect(MockMvcResultMatchers.status().isForbidden())
-        .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
-  }
-
-  @Test
-  void shouldThrow403_When_UserNotMatchUpdate() throws Exception {
-    // Given
-    when(profileService.getProfileByEmail(email)).thenReturn(profile);
-    ProfileDto updatedProfile = new ProfileDto(
-        profileDto.getId(), profileDto.getEmail(),
-        "UpdatedName", null, "UpdatedLastName");
-
-    // When + Then
-    mockMvc.perform(MockMvcRequestBuilders
-            .put(URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(updatedProfile))
-            .header("X-User", "other@email.com")
-            .header("X-User-Roles", roles)
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers

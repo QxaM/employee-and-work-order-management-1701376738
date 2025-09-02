@@ -1,9 +1,11 @@
 package org.maxq.profileservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.maxq.profileservice.controller.api.ProfileApi;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
+import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
@@ -39,11 +41,14 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  @PutMapping
-  @PreAuthorize("authentication.principal == #profileDto.email")
+  @PutMapping("/me")
+  @PreAuthorize("authentication.principal != null")
   public ResponseEntity<Void> updateProfile(Authentication authentication,
-                                            @RequestBody ProfileDto profileDto) {
-    RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDto, updateProfileTopic);
+                                            @RequestBody @Valid UpdateProfileDto profileDto) {
+    ProfileDto profileDtoToSave = new ProfileDto((String) authentication.getPrincipal(),
+        profileDto.getFirstName(), profileDto.getMiddleName(), profileDto.getLastName());
+    RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDtoToSave, updateProfileTopic);
+
     messageService.sendMessage(message);
     return ResponseEntity.ok().build();
   }
