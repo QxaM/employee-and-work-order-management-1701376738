@@ -50,7 +50,7 @@ spring:
               uri: lb://profile-service
               predicates:
                 - Path=/api/profile/**
-                - Method=GET
+                - Method=GET,PUT
                 - Header=Content-Type, application/json
               filters:
                 - AddRequestHeader=X-Gateway, api-gateway-service
