@@ -26,6 +26,11 @@ public interface ProfileApi {
               schema = @Schema(implementation = ProfileDto.class)
           )
       })
+  @ApiResponse(responseCode = "400",
+      description = "Validation errors for provided request body",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
   @ApiResponse(responseCode = "401",
       description = "Unauthenticated - only request with Robot Token are passed",
       content = {
@@ -48,7 +53,7 @@ public interface ProfileApi {
       summary = "Update profile information",
       description = "Allows to update profile data"
   )
-  @ApiResponse(responseCode = "200", description = "User information properly returned")
+  @ApiResponse(responseCode = "200", description = "User update message properly sent")
   @ApiResponse(responseCode = "401",
       description = "Unauthenticated - only request with Robot Token are passed",
       content = {
@@ -56,11 +61,6 @@ public interface ProfileApi {
       })
   @ApiResponse(responseCode = "403",
       description = "Unauthorized - only logged in users can access this resource",
-      content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
-      })
-  @ApiResponse(responseCode = "404",
-      description = "Not found - profile does not exist",
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
