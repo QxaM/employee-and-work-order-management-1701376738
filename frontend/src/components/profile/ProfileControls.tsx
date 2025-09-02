@@ -23,7 +23,7 @@ const ProfileControls = ({
       gap="2"
     >
       {!isEdited && (
-        <Button size="4" my="3" onClick={onEdit}>
+        <Button size="4" my="3" onClick={onEdit} type="button">
           <Pencil1Icon className="size-(--font-size-5)" /> Edit profile
         </Button>
       )}
@@ -35,7 +35,13 @@ const ProfileControls = ({
             width="fit"
             icon={SaveIcon}
           />
-          <Button size="4" color="gray" variant="soft" onClick={onCancel}>
+          <Button
+            size="4"
+            color="gray"
+            variant="soft"
+            onClick={onCancel}
+            type="button"
+          >
             <Cross2Icon className="size-(--font-size-5)" /> Cancel
           </Button>
         </>

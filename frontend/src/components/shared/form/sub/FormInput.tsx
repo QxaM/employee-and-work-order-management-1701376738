@@ -15,7 +15,7 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ValidatorType } from '../../../../types/ValidatorTypes.ts';
 import { IconType } from '../../../../types/components/BaseTypes.ts';
 
-interface RadixFormInputProps extends TextField.RootProps {
+export interface RadixFormInputProps extends TextField.RootProps {
   icon?: IconType;
   validators?: ValidatorType[];
   onValueChange?: (value: string) => void;
