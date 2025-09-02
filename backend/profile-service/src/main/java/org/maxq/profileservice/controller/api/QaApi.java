@@ -6,4 +6,6 @@ import org.springframework.http.ResponseEntity;
 public interface QaApi {
 
   ResponseEntity<ProfileDto> createProfile(ProfileDto profileDto);
+
+  ResponseEntity<ProfileDto> updateProfile(ProfileDto profileDto);
 }
