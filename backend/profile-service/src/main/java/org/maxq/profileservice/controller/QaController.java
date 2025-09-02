@@ -23,7 +23,7 @@ public class QaController implements QaApi {
   @Override
   @PostMapping("/profiles")
   public ResponseEntity<ProfileDto> createProfile(@RequestBody ProfileDto profileDto) {
-    createProfileMessageReceiver.receiveCreateMessage(profileDto);
+    createProfileMessageReceiver.receiveUpdateMessage(profileDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(profileDto);
   }
 }

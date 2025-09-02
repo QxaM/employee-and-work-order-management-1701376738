@@ -25,7 +25,7 @@ class CreateProfileMessageReceiverTest {
     ProfileDto profileDto = new ProfileDto(1L, "test@test.com", "Test", null, "User");
 
     // When
-    messageReceiver.receiveCreateMessage(profileDto);
+    messageReceiver.receiveUpdateMessage(profileDto);
 
     // Then
     verify(createProfileHandler, times(1)).handleMessage(profileDto);

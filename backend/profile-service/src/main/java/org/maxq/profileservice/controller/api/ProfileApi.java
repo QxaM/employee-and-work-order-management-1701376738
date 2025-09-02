@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.profileservice.domain.HttpErrorMessage;
 import org.maxq.profileservice.domain.dto.ProfileDto;
+import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -54,8 +55,7 @@ public interface ProfileApi {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
   @ApiResponse(responseCode = "403",
-      description = "Unauthorized - only logged in users can access this resource, or tried to " +
-          "access profile of other user",
+      description = "Unauthorized - only logged in users can access this resource",
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
@@ -64,6 +64,6 @@ public interface ProfileApi {
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
-  ResponseEntity<Void> updateProfile(Authentication authentication, ProfileDto profileDto)
+  ResponseEntity<Void> updateProfile(Authentication authentication, UpdateProfileDto profileDto)
       throws ElementNotFoundException;
 }

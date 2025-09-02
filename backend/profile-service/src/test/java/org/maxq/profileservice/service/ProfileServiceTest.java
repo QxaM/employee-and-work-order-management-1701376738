@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class ProfileServiceTest {
 
   Profile profile
-      = new Profile("test@test.com", "TestName", "testMiddleName", "TestLastName");
+      = new Profile(1L, "test@test.com", "TestName", "testMiddleName", "TestLastName");
   @Autowired
   private ProfileService profileService;
   @MockitoBean
@@ -92,5 +92,57 @@ class ProfileServiceTest {
         () -> profileService.createProfile(profile)
     );
     verify(profileRepository, times(1)).save(profile);
+  }
+
+  @Test
+  void shouldUpdateProfile() throws DataValidationException {
+    // Given
+    when(profileRepository.findByEmail(profile.getEmail())).thenReturn(Optional.of(profile));
+    Profile updateProfile = new Profile(profile.getEmail(), "UpdatedName", "UpdatedMiddleName", "UpdatedLastName");
+
+    // When
+    profileService.updateProfile(updateProfile);
+
+    // Then
+    verify(profileRepository, times(1))
+        .save(argThat(
+            profileCall -> profile.getId().equals(profileCall.getId())
+                && updateProfile.getEmail().equals(profileCall.getEmail())
+                && updateProfile.getFirstName().equals(profileCall.getFirstName())
+                && updateProfile.getMiddleName().equals(profileCall.getMiddleName())
+                && updateProfile.getLastName().equals(profileCall.getLastName())
+        ));
+  }
+
+  @Test
+  void shouldCreateProfile_When_ProfileDoesNotExistDuring_OnUpdate() throws DataValidationException {
+    // Given
+    when(profileRepository.findByEmail(profile.getEmail())).thenReturn(Optional.empty());
+    Profile updateProfile = new Profile(profile.getEmail(), "UpdatedName", "UpdatedMiddleName", "UpdatedLastName");
+
+    // When
+    profileService.updateProfile(updateProfile);
+
+    // Then
+    verify(profileRepository, times(1))
+        .save(argThat(
+            profileCall -> profileCall.getId() == null
+                && updateProfile.getEmail().equals(profileCall.getEmail())
+                && updateProfile.getFirstName().equals(profileCall.getFirstName())
+                && updateProfile.getMiddleName().equals(profileCall.getMiddleName())
+                && updateProfile.getLastName().equals(profileCall.getLastName())
+        ));
+  }
+
+  @Test
+  void shouldThrow_When_ProfileValidationFailed_OnUpdate() {
+    // Given
+    when(profileRepository.findByEmail(profile.getEmail())).thenReturn(Optional.of(profile));
+    doThrow(TransactionSystemException.class).when(profileRepository).save(any(Profile.class));
+
+    // When + Then
+    assertThrows(DataValidationException.class,
+        () -> profileService.updateProfile(profile)
+    );
   }
 }
