@@ -3,8 +3,9 @@ import { Credentials, Token } from "../types/Authorization";
 import { openHomePage, openProfilePage } from "../utils/navigation.utils";
 import {
   clickEditProfile,
+  clickSaveProfile,
   fillProfileDetails,
-  navigateToProfile,
+  navigateToProfile
 } from "./profiles.utils";
 
 import credentials from "../../test-data/credentials.json";
@@ -156,4 +157,35 @@ test("TC24 - should update profile", async ({
       ]);
     }).toPass();
   });
+});
+
+test("TC25 - should show error, when request fails", async ({ adminPage }) => {
+  // Given
+  const errorMessage = "Bad profile update request";
+  await adminPage.route("**/profiles/me", async (route) => {
+    if (route.request().method() === "PUT") {
+      await route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "Bad Request",
+          message: errorMessage,
+        }),
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
+  await openProfilePage(adminPage);
+
+  // When
+  await clickEditProfile(adminPage);
+  await clickSaveProfile(adminPage);
+  const errorMessageElement = adminPage.getByText(
+    new RegExp(`^${errorMessage}$`),
+  );
+
+  // Then
+  await expect(errorMessageElement).toBeVisible();
 });
