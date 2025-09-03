@@ -1,16 +1,20 @@
 package org.maxq.profileservice.controller;
 
+import com.google.gson.Gson;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
+import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
+import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -25,13 +29,15 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.Instant;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @WebAppConfiguration
 class ProfileControllerTest {
 
   private static final String URL = "/profiles";
+  private static final Gson GSON = new Gson();
+
   Jwt jwt = Jwt.withTokenValue("test-token")
       .header("alg", "RS256")
       .subject("robot")
@@ -40,14 +46,12 @@ class ProfileControllerTest {
       .issuedAt(Instant.now())
       .expiresAt(Instant.now().plusSeconds(3600))
       .build();
-
   String email = "test@test.com";
   String roles = "ROLE_TEST";
   Profile profile
-      = new Profile(email, "TestName", "testMiddleName", "TestLastName");
+      = new Profile(1L, email, "TestName", "testMiddleName", "TestLastName");
   ProfileDto profileDto
-      = new ProfileDto(email, profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
-
+      = new ProfileDto(1L, email, profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
   private MockMvc mockMvc;
 
   @Autowired
@@ -57,6 +61,8 @@ class ProfileControllerTest {
   private ProfileService profileService;
   @MockitoBean
   private ProfileMapper profileMapper;
+  @MockitoBean
+  private MessageService<RabbitmqMessage<?>> messageService;
 
   @MockitoBean
   private JwtDecoder jwtDecoder;
@@ -145,4 +151,65 @@ class ProfileControllerTest {
             .jsonPath("$.message", Matchers.is(error)));
   }
 
+  @Test
+  void shouldUpdateProfile() throws Exception {
+    // Given
+    when(profileService.getProfileByEmail(email)).thenReturn(profile);
+    ProfileDto updatedProfile = new ProfileDto(
+        profileDto.getId(), profileDto.getEmail(),
+        "UpdatedName", null, "UpdatedLastName");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL + "/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(updatedProfile))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(messageService, times(1))
+        .sendMessage(argThat(message -> "profile.update".equals(message.getTopic())));
+    verify(messageService, times(1))
+        .sendMessage(argThat(message -> email.equals(((ProfileDto) message.getPayload()).getEmail())));
+  }
+
+  @Test
+  void shouldThrow401_When_NoRobotToken_OnUpdate() throws Exception {
+    // Given
+    when(profileService.getProfileByEmail(email)).thenReturn(profile);
+    ProfileDto updatedProfile = new ProfileDto(
+        profileDto.getId(), profileDto.getEmail(),
+        "UpdatedName", null, "UpdatedLastName");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL + "/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(updatedProfile))
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+  }
+
+  @Test
+  void shouldThrow403_When_NoUserHeaders_OnUpdate() throws Exception {
+    // Given
+    when(profileService.getProfileByEmail(email)).thenReturn(profile);
+    ProfileDto updatedProfile = new ProfileDto(
+        profileDto.getId(), profileDto.getEmail(),
+        "UpdatedName", null, "UpdatedLastName");
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL + "/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(updatedProfile))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+  }
 }

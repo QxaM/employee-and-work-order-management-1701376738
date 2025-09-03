@@ -93,6 +93,33 @@ class ProfileRepositoryTest {
   }
 
   @Test
+  void shouldUpdateProfile() {
+    // Given
+    profileRepository.save(profile);
+    Profile updatedProfile = new Profile(
+        profile.getId(), profile.getEmail(),
+        "UpdatedName", "UpdatedMiddleName", "UpdatedLastName"
+    );
+
+    // When
+    profileRepository.save(updatedProfile);
+    Optional<Profile> foundProfile = profileRepository.findById(profile.getId());
+
+    // Then
+    assertTrue(foundProfile.isPresent(), "Profile should be found after update");
+    assertAll(
+        () -> assertEquals(updatedProfile.getEmail(), foundProfile.get().getEmail(),
+            "Profile should save with equal email"),
+        () -> assertEquals(updatedProfile.getFirstName(), foundProfile.get().getFirstName(),
+            "Profile should save with equal first name"),
+        () -> assertEquals(updatedProfile.getMiddleName(), foundProfile.get().getMiddleName(),
+            "Middle name should be null"),
+        () -> assertEquals(updatedProfile.getLastName(), foundProfile.get().getLastName(),
+            "Profile should save with equal last name")
+    );
+  }
+
+  @Test
   void shouldFindByEmail() {
     // Given
     profileRepository.save(profile);

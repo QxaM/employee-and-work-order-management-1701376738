@@ -15,9 +15,11 @@ app:
 profile:
   queue:
     create: "authorization-profile-create-queue"
+    update: "authorization-profile-update-queue"
   exchange: "authorization-profile-exchange"
   topic:
     create: "profile.create"
+    update: "profile.update"
 
 spring:
   application:

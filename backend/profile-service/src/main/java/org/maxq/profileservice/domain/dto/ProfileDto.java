@@ -11,8 +11,16 @@ import lombok.ToString;
 @ToString
 public class ProfileDto {
 
+  private Long id;
   private String email;
   private String firstName;
   private String middleName;
   private String lastName;
+
+  public ProfileDto(String email, String firstName, String middleName, String lastName) {
+    this.email = email;
+    this.firstName = firstName;
+    this.middleName = middleName;
+    this.lastName = lastName;
+  }
 }
