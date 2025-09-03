@@ -1,12 +1,13 @@
 import ProfileSection from '../../../src/components/profile/ProfileSection.tsx';
 import { render, screen } from '@testing-library/react';
+import { PersonIcon } from '@radix-ui/react-icons';
 
 describe('ProfileSection', () => {
   const title = 'Test Title';
 
   it('Should render title', () => {
     // Given
-    render(<ProfileSection title={title} />);
+    render(<ProfileSection title={title} icon={PersonIcon} />);
 
     // When
     const titleElement = screen.getByRole('heading', { name: title });
@@ -18,7 +19,11 @@ describe('ProfileSection', () => {
   it('Should render children', () => {
     // Given
     const children = 'Test children';
-    render(<ProfileSection title={title}>{children}</ProfileSection>);
+    render(
+      <ProfileSection title={title} icon={PersonIcon}>
+        {children}
+      </ProfileSection>
+    );
 
     // When
     const childrenElement = screen.getByText(children);
