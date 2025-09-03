@@ -1,11 +1,13 @@
 import {
   Avatar,
+  Badge,
   Box,
   Flex,
   Grid,
   Heading,
   Link,
   Separator,
+  Skeleton,
 } from '@radix-ui/themes';
 import {
   useMyProfileQuery,
@@ -17,9 +19,15 @@ import { FormEvent, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
 import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
+import { useMeData } from '../../hooks/useMeData.tsx';
+import { getColor } from '../../types/components/RoleTypes.ts';
+import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
+import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
+  const { me } = useMeData();
+
   const [isEdited, setIsEdited] = useState(false);
   const [updateProfile] = useUpdateMyProfileMutation();
 
@@ -70,7 +78,7 @@ const Profile = () => {
           gap="4"
           align="start"
         >
-          <ProfileSection title="Personal Information">
+          <ProfileSection title="Personal Information" icon={PersonIcon}>
             <Grid columns="2" gap="4" minHeight="0">
               <ProfileItem
                 isEdited={isEdited}
@@ -99,13 +107,28 @@ const Profile = () => {
               </Box>
             </Grid>
           </ProfileSection>
-          <ProfileSection title="email address">
+          <ProfileSection title="email address" icon={EnvelopeClosedIcon}>
             <ProfileItem isEdited={false} isLoading={!profileData}>
               <Link href={`mailto:${profileData?.email}`}>
                 {profileData?.email ?? ''}
               </Link>
             </ProfileItem>
           </ProfileSection>
+          <Box gridColumnStart="1" gridColumnEnd="3">
+            <ProfileSection title="Assigned Roles" icon={PersonGearOutlineIcon}>
+              <Flex direction="row" justify="start" align="center" gap="2">
+                <Skeleton loading={!me}>
+                  {me?.roles
+                    .toSorted((a, b) => b.id - a.id)
+                    .map((role) => (
+                      <Badge key={role.name} size="3" color={getColor(role)}>
+                        {role.name}
+                      </Badge>
+                    ))}
+                </Skeleton>
+              </Flex>
+            </ProfileSection>
+          </Box>
 
           <ProfileControls
             isEdited={isEdited}

@@ -1,20 +1,22 @@
 import { Box, Card, DataList, Flex, Heading } from '@radix-ui/themes';
-import { PersonIcon } from '@radix-ui/react-icons';
 import { PropsWithChildren } from 'react';
+import { IconType } from '../../types/components/BaseTypes.ts';
 
 interface ProfileSectionProps {
   title: string;
+  icon: IconType;
 }
 
 const ProfileSection = ({
   title,
+  icon: Icon,
   children,
 }: PropsWithChildren<ProfileSectionProps>) => {
   return (
     <Card>
       <Box p="2">
         <Flex direction="row" justify="start" align="center" gap="2">
-          <PersonIcon className="size-(--font-size-4) text-(--accent-11)" />
+          <Icon className="size-(--font-size-4) text-(--accent-11)" />
           <Heading as="h3" size="2" weight="medium" trim="both">
             {title}
           </Heading>

@@ -1,16 +1,30 @@
 import * as profileApiModule from '../../../src/store/api/profile.ts';
+import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+import { MeType } from '../../../src/store/api/auth.ts';
+import { RoleType } from '../../../src/types/api/RoleTypes.ts';
 
+const email = 'test@test.com';
 const profileData: ProfileType = {
   firstName: 'John',
   middleName: 'Jack',
   lastName: 'Doe',
-  email: 'test@test.com',
+  email,
+};
+const roles: RoleType[] = [
+  {
+    id: 1,
+    name: 'OPERATOR',
+  },
+];
+const meData: MeType = {
+  email,
+  roles,
 };
 
 describe('Profile', () => {
@@ -26,6 +40,11 @@ describe('Profile', () => {
       isError: false,
       data: profileData,
       refetch: vi.fn(),
+    });
+    vi.spyOn(useMeDataModule, 'useMeData').mockReturnValue({
+      me: meData,
+      isLoading: false,
+      isError: false,
     });
     vi.spyOn(profileApiModule, 'useUpdateMyProfileMutation').mockReturnValue([
       mockProfileUpdate,
@@ -91,11 +110,30 @@ describe('Profile', () => {
     // Given
     renderWithProviders(<Profile />);
 
-    // when
+    // When
     const emailElement = screen.getByText(profileData.email);
 
     // Then
     expect(emailElement).toBeInTheDocument();
+  });
+
+  it('Should render roles', () => {
+    // Given
+    const rolesTitle = 'Assigned Roles';
+    renderWithProviders(<Profile />);
+
+    // When
+    const titleElement = screen.getByRole('heading', { name: rolesTitle });
+    const roleElements = meData.roles.map((role) =>
+      screen.getByText(role.name)
+    );
+
+    // Then
+    expect(titleElement).toBeInTheDocument();
+    expect(roleElements).toHaveLength(meData.roles.length);
+    roleElements.forEach((element) => {
+      expect(element).toBeInTheDocument();
+    });
   });
 
   describe('Editability', () => {
