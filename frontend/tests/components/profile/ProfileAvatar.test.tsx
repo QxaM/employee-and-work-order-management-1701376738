@@ -119,7 +119,7 @@ describe('ProfileAvatar', () => {
       expect(mockRevokeUrl).toHaveBeenCalledWith('test-preview');
     });
 
-    it('Should not unmount previews when files were not uploaded', async () => {
+    it('Should not unmount previews when files were not uploaded', () => {
       // Given
       const testPreview = 'test-preview';
       const mockRevokeUrl = vi.fn();
