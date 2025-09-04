@@ -74,10 +74,22 @@ describe('Profile', () => {
     expect(titleElement).toBeInTheDocument();
   });
 
+  it('Should contain profile avatar component', () => {
+    // Given
+    const avatarTestId = 'avatar-container';
+    renderWithProviders(<Profile />);
+
+    // When
+    const avatarComponent = screen.getByTestId(avatarTestId);
+
+    // Then
+    expect(avatarComponent).toBeInTheDocument();
+  });
+
   it('Should contain personal information and email section', () => {
     // Given
     const personalInformationTitle = 'Personal Information';
-    const emailTitle = 'email address';
+    const emailTitle = 'Email Address';
     renderWithProviders(<Profile />);
 
     // When

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Badge,
   Box,
   Flex,
@@ -23,6 +22,7 @@ import { useMeData } from '../../hooks/useMeData.tsx';
 import { getColor } from '../../types/components/RoleTypes.ts';
 import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
 import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
+import ProfileAvatar from './ProfileAvatar.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
@@ -30,12 +30,6 @@ const Profile = () => {
 
   const [isEdited, setIsEdited] = useState(false);
   const [updateProfile] = useUpdateMyProfileMutation();
-
-  const firstNameFirstLetter = profileData?.firstName.charAt(0) ?? 'M';
-  const lastNameFirstLetter = profileData?.lastName.charAt(0) ?? 'Q';
-  const imageFallback = (
-    firstNameFirstLetter + lastNameFirstLetter
-  ).toUpperCase();
 
   const handleEdit = () => {
     setIsEdited(true);
@@ -68,7 +62,11 @@ const Profile = () => {
         mt="1"
         mb="6"
       />
-      <Avatar size="9" radius="full" fallback={imageFallback} />
+      <ProfileAvatar
+        firstName={profileData?.firstName}
+        lastName={profileData?.lastName}
+        isEdited={isEdited}
+      />
 
       <Form handleSubmit={handleSubmit} className="w-full">
         <Grid
@@ -107,7 +105,7 @@ const Profile = () => {
               </Box>
             </Grid>
           </ProfileSection>
-          <ProfileSection title="email address" icon={EnvelopeClosedIcon}>
+          <ProfileSection title="Email Address" icon={EnvelopeClosedIcon}>
             <ProfileItem isEdited={false} isLoading={!profileData}>
               <Link href={`mailto:${profileData?.email}`}>
                 {profileData?.email ?? ''}
@@ -116,8 +114,8 @@ const Profile = () => {
           </ProfileSection>
           <Box gridColumnStart="1" gridColumnEnd="3">
             <ProfileSection title="Assigned Roles" icon={PersonGearOutlineIcon}>
-              <Flex direction="row" justify="start" align="center" gap="2">
-                <Skeleton loading={!me}>
+              <Skeleton loading={!me}>
+                <Flex direction="row" justify="start" align="center" gap="2">
                   {me?.roles
                     .toSorted((a, b) => b.id - a.id)
                     .map((role) => (
@@ -125,8 +123,8 @@ const Profile = () => {
                         {role.name}
                       </Badge>
                     ))}
-                </Skeleton>
-              </Flex>
+                </Flex>
+              </Skeleton>
             </ProfileSection>
           </Box>
 
