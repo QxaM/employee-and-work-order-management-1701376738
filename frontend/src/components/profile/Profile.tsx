@@ -105,7 +105,7 @@ const Profile = () => {
               </Box>
             </Grid>
           </ProfileSection>
-          <ProfileSection title="email address" icon={EnvelopeClosedIcon}>
+          <ProfileSection title="Email Address" icon={EnvelopeClosedIcon}>
             <ProfileItem isEdited={false} isLoading={!profileData}>
               <Link href={`mailto:${profileData?.email}`}>
                 {profileData?.email ?? ''}

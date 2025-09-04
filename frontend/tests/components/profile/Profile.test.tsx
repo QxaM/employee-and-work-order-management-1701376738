@@ -89,7 +89,7 @@ describe('Profile', () => {
   it('Should contain personal information and email section', () => {
     // Given
     const personalInformationTitle = 'Personal Information';
-    const emailTitle = 'email address';
+    const emailTitle = 'Email Address';
     renderWithProviders(<Profile />);
 
     // When
