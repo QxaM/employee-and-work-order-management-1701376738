@@ -1,7 +1,11 @@
 import * as profileApiModule from '../../../src/store/api/profile.ts';
 import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
+import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
+import {
+  ProfileType,
+  UpdateProfileType,
+} from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
@@ -30,6 +34,7 @@ const meData: MeType = {
 describe('Profile', () => {
   const editButton = 'Edit profile';
   const mockProfileUpdate = vi.fn();
+  const mockUploadCancel = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,6 +61,16 @@ describe('Profile', () => {
         reset: vi.fn(),
       },
     ]);
+    vi.spyOn(useImageUploadModule, 'useImageUpload').mockReturnValue({
+      selectedFile: undefined,
+      dragActive: false,
+      validationErrors: [],
+      isValidationError: false,
+      handleChange: vi.fn(),
+      handleDrag: vi.fn(),
+      handleDrop: vi.fn(),
+      handleCancel: mockUploadCancel,
+    });
   });
 
   afterEach(() => {
@@ -218,6 +233,7 @@ describe('Profile', () => {
 
       // then
       expect(textboxElements).toHaveLength(0);
+      expect(mockUploadCancel).toHaveBeenCalledOnce();
     });
 
     it('Should stop editing profile, when save clicked', () => {

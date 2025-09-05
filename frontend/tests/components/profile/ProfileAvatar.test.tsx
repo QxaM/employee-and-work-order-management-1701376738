@@ -2,17 +2,42 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ProfileAvatar from '../../../src/components/profile/ProfileAvatar.tsx';
 import { afterEach, beforeEach } from 'vitest';
 import { userEvent, UserEvent } from '@testing-library/user-event';
+import { useImageUpload } from '../../../src/hooks/useImageUpload.tsx';
 
 describe('ProfileAvatar', () => {
   const firstName = 'John';
   const lastName = 'Doe';
+  const mockUseImageUpload: ReturnType<typeof useImageUpload> = {
+    selectedFile: undefined,
+    dragActive: false,
+    isValidationError: false,
+    validationErrors: [],
+    handleChange: vi.fn(),
+    handleDrag: vi.fn(),
+    handleDrop: vi.fn(),
+    handleCancel: vi.fn(),
+  };
 
   const inputLabel = 'upload avatar';
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   describe('Not Edited', () => {
     it('Should not render input element', () => {
       // Given
-      render(<ProfileAvatar firstName={firstName} lastName={lastName} />);
+      render(
+        <ProfileAvatar
+          firstName={firstName}
+          lastName={lastName}
+          imageUpload={mockUseImageUpload}
+        />
+      );
 
       // When
       const inputElement = screen.queryByLabelText(inputLabel);
@@ -25,23 +50,20 @@ describe('ProfileAvatar', () => {
   describe('Edited', () => {
     let user: UserEvent;
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
-    const mockCreateUrl = vi.fn();
 
     beforeEach(() => {
-      vi.resetAllMocks();
       user = userEvent.setup();
-
-      global.URL.createObjectURL = mockCreateUrl;
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
     });
 
     it('Should render input element', () => {
       // Given
       render(
-        <ProfileAvatar firstName={firstName} lastName={lastName} isEdited />
+        <ProfileAvatar
+          firstName={firstName}
+          lastName={lastName}
+          imageUpload={mockUseImageUpload}
+          isEdited
+        />
       );
 
       // When
@@ -54,7 +76,12 @@ describe('ProfileAvatar', () => {
     it('Should allow to upload file by click', async () => {
       // Given
       render(
-        <ProfileAvatar firstName={firstName} lastName={lastName} isEdited />
+        <ProfileAvatar
+          firstName={firstName}
+          imageUpload={mockUseImageUpload}
+          lastName={lastName}
+          isEdited
+        />
       );
       const inputElement = screen.getByLabelText(inputLabel);
 
@@ -62,23 +89,28 @@ describe('ProfileAvatar', () => {
       await user.upload(inputElement, file);
 
       // Then
-      expect(mockCreateUrl).toHaveBeenCalledOnce();
-      expect(mockCreateUrl).toHaveBeenCalledWith(file);
-
-      const input = inputElement.firstChild as HTMLInputElement;
-      expect(input.files).toHaveLength(1);
-      expect(input.files?.[0]).toBe(file);
-
-      const filenameElement = screen.getByText(file.name);
-      const filesizeElement = screen.getByText(file.size, { exact: true });
-      expect(filenameElement).toBeInTheDocument();
-      expect(filesizeElement).toBeInTheDocument();
+      expect(mockUseImageUpload.handleChange).toHaveBeenCalledOnce();
+      expect(mockUseImageUpload.handleChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: expect.objectContaining({
+            files: expect.objectContaining({
+              length: 1,
+              '0': file,
+            }) as FileList,
+          }) as HTMLInputElement,
+        })
+      );
     });
 
     it('Should allow to upload file by drag and drop', async () => {
       // Given
       render(
-        <ProfileAvatar firstName={firstName} lastName={lastName} isEdited />
+        <ProfileAvatar
+          firstName={firstName}
+          lastName={lastName}
+          imageUpload={mockUseImageUpload}
+          isEdited
+        />
       );
       const inputElement = screen.getByLabelText(inputLabel);
 
@@ -87,54 +119,15 @@ describe('ProfileAvatar', () => {
 
       // Then
       await waitFor(() => {
-        expect(mockCreateUrl).toHaveBeenCalledOnce();
-        expect(mockCreateUrl).toHaveBeenCalledWith(file);
-
-        const filenameElement = screen.getByText(file.name);
-        const filesizeElement = screen.getByText(file.size, { exact: true });
-        expect(filenameElement).toBeInTheDocument();
-        expect(filesizeElement).toBeInTheDocument();
+        expect(mockUseImageUpload.handleDrop).toHaveBeenCalledOnce();
+        expect(mockUseImageUpload.handleDrop).toHaveBeenCalledWith(
+          expect.objectContaining({
+            dataTransfer: {
+              files: [file],
+            },
+          })
+        );
       });
-    });
-
-    it('Should unmount previews when element is unmounted', async () => {
-      // Given
-      const testPreview = 'test-preview';
-      const mockRevokeUrl = vi.fn();
-      URL.createObjectURL = vi.fn().mockReturnValue(testPreview);
-      URL.revokeObjectURL = mockRevokeUrl;
-
-      const { unmount } = render(
-        <ProfileAvatar firstName={firstName} lastName={lastName} isEdited />
-      );
-
-      const inputElement = screen.getByLabelText(inputLabel);
-      await user.upload(inputElement, file);
-
-      // When
-      unmount();
-
-      // Then
-      expect(mockRevokeUrl).toHaveBeenCalledOnce();
-      expect(mockRevokeUrl).toHaveBeenCalledWith('test-preview');
-    });
-
-    it('Should not unmount previews when files were not uploaded', () => {
-      // Given
-      const testPreview = 'test-preview';
-      const mockRevokeUrl = vi.fn();
-      URL.createObjectURL = vi.fn().mockReturnValue(testPreview);
-      URL.revokeObjectURL = mockRevokeUrl;
-
-      const { unmount } = render(
-        <ProfileAvatar firstName={firstName} lastName={lastName} isEdited />
-      );
-
-      // When
-      unmount();
-
-      // Then
-      expect(mockRevokeUrl).not.toHaveBeenCalled();
     });
   });
 });

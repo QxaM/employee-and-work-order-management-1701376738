@@ -1,6 +1,10 @@
 import { ValidatorType } from '../types/ValidatorTypes.ts';
+import { formatFileSize } from './file.ts';
+import { fileTypeFromBlob } from 'file-type';
 
 export const MINIMUM_PASSWORD_LENGTH = 4;
+export const MAXIMUM_IMAGE_SIZE_BYTES = 1024 * 1024 * 10;
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
 export const createValueMissingMessage = (name: string) =>
   `${name} is required`;
@@ -25,6 +29,11 @@ export const passwordShouldContainUppercaseLetter =
 export const passwordShouldContainNumber =
   'Password must contain at least one number';
 export const confirmPasswordShouldMatch = 'Passwords do not match';
+const invalidImageName =
+  'Invalid file name. Only numbers and characters are allowed.';
+const invalidImageExtension =
+  'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
+const invalidImageSize = `Image size exceeds the limit of ${formatFileSize(MAXIMUM_IMAGE_SIZE_BYTES)}.`;
 
 export const missingLowercaseLetter = (value: string): boolean => {
   const lowercaseRegex = /[a-z]/;
@@ -76,4 +85,58 @@ export const isValidPassword = (value: string): boolean => {
     missingLowercaseLetter(value) ||
     value.length < MINIMUM_PASSWORD_LENGTH
   );
+};
+
+const filenameAllowList = '[a-zA-Z0-9]';
+
+export const isValidImageName = (filename: string): boolean => {
+  const nameRegex = new RegExp(`^${filenameAllowList}*\\.?[a-zA-Z0-9]*$`);
+  return nameRegex.test(filename);
+};
+
+export const isValidImageExtension = (filename: string): boolean => {
+  const extensionRegex = new RegExp(`^${filenameAllowList}+\\.(jpg|jpeg|png)$`);
+  return extensionRegex.test(filename);
+};
+
+export const isValidImageSize = (filesize: number): boolean =>
+  filesize <= MAXIMUM_IMAGE_SIZE_BYTES;
+
+export const isValidMimeType = async (file: File) => {
+  if (!VALID_IMAGE_TYPES.includes(file.type)) {
+    return false;
+  }
+  const realMimeType = await fileTypeFromBlob(file);
+  return VALID_IMAGE_TYPES.includes(realMimeType?.mime ?? 'unknown');
+};
+
+export const validateFile = async (
+  file: File
+): Promise<{
+  result: boolean;
+  errors: string[];
+}> => {
+  const errors: string[] = [];
+
+  if (!isValidImageName(file.name)) {
+    errors.push(invalidImageName);
+  } else if (!isValidImageExtension(file.name)) {
+    errors.push(invalidImageExtension);
+  }
+
+  if (!isValidImageSize(file.size)) {
+    errors.push(invalidImageSize);
+  }
+
+  if (!errors.includes(invalidImageExtension)) {
+    const invalidMimeType = await isValidMimeType(file);
+    if (!invalidMimeType) {
+      errors.push(invalidImageExtension);
+    }
+  }
+
+  return {
+    result: errors.length === 0,
+    errors,
+  };
 };

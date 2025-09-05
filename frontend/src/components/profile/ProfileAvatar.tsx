@@ -1,31 +1,33 @@
 import { Avatar, Flex, Text } from '@radix-ui/themes';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
 import { UploadIcon } from '@radix-ui/react-icons';
-import { ChangeEvent, DragEvent, useEffect, useState } from 'react';
 import clsx from 'clsx/lite';
-
-interface UploadType {
-  file: File;
-  preview: string;
-  name: string;
-  size: number;
-}
+import { useImageUpload } from '../../hooks/useImageUpload.tsx';
+import ErrorComponent from '../shared/ErrorComponent.tsx';
+import { formatFileSize } from '../../utils/file.ts';
 
 interface ProfileAvatarProps {
   firstName: string | undefined;
   lastName: string | undefined;
+  imageUpload: ReturnType<typeof useImageUpload>;
   isEdited?: boolean;
 }
 
 const ProfileAvatar = ({
   firstName,
   lastName,
+  imageUpload,
   isEdited,
 }: ProfileAvatarProps) => {
-  const [selectedFile, setSelectedFile] = useState<UploadType | undefined>(
-    undefined
-  );
-  const [dragActive, setDragActive] = useState(false);
+  const {
+    selectedFile,
+    dragActive,
+    isValidationError,
+    validationErrors,
+    handleDrag,
+    handleDrop,
+    handleChange,
+  } = imageUpload;
 
   const firstNameFirstLetter = firstName?.charAt(0) ?? 'M';
   const lastNameFirstLetter = lastName?.charAt(0) ?? 'Q';
@@ -34,7 +36,7 @@ const ProfileAvatar = ({
   ).toUpperCase();
 
   const wrapperClasses = clsx(
-    'relative border-2 border-dashed rounded-(--radius-2) size-[160px] hover:bg-(--gray-a1)',
+    'relative border-2 border-dashed rounded-(--radius-2) size-[250px] hover:bg-(--gray-a1)',
     dragActive ? 'border-(--accent-a9)' : 'border-(--gray-a8)'
   );
 
@@ -49,54 +51,6 @@ const ProfileAvatar = ({
     dragActive ? 'text-(--accent-a6)' : 'text-(--gray-a6'
   );
 
-  const handleFile = (file: File) => {
-    const selectedFile: UploadType = {
-      file: file,
-      preview: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size,
-    };
-
-    setSelectedFile(selectedFile);
-  };
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    if (event.currentTarget.files?.[0]) {
-      handleFile(event.currentTarget.files[0]);
-    }
-  };
-
-  const handleDrag = (event: DragEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (event.type === 'dragenter' || event.type === 'dragover') {
-      setDragActive(true);
-    }
-    if (event.type === 'dragleave') {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (event: DragEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDragActive(false);
-
-    if (event.dataTransfer.files.length > 0) {
-      handleFile(event.dataTransfer.files[0]);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (selectedFile?.preview) {
-        URL.revokeObjectURL(selectedFile.preview);
-      }
-    };
-  }, [selectedFile?.preview]);
-
   return (
     <div data-testid="avatar-container">
       {!isEdited && <Avatar size="9" radius="full" fallback={imageFallback} />}
@@ -110,7 +64,9 @@ const ProfileAvatar = ({
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
-            onDrop={handleDrop}
+            onDrop={(event) => {
+              void handleDrop(event);
+            }}
           >
             <label
               htmlFor="avatar-upload"
@@ -122,7 +78,9 @@ const ProfileAvatar = ({
                 type="file"
                 accept=".png, .jpeg, .jpg"
                 hidden
-                onChange={handleChange}
+                onChange={(event) => {
+                  void handleChange(event);
+                }}
                 draggable
               />
             </label>
@@ -148,6 +106,10 @@ const ProfileAvatar = ({
                 <Text align="center" weight="medium">
                   drag image here
                 </Text>
+
+                <Text align="center" weight="regular" size="2" mt="5">
+                  File name could only contain letters and number.
+                </Text>
               </Flex>
             </Flex>
           </Flex>
@@ -164,10 +126,14 @@ const ProfileAvatar = ({
               />
               <Flex direction="row" justify="center" align="center" gap="1">
                 <Text>{selectedFile.name}</Text>
-                <Text>{selectedFile.size}</Text>
+                <Text>{formatFileSize(selectedFile.size)}</Text>
               </Flex>
             </Flex>
           )}
+          {isValidationError &&
+            validationErrors.map((error) => (
+              <ErrorComponent key={error} error={error} />
+            ))}
         </Flex>
       )}
     </div>

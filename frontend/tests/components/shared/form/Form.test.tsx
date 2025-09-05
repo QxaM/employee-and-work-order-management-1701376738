@@ -1,21 +1,22 @@
 import Form from '../../../../src/components/shared/form/Form.tsx';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach } from 'vitest';
+import { beforeEach, Mock } from 'vitest';
 import { FormEvent } from 'react';
 
 describe('Form', () => {
-  const mockSubmit = vi
-    .fn()
-    .mockImplementation((event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-    });
+  let mockSubmit: Mock<(...args: unknown[]) => unknown>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSubmit = vi
+      .fn()
+      .mockImplementation((event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+      });
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('Should render children', () => {
