@@ -1,17 +1,34 @@
-import { describe, expect } from 'vitest';
-
 import {
   isValidImageExtension,
   isValidImageName,
   isValidImageSize,
+  isValidMimeType,
   isValidPassword,
   missingLowercaseLetter,
   missingNumber,
   missingUppercaseLetter,
   validateFile,
 } from '../../src/utils/validators.ts';
+import { afterEach, beforeEach } from 'vitest';
+import { fileTypeFromBlob } from 'file-type';
+
+vi.mock('file-type', async () => {
+  const fileType = await vi.importActual('file-type');
+  return {
+    ...fileType,
+    fileTypeFromBlob: vi.fn(),
+  };
+});
 
 describe('Validators', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Missing Lowercase Letter', () => {
     it('Should return true when missing lowercase letter', () => {
       // Given
@@ -164,7 +181,7 @@ describe('Validators', () => {
 
     describe('isValidImageName', () => {
       validFileNames.forEach((fileName) => {
-        test('Should return true for valid file name: ' + fileName, () => {
+        it('Should return true for valid file name: ' + fileName, () => {
           // Given
 
           // When
@@ -176,7 +193,7 @@ describe('Validators', () => {
       });
 
       invalidFileNames.forEach((fileName) => {
-        test('Should return false for invalid file name: ' + fileName, () => {
+        it('Should return false for invalid file name: ' + fileName, () => {
           // Given
 
           // When
@@ -190,7 +207,7 @@ describe('Validators', () => {
 
     describe('isValidImageExtension', () => {
       validFileNames.forEach((fileName) => {
-        test('Should return true for valid file name: ' + fileName, () => {
+        it('Should return true for valid file name: ' + fileName, () => {
           // Given
 
           // When
@@ -202,7 +219,7 @@ describe('Validators', () => {
       });
 
       invalidFileExtensions.forEach((fileName) => {
-        test('Should return false for invalid extension: ' + fileName, () => {
+        it('Should return false for invalid extension: ' + fileName, () => {
           // Given
 
           // When
@@ -241,17 +258,106 @@ describe('Validators', () => {
       });
     });
 
+    describe('isValidMimeType', () => {
+      beforeEach(() => {
+        vi.mocked(fileTypeFromBlob).mockResolvedValue({
+          ext: 'jpg',
+          mime: 'image/jpeg',
+        });
+      });
+
+      it('Should return false, when invalid file type', async () => {
+        // Given
+        const file = {
+          name: 'image.png',
+          size: 10 * 1024 * 1024,
+          type: 'text/plain',
+        } as File;
+
+        // When
+        const result = await isValidMimeType(file);
+
+        // Then
+        expect(result).toBe(false);
+        expect(fileTypeFromBlob).not.toBeCalled();
+      });
+
+      it('Should return false when invalid real mime type', async () => {
+        // Given
+        const file = {
+          name: 'image.png',
+          size: 10 * 1024 * 1024,
+          type: 'image/png',
+        } as File;
+        vi.mocked(fileTypeFromBlob).mockResolvedValue({
+          ext: 'php',
+          mime: 'text/php',
+        });
+
+        // When
+        const result = await isValidMimeType(file);
+
+        // Then
+        expect(result).toBe(false);
+        expect(fileTypeFromBlob).toHaveBeenCalledOnce();
+        expect(fileTypeFromBlob).toHaveBeenCalledWith(file);
+      });
+
+      it('Should return true when valid real mime type', async () => {
+        // Given
+        const file = {
+          name: 'image.png',
+          size: 10 * 1024 * 1024,
+          type: 'image/png',
+        } as File;
+
+        // When
+        const result = await isValidMimeType(file);
+
+        // Then
+        expect(result).toBe(true);
+        expect(fileTypeFromBlob).toHaveBeenCalledOnce();
+        expect(fileTypeFromBlob).toHaveBeenCalledWith(file);
+      });
+
+      it('Should return false when unknown real mime type', async () => {
+        // Given
+        const file = {
+          name: 'image.png',
+          size: 10 * 1024 * 1024,
+          type: 'image/png',
+        } as File;
+        vi.mocked(fileTypeFromBlob).mockResolvedValue(undefined);
+
+        // When
+        const result = await isValidMimeType(file);
+
+        // Then
+        expect(result).toBe(false);
+        expect(fileTypeFromBlob).toHaveBeenCalledOnce();
+        expect(fileTypeFromBlob).toHaveBeenCalledWith(file);
+      });
+    });
+
     describe('validateFile', () => {
+      beforeEach(() => {
+        vi.mocked(fileTypeFromBlob).mockResolvedValue({
+          ext: 'jpg',
+          mime: 'image/jpeg',
+        });
+      });
+
       validFileNames.map((fileName) => {
-        test('Should return valid for valid names: ' + fileName, () => {
+        it('Should return valid for valid names: ' + fileName, async () => {
           // Given
           const file = {
             name: fileName,
             size: 10 * 1024 * 1024,
+            type: 'image/jpeg',
           } as File;
 
           // When
-          const isValid = validateFile(file);
+          const isValid = await validateFile(file);
 
           // Then
           expect(isValid.result).toBe(true);
@@ -260,19 +366,20 @@ describe('Validators', () => {
       });
 
       invalidFileNames.map((fileName) => {
-        test(
+        it(
           'Should return invalid for invalid file names: ' + fileName,
-          () => {
+          async () => {
             // Given
             const error =
               'Invalid file name. Only numbers and characters are allowed.';
             const file = {
               name: fileName,
               size: 10 * 1024 * 1024,
+              type: 'image/jpeg',
             } as File;
 
             // When
-            const isValid = validateFile(file);
+            const isValid = await validateFile(file);
 
             // Then
             expect(isValid.result).toBe(false);
@@ -281,55 +388,114 @@ describe('Validators', () => {
         );
       });
 
-      test('Should return invalid for invalid file extension', () => {
+      it('Should return invalid for invalid file extension', async () => {
         // Given
         const error =
           'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
         const file = {
           name: 'image.php',
           size: 10 * 1024 * 1024,
+          type: 'image/jpeg',
         } as File;
 
         // When
-        const isValid = validateFile(file);
+        const isValid = await validateFile(file);
 
         // Then
         expect(isValid.result).toBe(false);
         expect(isValid.errors).toContain(error);
       });
 
-      test('Should return invalid for invalid file size', () => {
+      it('Should return invalid for invalid file size', async () => {
         // Given
         const error = 'Image size exceeds the limit of 10MB.';
         const file = {
           name: 'image.jpg',
           size: 10 * 1024 * 1024 + 1,
+          type: 'image/jpeg',
         } as File;
 
         // When
-        const isValid = validateFile(file);
+        const isValid = await validateFile(file);
 
         // Then
         expect(isValid.result).toBe(false);
         expect(isValid.errors).toContain(error);
       });
 
-      test('Should return valid for valid file size', () => {
+      it('Should return valid for valid file size', async () => {
         // Given
         const file = {
           name: 'image.jpg',
           size: 10 * 1024 * 1024,
+          type: 'image/jpeg',
         } as File;
 
         // When
-        const isValid = validateFile(file);
+        const isValid = await validateFile(file);
 
         // Then
         expect(isValid.result).toBe(true);
         expect(isValid.errors).toHaveLength(0);
       });
 
-      test('Should return multiple errors', () => {
+      it('Should return invalid for invalid file type', async () => {
+        // Given
+        const errorExtension =
+          'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
+        const file = {
+          name: 'image.jpg',
+          size: 10 * 1024 * 1024,
+          type: 'text/plain',
+        } as File;
+
+        // When
+        const isValid = await validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(false);
+        expect(isValid.errors).toContain(errorExtension);
+      });
+
+      it('Should return invalid for invalid real mime type', async () => {
+        // Given
+        const errorExtension =
+          'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
+        const file = {
+          name: 'image.jpg',
+          size: 10 * 1024 * 1024,
+          type: 'image/jpeg',
+        } as File;
+        vi.mocked(fileTypeFromBlob).mockResolvedValue({
+          ext: 'php',
+          mime: 'text/php',
+        });
+
+        // When
+        const isValid = await validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(false);
+        expect(isValid.errors).toContain(errorExtension);
+      });
+
+      it('Should return valid for valid real mime type', async () => {
+        // Given
+        const file = {
+          name: 'image.jpg',
+          size: 10 * 1024 * 1024,
+          type: 'image/jpeg',
+        } as File;
+
+        // When
+        const isValid = await validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(true);
+        expect(isValid.errors).toHaveLength(0);
+      });
+
+      it('Should return multiple errors', async () => {
         // Given
         const errorExtension =
           'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
@@ -337,10 +503,11 @@ describe('Validators', () => {
         const file = {
           name: 'image.php',
           size: 10 * 1024 * 1024 + 1,
+          type: 'image/jpeg',
         } as File;
 
         // When
-        const isValid = validateFile(file);
+        const isValid = await validateFile(file);
 
         // Then
         expect(isValid.result).toBe(false);

@@ -1,8 +1,10 @@
 import { ValidatorType } from '../types/ValidatorTypes.ts';
 import { formatFileSize } from './file.ts';
+import { fileTypeFromBlob } from 'file-type';
 
 export const MINIMUM_PASSWORD_LENGTH = 4;
 export const MAXIMUM_IMAGE_SIZE_BYTES = 1024 * 1024 * 10;
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
 export const createValueMissingMessage = (name: string) =>
   `${name} is required`;
@@ -100,12 +102,20 @@ export const isValidImageExtension = (filename: string): boolean => {
 export const isValidImageSize = (filesize: number): boolean =>
   filesize <= MAXIMUM_IMAGE_SIZE_BYTES;
 
-export const validateFile = (
+export const isValidMimeType = async (file: File) => {
+  if (!VALID_IMAGE_TYPES.includes(file.type)) {
+    return false;
+  }
+  const realMimeType = await fileTypeFromBlob(file);
+  return VALID_IMAGE_TYPES.includes(realMimeType?.mime ?? 'unknown');
+};
+
+export const validateFile = async (
   file: File
-): {
+): Promise<{
   result: boolean;
   errors: string[];
-} => {
+}> => {
   const errors: string[] = [];
 
   if (!isValidImageName(file.name)) {
@@ -116,6 +126,13 @@ export const validateFile = (
 
   if (!isValidImageSize(file.size)) {
     errors.push(invalidImageSize);
+  }
+
+  if (!errors.includes(invalidImageExtension)) {
+    const invalidMimeType = await isValidMimeType(file);
+    if (!invalidMimeType) {
+      errors.push(invalidImageExtension);
+    }
   }
 
   return {

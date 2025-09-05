@@ -7,7 +7,7 @@ import { ChangeEvent, DragEvent } from 'react';
 describe('useImageUpload', () => {
   const mockRevokeObjectURL = vi.fn();
   let mockValidateFile: MockInstance<
-    (file: File) => { result: boolean; errors: string[] }
+    (file: File) => Promise<{ result: boolean; errors: string[] }>
   >;
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe('useImageUpload', () => {
 
     mockValidateFile = vi
       .spyOn(validationModule, 'validateFile')
-      .mockReturnValue({
+      .mockResolvedValue({
         result: true,
         errors: [],
       });
@@ -28,7 +28,7 @@ describe('useImageUpload', () => {
   describe('handleFile', () => {
     const file = new File([''], 'test.png', { type: 'image/png' });
 
-    it('Should handle file successfully, after default state', () => {
+    it('Should handle file successfully, after default state', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -40,8 +40,8 @@ describe('useImageUpload', () => {
       const { result } = renderHook(() => useImageUpload());
 
       // When
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -55,7 +55,7 @@ describe('useImageUpload', () => {
       expect(currentFile?.size).toBe(file.size);
     });
 
-    it('Should handle file successfully, after file is successful', () => {
+    it('Should handle file successfully, after file is successful', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -65,8 +65,8 @@ describe('useImageUpload', () => {
       };
 
       const { result } = renderHook(() => useImageUpload());
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -79,8 +79,8 @@ describe('useImageUpload', () => {
           files: [newFile],
         },
       };
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           newEvent as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -94,7 +94,7 @@ describe('useImageUpload', () => {
       expect(currentFile?.size).toBe(newFile.size);
     });
 
-    it('Should handle file successfully, after file is not valid', () => {
+    it('Should handle file successfully, after file is not valid', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -104,12 +104,12 @@ describe('useImageUpload', () => {
       };
 
       const { result } = renderHook(() => useImageUpload());
-      vi.spyOn(validationModule, 'validateFile').mockReturnValueOnce({
+      vi.spyOn(validationModule, 'validateFile').mockResolvedValueOnce({
         result: false,
         errors: ['test error'],
       });
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -122,12 +122,12 @@ describe('useImageUpload', () => {
           files: [newFile],
         },
       };
-      vi.spyOn(validationModule, 'validateFile').mockReturnValue({
+      vi.spyOn(validationModule, 'validateFile').mockResolvedValue({
         result: true,
         errors: [],
       });
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           newEvent as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -145,13 +145,13 @@ describe('useImageUpload', () => {
       const testError = 'Test error';
 
       beforeEach(() => {
-        vi.spyOn(validationModule, 'validateFile').mockReturnValue({
+        vi.spyOn(validationModule, 'validateFile').mockResolvedValue({
           result: false,
           errors: [testError],
         });
       });
 
-      it('Should handle invalid file, after default state', () => {
+      it('Should handle invalid file, after default state', async () => {
         // Given
         const event = {
           preventDefault: vi.fn(),
@@ -163,8 +163,8 @@ describe('useImageUpload', () => {
         const { result } = renderHook(() => useImageUpload());
 
         // When
-        act(() => {
-          result.current.handleChange(
+        await act(async () => {
+          await result.current.handleChange(
             event as unknown as ChangeEvent<HTMLInputElement>
           );
         });
@@ -180,7 +180,7 @@ describe('useImageUpload', () => {
         expect(validationErrors).toContain(testError);
       });
 
-      it('Should handle invalid file, after file is successful', () => {
+      it('Should handle invalid file, after file is successful', async () => {
         // Given
         const event = {
           preventDefault: vi.fn(),
@@ -190,18 +190,18 @@ describe('useImageUpload', () => {
         };
 
         const { result } = renderHook(() => useImageUpload());
-        vi.spyOn(validationModule, 'validateFile').mockReturnValueOnce({
+        vi.spyOn(validationModule, 'validateFile').mockResolvedValueOnce({
           result: true,
           errors: [],
         });
-        act(() => {
-          result.current.handleChange(
+        await act(async () => {
+          await result.current.handleChange(
             event as unknown as ChangeEvent<HTMLInputElement>
           );
         });
 
         // When
-        vi.spyOn(validationModule, 'validateFile').mockReturnValue({
+        vi.spyOn(validationModule, 'validateFile').mockResolvedValue({
           result: false,
           errors: [testError],
         });
@@ -212,8 +212,8 @@ describe('useImageUpload', () => {
             files: [newFile],
           },
         };
-        act(() => {
-          result.current.handleChange(
+        await act(async () => {
+          await result.current.handleChange(
             newEvent as unknown as ChangeEvent<HTMLInputElement>
           );
         });
@@ -229,7 +229,7 @@ describe('useImageUpload', () => {
         expect(validationErrors).toContain(testError);
       });
 
-      it('Should handle invalid file, after file is not valid', () => {
+      it('Should handle invalid file, after file is not valid', async () => {
         // Given
         const event = {
           preventDefault: vi.fn(),
@@ -239,8 +239,8 @@ describe('useImageUpload', () => {
         };
 
         const { result } = renderHook(() => useImageUpload());
-        act(() => {
-          result.current.handleChange(
+        await act(async () => {
+          await result.current.handleChange(
             event as unknown as ChangeEvent<HTMLInputElement>
           );
         });
@@ -253,8 +253,8 @@ describe('useImageUpload', () => {
             files: [newFile],
           },
         };
-        act(() => {
-          result.current.handleChange(
+        await act(async () => {
+          await result.current.handleChange(
             newEvent as unknown as ChangeEvent<HTMLInputElement>
           );
         });
@@ -275,7 +275,7 @@ describe('useImageUpload', () => {
   describe('handleChange', () => {
     const file = new File([''], 'test.png', { type: 'image/png' });
 
-    it('Should handle event', () => {
+    it('Should handle event', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -287,8 +287,8 @@ describe('useImageUpload', () => {
       const { result } = renderHook(() => useImageUpload());
 
       // When
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -298,7 +298,7 @@ describe('useImageUpload', () => {
       expect(mockValidateFile).toHaveBeenCalledWith(file);
     });
 
-    it('Should handle empty event', () => {
+    it('Should handle empty event', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -308,8 +308,8 @@ describe('useImageUpload', () => {
       const { result } = renderHook(() => useImageUpload());
 
       // When
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -389,7 +389,7 @@ describe('useImageUpload', () => {
   describe('handleDrop', () => {
     const file = new File([''], 'test.png', { type: 'image/png' });
 
-    it('Should handle drag state', () => {
+    it('Should handle drag state', async () => {
       // Given
       const event: Partial<DragEvent<HTMLInputElement>> = {
         type: 'dragover',
@@ -409,8 +409,8 @@ describe('useImageUpload', () => {
           files: [file],
         },
       };
-      act(() => {
-        result.current.handleDrop(
+      await act(async () => {
+        await result.current.handleDrop(
           dropEvent as unknown as DragEvent<HTMLInputElement>
         );
       });
@@ -420,7 +420,7 @@ describe('useImageUpload', () => {
       expect(drag).toBe(false);
     });
 
-    it('Should handle event', () => {
+    it('Should handle event', async () => {
       // Given
       const dropEvent = {
         preventDefault: vi.fn(),
@@ -432,8 +432,8 @@ describe('useImageUpload', () => {
       const { result } = renderHook(() => useImageUpload());
 
       // When
-      act(() => {
-        result.current.handleDrop(
+      await act(async () => {
+        await result.current.handleDrop(
           dropEvent as unknown as DragEvent<HTMLInputElement>
         );
       });
@@ -443,7 +443,7 @@ describe('useImageUpload', () => {
       expect(mockValidateFile).toHaveBeenCalledWith(file);
     });
 
-    it('Should handle empty event', () => {
+    it('Should handle empty event', async () => {
       // Given
       const dropEvent = {
         preventDefault: vi.fn(),
@@ -455,8 +455,8 @@ describe('useImageUpload', () => {
       const { result } = renderHook(() => useImageUpload());
 
       // When
-      act(() => {
-        result.current.handleDrop(
+      await act(async () => {
+        await result.current.handleDrop(
           dropEvent as unknown as DragEvent<HTMLInputElement>
         );
       });
@@ -469,7 +469,7 @@ describe('useImageUpload', () => {
   describe('handleCancel', () => {
     const file = new File([''], 'test.png', { type: 'image/png' });
 
-    it('Should reset selected file', () => {
+    it('Should reset selected file', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -479,8 +479,8 @@ describe('useImageUpload', () => {
       };
 
       const { result } = renderHook(() => useImageUpload());
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -495,7 +495,7 @@ describe('useImageUpload', () => {
       expect(selectedFile).toBeUndefined();
     });
 
-    it('Should reset validation error', () => {
+    it('Should reset validation error', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -503,14 +503,14 @@ describe('useImageUpload', () => {
           files: [file],
         },
       };
-      vi.spyOn(validationModule, 'validateFile').mockReturnValue({
+      vi.spyOn(validationModule, 'validateFile').mockResolvedValue({
         result: false,
         errors: ['test error'],
       });
 
       const { result } = renderHook(() => useImageUpload());
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -525,7 +525,7 @@ describe('useImageUpload', () => {
       expect(isError).toBe(false);
     });
 
-    it('Should reset validation error list', () => {
+    it('Should reset validation error list', async () => {
       // Given
       const event = {
         preventDefault: vi.fn(),
@@ -533,14 +533,14 @@ describe('useImageUpload', () => {
           files: [file],
         },
       };
-      vi.spyOn(validationModule, 'validateFile').mockReturnValue({
+      vi.spyOn(validationModule, 'validateFile').mockResolvedValue({
         result: false,
         errors: ['test error'],
       });
 
       const { result } = renderHook(() => useImageUpload());
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });
@@ -557,7 +557,7 @@ describe('useImageUpload', () => {
   });
 
   describe('side effects', () => {
-    it('Should unmount previews when element is unmounted', () => {
+    it('Should unmount previews when element is unmounted', async () => {
       // Given
       const file = new File([''], 'test.png', { type: 'image/png' });
       const event = {
@@ -568,8 +568,8 @@ describe('useImageUpload', () => {
       };
 
       const { result, unmount } = renderHook(() => useImageUpload());
-      act(() => {
-        result.current.handleChange(
+      await act(async () => {
+        await result.current.handleChange(
           event as unknown as ChangeEvent<HTMLInputElement>
         );
       });

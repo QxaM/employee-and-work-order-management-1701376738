@@ -64,7 +64,9 @@ const ProfileAvatar = ({
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
-            onDrop={handleDrop}
+            onDrop={(event) => {
+              void handleDrop(event);
+            }}
           >
             <label
               htmlFor="avatar-upload"
@@ -76,7 +78,9 @@ const ProfileAvatar = ({
                 type="file"
                 accept=".png, .jpeg, .jpg"
                 hidden
-                onChange={handleChange}
+                onChange={(event) => {
+                  void handleChange(event);
+                }}
                 draggable
               />
             </label>

@@ -16,13 +16,17 @@ export const useImageUpload = () => {
   const [isValidationError, setIsValidationError] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  const handleFile = (file: File) => {
+  const handleCancel = () => {
     setSelectedFile(undefined);
     setIsValidationError(false);
     setValidationErrors([]);
-    const validationResult = validateFile(file);
+  };
+
+  const handleFile = async (file: File) => {
+    const validationResult = await validateFile(file);
 
     if (validationResult.result) {
+      handleCancel();
       const selectedFile: UploadType = {
         file: file,
         preview: URL.createObjectURL(file),
@@ -31,15 +35,16 @@ export const useImageUpload = () => {
       };
       setSelectedFile(selectedFile);
     } else {
+      handleCancel();
       setIsValidationError(true);
       setValidationErrors(validationResult.errors);
     }
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     if (event.currentTarget.files?.[0]) {
-      handleFile(event.currentTarget.files[0]);
+      await handleFile(event.currentTarget.files[0]);
     }
   };
 
@@ -55,20 +60,14 @@ export const useImageUpload = () => {
     }
   };
 
-  const handleDrop = (event: DragEvent<HTMLInputElement>) => {
+  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragActive(false);
 
     if (event.dataTransfer.files.length > 0) {
-      handleFile(event.dataTransfer.files[0]);
+      await handleFile(event.dataTransfer.files[0]);
     }
-  };
-
-  const handleCancel = () => {
-    setSelectedFile(undefined);
-    setIsValidationError(false);
-    setValidationErrors([]);
   };
 
   useEffect(() => {
