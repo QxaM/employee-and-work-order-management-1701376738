@@ -4,6 +4,7 @@ import { UploadIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx/lite';
 import { useImageUpload } from '../../hooks/useImageUpload.tsx';
 import ErrorComponent from '../shared/ErrorComponent.tsx';
+import { formatFileSize } from '../../utils/file.ts';
 
 interface ProfileAvatarProps {
   firstName: string | undefined;
@@ -121,7 +122,7 @@ const ProfileAvatar = ({
               />
               <Flex direction="row" justify="center" align="center" gap="1">
                 <Text>{selectedFile.name}</Text>
-                <Text>{selectedFile.size}</Text>
+                <Text>{formatFileSize(selectedFile.size)}</Text>
               </Flex>
             </Flex>
           )}

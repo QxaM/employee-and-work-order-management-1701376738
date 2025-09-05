@@ -3,6 +3,7 @@ import { describe, expect } from 'vitest';
 import {
   isValidImageExtension,
   isValidImageName,
+  isValidImageSize,
   isValidPassword,
   missingLowercaseLetter,
   missingNumber,
@@ -213,12 +214,40 @@ describe('Validators', () => {
       });
     });
 
+    describe('isValidImageSize', () => {
+      it('Should return true for valid image size', () => {
+        // Given
+        const smallerSize = 5 * 1024 * 1024;
+        const boundarySize = 10 * 1024 * 1024;
+
+        // When
+        const smallerValid = isValidImageSize(smallerSize);
+        const boundaryValid = isValidImageSize(boundarySize);
+
+        // Then
+        expect(smallerValid).toBe(true);
+        expect(boundaryValid).toBe(true);
+      });
+
+      it('Should return false for invalid image size', () => {
+        // Given
+        const largerSize = 10 * 1024 * 1024 + 1;
+
+        // When
+        const largerValid = isValidImageSize(largerSize);
+
+        // Then
+        expect(largerValid).toBe(false);
+      });
+    });
+
     describe('validateFile', () => {
       validFileNames.map((fileName) => {
         test('Should return valid for valid names: ' + fileName, () => {
           // Given
           const file = {
             name: fileName,
+            size: 10 * 1024 * 1024,
           } as File;
 
           // When
@@ -239,6 +268,7 @@ describe('Validators', () => {
               'Invalid file name. Only numbers and characters are allowed.';
             const file = {
               name: fileName,
+              size: 10 * 1024 * 1024,
             } as File;
 
             // When
@@ -257,6 +287,7 @@ describe('Validators', () => {
           'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
         const file = {
           name: 'image.php',
+          size: 10 * 1024 * 1024,
         } as File;
 
         // When
@@ -265,6 +296,57 @@ describe('Validators', () => {
         // Then
         expect(isValid.result).toBe(false);
         expect(isValid.errors).toContain(error);
+      });
+
+      test('Should return invalid for invalid file size', () => {
+        // Given
+        const error = 'Image size exceeds the limit of 10MB.';
+        const file = {
+          name: 'image.jpg',
+          size: 10 * 1024 * 1024 + 1,
+        } as File;
+
+        // When
+        const isValid = validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(false);
+        expect(isValid.errors).toContain(error);
+      });
+
+      test('Should return valid for valid file size', () => {
+        // Given
+        const file = {
+          name: 'image.jpg',
+          size: 10 * 1024 * 1024,
+        } as File;
+
+        // When
+        const isValid = validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(true);
+        expect(isValid.errors).toHaveLength(0);
+      });
+
+      test('Should return multiple errors', () => {
+        // Given
+        const errorExtension =
+          'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
+        const errorSize = 'Image size exceeds the limit of 10MB.';
+        const file = {
+          name: 'image.php',
+          size: 10 * 1024 * 1024 + 1,
+        } as File;
+
+        // When
+        const isValid = validateFile(file);
+
+        // Then
+        expect(isValid.result).toBe(false);
+        expect(isValid.errors).toHaveLength(2);
+        expect(isValid.errors).toContain(errorSize);
+        expect(isValid.errors).toContain(errorExtension);
       });
     });
   });

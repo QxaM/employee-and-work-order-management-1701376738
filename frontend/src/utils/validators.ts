@@ -1,6 +1,8 @@
 import { ValidatorType } from '../types/ValidatorTypes.ts';
+import { formatFileSize } from './file.ts';
 
 export const MINIMUM_PASSWORD_LENGTH = 4;
+export const MAXIMUM_IMAGE_SIZE_BYTES = 1024 * 1024 * 10;
 
 export const createValueMissingMessage = (name: string) =>
   `${name} is required`;
@@ -29,6 +31,7 @@ const invalidImageName =
   'Invalid file name. Only numbers and characters are allowed.';
 const invalidImageExtension =
   'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
+const invalidImageSize = `Image size exceeds the limit of ${formatFileSize(MAXIMUM_IMAGE_SIZE_BYTES)}.`;
 
 export const missingLowercaseLetter = (value: string): boolean => {
   const lowercaseRegex = /[a-z]/;
@@ -94,6 +97,9 @@ export const isValidImageExtension = (filename: string): boolean => {
   return extensionRegex.test(filename);
 };
 
+export const isValidImageSize = (filesize: number): boolean =>
+  filesize <= MAXIMUM_IMAGE_SIZE_BYTES;
+
 export const validateFile = (
   file: File
 ): {
@@ -106,6 +112,10 @@ export const validateFile = (
     errors.push(invalidImageName);
   } else if (!isValidImageExtension(file.name)) {
     errors.push(invalidImageExtension);
+  }
+
+  if (!isValidImageSize(file.size)) {
+    errors.push(invalidImageSize);
   }
 
   return {

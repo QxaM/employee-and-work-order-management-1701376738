@@ -2,7 +2,10 @@ import * as profileApiModule from '../../../src/store/api/profile.ts';
 import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
 import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
+import {
+  ProfileType,
+  UpdateProfileType,
+} from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
