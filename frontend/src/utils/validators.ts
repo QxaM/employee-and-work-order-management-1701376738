@@ -25,6 +25,10 @@ export const passwordShouldContainUppercaseLetter =
 export const passwordShouldContainNumber =
   'Password must contain at least one number';
 export const confirmPasswordShouldMatch = 'Passwords do not match';
+const invalidImageName =
+  'Invalid file name. Only numbers and characters are allowed.';
+const invalidImageExtension =
+  'Invalid file type. Only JPG, JPEG and PNG files are allowed.';
 
 export const missingLowercaseLetter = (value: string): boolean => {
   const lowercaseRegex = /[a-z]/;
@@ -76,4 +80,36 @@ export const isValidPassword = (value: string): boolean => {
     missingLowercaseLetter(value) ||
     value.length < MINIMUM_PASSWORD_LENGTH
   );
+};
+
+const filenameAllowList = '[a-zA-Z0-9]';
+
+export const isValidImageName = (filename: string): boolean => {
+  const nameRegex = new RegExp(`^${filenameAllowList}*\\.?[a-zA-Z0-9]*$`);
+  return nameRegex.test(filename);
+};
+
+export const isValidImageExtension = (filename: string): boolean => {
+  const extensionRegex = new RegExp(`^${filenameAllowList}+\\.(jpg|jpeg|png)$`);
+  return extensionRegex.test(filename);
+};
+
+export const validateFile = (
+  file: File
+): {
+  result: boolean;
+  errors: string[];
+} => {
+  const errors: string[] = [];
+
+  if (!isValidImageName(file.name)) {
+    errors.push(invalidImageName);
+  } else if (!isValidImageExtension(file.name)) {
+    errors.push(invalidImageExtension);
+  }
+
+  return {
+    result: errors.length === 0,
+    errors,
+  };
 };

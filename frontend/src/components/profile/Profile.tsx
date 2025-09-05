@@ -23,18 +23,21 @@ import { getColor } from '../../types/components/RoleTypes.ts';
 import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
 import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
 import ProfileAvatar from './ProfileAvatar.tsx';
+import { useImageUpload } from '../../hooks/useImageUpload.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
   const { me } = useMeData();
 
   const [isEdited, setIsEdited] = useState(false);
+  const imageUpload = useImageUpload();
   const [updateProfile] = useUpdateMyProfileMutation();
 
   const handleEdit = () => {
     setIsEdited(true);
   };
   const handleCancel = () => {
+    imageUpload.handleCancel();
     setIsEdited(false);
   };
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -65,6 +68,7 @@ const Profile = () => {
       <ProfileAvatar
         firstName={profileData?.firstName}
         lastName={profileData?.lastName}
+        imageUpload={imageUpload}
         isEdited={isEdited}
       />
 
