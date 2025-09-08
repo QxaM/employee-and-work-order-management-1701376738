@@ -9,6 +9,7 @@ import { act, PropsWithChildren } from 'react';
 import {
   useMyProfileQuery,
   useProfileHealthcheckQuery,
+  useUpdateMyProfileImageMutation,
   useUpdateMyProfileMutation,
 } from '../../../src/store/api/profile.ts';
 import { setupStore } from '../../../src/store';
@@ -461,6 +462,165 @@ describe('Profiles API', () => {
       await waitFor(() => {
         const currentResult = result.current as ReturnType<
           typeof useUpdateMyProfileMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(true);
+        expect(error).toBeDefined();
+        expect((error as CustomFetchBaseQueryError).status).toStrictEqual(500);
+        expect((error as CustomFetchBaseQueryError).message).toStrictEqual(
+          errorMessage
+        );
+      });
+    });
+  });
+
+  describe('useUpdateMyProfileImageMutation', () => {
+    let formData: FormData;
+    const file = new File(['test'], 'test.txt', { type: 'image/jpg' });
+
+    beforeEach(() => {
+      formData = new FormData();
+      formData.append('file', file);
+    });
+
+    it('Should make API call with correct parameters', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileImageMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileImageMutation
+      >;
+      const [uploadImage] = currentResult;
+      act(() => {
+        void uploadImage(formData);
+      });
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: `/profile/profiles/me/image`,
+            method: 'POST',
+            headers: {
+              'Content-Type': undefined,
+            },
+            body: formData,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('Should return success state', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileImageMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileImageMutation
+      >;
+      const [uploadImage] = currentResult;
+      act(() => {
+        void uploadImage(formData);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileImageMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(true);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+    });
+
+    it('Should handle loading state', async () => {
+      // Given
+      let resolvePromise: (value: { data: undefined }) => void;
+      const controlledPromise = new Promise<{ data: undefined }>((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      vi.mocked(customBaseQuery).mockReturnValue(controlledPromise);
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileImageMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileImageMutation
+      >;
+      const [uploadImage] = currentResult;
+      act(() => {
+        void uploadImage(formData);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileImageMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(false);
+        expect(isLoading).toBe(true);
+        expect(isError).toBe(false);
+        expect(error).toBe(undefined);
+      });
+
+      // Clean up - resolve the promise to avoid hanging
+      act(() => {
+        resolvePromise({ data: undefined });
+      });
+    });
+
+    it('Should handle error state', async () => {
+      // Given
+      const errorMessage = 'Error while fetching roles data';
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        error: {
+          status: 500,
+          message: errorMessage,
+        },
+      });
+
+      const { result } = renderHookWithProviders(() =>
+        useUpdateMyProfileImageMutation()
+      );
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useUpdateMyProfileImageMutation
+      >;
+      const [uploadImage] = currentResult;
+      act(() => {
+        void uploadImage(formData);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useUpdateMyProfileImageMutation
         >;
         const [, { isSuccess, isLoading, isError, error }] = currentResult;
         expect(isSuccess).toBe(false);

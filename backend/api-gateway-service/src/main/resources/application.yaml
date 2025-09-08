@@ -21,6 +21,15 @@ frontend:
 spring:
   application:
     name: api-gateway-service
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+  webflux:
+    multipart:
+      max-in-memory-size: 1MB
+      max-disk-usage-per-part: 10MB
+      max-parts: 128
   cloud:
     gateway:
       server:
@@ -52,6 +61,15 @@ spring:
                 - Path=/api/profile/**
                 - Method=GET,PUT
                 - Header=Content-Type, application/json
+              filters:
+                - AddRequestHeader=X-Gateway, api-gateway-service
+                - RewritePath=/api/profile/?(?<segment>.*), /$\{segment}
+            - id: profile-service-file-upload
+              uri: lb://profile-service
+              predicates:
+                - Path=/api/profile/**
+                - Method=POST
+                - Header=Content-Type, multipart/form-data.*
               filters:
                 - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/profile/?(?<segment>.*), /$\{segment}

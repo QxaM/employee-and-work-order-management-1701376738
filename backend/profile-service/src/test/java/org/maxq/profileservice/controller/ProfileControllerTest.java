@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -22,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -207,6 +209,80 @@ class ProfileControllerTest {
             .put(URL + "/me")
             .contentType(MediaType.APPLICATION_JSON)
             .content(GSON.toJson(updatedProfile))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+  }
+
+  @Test
+  void shouldReturn200_When_CorrectImageUploaded() throws Exception {
+    // Given
+    String fileName = "image.jpg";
+    String contentType = "image/jpeg";
+    String content = "test-content";
+    MockMultipartFile mockMultipartFile
+        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
+  @Test
+  void shouldReturn400_When_NoImageProvided() throws Exception {
+    // Given
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is("Required part 'file' is not present.")));
+  }
+
+  @Test
+  void shouldReturn401_When_NoRobotToken_ImageUpload() throws Exception {
+    // Given
+    String fileName = "image.jpg";
+    String contentType = "image/jpeg";
+    String content = "test-content";
+    MockMultipartFile mockMultipartFile
+        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+  }
+
+  @Test
+  void shouldReturn403_When_NoUserHeaders_ImageUpload() throws Exception {
+    // Given
+    String fileName = "image.jpg";
+    String contentType = "image/jpeg";
+    String content = "test-content";
+    MockMultipartFile mockMultipartFile
+        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers

@@ -31,7 +31,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
     "eureka.client.enabled=false",
     "test.loadbalancer=profile"
 })
-class ProfileServiceTest {
+class ProfileServiceFileUploadTest {
+
+  private static final String PROFILE_URL = "/api/profile";
+  private static final String UPLOAD_URL = "/test";
+  private static final String BOUNDARY = "CustomBoundaryValue";
 
   @LocalServerPort
   private int port;
@@ -39,7 +43,7 @@ class ProfileServiceTest {
   private WebTestClient webTestClient;
 
   protected static Stream<HttpMethod> allowedMethods() {
-    return RequestsUtils.buildAllowedMethods(HttpMethod.GET, HttpMethod.PUT);
+    return RequestsUtils.buildAllowedMethods(HttpMethod.POST);
   }
 
   protected static Stream<HttpMethod> disallowedMethods() {
@@ -56,22 +60,21 @@ class ProfileServiceTest {
             .build();
 
     allowedMethods().forEach(method ->
-        stubFor(WireMock.request(method.name(), WireMock.urlEqualTo("/test"))
+        stubFor(WireMock.request(method.name(), WireMock.urlEqualTo(UPLOAD_URL))
             .willReturn(WireMock.ok()))
     );
   }
 
   @ParameterizedTest
   @MethodSource("allowedMethods")
-  void shouldRouteToAllowedMethods(
-      HttpMethod method) {
+  void shouldRouteAllowedMethods(HttpMethod method) {
     // Given
-    String profileUri = "/api/profile";
 
     // When + Then
     webTestClient.method(method)
-        .uri(profileUri + "/test")
-        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .header(HttpHeaders.CONTENT_TYPE,
+            MediaType.MULTIPART_FORM_DATA_VALUE + "; boundary=" + BOUNDARY)
         .exchange()
         .expectStatus().isOk();
   }
@@ -80,12 +83,11 @@ class ProfileServiceTest {
   @MethodSource("disallowedMethods")
   void shouldNotRouteDisallowedMethods(HttpMethod method) {
     // Given
-    String profileUri = "/api/profile";
 
     // When + Then
     webTestClient.method(method)
-        .uri(profileUri + "/test")
-        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE + ";boundary=" + BOUNDARY)
         .exchange()
         .expectStatus().isNotFound();
   }
@@ -93,12 +95,11 @@ class ProfileServiceTest {
   @Test
   void shouldNotRouteWithoutContentType() {
     // Given
-    String profileUri = "/api/profile";
-    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.POST);
 
     // When + Then
     webTestClient.method(method)
-        .uri(profileUri + "/test")
+        .uri(PROFILE_URL + UPLOAD_URL)
         .exchange()
         .expectStatus().isNotFound();
   }
@@ -106,13 +107,12 @@ class ProfileServiceTest {
   @Test
   void shouldNotRouteWithInvalidContentType() {
     // Given
-    String profileUri = "/api/auth";
-    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.POST);
     String invalidContentType = MediaType.TEXT_PLAIN_VALUE;
 
     // When + Then
     webTestClient.method(method)
-        .uri(profileUri + "/test")
+        .uri(PROFILE_URL + UPLOAD_URL)
         .header(HttpHeaders.CONTENT_TYPE, invalidContentType)
         .exchange()
         .expectStatus().isNotFound();

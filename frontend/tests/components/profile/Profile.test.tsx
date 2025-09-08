@@ -2,10 +2,7 @@ import * as profileApiModule from '../../../src/store/api/profile.ts';
 import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
 import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import {
-  ProfileType,
-  UpdateProfileType,
-} from '../../../src/types/api/ProfileTypes.ts';
+import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
@@ -34,6 +31,7 @@ const meData: MeType = {
 describe('Profile', () => {
   const editButton = 'Edit profile';
   const mockProfileUpdate = vi.fn();
+  const mockImageUpload = vi.fn();
   const mockUploadCancel = vi.fn();
 
   beforeEach(() => {
@@ -53,6 +51,19 @@ describe('Profile', () => {
     });
     vi.spyOn(profileApiModule, 'useUpdateMyProfileMutation').mockReturnValue([
       mockProfileUpdate,
+      {
+        isLoading: false,
+        isError: false,
+        isSuccess: false,
+        error: undefined,
+        reset: vi.fn(),
+      },
+    ]);
+    vi.spyOn(
+      profileApiModule,
+      'useUpdateMyProfileImageMutation'
+    ).mockReturnValue([
+      mockImageUpload,
       {
         isLoading: false,
         isError: false,
@@ -350,6 +361,63 @@ describe('Profile', () => {
       // Then
       expect(mockProfileUpdate).toHaveBeenCalledOnce();
       expect(mockProfileUpdate).toHaveBeenCalledWith(updatedProfile);
+    });
+
+    it('Should call update image when image selected', async () => {
+      // Given
+      const file = new File(['test-file'], 'test.png', { type: 'image/png' });
+      vi.spyOn(useImageUploadModule, 'useImageUpload').mockReturnValue({
+        selectedFile: {
+          file,
+          name: 'test.png',
+          size: 100000,
+          preview: 'test.png',
+        },
+        dragActive: false,
+        validationErrors: [],
+        isValidationError: false,
+        handleChange: vi.fn(),
+        handleDrag: vi.fn(),
+        handleDrop: vi.fn(),
+        handleCancel: mockUploadCancel,
+      });
+
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+      await user.click(editButtonElement);
+
+      // When
+      const saveButtonElement = screen.getByRole('button', {
+        name: saveButton,
+      });
+      await user.click(saveButtonElement);
+
+      // Then
+      expect(mockImageUpload).toHaveBeenCalledOnce();
+
+      const formData = new FormData();
+      formData.append('file', file);
+      expect(mockImageUpload).toHaveBeenCalledWith(formData);
+    });
+
+    it('Should not call update image when image is not selected', async () => {
+      // Given
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+      await user.click(editButtonElement);
+
+      // When
+      const saveButtonElement = screen.getByRole('button', {
+        name: saveButton,
+      });
+      await user.click(saveButtonElement);
+
+      // Then
+      expect(mockImageUpload).not.toHaveBeenCalled();
     });
   });
 });
