@@ -2,6 +2,7 @@ package org.maxq.profileservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.controller.api.ProfileApi;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
@@ -16,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/profiles")
 @RequiredArgsConstructor
@@ -50,6 +53,16 @@ public class ProfileController implements ProfileApi {
     RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDtoToSave, updateProfileTopic);
 
     messageService.sendMessage(message);
+    return ResponseEntity.ok().build();
+  }
+
+  @Override
+  @PostMapping("/me/image")
+  @PreAuthorize("authentication.principal != null")
+  public ResponseEntity<Void> updateProfileImage(Authentication authentication,
+                                                 @RequestParam("file") MultipartFile file) {
+    log.info("Updating profile image for user: {}", authentication.getPrincipal());
+    log.info("Received file: {}", file.getOriginalFilename());
     return ResponseEntity.ok().build();
   }
 }

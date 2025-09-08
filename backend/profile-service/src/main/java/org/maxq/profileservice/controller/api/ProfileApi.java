@@ -11,6 +11,7 @@ import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Profiles API")
 public interface ProfileApi {
@@ -66,4 +67,26 @@ public interface ProfileApi {
       })
   ResponseEntity<Void> updateProfile(Authentication authentication, UpdateProfileDto profileDto)
       throws ElementNotFoundException;
+
+  @Operation(
+      summary = "Update profile image",
+      description = "Allows to update profile image"
+  )
+  @ApiResponse(responseCode = "200", description = "Image update message properly sent")
+  @ApiResponse(responseCode = "400",
+      description = "Bad Request - file validation failed or no file provided",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "401",
+      description = "Unauthenticated - only request with Robot Token are passed",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "403",
+      description = "Unauthorized - only logged in users can access this resource",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file);
 }
