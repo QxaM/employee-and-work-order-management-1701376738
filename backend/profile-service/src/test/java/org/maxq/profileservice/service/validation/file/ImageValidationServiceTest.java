@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ImageValidationServiceTest {
 
   private static final String FILE_VALIDATION_ERROR = "File validation failed!";
+  private static final String FILE_CONTENT_TYPE = "image/jpeg";
 
-  private final String contentType = "image/jpeg";
   private final byte[] content = "test-content".getBytes();
   @Autowired
   private ImageValidationService validationService;
@@ -38,7 +38,7 @@ class ImageValidationServiceTest {
   @MethodSource("validImageNames")
   void validateName_When_CorrectFile(String originalFilename) {
     // Given
-    MockMultipartFile file = new MockMultipartFile("file", originalFilename, contentType, content);
+    MockMultipartFile file = new MockMultipartFile("file", originalFilename, FILE_CONTENT_TYPE, content);
 
     // When
     assertDoesNotThrow(() -> validationService.of(file).validateName().validate(), "Exception thrown for valid file");
@@ -49,7 +49,7 @@ class ImageValidationServiceTest {
   @MethodSource("invalidImageNames")
   void validateName_When_IncorrectFile(String originalFilename) {
     // Given
-    MockMultipartFile file = new MockMultipartFile("file", originalFilename, contentType, content);
+    MockMultipartFile file = new MockMultipartFile("file", originalFilename, FILE_CONTENT_TYPE, content);
     ValidationResult validationResult = new ValidationResult();
     validationResult.addError(ValidationError.FILE_NAME);
 

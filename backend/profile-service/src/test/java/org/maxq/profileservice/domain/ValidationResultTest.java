@@ -19,7 +19,8 @@ class ValidationResultTest {
     // Then
     assertFalse(result.isValid(), "ValidationResult should be invalid after adding error");
     assertEquals(1, result.getMessages().size(), "ValidationResult should have one error");
-    assertTrue(result.getMessages().contains(ValidationError.FILE_NAME));
+    assertTrue(result.getMessages().contains(ValidationError.FILE_NAME),
+        "File name ValidationResult should contain error FILE_NAME");
   }
 
   @Test

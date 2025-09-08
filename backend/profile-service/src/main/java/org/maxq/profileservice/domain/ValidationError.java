@@ -19,7 +19,7 @@ public enum ValidationError implements Serializable {
   @JsonValue
   private final String message;
 
-  static class Messages {
+  static final class Messages {
     private static final String FILE_NAME_ERROR
         = "Invalid file name. Only numbers and letters are allowed";
 
