@@ -8,10 +8,12 @@ import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
+import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
+import org.maxq.profileservice.service.validation.file.ImageValidationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileService profileService;
   private final ProfileMapper profileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
+  private final ImageValidationService validationService;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
@@ -60,9 +63,11 @@ public class ProfileController implements ProfileApi {
   @PostMapping("/me/image")
   @PreAuthorize("authentication.principal != null")
   public ResponseEntity<Void> updateProfileImage(Authentication authentication,
-                                                 @RequestParam("file") MultipartFile file) {
+                                                 @RequestParam("file") MultipartFile file) throws FileValidationException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     log.info("Received file: {}", file.getOriginalFilename());
+
+    validationService.of(file).validate();
     return ResponseEntity.ok().build();
   }
 }

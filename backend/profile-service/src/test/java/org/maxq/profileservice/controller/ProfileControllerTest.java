@@ -5,12 +5,16 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ValidationError;
+import org.maxq.profileservice.domain.ValidationResult;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
+import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
+import org.maxq.profileservice.service.validation.file.ImageValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +27,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -54,6 +57,13 @@ class ProfileControllerTest {
       = new Profile(1L, email, "TestName", "testMiddleName", "TestLastName");
   ProfileDto profileDto
       = new ProfileDto(1L, email, profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
+
+  String fileName = "image.jpg";
+  String contentType = "image/jpeg";
+  String content = "test-content";
+  MockMultipartFile mockMultipartFile
+      = new MockMultipartFile("file", fileName, contentType, content.getBytes());
+
   private MockMvc mockMvc;
 
   @Autowired
@@ -65,17 +75,20 @@ class ProfileControllerTest {
   private ProfileMapper profileMapper;
   @MockitoBean
   private MessageService<RabbitmqMessage<?>> messageService;
+  @MockitoBean
+  private ImageValidationService validationService;
 
   @MockitoBean
   private JwtDecoder jwtDecoder;
 
   @BeforeEach
-  void securitySetup() {
+  void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
         .apply(SecurityMockMvcConfigurers.springSecurity())
         .build();
 
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
+    when(validationService.of(any(MockMultipartFile.class))).thenReturn(validationService);
   }
 
   @Test
@@ -218,11 +231,6 @@ class ProfileControllerTest {
   @Test
   void shouldReturn200_When_CorrectImageUploaded() throws Exception {
     // Given
-    String fileName = "image.jpg";
-    String contentType = "image/jpeg";
-    String content = "test-content";
-    MockMultipartFile mockMultipartFile
-        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -244,20 +252,41 @@ class ProfileControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", email)
             .header("X-User-Roles", roles))
-        .andDo(MockMvcResultHandlers.print())
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers
             .jsonPath("$.message", Matchers.is("Required part 'file' is not present.")));
   }
 
   @Test
+  void shouldReturn400_When_InvalidImageNameProvided() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_NAME;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(validationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", email)
+            .header("X-User-Roles", roles))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+  }
+
+  @Test
   void shouldReturn401_When_NoRobotToken_ImageUpload() throws Exception {
     // Given
-    String fileName = "image.jpg";
-    String contentType = "image/jpeg";
-    String content = "test-content";
-    MockMultipartFile mockMultipartFile
-        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -273,11 +302,6 @@ class ProfileControllerTest {
   @Test
   void shouldReturn403_When_NoUserHeaders_ImageUpload() throws Exception {
     // Given
-    String fileName = "image.jpg";
-    String contentType = "image/jpeg";
-    String content = "test-content";
-    MockMultipartFile mockMultipartFile
-        = new MockMultipartFile("file", fileName, contentType, content.getBytes());
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
