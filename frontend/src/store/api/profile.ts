@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { profileApi as PROFILE_API } from './base.ts';
-import { api } from '../apiSlice.ts';
-import { ProfileType, UpdateProfileType, } from '../../types/api/ProfileTypes.ts';
-import { readErrorMessage } from '../../utils/errorUtils.ts';
-import { registerModal } from '../modalSlice.ts';
-import { v4 as uuidv4 } from 'uuid';
-import { getStringOrDefault } from '../../utils/shared.ts';
+import {profileApi as PROFILE_API} from './base.ts';
+import {api} from '../apiSlice.ts';
+import {ProfileType, UpdateProfileType,} from '../../types/api/ProfileTypes.ts';
+import {readErrorMessage} from '../../utils/errorUtils.ts';
+import {registerModal} from '../modalSlice.ts';
+import {v4 as uuidv4} from 'uuid';
+import {getStringOrDefault} from '../../utils/shared.ts';
 
 const PROFILES_API = '/profiles';
 const HEALTHCHECK_API = '/actuator/health';
@@ -68,6 +68,18 @@ export const profileApi = api.injectEndpoints({
         }
       },
     }),
+    updateMyProfileImage: builder.mutation<undefined, FormData>({
+      query: (formData) => {
+        return {
+          url: PROFILE_API + PROFILES_API + '/me/image',
+          method: 'POST',
+          headers: {
+            'Content-Type': undefined,
+          },
+          body: formData,
+        };
+      },
+    }),
   }),
 });
 
@@ -75,4 +87,5 @@ export const {
   useProfileHealthcheckQuery,
   useMyProfileQuery,
   useUpdateMyProfileMutation,
+  useUpdateMyProfileImageMutation,
 } = profileApi;

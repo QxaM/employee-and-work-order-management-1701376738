@@ -10,6 +10,7 @@ import {
 } from '@radix-ui/themes';
 import {
   useMyProfileQuery,
+  useUpdateMyProfileImageMutation,
   useUpdateMyProfileMutation,
 } from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
@@ -32,6 +33,7 @@ const Profile = () => {
   const [isEdited, setIsEdited] = useState(false);
   const imageUpload = useImageUpload();
   const [updateProfile] = useUpdateMyProfileMutation();
+  const [updateProfileImage] = useUpdateMyProfileImageMutation();
 
   const handleEdit = () => {
     setIsEdited(true);
@@ -45,6 +47,7 @@ const Profile = () => {
 
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
+    const image = imageUpload.selectedFile;
 
     const profile: UpdateProfileType = {
       firstName: data['first name'] as string,
@@ -52,6 +55,14 @@ const Profile = () => {
       lastName: data['last name'] as string,
     };
     void updateProfile(profile);
+
+    if (image) {
+      const formData = new FormData();
+      formData.append('file', image.file);
+      void updateProfileImage(formData);
+    }
+
+    handleCancel();
     setIsEdited(false);
   };
 
