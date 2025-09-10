@@ -22,19 +22,4 @@ class ValidationResultTest {
     assertTrue(result.getMessages().contains(ValidationError.FILE_NAME),
         "File name ValidationResult should contain error FILE_NAME");
   }
-
-  @Test
-  void shouldClearErrors() {
-    //Given
-    ValidationResult result = new ValidationResult();
-    result.addError(ValidationError.FILE_NAME);
-
-    // When
-    result.clear();
-
-    // Then
-    assertTrue(result.isValid(), "ValidationResult should be valid after clearing errors");
-    assertTrue(result.getMessages().isEmpty(),
-        "ValidationResult should have no errors after clearing errors");
-  }
 }

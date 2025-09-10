@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.controller.api.ProfileApi;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
@@ -77,6 +78,9 @@ public class ProfileController implements ProfileApi {
         .validateContentType()
         .validateSize()
         .validate();
+
+    InMemoryFile newFile = InMemoryFile.create(file.getBytes(), file.getContentType());
+    log.info("New file: {}", newFile.getName());
 
     return ResponseEntity.ok().build();
   }
