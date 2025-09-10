@@ -3,6 +3,7 @@ package org.maxq.profileservice.service.validation.file;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ValidationError;
@@ -41,6 +42,14 @@ class ImageValidationServiceTest {
 
   protected static Stream<String> invalidImageExtensions() {
     return Stream.of("image.php", "image.gif", "image.bmp", "image.svg", "test");
+  }
+
+  protected static Stream<String> validImageContentType() {
+    return Stream.of("image/jpg", "image/jpeg", "image/png");
+  }
+
+  protected static Stream<String> invalidImageContentType() {
+    return Stream.of("text/php", "image/gif", "image/bmp", "image/svg", "text/plain");
   }
 
   @ParameterizedTest
@@ -110,18 +119,57 @@ class ImageValidationServiceTest {
     );
   }
 
+  @ParameterizedTest
+  @MethodSource("validImageContentType")
+  void validateExtension_When_ValidContentType(String contentType) {
+    // Given
+    MockMultipartFile file = new MockMultipartFile("file", "image.png", contentType, content);
+
+    // When + Then
+    assertDoesNotThrow(() -> validationService.of(file).validateContentType().validate(),
+        "Exception thrown for valid file");
+  }
+
+  @ParameterizedTest
+  @EmptySource
+  @MethodSource("invalidImageContentType")
+  void validateExtension_When_InvalidContentType(String contentType) {
+    // Given
+    MockMultipartFile file = new MockMultipartFile("file", "image.png", contentType, content);
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(ValidationError.FILE_CONTENT_TYPE);
+
+    // When
+    Executable executable = () -> validationService.of(file).validateContentType().validate();
+
+    // Then
+    FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
+    assertAll(
+        () -> assertEquals(FILE_VALIDATION_ERROR, exception.getMessage(), "Exception message incorrect"),
+        () -> assertEquals(validationResult.isValid(), exception.getValidationResult().isValid(),
+            "Validation result incorrect"),
+        () -> assertEquals(validationResult.getMessages(), exception.getValidationResult().getMessages(),
+            "Validation result messages incorrect")
+    );
+  }
+
   @Test
   void shouldReturnMultipleErrors() {
     // Given
     MockMultipartFile file
-        = new MockMultipartFile("file", "test%00.php", FILE_CONTENT_TYPE, content);
+        = new MockMultipartFile("file", "test%00.php", "text/plain", content);
     ValidationResult validationResult = new ValidationResult();
     validationResult.addError(ValidationError.FILE_NAME);
     validationResult.addError(ValidationError.FILE_EXTENSION);
+    validationResult.addError(ValidationError.FILE_CONTENT_TYPE);
 
     // When
     Executable executable =
-        () -> validationService.of(file).validateName().validateExtension().validate();
+        () -> validationService.of(file)
+            .validateName()
+            .validateExtension()
+            .validateContentType()
+            .validate();
 
     // Then
     FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");

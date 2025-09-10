@@ -66,10 +66,13 @@ public class ProfileController implements ProfileApi {
                                                  @RequestParam("file") MultipartFile file) throws FileValidationException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     log.info("Received file: {}", file.getOriginalFilename());
+    log.info("Received file content type: {}", file.getContentType());
+    log.info("Received file size: {}", file.getSize());
 
     validationService.of(file)
         .validateName()
         .validateExtension()
+        .validateContentType()
         .validate();
     return ResponseEntity.ok().build();
   }
