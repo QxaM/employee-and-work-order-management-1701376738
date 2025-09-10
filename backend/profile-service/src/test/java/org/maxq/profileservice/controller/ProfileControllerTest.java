@@ -27,6 +27,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -84,7 +85,10 @@ class ProfileControllerTest {
         .build();
 
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
+
     when(validationService.of(any(MockMultipartFile.class))).thenReturn(validationService);
+    when(validationService.validateName()).thenReturn(validationService);
+    when(validationService.validateExtension()).thenReturn(validationService);
   }
 
   @Test
@@ -278,6 +282,68 @@ class ProfileControllerTest {
             .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
         .andExpect(MockMvcResultMatchers
             .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(validationService, times(1)).validateName();
+  }
+
+  @Test
+  void shouldReturn400_When_InvalidImageExtensionProvided() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_EXTENSION;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(validationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(validationService, times(1)).validateExtension();
+  }
+
+  @Test
+  void shouldReturn400_When_MultipleImageValidationErrors() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError errorName = ValidationError.FILE_NAME;
+    ValidationError errorExtension = ValidationError.FILE_EXTENSION;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(errorName);
+    validationResult.addError(errorExtension);
+
+    doThrow(new FileValidationException(testError, validationResult)).when(validationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath(
+                "$.errors",
+                Matchers.containsInAnyOrder(errorName.getMessage(), errorExtension.getMessage())
+            ));
+    verify(validationService, times(1)).validateExtension();
   }
 
   @Test

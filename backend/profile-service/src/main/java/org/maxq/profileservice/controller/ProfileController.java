@@ -67,7 +67,10 @@ public class ProfileController implements ProfileApi {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     log.info("Received file: {}", file.getOriginalFilename());
 
-    validationService.of(file).validate();
+    validationService.of(file)
+        .validateName()
+        .validateExtension()
+        .validate();
     return ResponseEntity.ok().build();
   }
 }
