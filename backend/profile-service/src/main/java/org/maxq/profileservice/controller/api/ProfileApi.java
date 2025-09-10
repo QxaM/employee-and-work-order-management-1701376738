@@ -9,9 +9,12 @@ import org.maxq.profileservice.domain.HttpErrorMessage;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
+import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Tag(name = "Profiles API")
 public interface ProfileApi {
@@ -88,5 +91,5 @@ public interface ProfileApi {
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
-  ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file);
+  ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file) throws FileValidationException, IOException;
 }

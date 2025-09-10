@@ -4,20 +4,25 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.controller.api.ProfileApi;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
+import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
+import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -28,6 +33,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileService profileService;
   private final ProfileMapper profileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
+  private final ValidationServiceFactory validationFactory;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
@@ -60,9 +66,22 @@ public class ProfileController implements ProfileApi {
   @PostMapping("/me/image")
   @PreAuthorize("authentication.principal != null")
   public ResponseEntity<Void> updateProfileImage(Authentication authentication,
-                                                 @RequestParam("file") MultipartFile file) {
+                                                 @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     log.info("Received file: {}", file.getOriginalFilename());
+    log.info("Received file content type: {}", file.getContentType());
+    log.info("Received file size: {}", file.getSize());
+
+    validationFactory.createImageValidationService(file)
+        .validateName()
+        .validateExtension()
+        .validateContentType()
+        .validateSize()
+        .validate();
+
+    InMemoryFile newFile = InMemoryFile.create(file.getBytes(), file.getContentType());
+    log.info("New file: {}", newFile.getName());
+
     return ResponseEntity.ok().build();
   }
 }

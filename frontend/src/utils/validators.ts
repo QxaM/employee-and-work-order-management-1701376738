@@ -90,12 +90,12 @@ export const isValidPassword = (value: string): boolean => {
 const filenameAllowList = '[a-zA-Z0-9]';
 
 export const isValidImageName = (filename: string): boolean => {
-  const nameRegex = new RegExp(`^${filenameAllowList}*\\.?[a-zA-Z0-9]*$`);
+  const nameRegex = new RegExp(`^${filenameAllowList}+\\.[a-zA-Z0-9]+$`);
   return nameRegex.test(filename);
 };
 
 export const isValidImageExtension = (filename: string): boolean => {
-  const extensionRegex = new RegExp(`^${filenameAllowList}+\\.(jpg|jpeg|png)$`);
+  const extensionRegex = /^.+\.(jpg|jpeg|png)$/;
   return extensionRegex.test(filename);
 };
 
