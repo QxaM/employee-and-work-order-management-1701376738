@@ -68,11 +68,13 @@ public class ProfileController implements ProfileApi {
     log.info("Received file: {}", file.getOriginalFilename());
     log.info("Received file content type: {}", file.getContentType());
     log.info("Received file size: {}", file.getSize());
+    file.
 
-    validationService.of(file)
+        validationService.of(file)
         .validateName()
         .validateExtension()
         .validateContentType()
+        .validateSize()
         .validate();
     return ResponseEntity.ok().build();
   }

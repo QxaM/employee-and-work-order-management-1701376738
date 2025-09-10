@@ -154,14 +154,50 @@ class ImageValidationServiceTest {
   }
 
   @Test
+  void validateExtension_When_ValidSize() {
+    // Given
+    byte[] validContent = new byte[1024 * 1024 * 10];
+    MockMultipartFile file = new MockMultipartFile("file", "image.png", FILE_CONTENT_TYPE, validContent);
+
+    // When + Then
+    assertDoesNotThrow(() -> validationService.of(file).validateSize().validate(),
+        "Exception thrown for valid file");
+  }
+
+  @Test
+  void validateExtension_When_InvalidSize() {
+    // Given
+    byte[] invalidContent = new byte[1024 * 1024 * 10 + 1];
+    MockMultipartFile file
+        = new MockMultipartFile("file", "image.png", FILE_CONTENT_TYPE, invalidContent);
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(ValidationError.FILE_SIZE);
+
+    // When
+    Executable executable = () -> validationService.of(file).validateSize().validate();
+
+    // Then
+    FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
+    assertAll(
+        () -> assertEquals(FILE_VALIDATION_ERROR, exception.getMessage(), "Exception message incorrect"),
+        () -> assertEquals(validationResult.isValid(), exception.getValidationResult().isValid(),
+            "Validation result incorrect"),
+        () -> assertEquals(validationResult.getMessages(), exception.getValidationResult().getMessages(),
+            "Validation result messages incorrect")
+    );
+  }
+
+  @Test
   void shouldReturnMultipleErrors() {
     // Given
+    byte[] invalidContent = new byte[1024 * 1024 * 10 + 1];
     MockMultipartFile file
-        = new MockMultipartFile("file", "test%00.php", "text/plain", content);
+        = new MockMultipartFile("file", "test%00.php", "text/plain", invalidContent);
     ValidationResult validationResult = new ValidationResult();
     validationResult.addError(ValidationError.FILE_NAME);
     validationResult.addError(ValidationError.FILE_EXTENSION);
     validationResult.addError(ValidationError.FILE_CONTENT_TYPE);
+    validationResult.addError(ValidationError.FILE_SIZE);
 
     // When
     Executable executable =
@@ -169,6 +205,7 @@ class ImageValidationServiceTest {
             .validateName()
             .validateExtension()
             .validateContentType()
+            .validateSize()
             .validate();
 
     // Then

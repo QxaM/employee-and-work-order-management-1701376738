@@ -16,6 +16,7 @@ public class ImageValidationService extends FileValidationService {
       Pattern.compile("^.+\\." + IMAGE_FILE_EXTENSION_ALLOWLIST + "$");
   public static final List<String> IMAGE_CONTENT_TYPE_ALLOWLIST
       = List.of("image/jpeg", "image/jpg", "image/png");
+  public static final int IMAGE_MAX_SIZE = 10 * 1024 * 1024; //10MB
 
 
   @Override
@@ -40,6 +41,14 @@ public class ImageValidationService extends FileValidationService {
   public FileValidationService validateContentType() {
     if (!IMAGE_CONTENT_TYPE_ALLOWLIST.contains(file.getContentType())) {
       validationResult.addError(ValidationError.FILE_CONTENT_TYPE);
+    }
+    return this;
+  }
+
+  @Override
+  public FileValidationService validateSize() {
+    if (file.getSize() > IMAGE_MAX_SIZE) {
+      validationResult.addError(ValidationError.FILE_SIZE);
     }
     return this;
   }

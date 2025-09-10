@@ -16,6 +16,8 @@ public abstract class FileValidationService implements ValidationService<Multipa
 
   public abstract FileValidationService validateContentType();
 
+  public abstract FileValidationService validateSize();
+
   @Override
   public FileValidationService of(MultipartFile object) {
     validationResult.clear();

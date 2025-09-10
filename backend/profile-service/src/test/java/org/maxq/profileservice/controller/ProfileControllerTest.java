@@ -90,6 +90,7 @@ class ProfileControllerTest {
     when(validationService.validateName()).thenReturn(validationService);
     when(validationService.validateExtension()).thenReturn(validationService);
     when(validationService.validateContentType()).thenReturn(validationService);
+    when(validationService.validateSize()).thenReturn(validationService);
   }
 
   @Test
@@ -343,16 +344,46 @@ class ProfileControllerTest {
   }
 
   @Test
+  void shouldReturn400_When_InvalidImageSize() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_SIZE;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(validationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(validationService, times(1)).validateSize();
+  }
+
+  @Test
   void shouldReturn400_When_MultipleImageValidationErrors() throws Exception {
     // Given
     String testError = "Test error";
     ValidationError errorName = ValidationError.FILE_NAME;
     ValidationError errorExtension = ValidationError.FILE_EXTENSION;
     ValidationError errorContentType = ValidationError.FILE_CONTENT_TYPE;
+    ValidationError errorSize = ValidationError.FILE_SIZE;
     ValidationResult validationResult = new ValidationResult();
     validationResult.addError(errorName);
     validationResult.addError(errorExtension);
     validationResult.addError(errorContentType);
+    validationResult.addError(errorSize);
 
     doThrow(new FileValidationException(testError, validationResult)).when(validationService).validate();
 
@@ -375,12 +406,14 @@ class ProfileControllerTest {
                 Matchers.containsInAnyOrder(
                     errorName.getMessage(),
                     errorExtension.getMessage(),
-                    errorContentType.getMessage()
+                    errorContentType.getMessage(),
+                    errorSize.getMessage()
                 )
             ));
     verify(validationService, times(1)).validateName();
     verify(validationService, times(1)).validateExtension();
     verify(validationService, times(1)).validateContentType();
+    verify(validationService, times(1)).validateSize();
   }
 
   @Test
