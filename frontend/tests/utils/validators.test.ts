@@ -171,13 +171,10 @@ describe('Validators', () => {
       'ima%0d%0age.jpg',
       'ima/ge.jpg',
       'ima.ge.jpg',
-    ];
-    const invalidFileExtensions = [
       'image.php.jpg',
-      'image.php%00.jpg',
-      'image.jpg5',
-      'image.test',
+      'image%00.php',
     ];
+    const invalidFileExtensions = ['image.jpg5', 'image.test'];
 
     describe('isValidImageName', () => {
       validFileNames.forEach((fileName) => {
