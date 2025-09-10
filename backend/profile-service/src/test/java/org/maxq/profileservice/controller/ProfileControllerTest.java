@@ -14,7 +14,9 @@ import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
+import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.maxq.profileservice.service.validation.file.ImageValidationService;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 
@@ -73,10 +76,13 @@ class ProfileControllerTest {
   @MockitoBean
   private MessageService<RabbitmqMessage<?>> messageService;
   @MockitoBean
-  private ImageValidationService validationService;
+  private ValidationServiceFactory validationFactory;
 
   @MockitoBean
   private JwtDecoder jwtDecoder;
+
+  @Mock
+  private ImageValidationService validationService;
 
   @BeforeEach
   void setup() {
@@ -86,7 +92,7 @@ class ProfileControllerTest {
 
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
-    when(validationService.of(any(MockMultipartFile.class))).thenReturn(validationService);
+    when(validationFactory.createImageValidationService(any(MultipartFile.class))).thenReturn(validationService);
     when(validationService.validateName()).thenReturn(validationService);
     when(validationService.validateExtension()).thenReturn(validationService);
     when(validationService.validateContentType()).thenReturn(validationService);

@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ValidationError;
 import org.maxq.profileservice.domain.ValidationResult;
 import org.maxq.profileservice.domain.exception.FileValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -24,8 +23,6 @@ class ImageValidationServiceTest {
   private static final String FILE_CONTENT_TYPE = "image/jpeg";
 
   private final byte[] content = "test-content".getBytes();
-  @Autowired
-  private ImageValidationService validationService;
 
   protected static Stream<String> validImageNames() {
     return Stream.of("test.jpg", "TEST.jpg", "Test12345.jpg");
@@ -59,7 +56,8 @@ class ImageValidationServiceTest {
     MockMultipartFile file = new MockMultipartFile("file", originalFilename, FILE_CONTENT_TYPE, content);
 
     // When + Then
-    assertDoesNotThrow(() -> validationService.of(file).validateName().validate(), "Exception thrown for valid file");
+    assertDoesNotThrow(() -> new ImageValidationService(file).validateName().validate(),
+        "Exception thrown for valid file");
   }
 
   @ParameterizedTest
@@ -72,7 +70,7 @@ class ImageValidationServiceTest {
     validationResult.addError(ValidationError.FILE_NAME);
 
     // When
-    Executable executable = () -> validationService.of(file).validateName().validate();
+    Executable executable = () -> new ImageValidationService(file).validateName().validate();
 
     // Then
     FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
@@ -92,7 +90,7 @@ class ImageValidationServiceTest {
     MockMultipartFile file = new MockMultipartFile("file", originalFilename, FILE_CONTENT_TYPE, content);
 
     // When + Then
-    assertDoesNotThrow(() -> validationService.of(file).validateExtension().validate(),
+    assertDoesNotThrow(() -> new ImageValidationService(file).validateExtension().validate(),
         "Exception thrown for valid file");
   }
 
@@ -106,7 +104,7 @@ class ImageValidationServiceTest {
     validationResult.addError(ValidationError.FILE_EXTENSION);
 
     // When
-    Executable executable = () -> validationService.of(file).validateExtension().validate();
+    Executable executable = () -> new ImageValidationService(file).validateExtension().validate();
 
     // Then
     FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
@@ -126,7 +124,7 @@ class ImageValidationServiceTest {
     MockMultipartFile file = new MockMultipartFile("file", "image.png", contentType, content);
 
     // When + Then
-    assertDoesNotThrow(() -> validationService.of(file).validateContentType().validate(),
+    assertDoesNotThrow(() -> new ImageValidationService(file).validateContentType().validate(),
         "Exception thrown for valid file");
   }
 
@@ -140,7 +138,7 @@ class ImageValidationServiceTest {
     validationResult.addError(ValidationError.FILE_CONTENT_TYPE);
 
     // When
-    Executable executable = () -> validationService.of(file).validateContentType().validate();
+    Executable executable = () -> new ImageValidationService(file).validateContentType().validate();
 
     // Then
     FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
@@ -160,7 +158,7 @@ class ImageValidationServiceTest {
     MockMultipartFile file = new MockMultipartFile("file", "image.png", FILE_CONTENT_TYPE, validContent);
 
     // When + Then
-    assertDoesNotThrow(() -> validationService.of(file).validateSize().validate(),
+    assertDoesNotThrow(() -> new ImageValidationService(file).validateSize().validate(),
         "Exception thrown for valid file");
   }
 
@@ -174,7 +172,7 @@ class ImageValidationServiceTest {
     validationResult.addError(ValidationError.FILE_SIZE);
 
     // When
-    Executable executable = () -> validationService.of(file).validateSize().validate();
+    Executable executable = () -> new ImageValidationService(file).validateSize().validate();
 
     // Then
     FileValidationException exception = assertThrows(FileValidationException.class, executable, "Exception not thrown for invalid file");
@@ -201,7 +199,7 @@ class ImageValidationServiceTest {
 
     // When
     Executable executable =
-        () -> validationService.of(file)
+        () -> new ImageValidationService(file)
             .validateName()
             .validateExtension()
             .validateContentType()

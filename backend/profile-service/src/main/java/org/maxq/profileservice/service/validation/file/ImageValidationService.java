@@ -1,12 +1,11 @@
 package org.maxq.profileservice.service.validation.file;
 
 import org.maxq.profileservice.domain.ValidationError;
-import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Service
 public class ImageValidationService extends FileValidationService {
   public static final String IMAGE_FILE_NAME_ALLOWLIST = "[a-zA-Z0-9]";
   public static final String IMAGE_FILE_EXTENSION_ALLOWLIST = "(jpg|jpeg|png)";
@@ -18,6 +17,9 @@ public class ImageValidationService extends FileValidationService {
       = List.of("image/jpeg", "image/jpg", "image/png");
   public static final int IMAGE_MAX_SIZE = 10 * 1024 * 1024; //10MB
 
+  public ImageValidationService(MultipartFile file) {
+    super(file);
+  }
 
   @Override
   public FileValidationService validateName() {

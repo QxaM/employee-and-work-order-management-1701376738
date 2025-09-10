@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Tag(name = "Profiles API")
 public interface ProfileApi {
 
@@ -89,5 +91,5 @@ public interface ProfileApi {
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
-  ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file) throws FileValidationException;
+  ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file) throws FileValidationException, IOException;
 }

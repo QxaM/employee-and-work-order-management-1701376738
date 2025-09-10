@@ -13,13 +13,15 @@ import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
-import org.maxq.profileservice.service.validation.file.ImageValidationService;
+import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -30,7 +32,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileService profileService;
   private final ProfileMapper profileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
-  private final ImageValidationService validationService;
+  private final ValidationServiceFactory validationFactory;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
@@ -63,19 +65,19 @@ public class ProfileController implements ProfileApi {
   @PostMapping("/me/image")
   @PreAuthorize("authentication.principal != null")
   public ResponseEntity<Void> updateProfileImage(Authentication authentication,
-                                                 @RequestParam("file") MultipartFile file) throws FileValidationException {
+                                                 @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     log.info("Received file: {}", file.getOriginalFilename());
     log.info("Received file content type: {}", file.getContentType());
     log.info("Received file size: {}", file.getSize());
-    file.
 
-        validationService.of(file)
+    validationFactory.createImageValidationService(file)
         .validateName()
         .validateExtension()
         .validateContentType()
         .validateSize()
         .validate();
+
     return ResponseEntity.ok().build();
   }
 }
