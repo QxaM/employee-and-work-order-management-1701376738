@@ -3,6 +3,7 @@ package org.maxq.profileservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.imaging.Imaging;
 import org.maxq.profileservice.controller.api.ProfileApi;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
@@ -68,9 +69,6 @@ public class ProfileController implements ProfileApi {
   public ResponseEntity<Void> updateProfileImage(Authentication authentication,
                                                  @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
-    log.info("Received file: {}", file.getOriginalFilename());
-    log.info("Received file content type: {}", file.getContentType());
-    log.info("Received file size: {}", file.getSize());
 
     validationFactory.createImageValidationService(file)
         .validateName()
@@ -81,6 +79,14 @@ public class ProfileController implements ProfileApi {
 
     InMemoryFile newFile = InMemoryFile.create(file.getBytes(), file.getContentType());
     log.info("New file: {}", newFile.getName());
+
+    try {
+      log.info("Guessed image format: {}", Imaging.guessFormat(newFile.getData()));
+      log.info("Image metadata: {}", Imaging.getMetadata(newFile.getData()));
+      log.info("Image actual content: {}", Imaging.getBufferedImage(newFile.getData()).getType());
+    } catch (Exception e) {
+      log.error("Failed to get image metadata", e);
+    }
 
     return ResponseEntity.ok().build();
   }
