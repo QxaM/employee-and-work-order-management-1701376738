@@ -1,6 +1,7 @@
 // shared.test.ts
 import { describe, expect, it } from 'vitest';
-import { deepEquals, getStringOrDefault } from '../../src/utils/shared.ts';
+import { deepEquals, getValueOrDefault } from '../../src/utils/shared.ts';
+import { MessageWithCause } from '../../src/types/components/ModalTypes.tsx';
 
 describe('shared utils', () => {
   describe('deepEquals', () => {
@@ -259,8 +260,8 @@ describe('shared utils', () => {
       const defaultString = 'default';
 
       // When
-      const result1 = getStringOrDefault(string1, defaultString);
-      const result2 = getStringOrDefault(string2, defaultString);
+      const result1 = getValueOrDefault(string1, defaultString);
+      const result2 = getValueOrDefault(string2, defaultString);
 
       // Then
       expect(result1).toStrictEqual(defaultString);
@@ -274,8 +275,8 @@ describe('shared utils', () => {
       const defaultString = 'default';
 
       // When
-      const result1 = getStringOrDefault(string1, defaultString);
-      const result2 = getStringOrDefault(string2, defaultString);
+      const result1 = getValueOrDefault(string1, defaultString);
+      const result2 = getValueOrDefault(string2, defaultString);
 
       // Then
       expect(result1).toStrictEqual(defaultString);
@@ -288,10 +289,25 @@ describe('shared utils', () => {
       const defaultString = 'default';
 
       // When
-      const result1 = getStringOrDefault(string1, defaultString);
+      const result1 = getValueOrDefault(string1, defaultString);
 
       // Then
       expect(result1).toStrictEqual(string1);
+    });
+
+    it('Should return MessageWithCause for valid ReactNode', () => {
+      // Given
+      const messageWithCause: MessageWithCause = {
+        message: 'Test message',
+        cause: ['Cause 1', 'Cause 2'],
+      };
+      const defaultString = 'default';
+
+      // When
+      const result = getValueOrDefault(messageWithCause, defaultString);
+
+      // Then
+      expect(result).toStrictEqual(messageWithCause);
     });
   });
 });

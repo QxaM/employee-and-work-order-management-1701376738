@@ -32,6 +32,7 @@ export interface ExtendedFetchArgs extends FetchArgs {
 export interface CustomFetchBaseQueryError {
   status: FetchBaseQueryError['status'];
   message: string;
+  cause?: string[];
 }
 
 const baseQuery = fetchBaseQuery({
@@ -54,6 +55,7 @@ export const customBaseQuery: BaseQueryFn<
 
   if (response.error) {
     let errorMessage = args.defaultError ?? defaultApiError;
+    let errorCause: string[] | undefined;
 
     const error = response.error;
     try {
@@ -61,6 +63,7 @@ export const customBaseQuery: BaseQueryFn<
       if (errorData.message) {
         errorMessage = errorData.message;
       }
+      errorCause = errorData.errors;
     } catch (error) {
       console.warn(error);
     }
@@ -69,6 +72,7 @@ export const customBaseQuery: BaseQueryFn<
       error: {
         status: error.status,
         message: errorMessage,
+        cause: errorCause,
       },
     };
   }

@@ -25,6 +25,8 @@ import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
 import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
 import ProfileAvatar from './ProfileAvatar.tsx';
 import { useImageUpload } from '../../hooks/useImageUpload.tsx';
+import { useFormNotifications } from '../../hooks/useFormNotifications.tsx';
+import { MessageWithCause } from '../../types/components/ModalTypes.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
@@ -33,7 +35,36 @@ const Profile = () => {
   const [isEdited, setIsEdited] = useState(false);
   const imageUpload = useImageUpload();
   const [updateProfile] = useUpdateMyProfileMutation();
-  const [updateProfileImage] = useUpdateMyProfileImageMutation();
+  const [
+    updateProfileImage,
+    {
+      isSuccess: imageUploadSuccess,
+      isError: imageUploadError,
+      error: imageUploadErrorData,
+    },
+  ] = useUpdateMyProfileImageMutation();
+
+  const imageUploadErrorMessage =
+    imageUploadErrorData &&
+    ('cause' in imageUploadErrorData
+      ? ({
+          message: imageUploadErrorData.message,
+          cause: imageUploadErrorData.cause,
+        } as MessageWithCause)
+      : imageUploadErrorData.message);
+
+  useFormNotifications({
+    success: {
+      status: imageUploadSuccess,
+      message: 'Profile image updated successfully',
+      hideTimeout: 15_000,
+    },
+    error: {
+      status: imageUploadError,
+      message: imageUploadErrorMessage,
+      hideTimeout: 30_000,
+    },
+  });
 
   const handleEdit = () => {
     setIsEdited(true);

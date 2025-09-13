@@ -6,7 +6,7 @@ import { RoleType } from '../../types/api/RoleTypes.ts';
 import { store } from '../index.ts';
 import { registerModal } from '../modalSlice.ts';
 import { v4 as uuidv4 } from 'uuid';
-import { getStringOrDefault } from '../../utils/shared.ts';
+import { getValueOrDefault } from '../../utils/shared.ts';
 import { readErrorMessage } from '../../utils/errorUtils.ts';
 import {
   addRoleToDraftUser,
@@ -83,7 +83,7 @@ export const usersApi = api.injectEndpoints({
             registerModal({
               id: uuidv4(),
               content: {
-                message: getStringOrDefault(
+                message: getValueOrDefault(
                   message,
                   defaultRoleUpdateErrorMessage
                 ),
@@ -134,7 +134,7 @@ export const usersApi = api.injectEndpoints({
             registerModal({
               id: uuidv4(),
               content: {
-                message: getStringOrDefault(
+                message: getValueOrDefault(
                   message,
                   defaultRoleUpdateErrorMessage
                 ),

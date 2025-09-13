@@ -1,13 +1,22 @@
-import { CheckCircledIcon, ExclamationTriangleIcon, InfoCircledIcon, } from '@radix-ui/react-icons';
+import {
+  CheckCircledIcon,
+  ExclamationTriangleIcon,
+  InfoCircledIcon,
+} from '@radix-ui/react-icons';
 import { Toast } from 'radix-ui';
 import { NonUndefined } from '../BaseTypes.ts';
+
+export interface MessageWithCause {
+  message: string;
+  cause: string[];
+}
 
 /**
  * Defines the structure of a modal object.
  */
 export interface ModalType {
   index: number;
-  message: string;
+  message: string | MessageWithCause;
   hideTimeout?: number;
   type?: keyof typeof MODAL_TYPE;
   sensitivity?: ModalSensitivity;
