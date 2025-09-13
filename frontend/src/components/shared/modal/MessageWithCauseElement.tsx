@@ -15,13 +15,13 @@ const MessageWithCauseElement = ({ errorData }: ImageUploadErrorProps) => {
       flexGrow="1"
     >
       <Text weight="medium">{errorData.message}</Text>
-      {'cause' in errorData && errorData.cause && (
+      {
         <ul className="list-disc list-inside">
           {errorData.cause.map((cause) => (
             <li key={cause}>{cause}</li>
           ))}
         </ul>
-      )}
+      }
     </Flex>
   );
 };

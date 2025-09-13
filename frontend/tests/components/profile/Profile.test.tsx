@@ -452,7 +452,7 @@ describe('Profile', () => {
           message: 'Profile image updated successfully',
           hideTimeout: 15000,
         },
-        id: expect.any(String),
+        id: expect.any(String) as string,
       });
     });
 
@@ -486,7 +486,7 @@ describe('Profile', () => {
           message: errorMessage,
           hideTimeout: 30_000,
         },
-        id: expect.any(String),
+        id: expect.any(String) as string,
       });
     });
 
@@ -525,7 +525,7 @@ describe('Profile', () => {
           },
           hideTimeout: 30_000,
         },
-        id: expect.any(String),
+        id: expect.any(String) as string,
       });
     });
   });
