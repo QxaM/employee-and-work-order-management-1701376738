@@ -23,7 +23,12 @@ public final class InMemoryFile {
   public static InMemoryFile create(byte[] data, @Nullable String contentType) {
     String fileName = UUID.randomUUID().toString();
     String fileExtension = Optional.ofNullable(contentType)
-        .map(ct -> "." + ct.split("/")[1])
+        .map(ct -> {
+          int slashIndex = ct.lastIndexOf('/');
+          return slashIndex >= 0 && slashIndex < ct.length() - 1
+              ? "." + ct.substring(slashIndex + 1)
+              : "";
+        })
         .orElse("");
     return new InMemoryFile(contentType, fileName + fileExtension, data);
   }

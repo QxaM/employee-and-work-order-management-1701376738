@@ -41,4 +41,22 @@ class InMemoryFileTest {
     );
   }
 
+  @Test
+  void shouldCreateFile_Without_Slash() {
+    // Given
+    String contentType = "unknown";
+    byte[] content = "test".getBytes();
+
+    // When
+    InMemoryFile file = InMemoryFile.create(content, contentType);
+
+    // Then
+    assertNotNull(file, "File not created");
+    assertAll(
+        () -> assertFalse(file.getName().contains("."), "File should not contain extension"),
+        () -> assertEquals(contentType, file.getContentType(), "Content type incorrect"),
+        () -> assertArrayEquals(content, file.getData(), "Content incorrect")
+    );
+  }
+
 }

@@ -13,6 +13,7 @@ import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
+import org.maxq.profileservice.service.image.ImageService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileMapper profileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
   private final ValidationServiceFactory validationFactory;
+  private final ImageService imageService;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
@@ -68,9 +70,6 @@ public class ProfileController implements ProfileApi {
   public ResponseEntity<Void> updateProfileImage(Authentication authentication,
                                                  @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
-    log.info("Received file: {}", file.getOriginalFilename());
-    log.info("Received file content type: {}", file.getContentType());
-    log.info("Received file size: {}", file.getSize());
 
     validationFactory.createImageValidationService(file)
         .validateName()
@@ -82,6 +81,11 @@ public class ProfileController implements ProfileApi {
     InMemoryFile newFile = InMemoryFile.create(file.getBytes(), file.getContentType());
     log.info("New file: {}", newFile.getName());
 
+    validationFactory.createImageContentValidationService(newFile)
+        .validateSignature()
+        .validateRealContent()
+        .validateMetadata()
+        .validate();
     return ResponseEntity.ok().build();
   }
 }

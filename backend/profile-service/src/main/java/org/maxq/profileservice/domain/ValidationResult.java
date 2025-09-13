@@ -25,9 +25,4 @@ public class ValidationResult implements Serializable {
     valid = false;
     messages.add(error);
   }
-
-  public void clear() {
-    valid = true;
-    messages.clear();
-  }
 }

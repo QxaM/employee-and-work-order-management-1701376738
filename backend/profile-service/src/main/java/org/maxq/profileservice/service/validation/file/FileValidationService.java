@@ -1,20 +1,17 @@
 package org.maxq.profileservice.service.validation.file;
 
 import lombok.Getter;
-import org.maxq.profileservice.domain.ValidationResult;
-import org.maxq.profileservice.domain.exception.FileValidationException;
-import org.maxq.profileservice.service.validation.ValidationService;
+import org.maxq.profileservice.service.validation.AbstractValidationService;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-public abstract class FileValidationService implements ValidationService {
+public abstract class FileValidationService extends AbstractValidationService {
 
-  protected final ValidationResult validationResult;
   protected final MultipartFile file;
 
   protected FileValidationService(MultipartFile file) {
+    super();
     this.file = file;
-    this.validationResult = new ValidationResult();
   }
 
   public abstract FileValidationService validateName();
@@ -25,10 +22,4 @@ public abstract class FileValidationService implements ValidationService {
 
   public abstract FileValidationService validateSize();
 
-  @Override
-  public void validate() throws FileValidationException {
-    if (!validationResult.isValid()) {
-      throw new FileValidationException("File validation failed!", validationResult);
-    }
-  }
 }
