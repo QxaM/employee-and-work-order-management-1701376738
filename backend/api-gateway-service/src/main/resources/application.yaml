@@ -73,6 +73,7 @@ spring:
               filters:
                 - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/profile/?(?<segment>.*), /$\{segment}
+                - RequestSize=11MB
             - id: eureka-apps
               uri: ${EUREKA_URL:http://localhost:8761/eureka}
               predicates:
