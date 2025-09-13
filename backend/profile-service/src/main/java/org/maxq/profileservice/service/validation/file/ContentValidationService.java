@@ -17,4 +17,6 @@ public abstract class ContentValidationService extends AbstractValidationService
   }
 
   public abstract ContentValidationService validateSignature() throws IOException;
+
+  public abstract ContentValidationService validateRealContent();
 }

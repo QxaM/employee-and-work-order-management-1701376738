@@ -108,6 +108,7 @@ class ProfileControllerTest {
     when(validationService.validateSize()).thenReturn(validationService);
 
     when(contentValidationService.validateSignature()).thenReturn(contentValidationService);
+    when(contentValidationService.validateRealContent()).thenReturn(contentValidationService);
   }
 
   @Test
@@ -497,7 +498,6 @@ class ProfileControllerTest {
     ValidationResult validationResult = new ValidationResult();
     validationResult.addError(error);
 
-
     doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
 
     // When + Then
@@ -515,6 +515,33 @@ class ProfileControllerTest {
         .andExpect(MockMvcResultMatchers
             .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
     verify(contentValidationService, times(1)).validateSignature();
+  }
+
+  @Test
+  void shouldReturn400_When_RealContentInvalid() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_REAL_FORMAT;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+    doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(contentValidationService, times(1)).validateRealContent();
   }
 
   @Test

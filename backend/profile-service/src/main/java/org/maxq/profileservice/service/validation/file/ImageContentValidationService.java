@@ -1,15 +1,21 @@
 package org.maxq.profileservice.service.validation.file;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.imaging.AbstractImageParser;
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageInfo;
+import org.apache.commons.imaging.bytesource.ByteSource;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.ValidationError;
 import org.maxq.profileservice.service.image.ImageService;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class ImageContentValidationService extends ContentValidationService {
   public static final List<ImageFormat> IMAGE_FORMATS_ALLOWLIST
       = List.of(ImageFormats.JPEG, ImageFormats.PNG);
@@ -33,6 +39,35 @@ public class ImageContentValidationService extends ContentValidationService {
     }
 
     validateContentMismatch(detectedFormat);
+    return this;
+  }
+
+  @Override
+  public ContentValidationService validateRealContent() {
+    List<AbstractImageParser<?>> imageParsers = imageService.getParsers();
+    ByteSource imageSource = ByteSource.array(file.getData());
+
+    boolean anyMatched = false;
+
+    for (AbstractImageParser<?> parser : imageParsers) {
+      try {
+        ImageInfo imageInfo = parser.getImageInfo(imageSource);
+        if (imageInfo != null) {
+          BufferedImage image = parser.getBufferedImage(imageSource, null);
+
+          if (image != null) {
+            anyMatched = true;
+          }
+        }
+      } catch (Exception e) {
+        log.debug("Failed to parse image", e);
+      }
+    }
+
+    if (!anyMatched) {
+      validationResult.addError(ValidationError.FILE_REAL_FORMAT);
+    }
+
     return this;
   }
 
