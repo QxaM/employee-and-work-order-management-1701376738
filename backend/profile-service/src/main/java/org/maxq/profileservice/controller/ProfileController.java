@@ -81,12 +81,14 @@ public class ProfileController implements ProfileApi {
     log.info("New file: {}", newFile.getName());
 
     try {
-      log.info("Guessed image format: {}", Imaging.guessFormat(newFile.getData()));
       log.info("Image metadata: {}", Imaging.getMetadata(newFile.getData()));
       log.info("Image actual content: {}", Imaging.getBufferedImage(newFile.getData()).getType());
     } catch (Exception e) {
       log.error("Failed to get image metadata", e);
     }
+    validationFactory.createImageContentValidationService(newFile)
+        .validateSignature()
+        .validate();
 
     return ResponseEntity.ok().build();
   }

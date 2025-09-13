@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.ValidationError;
 import org.maxq.profileservice.domain.ValidationResult;
@@ -15,6 +16,7 @@ import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.maxq.profileservice.service.validation.ValidationServiceFactory;
+import org.maxq.profileservice.service.validation.file.ImageContentValidationService;
 import org.maxq.profileservice.service.validation.file.ImageValidationService;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -83,20 +86,28 @@ class ProfileControllerTest {
 
   @Mock
   private ImageValidationService validationService;
+  @Mock
+  private ImageContentValidationService contentValidationService;
 
   @BeforeEach
-  void setup() {
+  void setup() throws IOException {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
         .apply(SecurityMockMvcConfigurers.springSecurity())
         .build();
 
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
-    when(validationFactory.createImageValidationService(any(MultipartFile.class))).thenReturn(validationService);
+    when(validationFactory.createImageValidationService(any(MultipartFile.class)))
+        .thenReturn(validationService);
+    when(validationFactory.createImageContentValidationService(any(InMemoryFile.class)))
+        .thenReturn(contentValidationService);
+
     when(validationService.validateName()).thenReturn(validationService);
     when(validationService.validateExtension()).thenReturn(validationService);
     when(validationService.validateContentType()).thenReturn(validationService);
     when(validationService.validateSize()).thenReturn(validationService);
+
+    when(contentValidationService.validateSignature()).thenReturn(contentValidationService);
   }
 
   @Test
@@ -420,6 +431,90 @@ class ProfileControllerTest {
     verify(validationService, times(1)).validateExtension();
     verify(validationService, times(1)).validateContentType();
     verify(validationService, times(1)).validateSize();
+  }
+
+  @Test
+  void shouldReturn400_When_InvalidImageSignature() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_REAL_FORMAT;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(contentValidationService, times(1)).validateSignature();
+  }
+
+  @Test
+  void shouldReturn400_When_ImageContentEmpty() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_CONTENT_TYPE;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(contentValidationService, times(1)).validateSignature();
+  }
+
+  @Test
+  void shouldReturn400_When_ImageContentMismatch() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.FILE_CONTENT_MISMATCH;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+
+    doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(contentValidationService, times(1)).validateSignature();
   }
 
   @Test
