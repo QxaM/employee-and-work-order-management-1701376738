@@ -6,6 +6,7 @@ import { SerializedError } from '@reduxjs/toolkit';
  */
 export interface ApiErrorType {
   message: string;
+  errors?: string[];
 }
 
 export type QueryError =

@@ -4,6 +4,7 @@ import { Toast } from 'radix-ui';
 import clsx from 'clsx/lite';
 import { Button, Flex } from '@radix-ui/themes';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import MessageWithCauseElement from './MessageWithCauseElement.tsx';
 
 /**
  * An animated modal component to display messages with customizable styles and auto-hide
@@ -51,7 +52,7 @@ const ModalMessage = ({
 
   const rootClasses = clsx(
     'm-0 p-(--space-4) rounded-(--radius-3) shadow-(--shadow-2)',
-    'w-full',
+    'w-max min-w-1/7 max-w-1/4',
     MODAL_TYPE[type].border,
     MODAL_TYPE[type].background,
     MODAL_TYPE[type].text,
@@ -86,7 +87,13 @@ const ModalMessage = ({
           </Button>
         </Toast.Close>
       </Flex>
-      <Toast.Description className="text-center">{message}</Toast.Description>
+      <Toast.Description className="text-center">
+        {typeof message === 'string' ? (
+          message
+        ) : (
+          <MessageWithCauseElement errorData={message} />
+        )}
+      </Toast.Description>
     </Toast.Root>
   );
 };

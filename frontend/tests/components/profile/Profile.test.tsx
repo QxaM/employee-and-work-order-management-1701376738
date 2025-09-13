@@ -420,4 +420,113 @@ describe('Profile', () => {
       expect(mockImageUpload).not.toHaveBeenCalled();
     });
   });
+
+  describe('Dialog dispatch', () => {
+    beforeEach(() => {
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: true,
+          isError: false,
+          isPending: false,
+          error: undefined,
+          reset: vi.fn(),
+        },
+      ]);
+    });
+
+    it('Should dispatch success modal', () => {
+      // Given
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'success',
+          message: 'Profile image updated successfully',
+          hideTimeout: 15000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
+    it('Should dispatch error modal', () => {
+      // Given
+      const errorMessage = 'Error message';
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: errorMessage,
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
+    it('Should dispatch error modal with cause', () => {
+      // Given
+      const errorMessage = 'Error message';
+      const cause = ['Cause 1', 'Cause 2'];
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+            cause,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: {
+            message: errorMessage,
+            cause,
+          },
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+  });
 });
