@@ -2,6 +2,7 @@ package org.maxq.profileservice.service.image;
 
 import org.apache.commons.imaging.AbstractImageParser;
 import org.apache.commons.imaging.ImageFormat;
+import org.maxq.profileservice.domain.ImageMetadata;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,4 +12,6 @@ public interface ImageService {
 
   @SuppressWarnings({"java:S1452"})
   List<AbstractImageParser<?>> getParsers();
+
+  ImageMetadata getMetadata(byte[] imageData) throws IOException;
 }

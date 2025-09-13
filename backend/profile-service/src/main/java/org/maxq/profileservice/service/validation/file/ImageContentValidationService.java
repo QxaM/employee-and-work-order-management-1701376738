@@ -7,6 +7,8 @@ import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.bytesource.ByteSource;
+import org.maxq.profileservice.domain.ImageMetadata;
+import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.ValidationError;
 import org.maxq.profileservice.service.image.ImageService;
@@ -21,6 +23,8 @@ public class ImageContentValidationService extends ContentValidationService {
       = List.of(ImageFormats.JPEG, ImageFormats.PNG);
   public static final List<String> JPEG_CONTENT_TYPE_LIST = List.of("image/jpeg", "image/jpg");
   public static final List<String> PNG_CONTENT_TYPE_LIST = List.of("image/png");
+  public static final int IMAGE_MAX_WIDTH = 8 * 1024;
+  public static final int IMAGE_MAX_HEIGHT = 8 * 1024;
 
   private final ImageService imageService;
 
@@ -92,4 +96,28 @@ public class ImageContentValidationService extends ContentValidationService {
     };
     validationOperation.run();
   }
+
+  @Override
+  public ContentValidationService validateMetadata() throws IOException {
+    ImageMetadata imageMetadata = imageService.getMetadata(file.getData());
+    validateSize(imageMetadata);
+    return this;
+  }
+
+  public void validateSize(ImageMetadata imageMetadata) {
+    ImageSize size = imageMetadata.getSize();
+    checkImageSize(size);
+
+    ImageSize metaSize = imageMetadata.getMetaSize();
+    if (metaSize != null) {
+      checkImageSize(metaSize);
+    }
+  }
+
+  public void checkImageSize(ImageSize imageSize) {
+    if (imageSize.getWidth() > IMAGE_MAX_WIDTH || imageSize.getHeight() > IMAGE_MAX_HEIGHT) {
+      validationResult.addError(ValidationError.IMAGE_SIZE);
+    }
+  }
+
 }

@@ -13,9 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.maxq.profileservice.domain.InMemoryFile;
-import org.maxq.profileservice.domain.ValidationError;
-import org.maxq.profileservice.domain.ValidationResult;
+import org.maxq.profileservice.domain.*;
 import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.service.image.ImageService;
 import org.mockito.Mock;
@@ -27,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,6 +74,32 @@ class ImageContentValidationServiceTest {
             validImageFormats()
                 .noneMatch(validFormat -> validFormat.equals(format))
         );
+  }
+
+  protected static Stream<Map<String, ImageSize>> invalidImageSizes() {
+    String size = "size";
+    String metaSize = "metaSize";
+    int validSize = 8 * 1024;
+    int invalidSize = 8 * 1024 + 1;
+
+    return Stream.of(
+        Map.of(
+            size, new ImageSize(invalidSize, validSize),
+            metaSize, new ImageSize(validSize, validSize)
+        ),
+        Map.of(
+            size, new ImageSize(validSize, invalidSize),
+            metaSize, new ImageSize(validSize, validSize)
+        ),
+        Map.of(
+            size, new ImageSize(validSize, validSize),
+            metaSize, new ImageSize(invalidSize, validSize)
+        ),
+        Map.of(
+            size, new ImageSize(validSize, validSize),
+            metaSize, new ImageSize(validSize, invalidSize)
+        )
+    );
   }
 
   @BeforeEach
@@ -385,6 +410,61 @@ class ImageContentValidationServiceTest {
 
     // When
     Executable executable = () -> validationService.validateRealContent().validate();
+
+    // Then
+    assertThrows(FileValidationException.class, executable,
+        "Exception not thrown for invalid file");
+    assertAll(
+        () -> assertFalse(validationService.getValidationResult().isValid(),
+            "Validation not valid for valid signature"),
+        () -> assertEquals(validationResult.getMessages(), validationService.getValidationResult().getMessages(),
+            "Wrong validation result for signature validation")
+    );
+  }
+
+  @Test
+  void shouldValidateMetadata_When_ValidMetadata() throws IOException {
+    // Given
+    InMemoryFile file = InMemoryFile.create("content".getBytes(), null);
+    ContentValidationService validationService = new ImageContentValidationService(file, imageService);
+
+    ImageMetadata metadata = new ImageMetadata(
+        new ImageSize(8 * 1024, 8 * 1024),
+        new ImageSize(8 * 1024, 8 * 1024)
+    );
+    when(imageService.getMetadata(file.getData())).thenReturn(metadata);
+
+    // When
+    Executable executable = () -> validationService.validateMetadata().validate();
+
+    // Then
+    assertDoesNotThrow(executable, "Exception thrown for valid file");
+    assertAll(
+        () -> assertTrue(validationService.getValidationResult().isValid(),
+            "Validation not valid for valid signature"),
+        () -> assertTrue(validationService.getValidationResult().getMessages().isEmpty(),
+            "Validation result should be empty for valid signature")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidImageSizes")
+  void shouldValidateMetadata_When_InvalidDimensions(Map<String, ImageSize> imageSizeMap) throws IOException {
+    // Given
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(ValidationError.IMAGE_SIZE);
+
+    InMemoryFile file = InMemoryFile.create("content".getBytes(), null);
+    ContentValidationService validationService = new ImageContentValidationService(file, imageService);
+
+    ImageMetadata metadata = new ImageMetadata(
+        imageSizeMap.get("size"),
+        imageSizeMap.get("metaSize")
+    );
+    when(imageService.getMetadata(file.getData())).thenReturn(metadata);
+
+    // When
+    Executable executable = () -> validationService.validateMetadata().validate();
 
     // Then
     assertThrows(FileValidationException.class, executable,

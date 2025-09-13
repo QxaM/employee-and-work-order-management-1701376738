@@ -109,6 +109,7 @@ class ProfileControllerTest {
 
     when(contentValidationService.validateSignature()).thenReturn(contentValidationService);
     when(contentValidationService.validateRealContent()).thenReturn(contentValidationService);
+    when(contentValidationService.validateMetadata()).thenReturn(contentValidationService);
   }
 
   @Test
@@ -542,6 +543,33 @@ class ProfileControllerTest {
         .andExpect(MockMvcResultMatchers
             .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
     verify(contentValidationService, times(1)).validateRealContent();
+  }
+
+  @Test
+  void shouldReturn400_When_ImageDimensionInvalid() throws Exception {
+    // Given
+    String testError = "Test error";
+    ValidationError error = ValidationError.IMAGE_SIZE;
+    ValidationResult validationResult = new ValidationResult();
+    validationResult.addError(error);
+
+    doThrow(new FileValidationException(testError, validationResult)).when(contentValidationService).validate();
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .multipart(URL + "/me/image")
+            .file(mockMultipartFile)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.message", Matchers.is(testError)))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.hasSize(validationResult.getMessages().size())))
+        .andExpect(MockMvcResultMatchers
+            .jsonPath("$.errors", Matchers.containsInAnyOrder(error.getMessage())));
+    verify(contentValidationService, times(1)).validateMetadata();
   }
 
   @Test

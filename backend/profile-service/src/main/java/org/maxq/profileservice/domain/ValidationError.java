@@ -16,7 +16,8 @@ public enum ValidationError implements Serializable {
   FILE_CONTENT_TYPE(Messages.FILE_CONTENT_TYPE_ERROR),
   FILE_SIZE(Messages.FILE_SIZE_ERROR),
   FILE_REAL_FORMAT(Messages.FILE_REAL_FORMAT_ERROR),
-  FILE_CONTENT_MISMATCH(Messages.FILE_CONTENT_MISMATCH_ERROR);
+  FILE_CONTENT_MISMATCH(Messages.FILE_CONTENT_MISMATCH_ERROR),
+  IMAGE_SIZE(Messages.IMAGE_SIZE_ERROR);
 
   @Serial
   private static final long serialVersionUID = -4850791916657742834L;
@@ -37,6 +38,8 @@ public enum ValidationError implements Serializable {
         = "Invalid detected file format. Only .jpg, .png and .jpeg files are allowed";
     private static final String FILE_CONTENT_MISMATCH_ERROR
         = "Provided file content does not match the detected file format";
+    private static final String IMAGE_SIZE_ERROR
+        = "Image size exceeds maximum allowed resolution of 8192x8192";
 
     private Messages() {
       throw new IllegalStateException("Non-initializable class");

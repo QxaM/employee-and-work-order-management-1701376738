@@ -19,4 +19,6 @@ public abstract class ContentValidationService extends AbstractValidationService
   public abstract ContentValidationService validateSignature() throws IOException;
 
   public abstract ContentValidationService validateRealContent();
+
+  public abstract ContentValidationService validateMetadata() throws IOException;
 }

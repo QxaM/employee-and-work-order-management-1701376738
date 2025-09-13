@@ -3,7 +3,6 @@ package org.maxq.profileservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.imaging.Imaging;
 import org.maxq.profileservice.controller.api.ProfileApi;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
@@ -14,6 +13,7 @@ import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
+import org.maxq.profileservice.service.image.ImageService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +35,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileMapper profileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
   private final ValidationServiceFactory validationFactory;
+  private final ImageService imageService;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
@@ -80,16 +81,11 @@ public class ProfileController implements ProfileApi {
     InMemoryFile newFile = InMemoryFile.create(file.getBytes(), file.getContentType());
     log.info("New file: {}", newFile.getName());
 
-    try {
-      log.info("Image metadata: {}", Imaging.getMetadata(newFile.getData()));
-    } catch (Exception e) {
-      log.error("Failed to get image metadata", e);
-    }
     validationFactory.createImageContentValidationService(newFile)
         .validateSignature()
         .validateRealContent()
+        .validateMetadata()
         .validate();
-
     return ResponseEntity.ok().build();
   }
 }
