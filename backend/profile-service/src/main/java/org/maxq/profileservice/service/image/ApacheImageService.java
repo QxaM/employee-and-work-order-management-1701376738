@@ -1,5 +1,6 @@
 package org.maxq.profileservice.service.image;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.imaging.AbstractImageParser;
 import org.apache.commons.imaging.ImageFormat;
@@ -7,14 +8,19 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.JpegImageParser;
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
+import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
+import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.apache.commons.imaging.formats.png.PngImageParser;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.maxq.profileservice.domain.ImageMetadata;
 import org.maxq.profileservice.domain.ImageSize;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +28,13 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ApacheImageService implements ImageService {
   private static final int MIN_EXIF_FIELDS = 2; // Expected at least width and height fields
+
+  private final ExifRewriter exifRewriter;
+  private final JpegXmpRewriter jpegXmpRewriter;
+  private final JpegIptcRewriter jpegIptcRewriter;
 
   @Override
   public ImageFormat guessFormat(byte[] imageData) throws IOException {
@@ -76,5 +87,35 @@ public class ApacheImageService implements ImageService {
     return Optional.of(
         new ImageSize(widthField.get().getIntValue(), heightField.get().getIntValue())
     );
+  }
+
+  @Override
+  public InMemoryFile stripMetadata(InMemoryFile file) throws IOException {
+    log.debug("Stripping metadata from file {}", file.getName());
+
+    if ("image/jpeg".equals(file.getContentType()) || "image/jpg".equals(file.getContentType())) {
+      byte[] dataWithoutMeta = stripMetadata(file.getData());
+      return new InMemoryFile(file.getContentType(), file.getName(), dataWithoutMeta);
+    } else {
+      log.info("File is not a JPEG, skipping stripping. Content type: {}", file.getContentType());
+    }
+
+    return file;
+  }
+
+  public byte[] stripMetadata(byte[] data) throws IOException {
+
+    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+      exifRewriter.removeExifMetadata(data, os);
+      byte[] dataWithoutExif = os.toByteArray();
+      os.reset();
+
+      jpegXmpRewriter.removeXmpXml(dataWithoutExif, os);
+      byte[] dataWithoutXmp = os.toByteArray();
+      os.reset();
+
+      jpegIptcRewriter.removeIptc(dataWithoutXmp, os, true);
+      return os.toByteArray();
+    }
   }
 }

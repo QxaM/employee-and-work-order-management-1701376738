@@ -3,6 +3,9 @@ package org.maxq.profileservice.service.image;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
+import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
+import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,16 +13,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ApacheImageServiceTest {
@@ -36,6 +43,13 @@ class ApacheImageServiceTest {
   private TiffField height;
   @Autowired
   private ApacheImageService imageService;
+
+  @MockitoBean
+  private ExifRewriter exifWriter;
+  @MockitoBean
+  private JpegXmpRewriter xmpWriter;
+  @MockitoBean
+  private JpegIptcRewriter iptcWriter;
 
   private List<TiffField> tiffFields;
 
@@ -173,5 +187,39 @@ class ApacheImageServiceTest {
 
     // Then
     assertFalse(imageSizeOptional.isPresent(), "Image size should not be present");
+  }
+
+  @Test
+  void shouldStrip_When_JpegFile() throws IOException {
+    // Given
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/jpeg");
+    doNothing().when(exifWriter).removeExifMetadata(any(byte[].class), any(ByteArrayOutputStream.class));
+    doNothing().when(xmpWriter).removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
+    doNothing().when(iptcWriter)
+        .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), anyBoolean());
+
+    // When
+    InMemoryFile strippedFile = imageService.stripMetadata(file);
+
+    // Then
+    verify(exifWriter, times(1))
+        .removeExifMetadata(eq(file.getData()), any(ByteArrayOutputStream.class));
+    verify(xmpWriter, times(1))
+        .removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
+    verify(iptcWriter, times(1))
+        .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), eq(true));
+    assertNotEquals(file, strippedFile, "New file should be created");
+  }
+
+  @Test
+  void shouldNotStrip_When_PngFile() throws IOException {
+    // Given
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+
+    // When
+    InMemoryFile strippedFile = imageService.stripMetadata(file);
+
+    // Then
+    assertEquals(file, strippedFile, "Original file should be returned");
   }
 }

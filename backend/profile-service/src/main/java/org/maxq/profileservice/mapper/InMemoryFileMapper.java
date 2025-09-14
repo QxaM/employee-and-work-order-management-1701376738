@@ -10,4 +10,8 @@ public class InMemoryFileMapper {
   public ImageDto mapToImageDto(InMemoryFile file, String userEmail) {
     return new ImageDto(userEmail, file.getName(), file.getContentType(), file.getData());
   }
+
+  public InMemoryFile mapToInMemoryFile(ImageDto imageDto) {
+    return new InMemoryFile(imageDto.getContentType(), imageDto.getName(), imageDto.getData());
+  }
 }

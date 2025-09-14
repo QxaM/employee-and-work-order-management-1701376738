@@ -31,4 +31,20 @@ class InMemoryFileMapperTest {
         () -> assertArrayEquals(file.getData(), imageDto.getData(), "Wrong data")
     );
   }
+
+  @Test
+  void shouldMapToInMemoryFile() {
+    // Given
+    ImageDto imageDto = new ImageDto("test@test.com", "test.jpg", "image/jpeg", "test-data".getBytes());
+
+    // When
+    InMemoryFile file = inMemoryFileMapper.mapToInMemoryFile(imageDto);
+
+    // Then
+    assertAll(
+        () -> assertEquals(imageDto.getName(), file.getName(), "Wrong name"),
+        () -> assertEquals(imageDto.getContentType(), file.getContentType(), "Wrong content type"),
+        () -> assertArrayEquals(imageDto.getData(), file.getData(), "Wrong data")
+    );
+  }
 }
