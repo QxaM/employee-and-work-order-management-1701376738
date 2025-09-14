@@ -58,17 +58,17 @@ class ApacheImageServiceTest {
 
   private List<TiffField> tiffFields;
 
-  private static Stream<TestDimensions> invalidImageDimensions() {
+  private static Stream<DimensionHelper> invalidImageDimensions() {
     return Stream.of(
-        new TestDimensions(
+        new DimensionHelper(
             new Dimension(1025, MAX_RESIZE_DIMENSION),
             new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
         ),
-        new TestDimensions(
+        new DimensionHelper(
             new Dimension(MAX_RESIZE_DIMENSION, 1025),
             new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
         ),
-        new TestDimensions(
+        new DimensionHelper(
             new Dimension(2 * MAX_RESIZE_DIMENSION, 1025),
             new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
         )
@@ -266,16 +266,16 @@ class ApacheImageServiceTest {
 
   @ParameterizedTest
   @MethodSource("invalidImageDimensions")
-  void shouldCalculateDimension_For_BiggerImages(TestDimensions testDimensions) {
+  void shouldCalculateDimension_For_BiggerImages(DimensionHelper dimensionHelper) {
     // Given
-    double expectedRatio = Math.min(testDimensions.widthRatio, testDimensions.heightRatio);
-    int expectedWidth = (int) (testDimensions.inputDimension.width * expectedRatio);
-    int expectedHeight = (int) (testDimensions.inputDimension.height * expectedRatio);
+    double expectedRatio = Math.min(dimensionHelper.widthRatio, dimensionHelper.heightRatio);
+    int expectedWidth = (int) (dimensionHelper.inputDimension.width * expectedRatio);
+    int expectedHeight = (int) (dimensionHelper.inputDimension.height * expectedRatio);
 
-    int biggerWidth = testDimensions.inputDimension.width;
-    int biggerHeight = testDimensions.inputDimension.height;
-    int maxWidth = testDimensions.maxDimension.width;
-    int maxHeight = testDimensions.maxDimension.height;
+    int biggerWidth = dimensionHelper.inputDimension.width;
+    int biggerHeight = dimensionHelper.inputDimension.height;
+    int maxWidth = dimensionHelper.maxDimension.width;
+    int maxHeight = dimensionHelper.maxDimension.height;
 
     // When
     Dimension newDimension
@@ -317,13 +317,13 @@ class ApacheImageServiceTest {
     );
   }
 
-  private static class TestDimensions {
+  private static final class DimensionHelper {
     private final Dimension inputDimension;
     private final Dimension maxDimension;
     private final double widthRatio;
     private final double heightRatio;
 
-    private TestDimensions(Dimension inputDimension, Dimension maxDimension) {
+    private DimensionHelper(Dimension inputDimension, Dimension maxDimension) {
       this.inputDimension = inputDimension;
       this.maxDimension = maxDimension;
       this.widthRatio = (double) maxDimension.width / inputDimension.width;

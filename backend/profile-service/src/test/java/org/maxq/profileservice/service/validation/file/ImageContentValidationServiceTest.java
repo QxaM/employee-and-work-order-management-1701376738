@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.maxq.profileservice.domain.*;
 import org.maxq.profileservice.domain.exception.FileValidationException;
-import org.maxq.profileservice.service.image.ImageService;
+import org.maxq.profileservice.service.image.ApacheImageService;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -58,7 +58,7 @@ class ImageContentValidationServiceTest {
   );
 
   @MockitoBean
-  private ImageService imageService;
+  private ApacheImageService imageService;
 
   @Mock
   private JpegImageParser imageParser;

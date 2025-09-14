@@ -2,7 +2,7 @@ package org.maxq.profileservice.service.validation;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.InMemoryFile;
-import org.maxq.profileservice.service.image.ImageService;
+import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.validation.file.ContentValidationService;
 import org.maxq.profileservice.service.validation.file.ImageContentValidationService;
 import org.maxq.profileservice.service.validation.file.ImageValidationService;
@@ -21,7 +21,7 @@ class ValidationServiceFactoryTest {
   private ValidationServiceFactory factory;
 
   @MockitoBean
-  private ImageService imageService;
+  private ApacheImageService imageService;
 
   @Test
   void shouldCreateImageValidationService() {
