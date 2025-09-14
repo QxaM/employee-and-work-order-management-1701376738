@@ -274,7 +274,7 @@ class ProfileControllerTest {
                     ((ImageDto) message.getPayload()).getData()
                 );
               } catch (IOException e) {
-                throw new RuntimeException(e);
+                return false;
               }
             }
         ));
