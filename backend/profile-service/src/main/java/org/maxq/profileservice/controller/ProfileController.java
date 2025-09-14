@@ -91,7 +91,7 @@ public class ProfileController implements ProfileApi {
         .validateMetadata()
         .validate();
 
-    ImageDto image = inMemoryFileMapper.mapToImageDto(newFile);
+    ImageDto image = inMemoryFileMapper.mapToImageDto(newFile, authentication.getPrincipal().toString());
     RabbitmqMessage<ImageDto> message = new RabbitmqMessage<>(image, imageUploadTopic);
     messageService.sendMessage(message);
     return ResponseEntity.ok().build();

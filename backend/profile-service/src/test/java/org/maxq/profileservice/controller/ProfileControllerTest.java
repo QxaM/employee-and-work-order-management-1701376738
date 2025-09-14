@@ -267,6 +267,10 @@ class ProfileControllerTest {
         .sendMessage(argThat(message -> "profile.image.upload".equals(message.getTopic())));
     verify(messageService, times(1))
         .sendMessage(argThat(message ->
+            EMAIL.equals(((ImageDto) message.getPayload()).getUserEmail())
+        ));
+    verify(messageService, times(1))
+        .sendMessage(argThat(message ->
             {
               try {
                 return Arrays.equals(

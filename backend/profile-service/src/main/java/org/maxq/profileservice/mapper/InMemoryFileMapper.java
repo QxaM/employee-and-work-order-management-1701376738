@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InMemoryFileMapper {
 
-  public ImageDto mapToImageDto(InMemoryFile file) {
-    return new ImageDto(file.getName(), file.getContentType(), file.getData());
+  public ImageDto mapToImageDto(InMemoryFile file, String userEmail) {
+    return new ImageDto(userEmail, file.getName(), file.getContentType(), file.getData());
   }
 }
