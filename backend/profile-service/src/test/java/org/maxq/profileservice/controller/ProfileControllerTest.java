@@ -8,6 +8,7 @@ import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
 import org.maxq.profileservice.domain.ValidationError;
 import org.maxq.profileservice.domain.ValidationResult;
+import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
@@ -39,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -261,6 +263,29 @@ class ProfileControllerTest {
             .header("X-User", EMAIL)
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isOk());
+    verify(messageService, times(1))
+        .sendMessage(argThat(message -> "profile.image.upload".equals(message.getTopic())));
+    verify(messageService, times(1))
+        .sendMessage(argThat(message ->
+            EMAIL.equals(((ImageDto) message.getPayload()).getUserEmail())
+        ));
+    verify(messageService, times(1))
+        .sendMessage(argThat(message ->
+            {
+              try {
+                return Arrays.equals(
+                    mockMultipartFile.getBytes(),
+                    ((ImageDto) message.getPayload()).getData()
+                );
+              } catch (IOException e) {
+                return false;
+              }
+            }
+        ));
+    verify(messageService, times(1))
+        .sendMessage(argThat(message ->
+            !mockMultipartFile.getOriginalFilename().equals(((ImageDto) message.getPayload()).getName())
+        ));
   }
 
   @Test

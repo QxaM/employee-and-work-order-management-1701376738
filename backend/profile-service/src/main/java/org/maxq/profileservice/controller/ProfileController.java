@@ -6,14 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.controller.api.ProfileApi;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.maxq.profileservice.event.message.RabbitmqMessage;
+import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileService;
-import org.maxq.profileservice.service.image.ImageService;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.maxq.profileservice.service.validation.ValidationServiceFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,12 +34,15 @@ public class ProfileController implements ProfileApi {
 
   private final ProfileService profileService;
   private final ProfileMapper profileMapper;
+  private final InMemoryFileMapper inMemoryFileMapper;
   private final MessageService<RabbitmqMessage<?>> messageService;
   private final ValidationServiceFactory validationFactory;
-  private final ImageService imageService;
 
   @Value("${profile.topic.update}")
   private String updateProfileTopic;
+
+  @Value("${profile.topic.image.upload}")
+  private String imageUploadTopic;
 
   @Override
   @GetMapping("/me")
@@ -86,6 +90,10 @@ public class ProfileController implements ProfileApi {
         .validateRealContent()
         .validateMetadata()
         .validate();
+
+    ImageDto image = inMemoryFileMapper.mapToImageDto(newFile, authentication.getPrincipal().toString());
+    RabbitmqMessage<ImageDto> message = new RabbitmqMessage<>(image, imageUploadTopic);
+    messageService.sendMessage(message);
     return ResponseEntity.ok().build();
   }
 }
