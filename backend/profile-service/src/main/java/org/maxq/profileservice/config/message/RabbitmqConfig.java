@@ -19,10 +19,14 @@ public class RabbitmqConfig {
   private String createQueueName;
   @Value("${profile.queue.update}")
   private String updateQueueName;
+  @Value("${profile.queue.image.upload}")
+  private String imageUploadQueueName;
   @Value("${profile.topic.create}")
   private String createTopicName;
   @Value("${profile.topic.update}")
   private String updateTopicName;
+  @Value("${profile.topic.image.upload}")
+  private String imageUploadTopicName;
 
   @Bean
   public TopicExchange topicExchange() {
@@ -40,6 +44,11 @@ public class RabbitmqConfig {
   }
 
   @Bean
+  public Queue imageUploadQueue() {
+    return new Queue(imageUploadQueueName, false);
+  }
+
+  @Bean
   public Binding createProfileBinding(Queue createQueue, TopicExchange topicExchange) {
     return BindingBuilder.bind(createQueue).to(topicExchange).with(createTopicName);
   }
@@ -47,6 +56,11 @@ public class RabbitmqConfig {
   @Bean
   public Binding updateProfileBinding(Queue updateQueue, TopicExchange topicExchange) {
     return BindingBuilder.bind(updateQueue).to(topicExchange).with(updateTopicName);
+  }
+
+  @Bean
+  public Binding profileImageUploadBinding(Queue imageUploadQueue, TopicExchange topicExchange) {
+    return BindingBuilder.bind(imageUploadQueue).to(topicExchange).with(imageUploadTopicName);
   }
 
   @Bean
