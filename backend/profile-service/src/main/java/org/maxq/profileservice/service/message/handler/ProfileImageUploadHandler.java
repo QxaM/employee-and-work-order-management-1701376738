@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
-import org.maxq.profileservice.service.image.ImageService;
+import org.maxq.profileservice.service.image.ApacheImageService;
 import org.springframework.stereotype.Component;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 @Slf4j
@@ -16,7 +17,7 @@ import java.io.IOException;
 public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
 
   private final InMemoryFileMapper inMemoryFileMapper;
-  private final ImageService imageService;
+  private final ApacheImageService imageService;
 
   @Override
   public void handleMessage(ImageDto message) {
@@ -26,8 +27,11 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
     try {
       InMemoryFile fileWithoutMetadata = imageService.stripMetadata(file);
       log.info("Stripped metadata from file: {}", fileWithoutMetadata.getName());
+
+      BufferedImage resizedImage = imageService.resizeImage(file);
+      log.info("Resized image: {}x{}", resizedImage.getWidth(), resizedImage.getHeight());
     } catch (IOException e) {
-      log.error("Failed to strip metadata from file: {}", file, e);
+      log.error("Failed processing image: {}", file, e);
     }
   }
 }

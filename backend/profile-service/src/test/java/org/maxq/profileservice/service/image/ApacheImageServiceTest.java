@@ -11,6 +11,7 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
@@ -19,11 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,6 +35,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class ApacheImageServiceTest {
 
+  private static final int MAX_RESIZE_DIMENSION = 1024;
   private static final int DIMENSION = 8 * 1024;
 
   @Mock
@@ -52,6 +57,23 @@ class ApacheImageServiceTest {
   private JpegIptcRewriter iptcWriter;
 
   private List<TiffField> tiffFields;
+
+  private static Stream<TestDimensions> invalidImageDimensions() {
+    return Stream.of(
+        new TestDimensions(
+            new Dimension(1025, MAX_RESIZE_DIMENSION),
+            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
+        ),
+        new TestDimensions(
+            new Dimension(MAX_RESIZE_DIMENSION, 1025),
+            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
+        ),
+        new TestDimensions(
+            new Dimension(2 * MAX_RESIZE_DIMENSION, 1025),
+            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
+        )
+    );
+  }
 
   @BeforeEach
   void setUp() {
@@ -221,5 +243,91 @@ class ApacheImageServiceTest {
 
     // Then
     assertEquals(file, strippedFile, "Original file should be returned");
+  }
+
+  @Test
+  void shouldCalculateDimension_For_SmallerImages() {
+    // Given
+    int smallerWidth = 100;
+    int smallerHeight = 100;
+    int maxWidth = 1024;
+    int maxHeight = 1024;
+
+    // When
+    Dimension newDimension
+        = imageService.calculateDimension(smallerWidth, smallerHeight, maxWidth, maxHeight);
+
+    // Then
+    assertAll(
+        () -> assertEquals(smallerWidth, newDimension.width, "Width should be equal"),
+        () -> assertEquals(smallerHeight, newDimension.height, "Height should be equal")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidImageDimensions")
+  void shouldCalculateDimension_For_BiggerImages(TestDimensions testDimensions) {
+    // Given
+    double expectedRatio = Math.min(testDimensions.widthRatio, testDimensions.heightRatio);
+    int expectedWidth = (int) (testDimensions.inputDimension.width * expectedRatio);
+    int expectedHeight = (int) (testDimensions.inputDimension.height * expectedRatio);
+
+    int biggerWidth = testDimensions.inputDimension.width;
+    int biggerHeight = testDimensions.inputDimension.height;
+    int maxWidth = testDimensions.maxDimension.width;
+    int maxHeight = testDimensions.maxDimension.height;
+
+    // When
+    Dimension newDimension
+        = imageService.calculateDimension(biggerWidth, biggerHeight, maxWidth, maxHeight);
+
+    // Then
+    assertAll(
+        () -> assertEquals(expectedWidth, newDimension.width, "Width should be equal"),
+        () -> assertEquals(expectedHeight, newDimension.height, "Height should be equal")
+    );
+  }
+
+  @Test
+  void shouldResizeImage() throws IOException {
+    // Given
+    ApacheImageService spyService = spy(imageService);
+    BufferedImage mockImage = mock(BufferedImage.class);
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+    int imageDimension = 2 * MAX_RESIZE_DIMENSION;
+
+    doReturn(mockImage).when(spyService).getBufferedImage(file);
+    when(mockImage.getWidth()).thenReturn(imageDimension);
+    when(mockImage.getHeight()).thenReturn(imageDimension);
+    when(mockImage.getType()).thenReturn(BufferedImage.TYPE_INT_RGB);
+
+    // When
+    BufferedImage newImage = spyService.resizeImage(file);
+
+    // Then
+    assertAll(
+        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getWidth(),
+            "Image should be correctly resized"),
+        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getHeight(),
+            "Image should be correctly resized")
+    );
+    verify(spyService, times(1)).calculateDimension(
+        imageDimension, imageDimension,
+        MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION
+    );
+  }
+
+  private static class TestDimensions {
+    private final Dimension inputDimension;
+    private final Dimension maxDimension;
+    private final double widthRatio;
+    private final double heightRatio;
+
+    private TestDimensions(Dimension inputDimension, Dimension maxDimension) {
+      this.inputDimension = inputDimension;
+      this.maxDimension = maxDimension;
+      this.widthRatio = (double) maxDimension.width / inputDimension.width;
+      this.heightRatio = (double) maxDimension.height / inputDimension.height;
+    }
   }
 }

@@ -20,6 +20,7 @@ import org.maxq.profileservice.domain.InMemoryFile;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -31,10 +32,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApacheImageService implements ImageService {
   private static final int MIN_EXIF_FIELDS = 2; // Expected at least width and height fields
+  private static final int MAX_IMAGE_WIDTH = 1024;
+  private static final int MAX_IMAGE_HEIGHT = 1024;
 
   private final ExifRewriter exifRewriter;
   private final JpegXmpRewriter jpegXmpRewriter;
   private final JpegIptcRewriter jpegIptcRewriter;
+
+  @Override
+  public BufferedImage getBufferedImage(InMemoryFile file) throws IOException {
+    return Imaging.getBufferedImage(file.getData());
+  }
 
   @Override
   public ImageFormat guessFormat(byte[] imageData) throws IOException {
@@ -117,5 +125,16 @@ public class ApacheImageService implements ImageService {
       jpegIptcRewriter.removeIptc(dataWithoutXmp, os, true);
       return os.toByteArray();
     }
+  }
+
+  public BufferedImage resizeImage(InMemoryFile file) throws IOException {
+    return resizeImage(file, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
+  }
+
+  @Override
+  public BufferedImage resizeImage(InMemoryFile file, int maxWidth, int maxHeight) throws IOException {
+    BufferedImage originalImage = getBufferedImage(file);
+    Dimension newDimensions = calculateDimension(originalImage.getWidth(), originalImage.getHeight(), maxWidth, maxHeight);
+    return new BufferedImage(newDimensions.width, newDimensions.height, originalImage.getType());
   }
 }
