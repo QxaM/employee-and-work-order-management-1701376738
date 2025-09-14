@@ -46,7 +46,7 @@ const Profile = () => {
 
   const imageUploadErrorMessage =
     imageUploadErrorData &&
-    ('cause' in imageUploadErrorData
+    ('cause' in imageUploadErrorData && imageUploadErrorData.cause
       ? ({
           message: imageUploadErrorData.message,
           cause: imageUploadErrorData.cause,

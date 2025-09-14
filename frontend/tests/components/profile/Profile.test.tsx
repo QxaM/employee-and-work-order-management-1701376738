@@ -490,6 +490,41 @@ describe('Profile', () => {
       });
     });
 
+    it('Should dispatch error modal when no cause undefined', () => {
+      // Given
+      const errorMessage = 'Error message';
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+            cause: undefined,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: errorMessage,
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
     it('Should dispatch error modal with cause', () => {
       // Given
       const errorMessage = 'Error message';
