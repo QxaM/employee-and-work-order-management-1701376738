@@ -1,4 +1,13 @@
-import { Badge, Box, Flex, Grid, Heading, Link, Separator, Skeleton, } from '@radix-ui/themes';
+import {
+  Badge,
+  Box,
+  Flex,
+  Grid,
+  Heading,
+  Link,
+  Separator,
+  Skeleton,
+} from '@radix-ui/themes';
 import {
   useMyProfileQuery,
   useUpdateMyProfileImageMutation,
