@@ -2,16 +2,14 @@ package org.maxq.profileservice.service.image;
 
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.common.SimpleBufferedImageFactory;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
-import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
-import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
-import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
@@ -20,22 +18,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.awt.*;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ApacheImageServiceTest {
 
-  private static final int MAX_RESIZE_DIMENSION = 1024;
   private static final int DIMENSION = 8 * 1024;
 
   @Mock
@@ -50,30 +49,9 @@ class ApacheImageServiceTest {
   private ApacheImageService imageService;
 
   @MockitoBean
-  private ExifRewriter exifWriter;
-  @MockitoBean
-  private JpegXmpRewriter xmpWriter;
-  @MockitoBean
-  private JpegIptcRewriter iptcWriter;
+  private ImageWriter jpegImageWriter;
 
   private List<TiffField> tiffFields;
-
-  private static Stream<DimensionHelper> invalidImageDimensions() {
-    return Stream.of(
-        new DimensionHelper(
-            new Dimension(1025, MAX_RESIZE_DIMENSION),
-            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
-        ),
-        new DimensionHelper(
-            new Dimension(MAX_RESIZE_DIMENSION, 1025),
-            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
-        ),
-        new DimensionHelper(
-            new Dimension(2 * MAX_RESIZE_DIMENSION, 1025),
-            new Dimension(MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION)
-        )
-    );
-  }
 
   @BeforeEach
   void setUp() {
@@ -212,122 +190,59 @@ class ApacheImageServiceTest {
   }
 
   @Test
-  void shouldStrip_When_JpegFile() throws IOException {
+  void shouldWriteToJpeg_When_WriteCorrect() throws IOException {
     // Given
-    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/jpeg");
-    doNothing().when(exifWriter).removeExifMetadata(any(byte[].class), any(ByteArrayOutputStream.class));
-    doNothing().when(xmpWriter).removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
-    doNothing().when(iptcWriter)
-        .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), anyBoolean());
+    int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
+    float compressionQuality = 0.9f;
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+
+    doCallRealMethod().when(jpegImageWriter).setOutput(any());
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
 
     // When
-    InMemoryFile strippedFile = imageService.stripMetadata(file);
+    InMemoryFile writtenImage = imageService.writeToJpeg(image);
 
     // Then
-    verify(exifWriter, times(1))
-        .removeExifMetadata(eq(file.getData()), any(ByteArrayOutputStream.class));
-    verify(xmpWriter, times(1))
-        .removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
-    verify(iptcWriter, times(1))
-        .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), eq(true));
-    assertNotEquals(file, strippedFile, "New file should be created");
+    assertEquals("image/jpeg", writtenImage.getContentType(), "Content type should be correct");
+    verify(jpegImageWriter, times(1)).setOutput(any());
+    verify(jpegImageWriter, times(1))
+        .write(
+            eq(null),
+            any(IIOImage.class),
+            argThat(writeParam ->
+                writeParam.getCompressionMode() == imageWriteParam
+                    && writeParam.getCompressionQuality() == compressionQuality
+            )
+        );
+    verify(jpegImageWriter, times(1)).dispose();
   }
 
   @Test
-  void shouldNotStrip_When_PngFile() throws IOException {
+  void shouldNotWriteToJpeg_When_writeFailed() throws IOException {
     // Given
-    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+    int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
+    float compressionQuality = 0.9f;
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+
+    doCallRealMethod().when(jpegImageWriter).setOutput(any());
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+    doThrow(new IOException("Test exception")).when(jpegImageWriter).write(any(), any(), any());
 
     // When
-    InMemoryFile strippedFile = imageService.stripMetadata(file);
+    Executable executable = () -> imageService.writeToJpeg(image);
 
     // Then
-    assertEquals(file, strippedFile, "Original file should be returned");
-  }
-
-  @Test
-  void shouldCalculateDimension_For_SmallerImages() {
-    // Given
-    int smallerWidth = 100;
-    int smallerHeight = 100;
-    int maxWidth = 1024;
-    int maxHeight = 1024;
-
-    // When
-    Dimension newDimension
-        = imageService.calculateDimension(smallerWidth, smallerHeight, maxWidth, maxHeight);
-
-    // Then
-    assertAll(
-        () -> assertEquals(smallerWidth, newDimension.width, "Width should be equal"),
-        () -> assertEquals(smallerHeight, newDimension.height, "Height should be equal")
-    );
-  }
-
-  @ParameterizedTest
-  @MethodSource("invalidImageDimensions")
-  void shouldCalculateDimension_For_BiggerImages(DimensionHelper dimensionHelper) {
-    // Given
-    double expectedRatio = Math.min(dimensionHelper.widthRatio, dimensionHelper.heightRatio);
-    int expectedWidth = (int) (dimensionHelper.inputDimension.width * expectedRatio);
-    int expectedHeight = (int) (dimensionHelper.inputDimension.height * expectedRatio);
-
-    int biggerWidth = dimensionHelper.inputDimension.width;
-    int biggerHeight = dimensionHelper.inputDimension.height;
-    int maxWidth = dimensionHelper.maxDimension.width;
-    int maxHeight = dimensionHelper.maxDimension.height;
-
-    // When
-    Dimension newDimension
-        = imageService.calculateDimension(biggerWidth, biggerHeight, maxWidth, maxHeight);
-
-    // Then
-    assertAll(
-        () -> assertEquals(expectedWidth, newDimension.width, "Width should be equal"),
-        () -> assertEquals(expectedHeight, newDimension.height, "Height should be equal")
-    );
-  }
-
-  @Test
-  void shouldResizeImage() throws IOException {
-    // Given
-    ApacheImageService spyService = spy(imageService);
-    BufferedImage mockImage = mock(BufferedImage.class);
-    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
-    int imageDimension = 2 * MAX_RESIZE_DIMENSION;
-
-    doReturn(mockImage).when(spyService).getBufferedImage(file);
-    when(mockImage.getWidth()).thenReturn(imageDimension);
-    when(mockImage.getHeight()).thenReturn(imageDimension);
-    when(mockImage.getType()).thenReturn(BufferedImage.TYPE_INT_RGB);
-
-    // When
-    BufferedImage newImage = spyService.resizeImage(file);
-
-    // Then
-    assertAll(
-        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getWidth(),
-            "Image should be correctly resized"),
-        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getHeight(),
-            "Image should be correctly resized")
-    );
-    verify(spyService, times(1)).calculateDimension(
-        imageDimension, imageDimension,
-        MAX_RESIZE_DIMENSION, MAX_RESIZE_DIMENSION
-    );
-  }
-
-  private static final class DimensionHelper {
-    private final Dimension inputDimension;
-    private final Dimension maxDimension;
-    private final double widthRatio;
-    private final double heightRatio;
-
-    private DimensionHelper(Dimension inputDimension, Dimension maxDimension) {
-      this.inputDimension = inputDimension;
-      this.maxDimension = maxDimension;
-      this.widthRatio = (double) maxDimension.width / inputDimension.width;
-      this.heightRatio = (double) maxDimension.height / inputDimension.height;
-    }
+    assertThrows(IOException.class, executable, "Exception should be thrown");
+    verify(jpegImageWriter, times(1)).setOutput(any());
+    verify(jpegImageWriter, times(1))
+        .write(
+            eq(null),
+            any(IIOImage.class),
+            argThat(writeParam ->
+                writeParam.getCompressionMode() == imageWriteParam
+                    && writeParam.getCompressionQuality() == compressionQuality
+            )
+        );
+    verify(jpegImageWriter, times(1)).dispose();
   }
 }

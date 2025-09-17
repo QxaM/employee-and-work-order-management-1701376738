@@ -8,9 +8,6 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.JpegImageParser;
-import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
-import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
-import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.apache.commons.imaging.formats.png.PngImageParser;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
@@ -19,6 +16,11 @@ import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -32,12 +34,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApacheImageService implements ImageService {
   private static final int MIN_EXIF_FIELDS = 2; // Expected at least width and height fields
-  private static final int MAX_IMAGE_WIDTH = 1024;
-  private static final int MAX_IMAGE_HEIGHT = 1024;
 
-  private final ExifRewriter exifRewriter;
-  private final JpegXmpRewriter jpegXmpRewriter;
-  private final JpegIptcRewriter jpegIptcRewriter;
+  private final ImageWriter jpegImageWriter;
 
   @Override
   public BufferedImage getBufferedImage(InMemoryFile file) throws IOException {
@@ -98,43 +96,20 @@ public class ApacheImageService implements ImageService {
   }
 
   @Override
-  public InMemoryFile stripMetadata(InMemoryFile file) throws IOException {
-    log.debug("Stripping metadata from file {}", file.getName());
+  public InMemoryFile writeToJpeg(BufferedImage image) throws IOException {
+    try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+         ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
+      jpegImageWriter.setOutput(ios);
 
-    if ("image/jpeg".equals(file.getContentType()) || "image/jpg".equals(file.getContentType())) {
-      byte[] dataWithoutMeta = stripMetadata(file.getData());
-      return new InMemoryFile(file.getContentType(), file.getName(), dataWithoutMeta);
-    } else {
-      log.info("File is not a JPEG, skipping stripping. Content type: {}", file.getContentType());
+      ImageWriteParam params = jpegImageWriter.getDefaultWriteParam();
+      params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+      params.setCompressionQuality(0.9f);
+      IIOImage newImage = new IIOImage(image, null, null);
+
+      jpegImageWriter.write(null, newImage, params);
+      return InMemoryFile.create(os.toByteArray(), "image/jpeg");
+    } finally {
+      jpegImageWriter.dispose();
     }
-
-    return file;
-  }
-
-  public byte[] stripMetadata(byte[] data) throws IOException {
-
-    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-      exifRewriter.removeExifMetadata(data, os);
-      byte[] dataWithoutExif = os.toByteArray();
-      os.reset();
-
-      jpegXmpRewriter.removeXmpXml(dataWithoutExif, os);
-      byte[] dataWithoutXmp = os.toByteArray();
-      os.reset();
-
-      jpegIptcRewriter.removeIptc(dataWithoutXmp, os, true);
-      return os.toByteArray();
-    }
-  }
-
-  public BufferedImage resizeImage(InMemoryFile file) throws IOException {
-    return resizeImage(file, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
-  }
-
-  @Override
-  public BufferedImage resizeImage(InMemoryFile file, int maxWidth, int maxHeight) throws IOException {
-    BufferedImage originalImage = getBufferedImage(file);
-    Dimension newDimensions = calculateDimension(originalImage.getWidth(), originalImage.getHeight(), maxWidth, maxHeight);
-    return new BufferedImage(newDimensions.width, newDimensions.height, originalImage.getType());
   }
 }

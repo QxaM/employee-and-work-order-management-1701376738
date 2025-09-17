@@ -6,6 +6,7 @@ import org.maxq.profileservice.domain.InMemoryFile;
 import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.service.image.ApacheImageService;
+import org.maxq.profileservice.service.image.processor.ApacheImageProcessor;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
@@ -18,6 +19,7 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
 
   private final InMemoryFileMapper inMemoryFileMapper;
   private final ApacheImageService imageService;
+  private final ApacheImageProcessor imageProcessor;
 
   @Override
   public void handleMessage(ImageDto message) {
@@ -25,12 +27,19 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
     InMemoryFile file = inMemoryFileMapper.mapToInMemoryFile(message);
 
     try {
-      InMemoryFile fileWithoutMetadata = imageService.stripMetadata(file);
+      InMemoryFile fileWithoutMetadata = imageProcessor.stripMetadata(file);
       log.info("Stripped metadata from file: {}", fileWithoutMetadata.getName());
 
-      BufferedImage resizedImage = imageService.resizeImage(file);
+      BufferedImage resizedImage = imageProcessor.resizeImage(file);
       log.info("Resized image: {}x{}", resizedImage.getWidth(), resizedImage.getHeight());
-    } catch (IOException e) {
+
+      BufferedImage cleanImage = imageProcessor.cleanImage(resizedImage);
+      log.info("Rewritten file into clean raster");
+
+      InMemoryFile jpegImage = imageService.writeToJpeg(cleanImage);
+      log.info("Cleaned image written to file: {}", jpegImage.getName());
+      log.info("Cleaned image size: {}", imageService.getMetadata(jpegImage.getData()));
+    } catch (IOException | IllegalArgumentException e) {
       log.error("Failed processing image: {}", file, e);
     }
   }
