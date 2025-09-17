@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { registerModal } from '../store/modalSlice.ts';
@@ -49,39 +49,57 @@ export const useFormNotifications = ({
 }: FormNotificationsProps) => {
   const dispatch = useAppDispatch();
 
+  const successRef = useRef<StatusProps>(success);
+  const errorRef = useRef<StatusProps | undefined>(error);
+
+  successRef.current = success;
+  errorRef.current = error;
+
+  const dispatchSuccessModal = useCallback(() => {
+    const currentSuccess = successRef.current;
+
+    dispatch(
+      registerModal({
+        id: uuidv4(),
+        content: {
+          message: getValueOrDefault(currentSuccess.message, defaultSuccess),
+          type: 'success',
+          hideTimeout: currentSuccess.hideTimeout,
+        },
+      })
+    );
+    if (currentSuccess.onEvent) {
+      currentSuccess.onEvent();
+    }
+  }, [dispatch]);
+
+  const dispatchErrorModal = useCallback(() => {
+    const currentError = errorRef.current;
+
+    dispatch(
+      registerModal({
+        id: uuidv4(),
+        content: {
+          message: getValueOrDefault(currentError?.message, defaultError),
+          type: 'error',
+          hideTimeout: currentError?.hideTimeout,
+        },
+      })
+    );
+    if (currentError?.onEvent) {
+      currentError.onEvent();
+    }
+  }, [dispatch]);
+
   useEffect(() => {
     if (success.status) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: getValueOrDefault(success.message, defaultSuccess),
-            type: 'success',
-            hideTimeout: success.hideTimeout,
-          },
-        })
-      );
-      if (success.onEvent) {
-        success.onEvent();
-      }
+      dispatchSuccessModal();
     }
-  }, [success, dispatch]);
+  }, [success.status, dispatchSuccessModal]);
 
   useEffect(() => {
     if (error?.status) {
-      dispatch(
-        registerModal({
-          id: uuidv4(),
-          content: {
-            message: getValueOrDefault(error.message, defaultError),
-            type: 'error',
-            hideTimeout: error.hideTimeout,
-          },
-        })
-      );
-      if (error.onEvent) {
-        error.onEvent();
-      }
+      dispatchErrorModal();
     }
-  }, [error, dispatch]);
+  }, [error?.status, dispatchErrorModal]);
 };
