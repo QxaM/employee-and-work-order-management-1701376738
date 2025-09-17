@@ -125,6 +125,7 @@ class ProfileImageUploadHandlerTest {
     when(imageProcessor.stripMetadata(file)).thenReturn(file);
     when(imageProcessor.resizeImage(file)).thenReturn(mockImage);
     when(imageProcessor.cleanImage(mockImage)).thenReturn(mockImage);
+    when(imageRandomizer.randomize(mockImage)).thenReturn(mockImage);
     doThrow(IOException.class).when(imageService).writeToJpeg(mockImage);
 
 
