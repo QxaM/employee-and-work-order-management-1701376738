@@ -260,6 +260,7 @@ describe('Password Update Form', () => {
 
     it('Should register successfull modal when success', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
         mockMutate,
         {
@@ -295,6 +296,7 @@ describe('Password Update Form', () => {
 
     it('Should register error modal with error', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       const errorMessage = 'Test Error';
       vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
         mockMutate,
@@ -334,6 +336,7 @@ describe('Password Update Form', () => {
 
     it('Should register error modal with default error message', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       vi.spyOn(passwordApiSlice, 'usePasswordUpdateMutation').mockReturnValue([
         mockMutate,
         {

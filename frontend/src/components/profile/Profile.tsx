@@ -15,7 +15,7 @@ import {
 } from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
 import ProfileItem from './ProfileItem.tsx';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
 import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
@@ -44,14 +44,17 @@ const Profile = () => {
     },
   ] = useUpdateMyProfileImageMutation();
 
-  const imageUploadErrorMessage =
-    imageUploadErrorData &&
-    ('cause' in imageUploadErrorData
+  const imageUploadErrorMessage = useMemo(() => {
+    if (!imageUploadErrorData) {
+      return undefined;
+    }
+    return 'cause' in imageUploadErrorData && imageUploadErrorData.cause
       ? ({
           message: imageUploadErrorData.message,
           cause: imageUploadErrorData.cause,
         } as MessageWithCause)
-      : imageUploadErrorData.message);
+      : imageUploadErrorData.message;
+  }, [imageUploadErrorData]);
 
   useFormNotifications({
     success: {

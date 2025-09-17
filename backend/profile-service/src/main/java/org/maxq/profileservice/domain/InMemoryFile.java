@@ -3,6 +3,7 @@ package org.maxq.profileservice.domain;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,10 +15,10 @@ public final class InMemoryFile {
   private final String contentType;
   private final byte[] data;
 
-  private InMemoryFile(String contentType, String name, byte[] data) {
+  public InMemoryFile(String contentType, String name, byte[] data) {
     this.contentType = contentType;
     this.name = name;
-    this.data = data;
+    this.data = Arrays.copyOf(data, data.length);
   }
 
   public static InMemoryFile create(byte[] data, @Nullable String contentType) {

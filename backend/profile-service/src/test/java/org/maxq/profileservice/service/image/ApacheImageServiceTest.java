@@ -2,24 +2,35 @@ package org.maxq.profileservice.service.image;
 
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.common.SimpleBufferedImageFactory;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
+import org.maxq.profileservice.domain.InMemoryFile;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ApacheImageServiceTest {
@@ -36,6 +47,9 @@ class ApacheImageServiceTest {
   private TiffField height;
   @Autowired
   private ApacheImageService imageService;
+
+  @MockitoBean
+  private ImageWriter jpegImageWriter;
 
   private List<TiffField> tiffFields;
 
@@ -173,5 +187,62 @@ class ApacheImageServiceTest {
 
     // Then
     assertFalse(imageSizeOptional.isPresent(), "Image size should not be present");
+  }
+
+  @Test
+  void shouldWriteToJpeg_When_WriteCorrect() throws IOException {
+    // Given
+    int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
+    float compressionQuality = 0.9f;
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+
+    doCallRealMethod().when(jpegImageWriter).setOutput(any());
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+
+    // When
+    InMemoryFile writtenImage = imageService.writeToJpeg(image);
+
+    // Then
+    assertEquals("image/jpeg", writtenImage.getContentType(), "Content type should be correct");
+    verify(jpegImageWriter, times(1)).setOutput(any());
+    verify(jpegImageWriter, times(1))
+        .write(
+            eq(null),
+            any(IIOImage.class),
+            argThat(writeParam ->
+                writeParam.getCompressionMode() == imageWriteParam
+                    && writeParam.getCompressionQuality() == compressionQuality
+            )
+        );
+    verify(jpegImageWriter, times(1)).dispose();
+  }
+
+  @Test
+  void shouldNotWriteToJpeg_When_writeFailed() throws IOException {
+    // Given
+    int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
+    float compressionQuality = 0.9f;
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+
+    doCallRealMethod().when(jpegImageWriter).setOutput(any());
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+    doThrow(new IOException("Test exception")).when(jpegImageWriter).write(any(), any(), any());
+
+    // When
+    Executable executable = () -> imageService.writeToJpeg(image);
+
+    // Then
+    assertThrows(IOException.class, executable, "Exception should be thrown");
+    verify(jpegImageWriter, times(1)).setOutput(any());
+    verify(jpegImageWriter, times(1))
+        .write(
+            eq(null),
+            any(IIOImage.class),
+            argThat(writeParam ->
+                writeParam.getCompressionMode() == imageWriteParam
+                    && writeParam.getCompressionQuality() == compressionQuality
+            )
+        );
+    verify(jpegImageWriter, times(1)).dispose();
   }
 }
