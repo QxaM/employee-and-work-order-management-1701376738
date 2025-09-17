@@ -7,6 +7,7 @@ import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.image.processor.ApacheImageProcessor;
+import org.maxq.profileservice.service.image.processor.ApacheImageRandomizer;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
   private final InMemoryFileMapper inMemoryFileMapper;
   private final ApacheImageService imageService;
   private final ApacheImageProcessor imageProcessor;
+  private final ApacheImageRandomizer imageRandomizer;
 
   @Override
   public void handleMessage(ImageDto message) {
@@ -36,7 +38,10 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
       BufferedImage cleanImage = imageProcessor.cleanImage(resizedImage);
       log.info("Rewritten file into clean raster");
 
-      InMemoryFile jpegImage = imageService.writeToJpeg(cleanImage);
+      BufferedImage randomizedImage = imageRandomizer.randomize(cleanImage);
+      log.info("Randomized image - added noise");
+
+      InMemoryFile jpegImage = imageService.writeToJpeg(randomizedImage);
       log.info("Cleaned image written to file: {}", jpegImage.getName());
       log.info("Cleaned image size: {}", imageService.getMetadata(jpegImage.getData()));
     } catch (IOException | IllegalArgumentException e) {
