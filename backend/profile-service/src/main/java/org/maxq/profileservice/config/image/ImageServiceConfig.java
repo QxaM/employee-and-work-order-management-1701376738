@@ -6,9 +6,6 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-
 @Configuration
 public class ImageServiceConfig {
 
@@ -25,10 +22,5 @@ public class ImageServiceConfig {
   @Bean
   public JpegIptcRewriter jpegIptcRewriter() {
     return new JpegIptcRewriter();
-  }
-
-  @Bean
-  public ImageWriter jpegImageWriter() {
-    return ImageIO.getImageWritersByFormatName("jpeg").next();
   }
 }

@@ -8,6 +8,7 @@ import org.maxq.profileservice.domain.dto.ImageDto;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.image.processor.ApacheImageProcessor;
+import org.maxq.profileservice.service.image.processor.ApacheImageRandomizer;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,8 @@ class ProfileImageUploadHandlerTest {
   private ApacheImageService imageService;
   @MockitoBean
   private ApacheImageProcessor imageProcessor;
+  @MockitoBean
+  private ApacheImageRandomizer imageRandomizer;
 
   @Mock
   private BufferedImage mockImage;
@@ -54,6 +57,7 @@ class ProfileImageUploadHandlerTest {
     when(imageProcessor.stripMetadata(file)).thenReturn(file);
     when(imageProcessor.resizeImage(file)).thenReturn(mockImage);
     when(imageProcessor.cleanImage(mockImage)).thenReturn(mockImage);
+    when(imageRandomizer.randomize(mockImage)).thenReturn(mockImage);
     when(imageService.writeToJpeg(mockImage)).thenReturn(file);
 
     // When
@@ -62,6 +66,9 @@ class ProfileImageUploadHandlerTest {
     // Then
     verify(imageProcessor, times(1)).stripMetadata(file);
     verify(imageProcessor, times(1)).resizeImage(file);
+    verify(imageProcessor, times(1)).cleanImage(mockImage);
+    verify(imageRandomizer, times(1)).randomize(mockImage);
+    verify(imageService, times(1)).writeToJpeg(mockImage);
   }
 
   @Test
@@ -118,6 +125,7 @@ class ProfileImageUploadHandlerTest {
     when(imageProcessor.stripMetadata(file)).thenReturn(file);
     when(imageProcessor.resizeImage(file)).thenReturn(mockImage);
     when(imageProcessor.cleanImage(mockImage)).thenReturn(mockImage);
+    when(imageRandomizer.randomize(mockImage)).thenReturn(mockImage);
     doThrow(IOException.class).when(imageService).writeToJpeg(mockImage);
 
 
