@@ -33,13 +33,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ApacheImageService implements ImageService {
+  public static final float COMPRESSION_QUALITY = 0.9f;
   private static final int MIN_EXIF_FIELDS = 2; // Expected at least width and height fields
 
-  private final ImageWriter jpegImageWriter;
+  private final ImageWriterFactory imageWriterFactory;
 
   @Override
   public BufferedImage getBufferedImage(InMemoryFile file) throws IOException {
     return Imaging.getBufferedImage(file.getData());
+  }
+
+  @Override
+  public BufferedImage getBufferedImage(byte[] imageData) throws IOException {
+    return Imaging.getBufferedImage(imageData);
   }
 
   @Override
@@ -97,13 +103,15 @@ public class ApacheImageService implements ImageService {
 
   @Override
   public InMemoryFile writeToJpeg(BufferedImage image) throws IOException {
+    ImageWriter jpegImageWriter = imageWriterFactory.createJpegImageWriter();
+
     try (ByteArrayOutputStream os = new ByteArrayOutputStream();
          ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
       jpegImageWriter.setOutput(ios);
 
       ImageWriteParam params = jpegImageWriter.getDefaultWriteParam();
       params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-      params.setCompressionQuality(0.9f);
+      params.setCompressionQuality(COMPRESSION_QUALITY);
       IIOImage newImage = new IIOImage(image, null, null);
 
       jpegImageWriter.write(null, newImage, params);

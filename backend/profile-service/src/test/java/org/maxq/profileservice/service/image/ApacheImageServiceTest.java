@@ -45,11 +45,13 @@ class ApacheImageServiceTest {
   private TiffField width;
   @Mock
   private TiffField height;
+  @Mock
+  private ImageWriter jpegImageWriter;
   @Autowired
   private ApacheImageService imageService;
 
   @MockitoBean
-  private ImageWriter jpegImageWriter;
+  private ImageWriterFactory imageWriterFactory;
 
   private List<TiffField> tiffFields;
 
@@ -59,6 +61,7 @@ class ApacheImageServiceTest {
 
     when(width.getTagName()).thenReturn("ExifImageWidth");
     when(height.getTagName()).thenReturn("ExifImageLength");
+    when(imageWriterFactory.createJpegImageWriter()).thenReturn(jpegImageWriter);
   }
 
   @Test

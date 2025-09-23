@@ -1,14 +1,25 @@
 package org.maxq.profileservice.service.image.processor;
 
 import org.apache.commons.imaging.common.SimpleBufferedImageFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.maxq.profileservice.service.image.ApacheImageService;
+import org.maxq.profileservice.service.image.ImageWriterFactory;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -21,10 +32,23 @@ class ApacheImageRandomizerTest {
   @Autowired
   private ApacheImageRandomizer randomizer;
 
+  @Mock
+  private ImageWriter jpegImageWriter;
+
+  @MockitoBean
+  private ImageWriterFactory imageWriterFactory;
+  @MockitoBean
+  private ApacheImageService imageService;
+
   protected static Stream<Color> uniformColors() {
     return Stream.of(Color.BLACK, Color.WHITE,
         Color.RED, Color.GREEN, Color.BLUE,
         Color.YELLOW, Color.PINK, new Color(128, 54, 1));
+  }
+
+  @BeforeEach
+  void setUp() {
+    when(imageWriterFactory.createJpegImageWriter()).thenReturn(jpegImageWriter);
   }
 
 
@@ -184,15 +208,94 @@ class ApacheImageRandomizerTest {
   }
 
   @Test
-  void shouldRandomizeImage() {
+  void shouldApplyRandomCompression() throws IOException {
     // Given
+    float minCompression = ApacheImageService.COMPRESSION_QUALITY;
     BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
-    ApacheImageRandomizer spyRandomizer = spy(ApacheImageRandomizer.class);
+
+    when(imageService.getBufferedImage(any(byte[].class))).thenReturn(image);
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
 
     // When
-    spyRandomizer.randomize(image);
+    Executable executable = () -> randomizer.applyRandomCompression(image);
 
     // Then
+    assertDoesNotThrow(executable, "Exception should not be thrown");
+    verify(jpegImageWriter, times(1)).setOutput(any());
+    verify(jpegImageWriter, times(1))
+        .write(
+            eq(null),
+            any(IIOImage.class),
+            argThat(writeParam ->
+                writeParam.getCompressionMode() == ImageWriteParam.MODE_EXPLICIT
+                    && writeParam.getCompressionQuality() >= minCompression
+                    && writeParam.getCompressionQuality() <= 1f
+            ));
+  }
+
+  @Test
+  void shouldRandomCompressionThrow_When_writerThrows() throws IOException {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+
+    when(imageService.getBufferedImage(any(byte[].class))).thenReturn(image);
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+    doThrow(IOException.class).when(jpegImageWriter).write(any(), any(), any());
+
+    // When
+    Executable executable = () -> randomizer.applyRandomCompression(image);
+
+    // Then
+    assertThrows(IOException.class, executable, "Exception should be thrown");
+  }
+
+  @Test
+  void shouldRandomCompressionThrow_When_Throws() throws IOException {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+    doThrow(IOException.class).when(imageService).getBufferedImage(any(byte[].class));
+
+    // When
+    Executable executable = () -> randomizer.applyRandomCompression(image);
+
+    // Then
+    assertThrows(IOException.class, executable, "Exception should be thrown");
+  }
+
+  @Test
+  void shouldRandomizeImage() throws IOException {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+    ApacheImageRandomizer spyRandomizer = spy(randomizer);
+
+    when(jpegImageWriter.getDefaultWriteParam()).thenReturn(new JPEGImageWriteParam(null));
+    when(imageService.getBufferedImage(any(byte[].class))).thenReturn(image);
+
+    // When
+    Executable executable = () -> spyRandomizer.randomize(image);
+
+    // Then
+    assertDoesNotThrow(executable, "Exception should not be thrown");
+    verify(spyRandomizer, times(1)).addNoise(image);
+    verify(spyRandomizer, times(1)).addShifts(any(BufferedImage.class));
+    verify(spyRandomizer, times(1)).addColorSpaceNoise(any(BufferedImage.class));
+    verify(spyRandomizer, times(1)).applyRandomCompression(any(BufferedImage.class));
+  }
+
+  @Test
+  void shouldThrow_When_RandomizeThrows() throws IOException {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+    ApacheImageRandomizer spyRandomizer = spy(randomizer);
+    doThrow(IOException.class).when(spyRandomizer).applyRandomCompression(any(BufferedImage.class));
+
+    // When
+    Executable executable = () -> spyRandomizer.randomize(image);
+
+    // Then
+    assertThrows(IOException.class, executable, "Exception should be thrown");
     verify(spyRandomizer, times(1)).addNoise(image);
     verify(spyRandomizer, times(1)).addShifts(any(BufferedImage.class));
     verify(spyRandomizer, times(1)).addColorSpaceNoise(any(BufferedImage.class));

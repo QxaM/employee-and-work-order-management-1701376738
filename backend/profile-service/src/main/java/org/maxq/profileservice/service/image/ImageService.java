@@ -12,6 +12,8 @@ import java.util.List;
 public interface ImageService {
   BufferedImage getBufferedImage(InMemoryFile file) throws IOException;
 
+  BufferedImage getBufferedImage(byte[] imageData) throws IOException;
+
   ImageFormat guessFormat(byte[] imageData) throws IOException;
 
   @SuppressWarnings({"java:S1452"})

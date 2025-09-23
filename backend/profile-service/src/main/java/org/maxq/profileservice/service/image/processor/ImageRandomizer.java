@@ -1,6 +1,7 @@
 package org.maxq.profileservice.service.image.processor;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public interface ImageRandomizer {
 
@@ -10,5 +11,7 @@ public interface ImageRandomizer {
 
   BufferedImage addColorSpaceNoise(BufferedImage image);
 
-  BufferedImage randomize(BufferedImage image);
+  BufferedImage applyRandomCompression(BufferedImage image) throws IOException;
+
+  BufferedImage randomize(BufferedImage image) throws IOException;
 }

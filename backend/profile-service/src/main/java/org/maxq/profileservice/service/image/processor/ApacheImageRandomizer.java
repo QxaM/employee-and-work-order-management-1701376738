@@ -1,17 +1,31 @@
 package org.maxq.profileservice.service.image.processor;
 
+import lombok.RequiredArgsConstructor;
+import org.maxq.profileservice.service.image.ApacheImageService;
+import org.maxq.profileservice.service.image.ImageService;
+import org.maxq.profileservice.service.image.ImageWriterFactory;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.stream.IntStream;
 
 @Service
+@RequiredArgsConstructor
 public class ApacheImageRandomizer implements ImageRandomizer {
   private static final float NOISE_LEVEL = 0.3f; // Percentage of pixels to be noisy
 
   private final SecureRandom secureRandom = new SecureRandom();
+  private final ImageWriterFactory imageWriterFactory;
+  private final ImageService imageService;
 
   @Override
   public BufferedImage addNoise(BufferedImage image) {
@@ -131,9 +145,33 @@ public class ApacheImageRandomizer implements ImageRandomizer {
   }
 
   @Override
-  public BufferedImage randomize(BufferedImage image) {
+  public BufferedImage applyRandomCompression(BufferedImage image) throws IOException {
+    ImageWriter jpegImageWriter = imageWriterFactory.createJpegImageWriter();
+
+    try (ByteArrayOutputStream os = new ByteArrayOutputStream();
+         ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
+      jpegImageWriter.setOutput(ios);
+
+      float quality =
+          Math.min(1f, secureRandom.nextFloat() * 0.1f + ApacheImageService.COMPRESSION_QUALITY);
+
+      ImageWriteParam params = jpegImageWriter.getDefaultWriteParam();
+      params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+      params.setCompressionQuality(quality);
+      IIOImage newImage = new IIOImage(image, null, null);
+
+      jpegImageWriter.write(null, newImage, params);
+      return imageService.getBufferedImage(os.toByteArray());
+    } finally {
+      jpegImageWriter.dispose();
+    }
+  }
+
+  @Override
+  public BufferedImage randomize(BufferedImage image) throws IOException {
     BufferedImage imageWithNoise = addNoise(image);
     BufferedImage imageWithShifts = addShifts(imageWithNoise);
-    return addColorSpaceNoise(imageWithShifts);
+    BufferedImage imageWithColorSpaceNoise = addColorSpaceNoise(imageWithShifts);
+    return applyRandomCompression(imageWithColorSpaceNoise);
   }
 }
