@@ -6,5 +6,7 @@ public interface ImageRandomizer {
 
   BufferedImage addNoise(BufferedImage image);
 
+  BufferedImage addShifts(BufferedImage image);
+
   BufferedImage randomize(BufferedImage image);
 }

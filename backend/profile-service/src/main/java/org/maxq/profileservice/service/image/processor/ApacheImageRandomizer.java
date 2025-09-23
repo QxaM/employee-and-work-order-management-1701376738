@@ -2,8 +2,10 @@ package org.maxq.profileservice.service.image.processor;
 
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
+import java.util.stream.IntStream;
 
 @Service
 public class ApacheImageRandomizer implements ImageRandomizer {
@@ -43,7 +45,64 @@ public class ApacheImageRandomizer implements ImageRandomizer {
   }
 
   @Override
+  public BufferedImage addShifts(BufferedImage image) {
+    int width = image.getWidth();
+    int height = image.getHeight();
+
+    int shiftX = secureRandom.nextInt(5) - 2;
+    int shiftY = secureRandom.nextInt(5) - 2;
+
+    if (shiftX == 0 && shiftY == 0) {
+      return image;
+    }
+
+    BufferedImage shiftedImage = new BufferedImage(width, height, image.getType());
+    Graphics2D graphics = shiftedImage.createGraphics();
+
+    Color edgeColor = getEdgeColor(image);
+    graphics.setColor(edgeColor);
+    graphics.fillRect(0, 0, width, height);
+
+    graphics.drawImage(image, shiftX, shiftY, null);
+    graphics.dispose();
+
+    return shiftedImage;
+  }
+
+  public Color getEdgeColor(BufferedImage image) {
+    IntStream bottomTopStream = IntStream.range(0, image.getWidth())
+        .flatMap(x ->
+            IntStream.of(
+                image.getRGB(x, 0),
+                image.getRGB(x, image.getHeight() - 1)
+            )
+        );
+    IntStream leftRightStream = IntStream.range(1, image.getHeight() - 1)
+        .flatMap(y ->
+            IntStream.of(
+                image.getRGB(0, y),
+                image.getRGB(image.getWidth() - 1, y)
+            )
+        );
+    int[] edgePixels =
+        IntStream.concat(bottomTopStream, leftRightStream).toArray();
+
+    int averageRed = (int) IntStream.of(edgePixels)
+        .map(pixel -> (pixel >> 16) & 0xFF)
+        .average().orElse(0);
+    int averageGreen = (int) IntStream.of(edgePixels)
+        .map(pixel -> (pixel >> 8) & 0xFF)
+        .average().orElse(0);
+    int averageBlue = (int) IntStream.of(edgePixels)
+        .map(pixel -> pixel & 0xFF)
+        .average().orElse(0);
+
+    return new Color(averageRed, averageGreen, averageBlue);
+  }
+
+  @Override
   public BufferedImage randomize(BufferedImage image) {
-    return addNoise(image);
+    BufferedImage imageWithNoise = addNoise(image);
+    return addShifts(imageWithNoise);
   }
 }
