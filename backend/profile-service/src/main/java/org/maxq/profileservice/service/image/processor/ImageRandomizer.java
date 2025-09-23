@@ -8,5 +8,7 @@ public interface ImageRandomizer {
 
   BufferedImage addShifts(BufferedImage image);
 
+  BufferedImage addColorSpaceNoise(BufferedImage image);
+
   BufferedImage randomize(BufferedImage image);
 }

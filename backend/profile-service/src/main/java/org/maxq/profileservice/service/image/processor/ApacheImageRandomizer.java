@@ -101,8 +101,39 @@ public class ApacheImageRandomizer implements ImageRandomizer {
   }
 
   @Override
+  public BufferedImage addColorSpaceNoise(BufferedImage image) {
+    BufferedImage noisyImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+
+    for (int x = 0; x < image.getWidth(); x++) {
+      for (int y = 0; y < image.getHeight(); y++) {
+        int rgb = image.getRGB(x, y);
+
+        int red = (rgb >> 16) & 0xFF;
+        int green = (rgb >> 8) & 0xFF;
+        int blue = rgb & 0xFF;
+        float[] hsb = Color.RGBtoHSB(red, green, blue, null);
+
+        if (secureRandom.nextFloat() < NOISE_LEVEL) {
+          float hueNoise = (secureRandom.nextFloat() - 0.5f) * 0.01f;
+          float saturationNoise = (secureRandom.nextFloat() - 0.5f) * 0.02f;
+          hsb = addNoiseToHsb(hsb, hueNoise, saturationNoise);
+        }
+
+        int newRgb = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+        noisyImage.setRGB(x, y, newRgb);
+      }
+    }
+    return noisyImage;
+  }
+
+  public float[] addNoiseToHsb(float[] hsb, float hueNoise, float saturationNoise) {
+    return new float[]{hsb[0] + hueNoise, hsb[1] + saturationNoise, hsb[2]};
+  }
+
+  @Override
   public BufferedImage randomize(BufferedImage image) {
     BufferedImage imageWithNoise = addNoise(image);
-    return addShifts(imageWithNoise);
+    BufferedImage imageWithShifts = addShifts(imageWithNoise);
+    return addColorSpaceNoise(imageWithShifts);
   }
 }

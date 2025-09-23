@@ -132,6 +132,7 @@ class ApacheImageRandomizerTest {
     g.setColor(Color.WHITE);
     g.fillRect(0, 0, size, 1);
     g.fillRect(0, size - 1, size, size);
+    g.dispose();
 
     // When
     Color averageColor = randomizer.getEdgeColor(image);
@@ -140,6 +141,46 @@ class ApacheImageRandomizerTest {
 
     // Then
     assertEquals(color, averageColor, "Average color should be equal to input color");
+  }
+
+  @Test
+  void shouldAddNoiseToColorSpace() {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+    Graphics g = image.getGraphics();
+    g.setColor(Color.WHITE);
+    g.fillRect(0, 0, 100, 100);
+    g.dispose();
+    int[] originalPixels = image.getRGB(0, 0, 100, 100, null, 0, 100);
+
+    // When
+    BufferedImage noisyImage = randomizer.addColorSpaceNoise(image);
+    int[] noisyPixels = noisyImage.getRGB(0, 0, 100, 100, null, 0, 100);
+
+    // Then
+    assertFalse(Arrays.equals(originalPixels, noisyPixels),
+        "Pixels should not be equal - noise should be added");
+  }
+
+  @Test
+  void shouldAddNoiseToHsb() {
+    // Given
+    float hueNoise = 0.01f;
+    float saturationNoise = 0.01f;
+    float[] originalHsb = {0.1f, 0.2f, 0.3f};
+
+    // When
+    float[] hsbWithNoise = randomizer.addNoiseToHsb(originalHsb, hueNoise, saturationNoise);
+
+    // Then
+    assertAll(
+        () -> assertEquals(originalHsb[0] + hueNoise, hsbWithNoise[0],
+            "Hue noise should be added correctly"),
+        () -> assertEquals(originalHsb[1] + saturationNoise, hsbWithNoise[1],
+            "Saturation noise should be added correctly"),
+        () -> assertEquals(originalHsb[2], hsbWithNoise[2],
+            "Brightness should not be changed")
+    );
   }
 
   @Test
@@ -154,5 +195,6 @@ class ApacheImageRandomizerTest {
     // Then
     verify(spyRandomizer, times(1)).addNoise(image);
     verify(spyRandomizer, times(1)).addShifts(any(BufferedImage.class));
+    verify(spyRandomizer, times(1)).addColorSpaceNoise(any(BufferedImage.class));
   }
 }
