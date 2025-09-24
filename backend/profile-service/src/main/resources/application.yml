@@ -27,6 +27,14 @@ profile:
     image:
       upload: "profile.image.upload"
 
+aws:
+  s3:
+    profile-images:
+      bucket: "employee-and-work-management-profile-pictures"
+      access-key: ${PROFILE_IMAGES_ACCESS_KEY}
+      access-secret: ${PROFILE_IMAGES_ACCESS_SECRET}
+      region: "eu-west-3"
+
 spring:
   application:
     name: profile-service
