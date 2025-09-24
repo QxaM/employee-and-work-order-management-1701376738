@@ -8,7 +8,9 @@ import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.image.processor.ApacheImageProcessor;
 import org.maxq.profileservice.service.image.processor.ApacheImageRandomizer;
+import org.maxq.profileservice.service.image.upload.ImageUploadService;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
   private final ApacheImageService imageService;
   private final ApacheImageProcessor imageProcessor;
   private final ApacheImageRandomizer imageRandomizer;
+  private final ImageUploadService imageUploadService;
 
   @Override
   public void handleMessage(ImageDto message) {
@@ -39,11 +42,15 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
       log.info("Rewritten file into clean raster");
 
       BufferedImage randomizedImage = imageRandomizer.randomize(cleanImage);
-      log.info("Randomized image - added noise");
+      log.info("Randomized image - added noise, shifts and compression");
 
       InMemoryFile jpegImage = imageService.writeToJpeg(randomizedImage);
       log.info("Cleaned image written to file: {}", jpegImage.getName());
       log.info("Cleaned image size: {}", imageService.getMetadata(jpegImage.getData()));
+
+      log.info("Uploading image to S3");
+      PutObjectResponse response = imageUploadService.uploadImage(jpegImage);
+      log.info("Image uploaded to S3: {}", response);
     } catch (IOException | IllegalArgumentException e) {
       log.error("Failed processing image: {}", file, e);
     }
