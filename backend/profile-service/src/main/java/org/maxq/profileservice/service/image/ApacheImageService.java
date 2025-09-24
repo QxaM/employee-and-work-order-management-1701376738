@@ -81,6 +81,21 @@ public class ApacheImageService implements ImageService {
         .orElse(Collections.emptyList());
   }
 
+  @Override
+  public BufferedImage resizeImage(BufferedImage image, Dimension newDimensions) {
+    BufferedImage resized
+        = new BufferedImage(newDimensions.width, newDimensions.height, image.getType());
+
+    Graphics2D g = resized.createGraphics();
+    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.drawImage(image, 0, 0, newDimensions.width, newDimensions.height, null);
+    g.dispose();
+
+    return resized;
+  }
+
   public Optional<ImageSize> getMetaSize(List<TiffField> fields) throws ImagingException {
     log.debug("Exif fields: {}", fields);
     if (fields.size() < MIN_EXIF_FIELDS) {

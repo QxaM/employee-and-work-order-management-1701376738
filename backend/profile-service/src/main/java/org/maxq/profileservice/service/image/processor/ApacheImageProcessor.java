@@ -63,7 +63,7 @@ public class ApacheImageProcessor implements ImageProcessor {
   public BufferedImage resizeImage(InMemoryFile file, int maxWidth, int maxHeight) throws IOException {
     BufferedImage originalImage = imageService.getBufferedImage(file);
     Dimension newDimensions = calculateDimension(originalImage.getWidth(), originalImage.getHeight(), maxWidth, maxHeight);
-    return new BufferedImage(newDimensions.width, newDimensions.height, originalImage.getType());
+    return imageService.resizeImage(originalImage, newDimensions);
   }
 
   @Override

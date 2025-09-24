@@ -5,6 +5,7 @@ import org.apache.commons.imaging.ImageFormat;
 import org.maxq.profileservice.domain.ImageMetadata;
 import org.maxq.profileservice.domain.InMemoryFile;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +21,8 @@ public interface ImageService {
   List<AbstractImageParser<?>> getParsers();
 
   ImageMetadata getMetadata(byte[] imageData) throws IOException;
+
+  BufferedImage resizeImage(BufferedImage image, Dimension newDimensions) throws IOException;
 
   InMemoryFile writeToJpeg(BufferedImage image) throws IOException;
 }

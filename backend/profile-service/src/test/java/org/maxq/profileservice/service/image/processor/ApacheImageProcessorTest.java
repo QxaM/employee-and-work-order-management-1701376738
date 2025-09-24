@@ -148,15 +148,15 @@ class ApacheImageProcessorTest {
     when(mockImage.getType()).thenReturn(BufferedImage.TYPE_INT_RGB);
 
     // When
-    BufferedImage newImage = imageProcessor.resizeImage(file);
+    imageProcessor.resizeImage(file);
 
     // Then
-    assertAll(
-        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getWidth(),
-            "Image should be correctly resized"),
-        () -> assertEquals(MAX_RESIZE_DIMENSION, newImage.getHeight(),
-            "Image should be correctly resized")
-    );
+    verify(imageService, times(1))
+        .resizeImage(
+            eq(mockImage),
+            argThat(dim ->
+                dim.getWidth() == MAX_RESIZE_DIMENSION && dim.getHeight() == MAX_RESIZE_DIMENSION)
+        );
   }
 
   @Test
