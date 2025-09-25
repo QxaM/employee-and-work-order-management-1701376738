@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ProfileImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +18,8 @@ class ProfileRepositoryTest {
 
   @Autowired
   private ProfileRepository profileRepository;
+  @Autowired
+  private ProfileImageRepository profileImageRepository;
 
   private Profile profile;
 
@@ -77,6 +80,48 @@ class ProfileRepositoryTest {
 
     // Clean up
     profileRepository.deleteById(profileWithoutMiddle.getId());
+  }
+
+  @Test
+  void shouldSaveProfile_And_ProfileImage() {
+    // Given
+    ProfileImage profileImage = new ProfileImage(null, "test.jpeg", "image/jpeg", 10, null);
+    Profile profileWithImage = new Profile(null, profile.getEmail(),
+        profile.getFirstName(), null, profile.getLastName(),
+        profileImage);
+
+    // When
+    profileRepository.save(profileWithImage);
+
+    // Then
+    Optional<Profile> foundProfile = profileRepository.findById(profileWithImage.getId());
+    assertTrue(foundProfile.isPresent(), "Profile was not found - not saved properly");
+
+    Profile foundProfileWithImage = foundProfile.get();
+    assertNotNull(foundProfileWithImage.getProfileImage(), "Profile image was not saved properly");
+    ProfileImage foundProfileImage = foundProfileWithImage.getProfileImage();
+    assertAll(
+        () -> assertEquals(profileWithImage.getProfileImage().getId(), foundProfileImage.getId(),
+            "Profile image should be saved with correct id"),
+        () -> assertEquals(profileWithImage.getProfileImage().getName(),
+            foundProfileImage.getName(),
+            "Profile image should be saved with correct name"),
+        () -> assertEquals(profileWithImage.getProfileImage().getContentType(),
+            foundProfileImage.getContentType(),
+            "Profile image should be saved with correct content type"),
+        () -> assertEquals(profileWithImage.getProfileImage().getSize(),
+            foundProfileImage.getSize(),
+            "Profile image should be saved with correct size"),
+        () -> assertNotNull(foundProfileImage.getTimestamp(), "Timestamp should be created")
+    );
+
+    // Clean up
+    if (profileWithImage.getId() != null) {
+      profileRepository.deleteById(profileWithImage.getId());
+    }
+    if (profileImage.getId() != null) {
+      profileImageRepository.deleteById(profileImage.getId());
+    }
   }
 
   @Test
@@ -175,5 +220,50 @@ class ProfileRepositoryTest {
 
     // Then
     assertFalse(foundProfile.isPresent(), "Profile was not deleted - not deleted properly");
+  }
+
+  @Test
+  void shouldNotDeleteProfileImage() {
+    // Given
+    ProfileImage profileImage = new ProfileImage(null, "test.jpeg", "image/jpeg", 10, null);
+    Profile profileWithImage = new Profile(null, profile.getEmail(),
+        profile.getFirstName(), null, profile.getLastName(),
+        profileImage);
+    profileRepository.save(profileWithImage);
+
+    // When
+    profileRepository.deleteById(profileWithImage.getId());
+    Optional<Profile> foundProfile = profileRepository.findById(profileWithImage.getId());
+
+    // Then
+    assertFalse(foundProfile.isPresent(), "Profile was found - not deleted properly");
+
+    Optional<ProfileImage> optionalFoundProfileImage =
+        profileImageRepository.findById(profileImage.getId());
+    assertTrue(optionalFoundProfileImage.isPresent(), "Profile Image was not found - deleted with profile");
+
+    ProfileImage foundProfileImage = optionalFoundProfileImage.get();
+    assertAll(
+        () -> assertEquals(profileWithImage.getProfileImage().getId(), foundProfileImage.getId(),
+            "Profile image should be saved with correct id"),
+        () -> assertEquals(profileWithImage.getProfileImage().getName(),
+            foundProfileImage.getName(),
+            "Profile image should be saved with correct name"),
+        () -> assertEquals(profileWithImage.getProfileImage().getContentType(),
+            foundProfileImage.getContentType(),
+            "Profile image should be saved with correct content type"),
+        () -> assertEquals(profileWithImage.getProfileImage().getSize(),
+            foundProfileImage.getSize(),
+            "Profile image should be saved with correct size"),
+        () -> assertNotNull(foundProfileImage.getTimestamp(), "Timestamp should be created")
+    );
+
+    // Clean up
+    if (profileWithImage.getId() != null) {
+      profileRepository.deleteById(profileWithImage.getId());
+    }
+    if (profileImage.getId() != null) {
+      profileImageRepository.deleteById(profileImage.getId());
+    }
   }
 }

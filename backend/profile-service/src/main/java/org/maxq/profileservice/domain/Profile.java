@@ -33,6 +33,18 @@ public class Profile {
   @NotNull
   private String lastName;
 
+  @OneToOne(cascade = CascadeType.PERSIST)
+  @JoinColumn(name = "profile_image_id", referencedColumnName = "id")
+  private ProfileImage profileImage;
+
+  public Profile(Long id, String email, String firstName, String middleName, String lastName) {
+    this.id = id;
+    this.lastName = lastName;
+    this.middleName = middleName;
+    this.firstName = firstName;
+    this.email = email;
+  }
+
   public Profile(String email, String firstName, String middleName, String lastName) {
     this.lastName = lastName;
     this.middleName = middleName;

@@ -40,7 +40,11 @@ public class ProfileService {
     Profile profileToSave;
     try {
       Profile foundProfile = this.getProfileByEmail(profile.getEmail());
-      profileToSave = new Profile(foundProfile.getId(), profile.getEmail(), profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
+      profileToSave = new Profile(
+          foundProfile.getId(), profile.getEmail(),
+          profile.getFirstName(), profile.getMiddleName(), profile.getLastName(),
+          foundProfile.getProfileImage()
+      );
     } catch (ElementNotFoundException e) {
       log.warn("Profile not found when updating, creating new profile: {}", profile.getEmail(), e);
       profileToSave = new Profile(profile.getEmail(), profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
