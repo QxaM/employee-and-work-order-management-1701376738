@@ -20,7 +20,7 @@ class ProfileImageRepositoryTest {
 
   @BeforeEach
   void setUp() {
-    profileImage = new ProfileImage(null, "test.jpg", "image/jpeg", 10, null);
+    profileImage = new ProfileImage("test.jpg", "image/jpeg", 10);
   }
 
   @AfterEach

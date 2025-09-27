@@ -1,6 +1,7 @@
 package org.maxq.profileservice.service.image.processor;
 
 import lombok.RequiredArgsConstructor;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.image.ImageService;
 import org.maxq.profileservice.service.image.ImageWriterFactory;
@@ -168,10 +169,14 @@ public class ApacheImageRandomizer implements ImageRandomizer {
   }
 
   @Override
-  public BufferedImage randomize(BufferedImage image) throws IOException {
+  public BufferedImage randomize(BufferedImage image) throws ImageProcessingException {
     BufferedImage imageWithNoise = addNoise(image);
     BufferedImage imageWithShifts = addShifts(imageWithNoise);
     BufferedImage imageWithColorSpaceNoise = addColorSpaceNoise(imageWithShifts);
-    return applyRandomCompression(imageWithColorSpaceNoise);
+    try {
+      return applyRandomCompression(imageWithColorSpaceNoise);
+    } catch (IOException e) {
+      throw new ImageProcessingException("Image randomization failed!", e);
+    }
   }
 }

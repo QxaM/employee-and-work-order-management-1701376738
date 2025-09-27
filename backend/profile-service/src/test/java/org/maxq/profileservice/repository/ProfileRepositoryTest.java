@@ -85,7 +85,7 @@ class ProfileRepositoryTest {
   @Test
   void shouldSaveProfile_And_ProfileImage() {
     // Given
-    ProfileImage profileImage = new ProfileImage(null, "test.jpeg", "image/jpeg", 10, null);
+    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg", 10);
     Profile profileWithImage = new Profile(null, profile.getEmail(),
         profile.getFirstName(), null, profile.getLastName(),
         profileImage);
@@ -225,7 +225,7 @@ class ProfileRepositoryTest {
   @Test
   void shouldNotDeleteProfileImage() {
     // Given
-    ProfileImage profileImage = new ProfileImage(null, "test.jpeg", "image/jpeg", 10, null);
+    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg", 10);
     Profile profileWithImage = new Profile(null, profile.getEmail(),
         profile.getFirstName(), null, profile.getLastName(),
         profileImage);

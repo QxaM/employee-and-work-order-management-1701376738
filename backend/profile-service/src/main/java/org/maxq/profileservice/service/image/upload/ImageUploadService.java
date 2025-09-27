@@ -1,9 +1,11 @@
 package org.maxq.profileservice.service.image.upload;
 
 import org.maxq.profileservice.domain.InMemoryFile;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import org.maxq.profileservice.domain.dto.BucketOperationResponse;
 
 public interface ImageUploadService {
 
-  PutObjectResponse uploadImage(InMemoryFile file);
+  BucketOperationResponse uploadImage(InMemoryFile file);
+
+  BucketOperationResponse deleteImage(String imageName);
 }

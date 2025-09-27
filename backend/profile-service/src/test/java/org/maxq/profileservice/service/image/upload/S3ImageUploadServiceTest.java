@@ -2,6 +2,8 @@ package org.maxq.profileservice.service.image.upload;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.dto.BucketOperationResponse;
+import org.maxq.profileservice.mapper.BucketOperationResponseMapper;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,11 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class S3ImageUploadServiceTest {
@@ -26,6 +31,8 @@ class S3ImageUploadServiceTest {
 
   @MockitoBean
   private S3Client s3Client;
+  @MockitoBean
+  private BucketOperationResponseMapper responseMapper;
 
   @Test
   void shouldUploadImage() {
@@ -38,11 +45,21 @@ class S3ImageUploadServiceTest {
         .key(file.getName())
         .build();
     RequestBody requestBody = RequestBody.fromBytes(file.getData());
+    PutObjectResponse putObjectResponse = PutObjectResponse.builder().build();
+    BucketOperationResponse operationResponse = new BucketOperationResponse(
+        true,
+        -1
+    );
+
+    when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(putObjectResponse);
+    when(responseMapper.mapToBucketOperationResponse(any(PutObjectResponse.class)))
+        .thenReturn(operationResponse);
 
     // When
-    service.uploadImage(file);
+    BucketOperationResponse actualResponse = service.uploadImage(file);
 
     // Then
+    assertEquals(operationResponse, actualResponse, "Correct response should be returned");
     verify(s3Client, times(1))
         .putObject(
             eq(request),
@@ -50,5 +67,31 @@ class S3ImageUploadServiceTest {
                 argument -> argument.optionalContentLength().equals(requestBody.optionalContentLength())
             )
         );
+  }
+
+  @Test
+  void shouldDeleteImage() {
+    // Given
+    String fileName = "test.jpeg";
+    DeleteObjectRequest request = DeleteObjectRequest.builder()
+        .bucket(profileImageUploadBucket)
+        .key(fileName)
+        .build();
+    DeleteObjectResponse deleteObjectResponse = DeleteObjectResponse.builder().build();
+    BucketOperationResponse operationResponse = new BucketOperationResponse(
+        true,
+        -1
+    );
+
+    when(s3Client.deleteObject(any(DeleteObjectRequest.class))).thenReturn(deleteObjectResponse);
+    when(responseMapper.mapToBucketOperationResponse(any(DeleteObjectResponse.class)))
+        .thenReturn(operationResponse);
+
+    // When
+    BucketOperationResponse actualResponse = service.deleteImage(fileName);
+
+    // Then
+    assertEquals(operationResponse, actualResponse, "Correct response should be returned");
+    verify(s3Client, times(1)).deleteObject(request);
   }
 }

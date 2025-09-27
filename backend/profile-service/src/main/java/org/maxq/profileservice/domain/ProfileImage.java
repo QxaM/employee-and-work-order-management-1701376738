@@ -28,4 +28,10 @@ public class ProfileImage {
 
   @CreationTimestamp
   private LocalDateTime timestamp;
+
+  public ProfileImage(String name, String contentType, long size) {
+    this.name = name;
+    this.contentType = contentType;
+    this.size = size;
+  }
 }

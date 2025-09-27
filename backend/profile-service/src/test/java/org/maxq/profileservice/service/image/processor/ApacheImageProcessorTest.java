@@ -5,9 +5,11 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
 import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,13 +64,16 @@ class ApacheImageProcessorTest {
   void shouldStrip_When_JpegFile() throws IOException {
     // Given
     InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/jpeg");
+    BufferedImage mockImage = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+
     doNothing().when(exifWriter).removeExifMetadata(any(byte[].class), any(ByteArrayOutputStream.class));
     doNothing().when(xmpWriter).removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
     doNothing().when(iptcWriter)
         .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), anyBoolean());
+    when(imageService.getBufferedImage((byte[]) any())).thenReturn(mockImage);
 
     // When
-    InMemoryFile strippedFile = imageProcessor.stripMetadata(file);
+    BufferedImage strippedFile = imageProcessor.stripMetadata(file);
 
     // Then
     verify(exifWriter, times(1))
@@ -77,19 +82,22 @@ class ApacheImageProcessorTest {
         .removeXmpXml(any(byte[].class), any(ByteArrayOutputStream.class));
     verify(iptcWriter, times(1))
         .removeIptc(any(byte[].class), any(ByteArrayOutputStream.class), eq(true));
-    assertNotEquals(file, strippedFile, "New file should be created");
+    assertNotNull(strippedFile, "New file should be created");
   }
 
   @Test
-  void shouldNotStrip_When_PngFile() throws IOException {
+  void shouldStrip_When_PngFile() throws IOException {
     // Given
+    BufferedImage mockImage = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
     InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
 
+    when(imageService.getBufferedImage(file)).thenReturn(mockImage);
+
     // When
-    InMemoryFile strippedFile = imageProcessor.stripMetadata(file);
+    BufferedImage strippedFile = imageProcessor.stripMetadata(file);
 
     // Then
-    assertEquals(file, strippedFile, "Original file should be returned");
+    assertNotNull(strippedFile, "New file should be created");
   }
 
   @Test
@@ -139,16 +147,14 @@ class ApacheImageProcessorTest {
   void shouldResizeImage() throws IOException {
     // Given
     BufferedImage mockImage = mock(BufferedImage.class);
-    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
     int imageDimension = 2 * MAX_RESIZE_DIMENSION;
 
-    doReturn(mockImage).when(imageService).getBufferedImage(file);
     when(mockImage.getWidth()).thenReturn(imageDimension);
     when(mockImage.getHeight()).thenReturn(imageDimension);
     when(mockImage.getType()).thenReturn(BufferedImage.TYPE_INT_RGB);
 
     // When
-    imageProcessor.resizeImage(file);
+    imageProcessor.resizeImage(mockImage);
 
     // Then
     verify(imageService, times(1))
@@ -175,6 +181,66 @@ class ApacheImageProcessorTest {
             "Image type should be RGB"),
         () -> assertEquals(imageDimension, cleanImage.getWidth(), "Image width should be equal"),
         () -> assertEquals(imageDimension, cleanImage.getHeight(), "Image height should be equal")
+    );
+  }
+
+  @Test
+  void shouldProcess_When_Success() throws IOException, ImageProcessingException {
+    // Given
+    ApacheImageProcessor spyProcess = spy(imageProcessor);
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+    BufferedImage mockImage = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+
+    doReturn(mockImage).when(spyProcess).stripMetadata(file);
+    doReturn(mockImage).when(spyProcess).resizeImage(mockImage);
+    doReturn(mockImage).when(spyProcess).cleanImage(mockImage);
+
+    // When
+    BufferedImage processedImage = spyProcess.process(file);
+
+    // Then
+    assertNotNull(processedImage, "Image should be processed");
+    assertAll(
+        () -> verify(spyProcess, times(1)).stripMetadata(file),
+        () -> verify(spyProcess, times(1)).resizeImage(mockImage),
+        () -> verify(spyProcess, times(1)).cleanImage(mockImage)
+    );
+  }
+
+  @Test
+  void shouldThrowProcess_When_StrippingFails() throws IOException {
+    // Given
+    ApacheImageProcessor spyProcess = spy(imageProcessor);
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+
+    doThrow(IOException.class).when(spyProcess).stripMetadata(file);
+
+    // When
+    Executable executable = () -> spyProcess.process(file);
+
+    // Then
+    assertThrows(ImageProcessingException.class, executable);
+    verify(spyProcess, times(1)).stripMetadata(file);
+  }
+
+  @Test
+  void shouldThrowProcess_When_ResizingFails() throws IOException {
+    // Given
+    ApacheImageProcessor spyProcess = spy(imageProcessor);
+    InMemoryFile file = InMemoryFile.create("test".getBytes(), "image/png");
+    BufferedImage mockImage = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, false);
+
+    doReturn(mockImage).when(spyProcess).stripMetadata(file);
+    doThrow(IOException.class).when(spyProcess).resizeImage(mockImage);
+
+    // When
+    Executable executable = () -> spyProcess.process(file);
+
+    // Then
+    assertThrows(ImageProcessingException.class, executable);
+    assertAll(
+        () -> verify(spyProcess, times(1)).stripMetadata(file),
+        () -> verify(spyProcess, times(1)).resizeImage(mockImage)
     );
   }
 

@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -230,7 +231,7 @@ class ApacheImageServiceTest {
   }
 
   @Test
-  void shouldWriteToJpeg_When_WriteCorrect() throws IOException {
+  void shouldWriteToJpeg_When_WriteCorrect() throws IOException, ImageProcessingException {
     // Given
     int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
     float compressionQuality = 0.9f;
@@ -272,7 +273,7 @@ class ApacheImageServiceTest {
     Executable executable = () -> imageService.writeToJpeg(image);
 
     // Then
-    assertThrows(IOException.class, executable, "Exception should be thrown");
+    assertThrows(ImageProcessingException.class, executable, "Exception should be thrown");
     verify(jpegImageWriter, times(1)).setOutput(any());
     verify(jpegImageWriter, times(1))
         .write(

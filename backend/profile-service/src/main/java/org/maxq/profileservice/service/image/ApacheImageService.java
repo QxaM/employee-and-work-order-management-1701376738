@@ -14,6 +14,7 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.maxq.profileservice.domain.ImageMetadata;
 import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.IIOImage;
@@ -117,7 +118,7 @@ public class ApacheImageService implements ImageService {
   }
 
   @Override
-  public InMemoryFile writeToJpeg(BufferedImage image) throws IOException {
+  public InMemoryFile writeToJpeg(BufferedImage image) throws ImageProcessingException {
     ImageWriter jpegImageWriter = imageWriterFactory.createJpegImageWriter();
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -131,6 +132,8 @@ public class ApacheImageService implements ImageService {
 
       jpegImageWriter.write(null, newImage, params);
       return InMemoryFile.create(os.toByteArray(), "image/jpeg");
+    } catch (IOException e) {
+      throw new ImageProcessingException("Failed to write image to jpeg file", e);
     } finally {
       jpegImageWriter.dispose();
     }

@@ -3,6 +3,7 @@ package org.maxq.profileservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ProfileImage;
 import org.maxq.profileservice.domain.exception.DataValidationException;
 import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
@@ -55,6 +56,11 @@ public class ProfileService {
     } catch (TransactionSystemException e) {
       throw new DataValidationException("Failed email or password validation", e);
     }
+  }
+
+  public void updateProfileImage(Profile profile, ProfileImage profileImage) {
+    profile.setProfileImage(profileImage);
+    profileRepository.save(profile);
   }
 
 }

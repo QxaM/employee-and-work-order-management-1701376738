@@ -1,6 +1,7 @@
 package org.maxq.profileservice.service.image.processor;
 
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,11 +9,13 @@ import java.io.IOException;
 
 public interface ImageProcessor {
 
-  InMemoryFile stripMetadata(InMemoryFile file) throws IOException;
+  BufferedImage stripMetadata(InMemoryFile file) throws IOException;
 
-  BufferedImage resizeImage(InMemoryFile file, int maxWidth, int maxHeight) throws IOException;
+  BufferedImage resizeImage(BufferedImage file, int maxWidth, int maxHeight) throws IOException;
 
   BufferedImage cleanImage(BufferedImage image);
+
+  BufferedImage process(InMemoryFile file) throws IOException, ImageProcessingException;
 
   default Dimension calculateDimension(int originalWidth, int originalHeight,
                                        int maxWidth, int maxHeight) {

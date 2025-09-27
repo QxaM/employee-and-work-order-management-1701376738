@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -33,7 +34,8 @@ public class Profile {
   @NotNull
   private String lastName;
 
-  @OneToOne(cascade = CascadeType.PERSIST)
+  @Setter
+  @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
   @JoinColumn(name = "profile_image_id", referencedColumnName = "id")
   private ProfileImage profileImage;
 
