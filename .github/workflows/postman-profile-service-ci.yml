@@ -95,4 +95,4 @@ jobs:
         if: always()
         uses: jwalton/gh-docker-logs@v2.2.2
         with:
-          images: 'profile-service'
+          images: 'profile-service-profile-service'
