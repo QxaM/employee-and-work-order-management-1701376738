@@ -8,6 +8,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -21,13 +22,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("DEV")
 class S3ImageUploadServiceTest {
 
   @Value("${aws.s3.profile-images.bucket}")
   private String profileImageUploadBucket;
 
   @Autowired
-  private ImageUploadService service;
+  private S3ImageUploadService service;
 
   @MockitoBean
   private S3Client s3Client;
