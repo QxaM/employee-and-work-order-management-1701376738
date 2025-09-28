@@ -60,7 +60,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: Run Compose Containers
-        run: docker compose up --build -d
+        run: docker compose up --build
         working-directory: backend/profile-service
         env:
           SPRING_PROFILES_ACTIVE: QA
