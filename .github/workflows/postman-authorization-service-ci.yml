@@ -102,3 +102,9 @@ jobs:
         with:
           name: postman-report-authorization-service
           path: postman-api-tests/authorization-service/results
+
+      - name: Dump container logs
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2.2.2
+        with:
+          images: 'authorization-service-authorization-service'

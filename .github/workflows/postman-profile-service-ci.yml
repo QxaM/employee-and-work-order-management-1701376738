@@ -92,7 +92,7 @@ jobs:
           path: postman-api-tests/profile-service/results
 
       - name: Dump container logs
-        if: always()
+        if: failure()
         uses: jwalton/gh-docker-logs@v2.2.2
         with:
           images: 'profile-service-profile-service'
