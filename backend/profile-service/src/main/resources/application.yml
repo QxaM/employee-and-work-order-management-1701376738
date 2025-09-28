@@ -13,6 +13,8 @@ jwt:
 
 app:
   init: true
+  listeners:
+    auto-startup: true
 
 profile:
   queue:
@@ -74,3 +76,6 @@ management:
 eureka:
   client:
     enabled: false
+app:
+  listeners:
+    auto-startup: false

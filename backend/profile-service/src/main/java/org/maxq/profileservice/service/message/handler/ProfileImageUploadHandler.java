@@ -64,11 +64,11 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
 
     if (!response.isSuccessful()) {
       throw new BucketOperationException(
-          "S3 upload failed with status: " + response.getStatusCode()
+          "Upload failed with status: " + response.getStatusCode()
       );
     }
 
-    log.info("Image uploaded to S3 successful: {}", response);
+    log.info("Image uploaded successfully: {}", response.getStatusCode());
   }
 
   public void updateAndCleanupProfileImage(String userEmail, InMemoryFile image) throws ElementNotFoundException {
@@ -87,11 +87,11 @@ public class ProfileImageUploadHandler implements MessageHandler<ImageDto> {
   }
 
   public void cleanupOldImage(String imageName) {
-    log.info("Deleting existing image in S3: {}", imageName);
+    log.info("Deleting existing image from bucket storage: {}", imageName);
     BucketOperationResponse deleteResponse = imageUploadService.deleteImage(imageName);
 
     if (deleteResponse.isSuccessful()) {
-      log.info("Image deleted from S3: {}", imageName);
+      log.info("Image deleted from bucket: {}", imageName);
     } else {
       log.warn("Failed to delete old profile image {}, status {}",
           imageName,

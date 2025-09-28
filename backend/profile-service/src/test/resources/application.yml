@@ -1,5 +1,7 @@
 app:
   init: false
+  listeners:
+    auto-startup: false
 
 eureka:
   client:

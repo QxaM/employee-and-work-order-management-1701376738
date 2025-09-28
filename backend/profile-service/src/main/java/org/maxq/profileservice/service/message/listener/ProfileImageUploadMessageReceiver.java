@@ -14,7 +14,11 @@ public class ProfileImageUploadMessageReceiver implements MessageReceiver<ImageD
 
   private final ProfileImageUploadHandler handler;
 
-  @RabbitListener(id = "profileImageUploadReceiver", queues = "${profile.queue.image.upload}")
+  @RabbitListener(
+      id = "profileImageUploadReceiver",
+      queues = "${profile.queue.image.upload}",
+      autoStartup = "${app.listeners.auto-startup}"
+  )
   public void receiveUploadMessage(ImageDto image) {
     receiveMessage(image);
   }
