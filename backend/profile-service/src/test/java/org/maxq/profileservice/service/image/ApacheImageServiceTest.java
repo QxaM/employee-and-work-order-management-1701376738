@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.maxq.profileservice.domain.ImageSize;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
@@ -193,7 +195,43 @@ class ApacheImageServiceTest {
   }
 
   @Test
-  void shouldWriteToJpeg_When_WriteCorrect() throws IOException {
+  void shouldResizeImage_When_Downscaling() {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+    int newWidth = 50;
+    int newHeight = 50;
+    Dimension dimension = new Dimension(newWidth, newHeight);
+
+    // When
+    BufferedImage resizedImage = imageService.resizeImage(image, dimension);
+
+    // Then
+    assertAll(
+        () -> assertEquals(newWidth, resizedImage.getWidth(), "Width should be equal"),
+        () -> assertEquals(newHeight, resizedImage.getHeight(), "Height should be equal")
+    );
+  }
+
+  @Test
+  void shouldResizeImage_When_Upscaling() {
+    // Given
+    BufferedImage image = new SimpleBufferedImageFactory().getColorBufferedImage(100, 100, true);
+    int newWidth = 200;
+    int newHeight = 200;
+    Dimension dimension = new Dimension(newWidth, newHeight);
+
+    // When
+    BufferedImage resizedImage = imageService.resizeImage(image, dimension);
+
+    // Then
+    assertAll(
+        () -> assertEquals(newWidth, resizedImage.getWidth(), "Width should be equal"),
+        () -> assertEquals(newHeight, resizedImage.getHeight(), "Height should be equal")
+    );
+  }
+
+  @Test
+  void shouldWriteToJpeg_When_WriteCorrect() throws IOException, ImageProcessingException {
     // Given
     int imageWriteParam = ImageWriteParam.MODE_EXPLICIT;
     float compressionQuality = 0.9f;
@@ -235,7 +273,7 @@ class ApacheImageServiceTest {
     Executable executable = () -> imageService.writeToJpeg(image);
 
     // Then
-    assertThrows(IOException.class, executable, "Exception should be thrown");
+    assertThrows(ImageProcessingException.class, executable, "Exception should be thrown");
     verify(jpegImageWriter, times(1)).setOutput(any());
     verify(jpegImageWriter, times(1))
         .write(

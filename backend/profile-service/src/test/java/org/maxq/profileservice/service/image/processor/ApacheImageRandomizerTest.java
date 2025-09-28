@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.maxq.profileservice.service.image.ApacheImageService;
 import org.maxq.profileservice.service.image.ImageWriterFactory;
 import org.mockito.Mock;
@@ -139,7 +140,7 @@ class ApacheImageRandomizerTest {
     int[] shiftedPixels = shiftedImage.getRGB(0, 0, size, size, null, 0, size);
 
     // Then
-    assertFalse(Arrays.equals(originalPixels, shiftedPixels),
+    assertNotEquals(originalPixels, shiftedPixels,
         "Pixels should not be equal - shifts should be added");
   }
 
@@ -182,7 +183,7 @@ class ApacheImageRandomizerTest {
     int[] noisyPixels = noisyImage.getRGB(0, 0, 100, 100, null, 0, 100);
 
     // Then
-    assertFalse(Arrays.equals(originalPixels, noisyPixels),
+    assertNotEquals(originalPixels, noisyPixels,
         "Pixels should not be equal - noise should be added");
   }
 
@@ -295,7 +296,7 @@ class ApacheImageRandomizerTest {
     Executable executable = () -> spyRandomizer.randomize(image);
 
     // Then
-    assertThrows(IOException.class, executable, "Exception should be thrown");
+    assertThrows(ImageProcessingException.class, executable, "Exception should be thrown");
     verify(spyRandomizer, times(1)).addNoise(image);
     verify(spyRandomizer, times(1)).addShifts(any(BufferedImage.class));
     verify(spyRandomizer, times(1)).addColorSpaceNoise(any(BufferedImage.class));

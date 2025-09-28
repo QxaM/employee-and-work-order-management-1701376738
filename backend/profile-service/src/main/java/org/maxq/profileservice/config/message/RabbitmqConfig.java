@@ -1,9 +1,8 @@
 package org.maxq.profileservice.config.message;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitmqConfig {
+  private static final String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
 
   @Value("${profile.exchange}")
   private String topicExchangeName;
+  private final String deadLetterExchangeName = topicExchangeName + "-dlq";
   @Value("${profile.queue.create}")
   private String createQueueName;
   @Value("${profile.queue.update}")
@@ -34,18 +35,34 @@ public class RabbitmqConfig {
   }
 
   @Bean
+  public TopicExchange deadLetterExchange() {
+    return new TopicExchange(deadLetterExchangeName);
+  }
+
+  @Bean
+  public Queue deadLetterQueue() {
+    return QueueBuilder.durable("dead-letter-queue").build();
+  }
+
+  @Bean
   public Queue createQueue() {
-    return new Queue(createQueueName, false);
+    return QueueBuilder.durable(createQueueName)
+        .withArgument(DEAD_LETTER_EXCHANGE_ARGUMENT, deadLetterExchangeName)
+        .build();
   }
 
   @Bean
   public Queue updateQueue() {
-    return new Queue(updateQueueName, false);
+    return QueueBuilder.durable(updateQueueName)
+        .withArgument(DEAD_LETTER_EXCHANGE_ARGUMENT, deadLetterExchangeName)
+        .build();
   }
 
   @Bean
   public Queue imageUploadQueue() {
-    return new Queue(imageUploadQueueName, false);
+    return QueueBuilder.durable(imageUploadQueueName)
+        .withArgument(DEAD_LETTER_EXCHANGE_ARGUMENT, deadLetterExchangeName)
+        .build();
   }
 
   @Bean
@@ -64,7 +81,21 @@ public class RabbitmqConfig {
   }
 
   @Bean
+  public Binding deadLetterBinding(Queue deadLetterQueue, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("#");
+  }
+
+  @Bean
   public MessageConverter messageConverter() {
     return new Jackson2JsonMessageConverter();
+  }
+
+  @Bean
+  public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+    SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    factory.setMessageConverter(messageConverter);
+    factory.setDefaultRequeueRejected(false);
+    return factory;
   }
 }

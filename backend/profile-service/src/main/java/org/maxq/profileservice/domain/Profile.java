@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -32,6 +33,19 @@ public class Profile {
 
   @NotNull
   private String lastName;
+
+  @Setter
+  @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+  @JoinColumn(name = "profile_image_id", referencedColumnName = "id")
+  private ProfileImage profileImage;
+
+  public Profile(Long id, String email, String firstName, String middleName, String lastName) {
+    this.id = id;
+    this.lastName = lastName;
+    this.middleName = middleName;
+    this.firstName = firstName;
+    this.email = email;
+  }
 
   public Profile(String email, String firstName, String middleName, String lastName) {
     this.lastName = lastName;

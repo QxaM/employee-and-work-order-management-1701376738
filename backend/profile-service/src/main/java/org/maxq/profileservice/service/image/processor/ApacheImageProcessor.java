@@ -6,6 +6,7 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcRewriter;
 import org.apache.commons.imaging.formats.jpeg.xmp.JpegXmpRewriter;
 import org.maxq.profileservice.domain.InMemoryFile;
+import org.maxq.profileservice.domain.exception.ImageProcessingException;
 import org.maxq.profileservice.service.image.ImageService;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +28,17 @@ public class ApacheImageProcessor implements ImageProcessor {
   private final JpegIptcRewriter jpegIptcRewriter;
 
   @Override
-  public InMemoryFile stripMetadata(InMemoryFile file) throws IOException {
+  public BufferedImage stripMetadata(InMemoryFile file) throws IOException {
     log.debug("Stripping metadata from file {}", file.getName());
 
     if ("image/jpeg".equals(file.getContentType()) || "image/jpg".equals(file.getContentType())) {
       byte[] dataWithoutMeta = stripMetadata(file.getData());
-      return new InMemoryFile(file.getContentType(), file.getName(), dataWithoutMeta);
+      return imageService.getBufferedImage(dataWithoutMeta);
     } else {
       log.info("File is not a JPEG, skipping stripping. Content type: {}", file.getContentType());
     }
 
-    return file;
+    return imageService.getBufferedImage(file);
   }
 
   public byte[] stripMetadata(byte[] data) throws IOException {
@@ -55,15 +56,14 @@ public class ApacheImageProcessor implements ImageProcessor {
     }
   }
 
-  public BufferedImage resizeImage(InMemoryFile file) throws IOException {
+  public BufferedImage resizeImage(BufferedImage file) throws IOException {
     return resizeImage(file, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
   }
 
   @Override
-  public BufferedImage resizeImage(InMemoryFile file, int maxWidth, int maxHeight) throws IOException {
-    BufferedImage originalImage = imageService.getBufferedImage(file);
+  public BufferedImage resizeImage(BufferedImage originalImage, int maxWidth, int maxHeight) throws IOException {
     Dimension newDimensions = calculateDimension(originalImage.getWidth(), originalImage.getHeight(), maxWidth, maxHeight);
-    return new BufferedImage(newDimensions.width, newDimensions.height, originalImage.getType());
+    return imageService.resizeImage(originalImage, newDimensions);
   }
 
   @Override
@@ -84,5 +84,22 @@ public class ApacheImageProcessor implements ImageProcessor {
     graphics.dispose();
 
     return cleanImage;
+  }
+
+  @Override
+  public BufferedImage process(InMemoryFile file) throws ImageProcessingException {
+    try {
+      BufferedImage imageWithoutMetadata = this.stripMetadata(file);
+      log.debug("Stripped metadata from file: {}", file.getName());
+
+      BufferedImage resizedImage = this.resizeImage(imageWithoutMetadata);
+      log.debug("Resized image: {}x{}", resizedImage.getWidth(), resizedImage.getHeight());
+
+      BufferedImage cleanImage = this.cleanImage(resizedImage);
+      log.debug("Rewritten file into clean raster");
+      return cleanImage;
+    } catch (IOException e) {
+      throw new ImageProcessingException("Image processing failed for file" + file.getName(), e);
+    }
   }
 }

@@ -1,5 +1,7 @@
 app:
   init: false
+  listeners:
+    auto-startup: false
 
 eureka:
   client:
@@ -20,6 +22,14 @@ profile:
     update: "profile.update"
     image:
       upload: "profile.image.upload"
+
+aws:
+  s3:
+    profile-images:
+      bucket: "test-profile-pictures"
+      access-key: "test-key"
+      access-secret: "test-secret"
+      region: "eu-west-3"
 
 spring:
   datasource:

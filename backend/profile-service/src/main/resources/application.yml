@@ -13,6 +13,8 @@ jwt:
 
 app:
   init: true
+  listeners:
+    auto-startup: true
 
 profile:
   queue:
@@ -26,6 +28,14 @@ profile:
     update: "profile.update"
     image:
       upload: "profile.image.upload"
+
+aws:
+  s3:
+    profile-images:
+      bucket: "employee-and-work-management-profile-pictures"
+      access-key: ${PROFILE_IMAGES_ACCESS_KEY}
+      access-secret: ${PROFILE_IMAGES_ACCESS_SECRET}
+      region: "eu-west-3"
 
 spring:
   application:
@@ -66,3 +76,6 @@ management:
 eureka:
   client:
     enabled: false
+app:
+  listeners:
+    auto-startup: false

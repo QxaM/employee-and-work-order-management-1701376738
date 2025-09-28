@@ -2,6 +2,7 @@ package org.maxq.profileservice.service;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ProfileImage;
 import org.maxq.profileservice.domain.exception.DataValidationException;
 import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
@@ -144,5 +145,26 @@ class ProfileServiceTest {
     assertThrows(DataValidationException.class,
         () -> profileService.updateProfile(profile)
     );
+  }
+
+  @Test
+  void shouldUpdateProfileImage() {
+    // Given
+    ProfileImage profileImage = new ProfileImage("file.jpeg", "image/jpeg", 10);
+    Profile profileWithImage = new Profile(
+        profile.getId(), profile.getEmail(),
+        profile.getFirstName(), profile.getMiddleName(), profile.getLastName()
+    );
+
+    // When
+    profileService.updateProfileImage(profileWithImage, profileImage);
+
+    // Then
+    verify(profileRepository, times(1))
+        .save(
+            argThat(argument -> profileImage.getName().equals(argument.getProfileImage().getName())
+                && profileImage.getContentType().equals(argument.getProfileImage().getContentType())
+                && profileImage.getSize() == argument.getProfileImage().getSize())
+        );
   }
 }
