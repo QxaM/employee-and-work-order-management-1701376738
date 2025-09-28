@@ -21,8 +21,8 @@ services:
     environment:
       - PROFILE_POSTGRES_LINK=jdbc:postgresql://profile-database:5433/profile-db?sslmode=disable
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local_app}
-      - PROFILE_IMAGES_ACCESS_KEY=${PROFILE_IMAGES_ACCESS_KEY:-password}
+      - PROFILE_IMAGES_ACCESS_KEY=${PROFILE_IMAGES_ACCESS_KEY:-local_app}
+      - PROFILE_IMAGES_ACCESS_SECRET=${PROFILE_IMAGES_ACCESS_SECRET:-secret}
     depends_on:
       profile-database:
         condition: service_healthy
