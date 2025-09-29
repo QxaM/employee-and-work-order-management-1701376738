@@ -8,4 +8,5 @@ import lombok.Getter;
 public class BucketOperationResponse {
   private boolean successful;
   private int statusCode;
+  private byte[] data;
 }

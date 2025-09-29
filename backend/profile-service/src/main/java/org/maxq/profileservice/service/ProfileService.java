@@ -12,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -63,5 +65,15 @@ public class ProfileService {
     profileRepository.save(profile);
   }
 
+  public ProfileImage getProfileImage(String email) throws ElementNotFoundException {
+    Profile profile = this.getProfileByEmail(email);
+    Optional<ProfileImage> optionalProfileImage = Optional.ofNullable(profile.getProfileImage());
+
+    if (optionalProfileImage.isEmpty()) {
+      throw new ElementNotFoundException("Image does not exist for a given user: " + email);
+    }
+
+    return optionalProfileImage.get();
+  }
 }
 

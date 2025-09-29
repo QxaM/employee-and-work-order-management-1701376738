@@ -252,7 +252,7 @@ class ProfileImageUploadHandlerTest {
         "test.jpeg",
         "test-data".getBytes()
     );
-    BucketOperationResponse response = new BucketOperationResponse(true, -1);
+    BucketOperationResponse response = new BucketOperationResponse(true, -1, null);
 
     when(imageUploadService.uploadImage(file)).thenReturn(response);
 
@@ -272,7 +272,7 @@ class ProfileImageUploadHandlerTest {
         "test.jpeg",
         "test-data".getBytes()
     );
-    BucketOperationResponse response = new BucketOperationResponse(false, 404);
+    BucketOperationResponse response = new BucketOperationResponse(false, 404, null);
 
     when(imageUploadService.uploadImage(file)).thenReturn(response);
 
@@ -379,7 +379,7 @@ class ProfileImageUploadHandlerTest {
   void shouldCleanupOldImage_When_DeleteSuccessful() {
     // Given
     String imageName = "image.jpeg";
-    BucketOperationResponse response = new BucketOperationResponse(true, 200);
+    BucketOperationResponse response = new BucketOperationResponse(true, 200, null);
 
     when(imageUploadService.deleteImage(anyString())).thenReturn(response);
 
@@ -394,7 +394,7 @@ class ProfileImageUploadHandlerTest {
   void shouldCleanupOldImage_When_DeleteFails() {
     // Given
     String imageName = "image.jpeg";
-    BucketOperationResponse response = new BucketOperationResponse(false, 404);
+    BucketOperationResponse response = new BucketOperationResponse(false, 404, null);
 
     when(imageUploadService.deleteImage(anyString())).thenReturn(response);
 

@@ -16,10 +16,17 @@ public class QaImageUploadService implements ImageUploadService {
   private String profileImageUploadBucket;
 
   @Override
+  public BucketOperationResponse getImage(String imageName) {
+    return new BucketOperationResponse(
+        true, 200, null
+    );
+  }
+
+  @Override
   public BucketOperationResponse deleteImage(String imageName) {
     log.info("Deleting image {} from bucket {}", imageName, profileImageUploadBucket);
     return new BucketOperationResponse(
-        true, 200
+        true, 200, null
     );
   }
 
@@ -27,7 +34,7 @@ public class QaImageUploadService implements ImageUploadService {
   public BucketOperationResponse uploadImage(InMemoryFile file) {
     log.info("Uploading image {} to bucket {}", file.getName(), profileImageUploadBucket);
     return new BucketOperationResponse(
-        true, 200
+        true, 200, null
     );
   }
 }
