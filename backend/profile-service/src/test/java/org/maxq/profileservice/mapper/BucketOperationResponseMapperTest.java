@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.dto.BucketOperationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,5 +53,26 @@ class BucketOperationResponseMapperTest {
     assertFalse(mappedResponse.isSuccessful(), "Mapped response should be failed");
     assertEquals(404, mappedResponse.getStatusCode(),
         "Mapped response should have correct status code");
+  }
+
+  @Test
+  void shouldMapToBucketOperationResponse_When_responseWithData() {
+    // Given
+    SdkHttpResponse httpResponse = SdkHttpResponse.builder()
+        .statusCode(200)
+        .build();
+    GetObjectResponse getObjectResponse = (GetObjectResponse) GetObjectResponse.builder()
+        .sdkHttpResponse(httpResponse)
+        .build();
+    byte[] data = "test-data".getBytes();
+    ResponseBytes<GetObjectResponse> response = ResponseBytes.fromByteArray(getObjectResponse, data);
+
+    // When
+    BucketOperationResponse mappedResponse = mapper.mapToBucketOperationResponse(response);
+   
+    // Then
+    assertTrue(mappedResponse.isSuccessful(), "Mapped response should be successful");
+    assertEquals(200, mappedResponse.getStatusCode(), "Mapped response should have correct status code");
+    assertArrayEquals(data, mappedResponse.getData(), "Mapped response should have correct data");
   }
 }

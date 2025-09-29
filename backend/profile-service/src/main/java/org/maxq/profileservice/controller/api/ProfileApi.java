@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.profileservice.domain.HttpErrorMessage;
 import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.dto.UpdateProfileDto;
+import org.maxq.profileservice.domain.exception.BucketOperationException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,4 +94,33 @@ public interface ProfileApi {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
   ResponseEntity<Void> updateProfileImage(Authentication authentication, MultipartFile file) throws FileValidationException, IOException;
+
+  @Operation(
+      summary = "Return my profile image",
+      description = "Returns user's profile image of currently logged in user"
+  )
+  @ApiResponse(responseCode = "200", description = "User profile image properly returned",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ProfileDto.class)
+          )
+      })
+  @ApiResponse(responseCode = "401",
+      description = "Unauthenticated - only request with Robot Token are passed",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "403",
+      description = "Unauthorized - only logged in users can access this resource",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  @ApiResponse(responseCode = "404",
+      description = "Not found - profile or profile image for this user does not exists",
+      content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
+      })
+  ResponseEntity<Resource> getMyProfileImage(Authentication authentication)
+      throws ElementNotFoundException, BucketOperationException, IOException;
 }

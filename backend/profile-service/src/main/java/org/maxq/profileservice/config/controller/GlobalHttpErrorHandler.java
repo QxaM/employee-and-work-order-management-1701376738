@@ -3,6 +3,7 @@ package org.maxq.profileservice.config.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.domain.HttpErrorMessage;
 import org.maxq.profileservice.domain.HttpValidationStatus;
+import org.maxq.profileservice.domain.exception.BucketOperationException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +36,12 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
         new HttpValidationStatus(e.getMessage(), e.getValidationResult().getMessages()),
         HttpStatus.BAD_REQUEST
     );
+  }
+
+  @ExceptionHandler(BucketOperationException.class)
+  public ResponseEntity<HttpErrorMessage> handleBucketOperationException(BucketOperationException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @Override

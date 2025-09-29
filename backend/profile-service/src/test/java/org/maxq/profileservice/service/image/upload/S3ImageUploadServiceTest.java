@@ -50,7 +50,8 @@ class S3ImageUploadServiceTest {
     PutObjectResponse putObjectResponse = PutObjectResponse.builder().build();
     BucketOperationResponse operationResponse = new BucketOperationResponse(
         true,
-        -1
+        -1,
+        null
     );
 
     when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(putObjectResponse);
@@ -82,7 +83,8 @@ class S3ImageUploadServiceTest {
     DeleteObjectResponse deleteObjectResponse = DeleteObjectResponse.builder().build();
     BucketOperationResponse operationResponse = new BucketOperationResponse(
         true,
-        -1
+        -1,
+        null
     );
 
     when(s3Client.deleteObject(any(DeleteObjectRequest.class))).thenReturn(deleteObjectResponse);
