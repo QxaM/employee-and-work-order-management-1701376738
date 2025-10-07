@@ -78,11 +78,11 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "EWM - Profile Service.postman_collection.json" \
+          newman run "./profile-service/EWM - Profile Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
-          --reporter-htmlextra-export ./results/report.html \
+          --reporter-htmlextra-export ./profile-service/results/report.html \
           --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
-        working-directory: postman-api-tests/profile-service
+        working-directory: postman-api-tests
 
       - name: Upload Postman Report
         if: always()
