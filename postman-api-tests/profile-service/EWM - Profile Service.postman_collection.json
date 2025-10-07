@@ -552,11 +552,417 @@
 					"item": [
 						{
 							"name": "Positive",
-							"item": []
+							"item": [
+								{
+									"name": "Create Profile",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateProfileEmail\", updateProfileEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/qa/profiles",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"profiles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update profile",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+													"\r",
+													"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{updateProfileEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_OPERATOR",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						},
 						{
 							"name": "Negative",
-							"item": []
+							"item": [
+								{
+									"name": "No robot token",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+													"\r",
+													"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Correct error message\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please')\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{updateProfileEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_OPERATOR",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "No user headers",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+													"\r",
+													"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Correct error message\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\")\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "First name missing",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+													"\r",
+													"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 400\", function () {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid error message\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('First name cannot be empty');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{updateProfileEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_OPERATOR",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Last name missing",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+													"\r",
+													"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+													"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 400\", function () {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid error message\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Last name cannot be empty');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{updateProfileEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_OPERATOR",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -568,129 +974,422 @@
 							"item": [
 								{
 									"name": "Existing Profile",
-									"item": []
+									"item": [
+										{
+											"name": "Create Profile",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const updateProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+															"pm.collectionVariables.set(\"updateProfileEmail\", updateProfileEmail);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 201\", () => {\r",
+															"    pm.response.to.have.status(201);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{profileServiceUrl}}/qa/profiles",
+													"host": [
+														"{{profileServiceUrl}}"
+													],
+													"path": [
+														"qa",
+														"profiles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Update profile",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+															"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+															"\r",
+															"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+															"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{profileServiceUrl}}/qa/profiles",
+													"host": [
+														"{{profileServiceUrl}}"
+													],
+													"path": [
+														"qa",
+														"profiles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "GET /profiles/me",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test('Should contain correct email', () => {\r",
+															"    const adminEmail = pm.variables.get('updateProfileEmail');\r",
+															"    pm.expect(response).to.haveOwnProperty('email').to.be.a('string');\r",
+															"    pm.expect(response.email).to.eql(adminEmail);\r",
+															"});\r",
+															"\r",
+															"pm.test('Should contain other profile info', () => {\r",
+															"    pm.expect(response).to.be.an('object');\r",
+															"    pm.expect(response).to.haveOwnProperty('firstName').to.be.a('string');\r",
+															"    pm.expect(response).to.haveOwnProperty('lastName').to.be.a('string');\r",
+															"\r",
+															"    const middleName = response.middleName;\r",
+															"    pm.expect(typeof middleName === 'string' || middleName === null).to.be.true;\r",
+															"})\r",
+															"\r",
+															"pm.test('Should contain correct first name and last name', () => {\r",
+															"    const firstName = pm.variables.get('updateProfileFirstName');\r",
+															"    const lastName = pm.variables.get('updateProfileLastName');\r",
+															"\r",
+															"    pm.expect(response.firstName).to.eql(firstName);\r",
+															"    pm.expect(response.lastName).to.eql(lastName);\r",
+															"})\r",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{updateProfileEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_OPERATOR",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{profileServiceUrl}}/profiles/me",
+													"host": [
+														"{{profileServiceUrl}}"
+													],
+													"path": [
+														"profiles",
+														"me"
+													]
+												}
+											},
+											"response": []
+										}
+									]
 								},
 								{
 									"name": "New Profile",
-									"item": []
+									"item": [
+										{
+											"name": "Update profile",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const updateProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+															"pm.collectionVariables.set(\"updateProfileEmail\", updateProfileEmail);\r",
+															"\r",
+															"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+															"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
+															"\r",
+															"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+															"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{profileServiceUrl}}/qa/profiles",
+													"host": [
+														"{{profileServiceUrl}}"
+													],
+													"path": [
+														"qa",
+														"profiles"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "GET /profiles/me",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', () => {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"const response = pm.response.json();\r",
+															"\r",
+															"pm.test('Should contain correct email', () => {\r",
+															"    const adminEmail = pm.variables.get('updateProfileEmail');\r",
+															"    pm.expect(response).to.haveOwnProperty('email').to.be.a('string');\r",
+															"    pm.expect(response.email).to.eql(adminEmail);\r",
+															"});\r",
+															"\r",
+															"pm.test('Should contain other profile info', () => {\r",
+															"    pm.expect(response).to.be.an('object');\r",
+															"    pm.expect(response).to.haveOwnProperty('firstName').to.be.a('string');\r",
+															"    pm.expect(response).to.haveOwnProperty('lastName').to.be.a('string');\r",
+															"\r",
+															"    const middleName = response.middleName;\r",
+															"    pm.expect(typeof middleName === 'string' || middleName === null).to.be.true;\r",
+															"})\r",
+															"\r",
+															"pm.test('Should contain correct first name and last name', () => {\r",
+															"    const firstName = pm.variables.get('updateProfileFirstName');\r",
+															"    const lastName = pm.variables.get('updateProfileLastName');\r",
+															"\r",
+															"    pm.expect(response.firstName).to.eql(firstName);\r",
+															"    pm.expect(response.lastName).to.eql(lastName);\r",
+															"})\r",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "X-User",
+														"value": "{{updateProfileEmail}}",
+														"type": "text"
+													},
+													{
+														"key": "X-User-Roles",
+														"value": "ROLE_OPERATOR",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{profileServiceUrl}}/profiles/me",
+													"host": [
+														"{{profileServiceUrl}}"
+													],
+													"path": [
+														"profiles",
+														"me"
+													]
+												}
+											},
+											"response": []
+										}
+									]
 								}
 							]
 						}
 					]
-				},
+				}
+			]
+		},
+		{
+			"name": "Profile Image",
+			"item": [
 				{
-					"name": "Create Profile",
-					"event": [
+					"name": "Update profile image",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const updateProfileEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
-									"pm.collectionVariables.set(\"updateProfileEmail\", updateProfileEmail);"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", () => {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{updateProfileEmail}}\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"name": "Positive",
+							"item": [
+								{
+									"name": "Update JPEG image",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctJpeg.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
 								}
-							}
-						},
-						"url": {
-							"raw": "{{profileServiceUrl}}/qa/profiles",
-							"host": [
-								"{{profileServiceUrl}}"
-							],
-							"path": [
-								"qa",
-								"profiles"
 							]
+						},
+						{
+							"name": "Negative",
+							"item": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "Update profile",
-					"event": [
+					"name": "Get profile image",
+					"item": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const updateProfileFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
-									"pm.collectionVariables.set(\"updateProfileFirstName\", updateProfileFirstName);\r",
-									"\r",
-									"const updateProfileLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
-									"pm.collectionVariables.set(\"updateProfileLastName\", updateProfileLastName);"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
+							"name": "Positive",
+							"item": []
 						},
+						{
+							"name": "Negative",
+							"item": []
+						}
+					]
+				},
+				{
+					"name": "Get Profile Image",
+					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
+									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
 					"request": {
-						"method": "PUT",
+						"method": "GET",
 						"header": [
 							{
 								"key": "X-User",
-								"value": "{{updateProfileEmail}}",
+								"value": "{{adminEmail}}",
 								"type": "text"
 							},
 							{
 								"key": "X-User-Roles",
-								"value": "ROLE_OPERATOR",
+								"value": "{{adminRoles}}",
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"{{updateProfileFirstName}}\",\r\n    \"lastName\": \"{{updateProfileLastName}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{profileServiceUrl}}/profiles/me",
+							"raw": "{{profileServiceUrl}}/profiles/me/image",
 							"host": [
 								"{{profileServiceUrl}}"
 							],
 							"path": [
 								"profiles",
-								"me"
+								"me",
+								"image"
 							]
 						}
 					},
