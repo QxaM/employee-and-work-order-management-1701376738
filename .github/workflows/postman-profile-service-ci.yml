@@ -78,7 +78,7 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "profile-service\EWM - Profile Service.postman_collection.json" \
+          newman run "./profile-service/EWM - Profile Service.postman_collection.json" \
           --reporters='cli,htmlextra' \
           --reporter-htmlextra-export ./profile-service/results/report.html \
           --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
