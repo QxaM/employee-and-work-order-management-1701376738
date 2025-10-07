@@ -1359,7 +1359,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 200', () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response;\r",
+									"\r",
+									"pm.test('Should contain image data', () => {\r",
+									"    pm.expect(response).to.haveOwnProperty('stream');\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {},
@@ -1487,6 +1495,16 @@
 		{
 			"key": "updateProfileLastName",
 			"value": ""
+		},
+		{
+			"key": "operatorEmail",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "operatorRoles",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

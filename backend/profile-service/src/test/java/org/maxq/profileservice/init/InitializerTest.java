@@ -10,8 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(properties = {"app.init=true"})
@@ -29,6 +28,7 @@ class InitializerTest {
   void shouldCorrectlyInitData() {
     // Given
     String adminEmail = "admin@maxq.com";
+    String adminImageName = "adminProfile.jpg";
     String designerEmail = "designer@maxq.com";
     String operatorEmail = "operator@maxq.com";
 
@@ -42,6 +42,11 @@ class InitializerTest {
         () -> assertTrue(admin.isPresent(), "Admin Profile was not created correctly"),
         () -> assertTrue(designer.isPresent(), "Designer Profile was not created correctly"),
         () -> assertTrue(operator.isPresent(), "Operator Profile was not created correctly")
+    );
+    assertAll(
+        () -> assertNotNull(admin.get().getProfileImage(), "Profile image should be initialized"),
+        () -> assertEquals(adminImageName, admin.get().getProfileImage().getName(),
+            "Profile image not initialized correctly")
     );
   }
 }
