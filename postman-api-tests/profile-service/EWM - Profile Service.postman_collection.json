@@ -1330,12 +1330,636 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Update PNG image",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctPng.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
 						{
 							"name": "Negative",
-							"item": []
+							"item": [
+								{
+									"name": "No Robot Token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response message', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctJpeg.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "No User Headers",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response message', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\");\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctJpeg.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Wrong name",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.contain('Invalid file name. Only numbers and letters are allowed');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/incorrect-file.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Wrong extension",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.contain('Invalid file extension. Only .jpg, .png and .jpeg files are allowed');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctJpeg.jfif"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Wrong Content-Type",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.contain('Invalid file type. Only .jpg, .png and .jpeg files are allowed');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "admin@maxq.com"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN"
+											},
+											{
+												"key": "Authorization",
+												"value": "••••••"
+											},
+											{
+												"key": "Cookie",
+												"value": "JSESSIONID=46F6A0A2AE420515E2A607608B6EF241"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"contentType": "image/bmp",
+													"type": "file",
+													"src": "profile-service/incorrectContentType.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										},
+										"description": "Generated from cURL: curl --location 'http://localhost:8082/profiles/me/image' \\\r\n--header 'X-User: admin@maxq.com' \\\r\n--header 'X-User-Roles: ROLE_ADMIN' \\\r\n--header 'Authorization: ••••••' \\\r\n--header 'Cookie: JSESSIONID=46F6A0A2AE420515E2A607608B6EF241' \\\r\n--form 'file=@\"profile-service/incorrectContentType.png\";type=image/bmp'"
+									},
+									"response": []
+								},
+								{
+									"name": "Wrong Real Type",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.contain('Invalid detected file format. Only .jpg, .png and .jpeg files are allowed');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "admin@maxq.com"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "ROLE_ADMIN"
+											},
+											{
+												"key": "Authorization",
+												"value": "••••••"
+											},
+											{
+												"key": "Cookie",
+												"value": "JSESSIONID=46F6A0A2AE420515E2A607608B6EF241"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"contentType": "image/jpeg",
+													"type": "file",
+													"src": "profile-service/incorrectRealType.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										},
+										"description": "Generated from cURL: curl --location 'http://localhost:8082/profiles/me/image' \\\r\n--header 'X-User: admin@maxq.com' \\\r\n--header 'X-User-Roles: ROLE_ADMIN' \\\r\n--header 'Authorization: ••••••' \\\r\n--header 'Cookie: JSESSIONID=46F6A0A2AE420515E2A607608B6EF241' \\\r\n--form 'file=@\"profile-service/correctJpeg.jfif\";type=image/jpeg'"
+									},
+									"response": []
+								},
+								{
+									"name": "Content Mismatch",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.contain('Provided file content does not match the detected file format');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/contentMismatch.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Multiple Errors",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 400', () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Correct response', () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response).to.haveOwnProperty('errors').that.is.an('array');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct message', () => {\r",
+													"    pm.expect(response.message).to.eql('File validation failed!');\r",
+													"})\r",
+													"\r",
+													"pm.test('Correct validation failure', () => {\r",
+													"    pm.expect(response.errors).to.have.lengthOf(2);\r",
+													"    pm.expect(response.errors).to.contain('Invalid file type. Only .jpg, .png and .jpeg files are allowed');\r",
+													"    pm.expect(response.errors).to.contain('Invalid file extension. Only .jpg, .png and .jpeg files are allowed');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "profile-service/correctJpeg.jfif"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -1344,64 +1968,283 @@
 					"item": [
 						{
 							"name": "Positive",
-							"item": []
+							"item": [
+								{
+									"name": "Get Profile Image",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response;\r",
+													"\r",
+													"pm.test('Should contain image data', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('stream');\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						},
 						{
 							"name": "Negative",
-							"item": []
-						}
-					]
-				},
-				{
-					"name": "Get Profile Image",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', () => {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"const response = pm.response;\r",
-									"\r",
-									"pm.test('Should contain image data', () => {\r",
-									"    pm.expect(response).to.haveOwnProperty('stream');\r",
-									"})"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-User",
-								"value": "{{adminEmail}}",
-								"type": "text"
-							},
-							{
-								"key": "X-User-Roles",
-								"value": "{{adminRoles}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{profileServiceUrl}}/profiles/me/image",
-							"host": [
-								"{{profileServiceUrl}}"
-							],
-							"path": [
-								"profiles",
-								"me",
-								"image"
+							"item": [
+								{
+									"name": "No Robot token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Should contain error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql('Unauthorized to access this resource, login please')\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "No User Header",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Should contain error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.eql(\"Forbidden: You don't have permission to access this resource\")\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{adminEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{adminRoles}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Non-Existent user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 404', () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Should contain error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const noProfileEmail = pm.collectionVariables.get(\"noProfileEmail\");\r",
+													"    pm.expect(response.message).to.eql(`User with email: ${noProfileEmail} does not exist!`)\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{noProfileEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{noProfileRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Non-Existent Image",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 404', () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test('Should contain error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const operatorEmail = pm.collectionVariables.get(\"operatorEmail\");\r",
+													"    pm.expect(response.message).to.eql(`Image does not exist for a given user: ${operatorEmail}`);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRoles}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{profileServiceUrl}}/profiles/me/image",
+											"host": [
+												"{{profileServiceUrl}}"
+											],
+											"path": [
+												"profiles",
+												"me",
+												"image"
+											]
+										}
+									},
+									"response": []
+								}
 							]
 						}
-					},
-					"response": []
+					]
 				}
 			]
 		}
@@ -1422,6 +2265,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1432,6 +2276,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1441,28 +2286,23 @@
 	"variable": [
 		{
 			"key": "profileServiceUrl",
-			"value": "http://localhost:8082",
-			"type": "string"
+			"value": "http://localhost:8082"
 		},
 		{
 			"key": "adminEmail",
-			"value": "admin@maxq.com",
-			"type": "default"
+			"value": "admin@maxq.com"
 		},
 		{
 			"key": "adminRoles",
-			"value": "ROLE_ADMIN",
-			"type": "default"
+			"value": "ROLE_ADMIN"
 		},
 		{
 			"key": "noProfileEmail",
-			"value": "noProfile@test.com",
-			"type": "string"
+			"value": "noProfile@test.com"
 		},
 		{
 			"key": "noProfileRole",
-			"value": "ROLE_OPERATOR",
-			"type": "string"
+			"value": "ROLE_OPERATOR"
 		},
 		{
 			"key": "createProfileEmail",
@@ -1498,13 +2338,11 @@
 		},
 		{
 			"key": "operatorEmail",
-			"value": "",
-			"type": "default"
+			"value": "operator@maxq.com"
 		},
 		{
 			"key": "operatorRoles",
-			"value": "",
-			"type": "default"
+			"value": "ROLE_OPERATOR"
 		}
 	]
 }
