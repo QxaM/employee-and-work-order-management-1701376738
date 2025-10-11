@@ -5,7 +5,7 @@ interface ProfileImageState {
   imageSrc: string | undefined;
   loading: boolean;
   error: string | null;
-  lastFetched: Date | null;
+  lastFetched: number | null;
 }
 
 const initialState: ProfileImageState = {
@@ -55,7 +55,7 @@ const profileImageSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.imageSrc = action.payload;
-        state.lastFetched = new Date();
+        state.lastFetched = Date.now();
       })
       .addCase(fetchProfileImage.rejected, (state, action) => {
         state.loading = false;
