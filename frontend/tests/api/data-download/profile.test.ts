@@ -182,7 +182,7 @@ describe('Profile API data download', () => {
       // Then
       expect(response.error).toBeDefined();
       expect(response.error?.status).toEqual('PARSING_ERROR');
-      expect(response.error?.message).toEqual('Error parsing image data');
+      expect(response.error?.message).toEqual('Error parsing image data.');
     });
   });
 });
