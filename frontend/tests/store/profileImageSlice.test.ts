@@ -46,7 +46,7 @@ describe('profileImageSlice', () => {
         imageSrc,
         loading: false,
         error: null,
-        lastFetched: new Date(),
+        lastFetched: Date.now(),
       };
 
       // When
@@ -65,7 +65,7 @@ describe('profileImageSlice', () => {
         imageSrc,
         loading: false,
         error: null,
-        lastFetched: new Date(),
+        lastFetched: Date.now(),
       };
 
       // When
@@ -83,7 +83,7 @@ describe('profileImageSlice', () => {
         imageSrc,
         loading: false,
         error: null,
-        lastFetched: new Date(),
+        lastFetched: Date.now(),
       };
 
       // When
@@ -100,7 +100,7 @@ describe('profileImageSlice', () => {
         imageSrc: undefined,
         loading: false,
         error,
-        lastFetched: new Date(),
+        lastFetched: Date.now(),
       };
 
       // When
@@ -116,7 +116,7 @@ describe('profileImageSlice', () => {
         imageSrc: undefined,
         loading: false,
         error: null,
-        lastFetched: new Date(),
+        lastFetched: Date.now(),
       };
 
       // When
