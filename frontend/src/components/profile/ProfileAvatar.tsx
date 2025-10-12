@@ -9,6 +9,7 @@ import { formatFileSize } from '../../utils/file.ts';
 interface ProfileAvatarProps {
   firstName: string | undefined;
   lastName: string | undefined;
+  imageSrc: string | undefined;
   imageUpload: ReturnType<typeof useImageUpload>;
   isEdited?: boolean;
 }
@@ -16,6 +17,7 @@ interface ProfileAvatarProps {
 const ProfileAvatar = ({
   firstName,
   lastName,
+  imageSrc,
   imageUpload,
   isEdited,
 }: ProfileAvatarProps) => {
@@ -53,7 +55,14 @@ const ProfileAvatar = ({
 
   return (
     <div data-testid="avatar-container">
-      {!isEdited && <Avatar size="9" radius="full" fallback={imageFallback} />}
+      {!isEdited && (
+        <Avatar
+          size="9"
+          radius="full"
+          src={imageSrc}
+          fallback={imageFallback}
+        />
+      )}
       {isEdited && (
         <Flex direction="column" justify="center" align="center" gap="2">
           <Flex
