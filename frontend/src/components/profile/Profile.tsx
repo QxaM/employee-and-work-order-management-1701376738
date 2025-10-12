@@ -27,12 +27,14 @@ import ProfileAvatar from './ProfileAvatar.tsx';
 import { useImageUpload } from '../../hooks/useImageUpload.tsx';
 import { useFormNotifications } from '../../hooks/useFormNotifications.tsx';
 import { MessageWithCause } from '../../types/components/ModalTypes.tsx';
+import { useProfileImage } from '../../hooks/useProfileImage.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
   const { me } = useMeData();
 
   const [isEdited, setIsEdited] = useState(false);
+  const { imageSrc, clearImage } = useProfileImage();
   const imageUpload = useImageUpload();
   const [updateProfile] = useUpdateMyProfileMutation();
   const [
@@ -94,6 +96,7 @@ const Profile = () => {
       const formData = new FormData();
       formData.append('file', image.file);
       void updateProfileImage(formData);
+      clearImage();
     }
 
     handleCancel();
@@ -113,6 +116,7 @@ const Profile = () => {
       <ProfileAvatar
         firstName={profileData?.firstName}
         lastName={profileData?.lastName}
+        imageSrc={imageSrc}
         imageUpload={imageUpload}
         isEdited={isEdited}
       />

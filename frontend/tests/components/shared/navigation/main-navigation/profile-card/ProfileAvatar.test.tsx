@@ -1,5 +1,6 @@
 import { DropdownMenu } from '@radix-ui/themes';
-import ProfileAvatar from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileAvatar.tsx';
+import ProfileAvatar
+  from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileAvatar.tsx';
 import { renderWithProviders } from '../../../../../test-utils.tsx';
 import * as authApiModule from '../../../../../../src/store/api/auth.ts';
 import { MeType } from '../../../../../../src/store/api/auth.ts';
@@ -8,7 +9,7 @@ import { screen } from '@testing-library/react';
 
 const TestWrapper = () => (
   <DropdownMenu.Root>
-    <ProfileAvatar />
+    <ProfileAvatar imageSrc={undefined} />
   </DropdownMenu.Root>
 );
 

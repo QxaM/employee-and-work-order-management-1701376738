@@ -1,14 +1,13 @@
 import { expect, test } from "../base/baseTest";
-import { Credentials, Token } from "../types/Authorization";
+import { Token } from "../types/Authorization";
 import { openHomePage, openProfilePage } from "../utils/navigation.utils";
 import {
   clickEditProfile,
   clickSaveProfile,
   fillProfileDetails,
-  navigateToProfile
+  navigateToProfile,
 } from "./profiles.utils";
 
-import credentials from "../../test-data/credentials.json";
 import profiles from "../../test-data/profiles.json";
 import { ProfileData } from "../types/Profile";
 import { getMyProfile } from "../utils/profile.api.utils";
@@ -21,12 +20,11 @@ test("TC22 - should navigate and display user profile", async ({
 }) => {
   // Given
   const profileTitle = "Profile";
-  const userCredentials = credentials.admin as Credentials;
   const profile = profiles.admin as ProfileData;
   await openHomePage(adminPage);
 
   // When
-  await navigateToProfile(adminPage, userCredentials.login);
+  await navigateToProfile(adminPage);
 
   // Then
   await Promise.all([

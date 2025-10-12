@@ -7,7 +7,7 @@ import { registerModal } from '../modalSlice.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { getValueOrDefault } from '../../utils/shared.ts';
 
-const PROFILES_API = '/profiles';
+export const PROFILES_API = '/profiles';
 const HEALTHCHECK_API = '/actuator/health';
 
 const defaultUpdateErrorMessage = 'Unknown error while updating profile data';

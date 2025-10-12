@@ -35,6 +35,7 @@ describe('ProfileAvatar', () => {
         <ProfileAvatar
           firstName={firstName}
           lastName={lastName}
+          imageSrc={undefined}
           imageUpload={mockUseImageUpload}
         />
       );
@@ -61,6 +62,7 @@ describe('ProfileAvatar', () => {
         <ProfileAvatar
           firstName={firstName}
           lastName={lastName}
+          imageSrc={undefined}
           imageUpload={mockUseImageUpload}
           isEdited
         />
@@ -80,6 +82,7 @@ describe('ProfileAvatar', () => {
           firstName={firstName}
           imageUpload={mockUseImageUpload}
           lastName={lastName}
+          imageSrc={undefined}
           isEdited
         />
       );
@@ -108,6 +111,7 @@ describe('ProfileAvatar', () => {
         <ProfileAvatar
           firstName={firstName}
           lastName={lastName}
+          imageSrc={undefined}
           imageUpload={mockUseImageUpload}
           isEdited
         />

@@ -23,7 +23,7 @@ export const profileApi = '/profile';
  * during an API request. This message serves as a fallback for cases
  * where a more specific error message is not available.
  */
-const defaultApiError = 'Unknown API request error';
+export const defaultApiError = 'Unknown API request error';
 
 export interface ExtendedFetchArgs extends FetchArgs {
   defaultError?: string;

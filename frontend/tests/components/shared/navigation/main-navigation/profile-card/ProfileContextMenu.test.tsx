@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { Button, DropdownMenu } from '@radix-ui/themes';
-import { beforeEach, describe } from 'vitest';
+import { afterEach, beforeEach, describe } from 'vitest';
 import { renderWithProviders } from '../../../../../test-utils.tsx';
 import ProfileContextMenu from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileContextMenu.tsx';
 import { screen } from '@testing-library/react';
@@ -24,9 +24,15 @@ const TestWrapper = ({ children }: PropsWithChildren) => {
 
 describe('ProfileContextMenu', () => {
   let user: UserEvent;
+  const mockClearImage = vi.fn();
 
   beforeEach(() => {
+    vi.resetAllMocks();
     user = userEvent.setup();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Profile navigation', () => {
@@ -36,7 +42,7 @@ describe('ProfileContextMenu', () => {
       // Given
       renderWithProviders(
         <TestWrapper>
-          <ProfileContextMenu />
+          <ProfileContextMenu clearImage={mockClearImage} />
         </TestWrapper>
       );
       const triggerButton = screen.getByText(openContext);
@@ -53,7 +59,7 @@ describe('ProfileContextMenu', () => {
       // Given
       renderWithProviders(
         <TestWrapper>
-          <ProfileContextMenu />
+          <ProfileContextMenu clearImage={mockClearImage} />
         </TestWrapper>
       );
       const triggerButton = screen.getByText(openContext);
@@ -75,7 +81,7 @@ describe('ProfileContextMenu', () => {
       // Given
       renderWithProviders(
         <TestWrapper>
-          <ProfileContextMenu />
+          <ProfileContextMenu clearImage={mockClearImage} />
         </TestWrapper>
       );
       const triggerButton = screen.getByText(openContext);
@@ -92,7 +98,7 @@ describe('ProfileContextMenu', () => {
       // Given
       const { store } = renderWithProviders(
         <TestWrapper>
-          <ProfileContextMenu />
+          <ProfileContextMenu clearImage={mockClearImage} />
         </TestWrapper>,
         {
           preloadedState: {
@@ -111,6 +117,31 @@ describe('ProfileContextMenu', () => {
 
       // Then
       expect(store.getState().auth.token).toBeUndefined();
+    });
+
+    it('Should call clear image function when logout', async () => {
+      // Given
+      renderWithProviders(
+        <TestWrapper>
+          <ProfileContextMenu clearImage={mockClearImage} />
+        </TestWrapper>,
+        {
+          preloadedState: {
+            auth: {
+              token: 'test-token',
+            },
+          },
+        }
+      );
+      const triggerButton = screen.getByText(openContext);
+      await user.click(triggerButton);
+      const logoutElement = await screen.findByText(logoutTitle);
+
+      // When
+      await user.click(logoutElement);
+
+      // Then
+      expect(mockClearImage).toHaveBeenCalledOnce();
     });
   });
 });

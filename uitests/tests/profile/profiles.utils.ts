@@ -6,9 +6,8 @@ interface UpdateProfileType {
   lastName: string;
 }
 
-export const navigateToProfile = async (page: Page, email: string) => {
-  const avatarLetter = email.charAt(0).toUpperCase();
-  await page.getByRole("button", { name: avatarLetter, exact: true }).click();
+export const navigateToProfile = async (page: Page) => {
+  await page.getByRole("button").locator("img").click();
   await page.getByRole("menuitem", { name: "Profile" }).click();
 };
 
