@@ -1,6 +1,7 @@
 import { beforeEach, expect } from 'vitest';
 import * as authApiModule from '../../../../../../src/store/api/auth.ts';
 import { MeType } from '../../../../../../src/store/api/auth.ts';
+import * as useProfileImageModule from '../../../../../../src/hooks/useProfileImage.ts';
 import { renderWithProviders } from '../../../../../test-utils.tsx';
 import ProfileCard from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileCard.tsx';
 import { screen } from '@testing-library/react';
@@ -9,6 +10,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 describe('ProfileCard', () => {
   const mockEmail = 'test@test.com';
+  const mockClearImage = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,6 +24,10 @@ describe('ProfileCard', () => {
       isError: false,
       error: undefined,
       refetch: vi.fn(),
+    });
+    vi.spyOn(useProfileImageModule, 'useProfileImage').mockReturnValue({
+      imageSrc: undefined,
+      clearImage: mockClearImage,
     });
   });
 
