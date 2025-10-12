@@ -1,6 +1,7 @@
 import * as profileApiModule from '../../../src/store/api/profile.ts';
 import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
 import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
+import * as useProfileImageModule from '../../../src/hooks/useProfileImage.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
@@ -33,6 +34,7 @@ describe('Profile', () => {
   const mockProfileUpdate = vi.fn();
   const mockImageUpload = vi.fn();
   const mockUploadCancel = vi.fn();
+  const mockClearImage = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -81,6 +83,10 @@ describe('Profile', () => {
       handleDrag: vi.fn(),
       handleDrop: vi.fn(),
       handleCancel: mockUploadCancel,
+    });
+    vi.spyOn(useProfileImageModule, 'useProfileImage').mockReturnValue({
+      imageSrc: undefined,
+      clearImage: mockClearImage,
     });
   });
 
@@ -400,6 +406,8 @@ describe('Profile', () => {
       const formData = new FormData();
       formData.append('file', file);
       expect(mockImageUpload).toHaveBeenCalledWith(formData);
+
+      expect(mockClearImage).toHaveBeenCalledOnce();
     });
 
     it('Should not call update image when image is not selected', async () => {
@@ -418,6 +426,7 @@ describe('Profile', () => {
 
       // Then
       expect(mockImageUpload).not.toHaveBeenCalled();
+      expect(mockClearImage).not.toHaveBeenCalled();
     });
   });
 
