@@ -1,12 +1,16 @@
-import {expect, test} from "../base/baseTest";
-import {openProfilePage} from "../utils/navigation.utils";
-import {loginApi} from "../utils/authorization.api.utils";
-import {ProfileData} from "../types/Profile";
-import {getMyProfile} from "../utils/profile.api.utils";
-import {Token} from "../types/Authorization";
-import {buildContextStorage} from "../setup/setup.utils";
-import {Page} from "playwright";
-import {clickEditProfile, clickSaveProfile, clickUploadImage,} from "./profiles.utils";
+import { expect, test } from "../base/baseTest";
+import { openProfilePage } from "../utils/navigation.utils";
+import { loginApi } from "../utils/authorization.api.utils";
+import { ProfileData } from "../types/Profile";
+import { getMyProfile } from "../utils/profile.api.utils";
+import { Token } from "../types/Authorization";
+import { buildContextStorage } from "../setup/setup.utils";
+import { Page } from "playwright";
+import {
+  clickEditProfile,
+  clickSaveProfile,
+  clickUploadImage,
+} from "./profiles.utils";
 
 test("TC26 - should show profile image", async ({ adminPage }) => {
   // Given
