@@ -1,15 +1,7 @@
-import { Badge, BadgeProps, Button, Flex, Heading } from '@radix-ui/themes';
+import { Badge, Button, Flex, Heading } from '@radix-ui/themes';
 import { RoleType } from '../../../../types/api/RoleTypes.ts';
 import { ReactNode } from 'react';
-
-const colorMap: Record<string, BadgeProps['color']> = {
-  OPERATOR: 'gray',
-  DESIGNER: 'blue',
-  ADMIN: 'crimson',
-};
-
-const getColor = (role: RoleType): BadgeProps['color'] =>
-  colorMap[role.name] ?? 'violet';
+import { getColor } from '../../../../types/components/RoleTypes.ts';
 
 interface RolesListProps {
   title: string;

@@ -6,7 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.maxq.apigatewayservice.config.AuthorizationServiceLoadBalancerConfig;
+import org.maxq.apigatewayservice.config.ServiceLoadBalancerConfig;
+import org.maxq.apigatewayservice.utils.RequestsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -23,12 +24,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 
 @SpringBootTest(
-    classes = {AuthorizationServiceLoadBalancerConfig.class},
+    classes = {ServiceLoadBalancerConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
-    "eureka.client.enabled=false"
+    "eureka.client.enabled=false",
+    "test.loadbalancer=authorization"
 })
 class AuthorizationServiceTest {
 
@@ -38,17 +40,13 @@ class AuthorizationServiceTest {
   private WebTestClient webTestClient;
 
   protected static Stream<HttpMethod> allowedMethods() {
-    return Stream.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH);
+    return RequestsUtils.buildAllowedMethods(
+        HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH
+    );
   }
 
   protected static Stream<HttpMethod> disallowedMethods() {
-    return Stream.of(HttpMethod.values())
-        .filter(method ->
-            allowedMethods().noneMatch(allowedMethod ->
-                allowedMethod.equals(method)
-            )
-        )
-        .filter(method -> !method.equals(HttpMethod.TRACE));
+    return RequestsUtils.buildDisallowedMethods(allowedMethods().toArray(HttpMethod[]::new));
   }
 
   @BeforeEach

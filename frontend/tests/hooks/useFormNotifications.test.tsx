@@ -40,6 +40,34 @@ describe('useFormNotifications', () => {
       );
     });
 
+    it('Should dispatch correct MessageWithCause success event on success', () => {
+      // Given
+      const submit = {
+        success: {
+          status: true,
+          message: {
+            message: 'Test success message',
+            cause: ['Cause 1', 'Cause 2'],
+          },
+        },
+      };
+
+      // When
+      const { store } = renderHookWithProviders(() => {
+        useFormNotifications(submit);
+      });
+
+      // Then
+      const modalState = store.getState().modal;
+      expect(modalState.modals).toHaveLength(1);
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: submit.success.message,
+          type: 'success',
+        })
+      );
+    });
+
     it('Should dispatch success event with default message', () => {
       // Given
       const submit = {
@@ -120,6 +148,38 @@ describe('useFormNotifications', () => {
         error: {
           status: true,
           message: 'Test error message',
+        },
+      };
+
+      // When
+      const { store } = renderHookWithProviders(() => {
+        useFormNotifications(submit);
+      });
+
+      // Then
+      const modalState = store.getState().modal;
+      expect(modalState.modals).toHaveLength(1);
+      expect(modalState.modals[0].content).toEqual(
+        expect.objectContaining({
+          message: submit.error.message,
+          type: 'error',
+        })
+      );
+    });
+
+    it('Should dispatch correct MessageWithCause error event on error', () => {
+      // Given
+      const submit = {
+        success: {
+          status: false,
+          message: 'Test success message',
+        },
+        error: {
+          status: true,
+          message: {
+            message: 'Test error message',
+            cause: ['Cause 1', 'Cause 2'],
+          },
         },
       };
 

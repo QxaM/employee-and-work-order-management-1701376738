@@ -7,7 +7,7 @@ import BasePage from './base/BasePage.tsx';
  */
 const RegisterPage = () => {
   return (
-    <BasePage>
+    <BasePage className="lg:w-1/2 w-3/4">
       <RegisterForm />
     </BasePage>
   );

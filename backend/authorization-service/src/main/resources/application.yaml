@@ -21,6 +21,11 @@ jwt:
 server:
   port: ${PORT:8081}
 
+profile:
+  exchange: "authorization-profile-exchange"
+  topic:
+    create: "profile.create"
+
 spring:
   application:
     name: authorization-service
@@ -33,6 +38,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_PROFILE_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_PROFILE_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
+    virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
   mail:
     host: smtp.gmail.com
     password: ${MAIL_PASSWORD}
@@ -53,6 +64,23 @@ spring:
   config:
     activate:
       on-profile: QA
+management:
+  health:
+    rabbit:
+      enabled: false
+    mail:
+      enabled: false
 eureka:
   client:
     enabled: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: SIT
+management:
+  health:
+    mail:
+      enabled: false

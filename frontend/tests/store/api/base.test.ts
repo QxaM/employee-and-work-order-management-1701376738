@@ -100,6 +100,7 @@ describe('customBaseQuery', () => {
 
     // Then
     expect(result.error?.message).toBe('API error message');
+    expect(result.error?.cause).toBeUndefined();
   });
 
   it('should fallback to default error message', async () => {
@@ -115,6 +116,26 @@ describe('customBaseQuery', () => {
 
     // Then
     expect(result.error?.message).toBe('Unknown API request error');
+  });
+
+  it('should return message with cause', async () => {
+    // Given
+    const messageWithCause = {
+      message: 'Test error',
+      errors: ['Cause 1', 'Cause 2'],
+    };
+    const mockResponse = new Response(JSON.stringify(messageWithCause), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    global.fetch = vi.fn().mockResolvedValue(mockResponse);
+
+    // When
+    const result = await customBaseQuery({ url: '/test' }, mockApi, {});
+
+    // Then
+    expect(result.error?.message).toBe(messageWithCause.message);
+    expect(result.error?.cause).toStrictEqual(messageWithCause.errors);
   });
 
   it('should mask the error if structured wrong', async () => {

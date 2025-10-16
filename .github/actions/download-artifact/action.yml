@@ -1,0 +1,42 @@
+name: 'Download Artifact with Fallback'
+author: 'Piotr Gliszczyński'
+description: |
+  Try to download artifact from current run 
+  and fallback to any previous run if failed
+
+inputs:
+  artifact_name:
+    description: 'Name of the artifact to download'
+    required: true
+  path:
+    description: 'Path to download the artifact to'
+    required: true
+  workflow:
+    description: 'Name of the workflow to search for the artifact for fallback'
+    required: false
+    default: 'ui-tests-ci.yml'
+  github_token:
+    description: 'GitHub token'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Try to download ${{ inputs.artifact_name }} from current run
+      id: download-current
+      uses: actions/download-artifact@v4
+      continue-on-error: true
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: ${{ inputs.path }}
+
+    - name: Download ${{ inputs.artifact_name }} from previous runs
+      if: steps.download-current.outcome == 'failure'
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: ${{ inputs.workflow }}
+        name: ${{ inputs.artifact_name }}
+        path: ${{ inputs.path }}
+        check_artifacts: true
+        search_artifacts: true
+        github_token: ${{ inputs.github_token }}

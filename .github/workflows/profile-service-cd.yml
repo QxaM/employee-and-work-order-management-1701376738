@@ -1,0 +1,82 @@
+name: profile Service Deploy
+on:
+  workflow_run:
+    workflows:
+      - UI Tests Pipeline
+    types:
+      - completed
+    secrets: inherit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  profile-changes:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push'
+    outputs:
+      profile: ${{ steps.filter.outputs.changes_detected }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in Profile Service
+        uses: ./.github/actions/check-changes
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: 'backend/profile-service/**'
+
+  profile-service-deploy:
+    needs: profile-changes
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push' &&
+      needs.profile-changes.outputs.profile == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: profile-service-jar
+          path: backend/profile-service/build/libs
+          github_token: ${{ github.token }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/profile-service
+          file: ./backend/profile-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/profile-service:1.0.0
+            ${{ secrets.DOCKER_USERNAME }}/profile-service:latest
+          labels: profile-service
+
+      - name: Deploy to Render
+        run: |
+          curl ${{ secrets.profile_RENDER_HOOK }}
+
+      - name: Wait for application to be ready
+        uses: './.github/actions/health-check'
+        with:
+          timeout_minutes: 10
+          url: ${{ secrets.profile_API_URL }}/actuator/health

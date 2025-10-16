@@ -1,0 +1,120 @@
+package org.maxq.apigatewayservice.route.configuration;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.maxq.apigatewayservice.config.ServiceLoadBalancerConfig;
+import org.maxq.apigatewayservice.utils.RequestsUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.Duration;
+import java.util.stream.Stream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+
+@SpringBootTest(
+    classes = {ServiceLoadBalancerConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
+@WireMockTest(httpPort = 8082)
+@TestPropertySource(properties = {
+    "eureka.client.enabled=false",
+    "test.loadbalancer=profile"
+})
+class ProfileServiceFileUploadTest {
+
+  private static final String PROFILE_URL = "/api/profile";
+  private static final String UPLOAD_URL = "/test";
+  private static final String BOUNDARY = "CustomBoundaryValue";
+
+  @LocalServerPort
+  private int port;
+  @Autowired
+  private WebTestClient webTestClient;
+
+  protected static Stream<HttpMethod> allowedMethods() {
+    return RequestsUtils.buildAllowedMethods(HttpMethod.POST);
+  }
+
+  protected static Stream<HttpMethod> disallowedMethods() {
+    return RequestsUtils.buildDisallowedMethods(allowedMethods().toArray(HttpMethod[]::new));
+  }
+
+  @BeforeEach
+  void setUp() {
+    String baseUri = "http://localhost:" + port;
+    this.webTestClient =
+        WebTestClient.bindToServer()
+            .responseTimeout(Duration.ofSeconds(10))
+            .baseUrl(baseUri)
+            .build();
+
+    allowedMethods().forEach(method ->
+        stubFor(WireMock.request(method.name(), WireMock.urlEqualTo(UPLOAD_URL))
+            .willReturn(WireMock.ok()))
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("allowedMethods")
+  void shouldRouteAllowedMethods(HttpMethod method) {
+    // Given
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .header(HttpHeaders.CONTENT_TYPE,
+            MediaType.MULTIPART_FORM_DATA_VALUE + "; boundary=" + BOUNDARY)
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @ParameterizedTest
+  @MethodSource("disallowedMethods")
+  void shouldNotRouteDisallowedMethods(HttpMethod method) {
+    // Given
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE + ";boundary=" + BOUNDARY)
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+
+  @Test
+  void shouldNotRouteWithoutContentType() {
+    // Given
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.POST);
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+
+  @Test
+  void shouldNotRouteWithInvalidContentType() {
+    // Given
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.POST);
+    String invalidContentType = MediaType.TEXT_PLAIN_VALUE;
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(PROFILE_URL + UPLOAD_URL)
+        .header(HttpHeaders.CONTENT_TYPE, invalidContentType)
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+}

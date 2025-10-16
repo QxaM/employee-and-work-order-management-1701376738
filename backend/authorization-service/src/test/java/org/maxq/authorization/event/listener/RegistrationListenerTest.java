@@ -2,12 +2,15 @@ package org.maxq.authorization.event.listener;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.authorization.config.AsyncConfig;
+import org.maxq.authorization.domain.Profile;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.VerificationToken;
 import org.maxq.authorization.event.OnRegistrationComplete;
+import org.maxq.authorization.event.message.RabbitmqMessage;
 import org.maxq.authorization.service.VerificationTokenService;
 import org.maxq.authorization.service.mail.MailService;
+import org.maxq.authorization.service.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -30,13 +33,16 @@ class RegistrationListenerTest {
   private VerificationTokenService verificationTokenService;
   @MockitoBean
   private MailService templateEmailService;
+  @MockitoBean
+  private MessageService<RabbitmqMessage<?>> messageService;
 
   @Test
   void shouldHandleRegistrationEvent() {
     // Given
     Role role = new Role(1L, "admin", Collections.emptyList());
     User user = new User(1L, "test@test.com", "test", false, Set.of(role));
-    OnRegistrationComplete event = new OnRegistrationComplete(user);
+    Profile profile = new Profile(user.getEmail(), "Test", null, "Test");
+    OnRegistrationComplete event = new OnRegistrationComplete(user, profile);
 
     VerificationToken token = new VerificationToken(1L, "token", user, LocalDateTime.now(), false);
     when(verificationTokenService.createToken(user)).thenReturn(token);
@@ -47,6 +53,9 @@ class RegistrationListenerTest {
     // Then
     verify(verificationTokenService, times(1)).createToken(any(User.class));
     verify(templateEmailService, times(1)).sendVerificationEmail(token.getToken(), user.getEmail());
+    verify(messageService, times(1))
+        .sendMessage(argThat(message -> "profile.create".equals(message.getTopic())));
+    verify(messageService, times(1)).sendMessage(any(RabbitmqMessage.class));
   }
 }
 

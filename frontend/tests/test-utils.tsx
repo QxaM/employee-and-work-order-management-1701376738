@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import { ActionResponse } from '../src/types/store/ActionTypes.ts';
 import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
+import { Theme } from '@radix-ui/themes';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>;
@@ -26,7 +27,9 @@ export const renderWithProviders = (
   } = extendedRenderOptions;
 
   const Wrapper = ({ children }: PropsWithChildren) => (
-    <Provider store={store}>{children}</Provider>
+    <Theme>
+      <Provider store={store}>{children}</Provider>
+    </Theme>
   );
 
   return {

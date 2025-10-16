@@ -33,7 +33,9 @@ project and employees managing easier.
    this will send email to users with password reset.
 2. **Authentication:** Role-base authentication is in place, as default
    three user roles are created - Admin, Operator and Designer.
-3. **Admin:**
+3. **Profile:** Users can view and update profile on their profile page.
+   Profile also includes a profile image and is also shown on the heading bar.
+4. **Admin:**
     - Admin can assign or revoke roles for users in Admin settings.
 
 ### Services:
@@ -59,6 +61,7 @@ project and employees managing easier.
     * Typescript
     * React
     * TailwindCSS
+    * Radix Themes/Primitives (UI components libraries)
     * React-Router
     * Redux Toolkit
     * Vite + Vitest
@@ -73,6 +76,7 @@ project and employees managing easier.
     * Swagger UI (API docs)
     * Eureka (discovery service)
     * Spring Cloud Gateway Webflux (API Gateway)
+    * Profile images storage - AWS S3
     * **Hosting** - Render, Docker
 * **API Testing:**
     * Postman
@@ -103,6 +107,10 @@ execution.
 ## 🖼️ Screenshots
 
 To give you a visual overview of the application, here are some screenshots:
+
+### Profile page
+
+![Profile page](profilePage.png)
 
 ### Roles update in the Admin's settings page
 

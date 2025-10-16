@@ -1,0 +1,81 @@
+server:
+  port: ${PORT:8082}
+  tomcat:
+    max-http-form-post-size: 11MB
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+jwt:
+  robot-public-key-path: classpath:/robot_public_key.pem
+
+app:
+  init: true
+  listeners:
+    auto-startup: true
+
+profile:
+  queue:
+    create: "authorization-profile-create-queue"
+    update: "authorization-profile-update-queue"
+    image:
+      upload: "authorization-profile-image-upload-queue"
+  exchange: "authorization-profile-exchange"
+  topic:
+    create: "profile.create"
+    update: "profile.update"
+    image:
+      upload: "profile.image.upload"
+
+aws:
+  s3:
+    profile-images:
+      bucket: "employee-and-work-management-profile-pictures"
+      access-key: ${PROFILE_IMAGES_ACCESS_KEY}
+      access-secret: ${PROFILE_IMAGES_ACCESS_SECRET}
+      region: "eu-west-3"
+
+spring:
+  application:
+    name: profile-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+      file-size-threshold: 1MB
+      enabled: true
+      location: ${java.io.tmpdir}
+  datasource:
+    password: ${PROFILE_POSTGRES_PASS:password}
+    url: ${PROFILE_POSTGRES_LINK:jdbc:postgresql://localhost:5433/profile-db?sslmode=disable}
+    username: ${PROFILE_POSTGRES_USER:local_app}
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_PROFILE_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_PROFILE_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
+    virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: QA
+management:
+  health:
+    rabbit:
+      enabled: false
+eureka:
+  client:
+    enabled: false
+app:
+  listeners:
+    auto-startup: false

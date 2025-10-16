@@ -10,8 +10,8 @@ import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';
 import PersonPlusIcon from './icons/PersonPlusIcon.tsx';
-import { EnvelopeClosedIcon, LockClosedIcon } from '@radix-ui/react-icons';
-import { Link as RadixLink, Text } from '@radix-ui/themes';
+import { EnvelopeClosedIcon, LockClosedIcon, PersonIcon, } from '@radix-ui/react-icons';
+import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';
 import PasswordRequirements from './shared/form/PasswordRequirements.tsx';
 
 /**
@@ -53,7 +53,12 @@ const RegisterForm = () => {
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
 
+    const middleName: string = data['middle name'] as string;
+
     const registerData: RegisterType = {
+      firstName: data['first name'] as string,
+      middleName: middleName.length > 0 ? middleName : undefined,
+      lastName: data['last name'] as string,
       email: data['email address'] as string,
       password: data.password as string,
     };
@@ -69,6 +74,28 @@ const RegisterForm = () => {
         icon={PersonPlusIcon}
       />
       <Form.Content isServerError={isError} serverError={error}>
+        <Flex direction="row" width="100%" gap="2">
+          <Form.Input
+            name="first name"
+            placeholder="First name"
+            type="text"
+            required
+            icon={PersonIcon}
+          />
+          <Form.Input
+            name="middle name"
+            placeholder="Middle name (optional)"
+            type="text"
+            icon={PersonIcon}
+          />
+        </Flex>
+        <Form.Input
+          name="last name"
+          placeholder="Last name"
+          type="text"
+          required
+          icon={PersonIcon}
+        />
         <Form.Input
           name="email address"
           placeholder="example@example.com"

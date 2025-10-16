@@ -8,7 +8,10 @@ import {
 } from '@testing-library/react';
 import ModalMessage from '../../../../src/components/shared/modal/ModalMessage.tsx';
 import ModalProvider from '../../../../src/components/shared/modal/ModalProvider.tsx';
-import { MODAL_TYPE } from '../../../../src/types/components/ModalTypes.tsx';
+import {
+  MessageWithCause,
+  MODAL_TYPE,
+} from '../../../../src/types/components/ModalTypes.tsx';
 
 const TEST_MESSAGE = 'Test message';
 
@@ -20,7 +23,7 @@ describe('ModalMessage Tests', () => {
   });
 
   describe('Rendering', () => {
-    it('Opens and displays the message when ModalMessage is created', () => {
+    it('Opens and displays the string message when ModalMessage is created', () => {
       // Given
 
       // When
@@ -32,6 +35,26 @@ describe('ModalMessage Tests', () => {
 
       // Then
       expect(screen.getByText(TEST_MESSAGE)).toBeInTheDocument();
+    });
+
+    it('Opens and displays the MessageWithCause message when ModalMessage is created', () => {
+      // Given
+      const message: MessageWithCause = {
+        message: TEST_MESSAGE,
+        cause: ['Cause 1', 'Cause 2'],
+      };
+
+      // When
+      render(
+        <ModalProvider>
+          <ModalMessage index={1} message={message} onClose={vi.fn()} />
+        </ModalProvider>
+      );
+
+      // Then
+      expect(screen.getByText(message.message)).toBeInTheDocument();
+      expect(screen.getByText(message.cause[0])).toBeInTheDocument();
+      expect(screen.getByText(message.cause[1])).toBeInTheDocument();
     });
 
     it('Closes when the close button is clicked', async () => {

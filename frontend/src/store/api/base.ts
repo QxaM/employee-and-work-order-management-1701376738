@@ -16,13 +16,14 @@ import { ApiErrorType } from '../../types/api/BaseTypes.ts';
 export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
 
 export const authApi = '/auth';
+export const profileApi = '/profile';
 
 /**
  * A default error message used to indicate an unknown error occurred
  * during an API request. This message serves as a fallback for cases
  * where a more specific error message is not available.
  */
-const defaultApiError = 'Unknown API request error';
+export const defaultApiError = 'Unknown API request error';
 
 export interface ExtendedFetchArgs extends FetchArgs {
   defaultError?: string;
@@ -31,6 +32,7 @@ export interface ExtendedFetchArgs extends FetchArgs {
 export interface CustomFetchBaseQueryError {
   status: FetchBaseQueryError['status'];
   message: string;
+  cause?: string[];
 }
 
 const baseQuery = fetchBaseQuery({
@@ -53,6 +55,7 @@ export const customBaseQuery: BaseQueryFn<
 
   if (response.error) {
     let errorMessage = args.defaultError ?? defaultApiError;
+    let errorCause: string[] | undefined;
 
     const error = response.error;
     try {
@@ -60,6 +63,7 @@ export const customBaseQuery: BaseQueryFn<
       if (errorData.message) {
         errorMessage = errorData.message;
       }
+      errorCause = errorData.errors;
     } catch (error) {
       console.warn(error);
     }
@@ -68,6 +72,7 @@ export const customBaseQuery: BaseQueryFn<
       error: {
         status: error.status,
         message: errorMessage,
+        cause: errorCause,
       },
     };
   }

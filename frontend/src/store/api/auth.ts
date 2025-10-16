@@ -15,6 +15,9 @@ const HEALTHCHECK_API = '/actuator/health';
  * Represents the data required by API for user registration.
  */
 export interface RegisterType {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   email: string;
   password: string;
 }

@@ -15,7 +15,7 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ValidatorType } from '../../../../types/ValidatorTypes.ts';
 import { IconType } from '../../../../types/components/BaseTypes.ts';
 
-interface RadixFormInputProps extends TextField.RootProps {
+export interface RadixFormInputProps extends TextField.RootProps {
   icon?: IconType;
   validators?: ValidatorType[];
   onValueChange?: (value: string) => void;
@@ -26,7 +26,8 @@ const FormInput = (props: RadixFormInputProps) => {
   const EyeOpen = EyeOpenIcon;
 
   const {
-    name = 'field',
+    id,
+    name,
     type,
     max,
     min,
@@ -39,6 +40,7 @@ const FormInput = (props: RadixFormInputProps) => {
     onValueChange,
     ...rest
   } = props;
+  const fieldName = name ?? id ?? 'field';
   const [typeState, setTypeState] = useState(type);
 
   const EyeIcon = typeState === 'password' ? EyeClosed : EyeOpen;
@@ -62,7 +64,7 @@ const FormInput = (props: RadixFormInputProps) => {
   };
 
   return (
-    <Form.Field name={name} className="group w-full">
+    <Form.Field name={fieldName} className="group w-full">
       <Flex direction="column" gap="1">
         {name && (
           <Form.Label>
@@ -71,7 +73,7 @@ const FormInput = (props: RadixFormInputProps) => {
             </Text>
           </Form.Label>
         )}
-        <Form.ValidityState name={name}>
+        <Form.ValidityState name={fieldName}>
           {(validity) => {
             return (
               <Form.Control asChild>
@@ -85,7 +87,7 @@ const FormInput = (props: RadixFormInputProps) => {
                     onValueChange?.(event.currentTarget.value);
                   }}
                   type={typeState}
-                  name={name}
+                  name={fieldName}
                   max={max}
                   min={min}
                   maxLength={maxLength}
@@ -121,36 +123,39 @@ const FormInput = (props: RadixFormInputProps) => {
           }}
         </Form.ValidityState>
         <FormInputMessage
-          title={createValueMissingMessage(name)}
+          title={createValueMissingMessage(fieldName)}
           match="valueMissing"
         />
         <FormInputMessage
-          title={createInvalidMessage(name)}
+          title={createInvalidMessage(fieldName)}
           match="typeMismatch"
         />
-        <FormInputMessage title={createInvalidMessage(name)} match="badInput" />
         <FormInputMessage
-          title={createInvalidMessage(name)}
+          title={createInvalidMessage(fieldName)}
+          match="badInput"
+        />
+        <FormInputMessage
+          title={createInvalidMessage(fieldName)}
           match="patternMismatch"
         />
         <FormInputMessage
-          title={createTooHighMessage(name, max)}
+          title={createTooHighMessage(fieldName, max)}
           match="rangeOverflow"
         />
         <FormInputMessage
-          title={createTooLowMessage(name, min)}
+          title={createTooLowMessage(fieldName, min)}
           match="rangeUnderflow"
         />
         <FormInputMessage
-          title={createInvalidMessage(name)}
+          title={createInvalidMessage(fieldName)}
           match="stepMismatch"
         />
         <FormInputMessage
-          title={createTooLongMessage(name, maxLength)}
+          title={createTooLongMessage(fieldName, maxLength)}
           match="tooLong"
         />
         <FormInputMessage
-          title={createTooShortMessage(name, minLength)}
+          title={createTooShortMessage(fieldName, minLength)}
           match="tooShort"
         />
         {validators.map((validator, index) => (

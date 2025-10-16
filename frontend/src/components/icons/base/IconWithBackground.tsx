@@ -35,19 +35,21 @@ const cardColors: Record<NonUndefined<AvatarProps['color']>, string> = {
 interface IconWithBackgroundProps {
   icon: IconType;
   className?: string;
+  iconClassName?: string;
   color?: AvatarProps['color'];
 }
 
 const IconWithBackground = ({
   icon: Icon,
   className,
+  iconClassName,
   color = 'violet',
 }: IconWithBackgroundProps) => {
   const iconWrapperStyles = clsx(className, cardColors[color]);
 
   return (
     <Flex justify="center" align="center" className={iconWrapperStyles}>
-      <Icon />
+      <Icon className={iconClassName} />
     </Flex>
   );
 };

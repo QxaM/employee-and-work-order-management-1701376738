@@ -8,6 +8,7 @@ test("TC21 - role elements should be hidden after logout", async ({
   await openHomePage(adminPage);
 
   // When
+  await adminPage.getByRole("button").locator("img").click();
   await adminPage.getByText("Logout").click();
 
   // Then
