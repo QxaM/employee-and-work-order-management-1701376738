@@ -15,6 +15,10 @@ export const clickEditProfile = async (page: Page) => {
   await page.getByRole("button", { name: "Edit profile" }).click();
 };
 
+export const clickUploadImage = async (page: Page) => {
+  await page.getByLabel("upload avatar").click();
+};
+
 export const clickSaveProfile = async (page: Page) => {
   await page.getByRole("button", { name: "Save changes" }).click();
 };
