@@ -141,3 +141,89 @@ test("TC28 - should show success when success", async ({
     ).toBeVisible();
   });
 });
+
+test("TC29 - should show API error message", async ({
+  baseURL,
+  browser,
+  apiContext,
+  registeredUser,
+}) => {
+  await test.step("TC29.1 - profile should already exits", async () => {
+    await expect(async () => {
+      // Given
+      const email = registeredUser.email;
+      const roles = ["ROLE_OPERATOR"];
+
+      // When
+      let profileData: ProfileData = await getMyProfile(
+        apiContext,
+        email,
+        roles,
+      );
+
+      // Then
+      expect(profileData).toBeDefined();
+    }).toPass();
+  });
+
+  let page: Page;
+
+  await test.step("TC29.2 - login user", async () => {
+    // Given
+    const email = registeredUser.email;
+    const password = registeredUser.password;
+
+    // When
+    const token: Token = await loginApi(apiContext, { login: email, password });
+    const context = buildContextStorage(baseURL, token);
+    page = await browser.newPage({ storageState: context });
+
+    // Then
+    expect(page).toBeDefined();
+  });
+
+  await test.step("TC29.3 - should upload profile image", async () => {
+    // Given
+    const errorMessage = "Bad profile update request";
+    const errors: string[] = [
+      "Unknown image format",
+      "Image size exceeds the limit",
+    ];
+    await page.route("**/profiles/me/image", async (route) => {
+      if (route.request().method() === "POST") {
+        await route.fulfill({
+          status: 401,
+          contentType: "application/json",
+          body: JSON.stringify({
+            message: errorMessage,
+            errors,
+          }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await openProfilePage(page);
+    await clickEditProfile(page);
+
+    // When
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await clickUploadImage(page);
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles("resources/images/correctJpeg.jpg");
+    await clickSaveProfile(page);
+
+    // Then
+    const errorMessageElement = page
+      .getByTestId("modal-message")
+      .getByText(errorMessage);
+    const errorsLocators = errors.map((error) =>
+      page.getByTestId("modal-message").getByText(error),
+    );
+    await expect(errorMessageElement).toBeVisible();
+    for (const errorLocator of errorsLocators) {
+      await expect(errorLocator).toBeVisible();
+    }
+  });
+});
