@@ -5,7 +5,7 @@ import {
   clickEditProfile,
   clickSaveProfile,
   fillProfileDetails,
-  navigateToProfile,
+  navigateToProfile
 } from "./profiles.utils";
 
 import profiles from "../../test-data/profiles.json";
@@ -51,6 +51,8 @@ test("TC23 - should show newly registered profile", async ({
   baseURL,
   browser,
 }) => {
+  let profileData: ProfileData;
+
   await test.step("TC23.1 - profile should already exits", async () => {
     await expect(async () => {
       // Given
@@ -58,11 +60,7 @@ test("TC23 - should show newly registered profile", async ({
       const roles = ["ROLE_OPERATOR"];
 
       // When
-      let profileData: ProfileData = await getMyProfile(
-        apiContext,
-        email,
-        roles,
-      );
+      profileData = await getMyProfile(apiContext, email, roles);
 
       // Then
       expect(profileData).toBeDefined();
@@ -94,6 +92,13 @@ test("TC23 - should show newly registered profile", async ({
         page.getByRole("link", { name: registeredUser.email }),
       ).toBeVisible(),
     ]);
+
+    const avatarFallback =
+      profileData.firstName.charAt(0).toUpperCase() +
+      profileData.lastName.charAt(0).toUpperCase();
+    await expect(
+      page.getByTestId("avatar-container").getByText(avatarFallback),
+    ).toBeVisible();
   });
 });
 
