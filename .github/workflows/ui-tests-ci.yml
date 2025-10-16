@@ -173,6 +173,13 @@ jobs:
           path: uitests/blob-report
           retention-days: 30
 
+      - name: Dump container logs
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2.2.2
+        with:
+          images: 'ewm-backend-profile-service,ewm-backend-authorization-service,
+          ewm-backend-discovery-service,ewm-backend-api-gateway-service'
+
   ui-tests-summary:
     runs-on: ubuntu-latest
     needs:

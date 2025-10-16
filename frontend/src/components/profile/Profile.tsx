@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Badge,
   Box,
   Flex,
@@ -11,11 +10,12 @@ import {
 } from '@radix-ui/themes';
 import {
   useMyProfileQuery,
+  useUpdateMyProfileImageMutation,
   useUpdateMyProfileMutation,
 } from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
 import ProfileItem from './ProfileItem.tsx';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
 import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
@@ -23,24 +23,59 @@ import { useMeData } from '../../hooks/useMeData.tsx';
 import { getColor } from '../../types/components/RoleTypes.ts';
 import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
 import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
+import ProfileAvatar from './ProfileAvatar.tsx';
+import { useImageUpload } from '../../hooks/useImageUpload.tsx';
+import { useFormNotifications } from '../../hooks/useFormNotifications.tsx';
+import { MessageWithCause } from '../../types/components/ModalTypes.tsx';
+import { useProfileImage } from '../../hooks/useProfileImage.tsx';
 
 const Profile = () => {
   const { data: profileData } = useMyProfileQuery();
   const { me } = useMeData();
 
   const [isEdited, setIsEdited] = useState(false);
+  const { imageSrc, clearImage } = useProfileImage();
+  const imageUpload = useImageUpload();
   const [updateProfile] = useUpdateMyProfileMutation();
+  const [
+    updateProfileImage,
+    {
+      isSuccess: imageUploadSuccess,
+      isError: imageUploadError,
+      error: imageUploadErrorData,
+    },
+  ] = useUpdateMyProfileImageMutation();
 
-  const firstNameFirstLetter = profileData?.firstName.charAt(0) ?? 'M';
-  const lastNameFirstLetter = profileData?.lastName.charAt(0) ?? 'Q';
-  const imageFallback = (
-    firstNameFirstLetter + lastNameFirstLetter
-  ).toUpperCase();
+  const imageUploadErrorMessage = useMemo(() => {
+    if (!imageUploadErrorData) {
+      return undefined;
+    }
+    return 'cause' in imageUploadErrorData && imageUploadErrorData.cause
+      ? ({
+          message: imageUploadErrorData.message,
+          cause: imageUploadErrorData.cause,
+        } as MessageWithCause)
+      : imageUploadErrorData.message;
+  }, [imageUploadErrorData]);
+
+  useFormNotifications({
+    success: {
+      status: imageUploadSuccess,
+      message: 'Profile image updated successfully',
+      hideTimeout: 15_000,
+    },
+    error: {
+      status: imageUploadError,
+      message: imageUploadErrorMessage,
+      hideTimeout: 30_000,
+    },
+  });
 
   const handleEdit = () => {
     setIsEdited(true);
   };
   const handleCancel = () => {
+    imageUpload.handleCancel();
     setIsEdited(false);
   };
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -48,6 +83,7 @@ const Profile = () => {
 
     const fd = new FormData(event.currentTarget);
     const data = Object.fromEntries(fd.entries());
+    const image = imageUpload.selectedFile;
 
     const profile: UpdateProfileType = {
       firstName: data['first name'] as string,
@@ -55,6 +91,15 @@ const Profile = () => {
       lastName: data['last name'] as string,
     };
     void updateProfile(profile);
+
+    if (image) {
+      const formData = new FormData();
+      formData.append('file', image.file);
+      void updateProfileImage(formData);
+      clearImage();
+    }
+
+    handleCancel();
     setIsEdited(false);
   };
 
@@ -68,7 +113,13 @@ const Profile = () => {
         mt="1"
         mb="6"
       />
-      <Avatar size="9" radius="full" fallback={imageFallback} />
+      <ProfileAvatar
+        firstName={profileData?.firstName}
+        lastName={profileData?.lastName}
+        imageSrc={imageSrc}
+        imageUpload={imageUpload}
+        isEdited={isEdited}
+      />
 
       <Form handleSubmit={handleSubmit} className="w-full">
         <Grid
@@ -107,7 +158,7 @@ const Profile = () => {
               </Box>
             </Grid>
           </ProfileSection>
-          <ProfileSection title="email address" icon={EnvelopeClosedIcon}>
+          <ProfileSection title="Email Address" icon={EnvelopeClosedIcon}>
             <ProfileItem isEdited={false} isLoading={!profileData}>
               <Link href={`mailto:${profileData?.email}`}>
                 {profileData?.email ?? ''}
@@ -116,8 +167,8 @@ const Profile = () => {
           </ProfileSection>
           <Box gridColumnStart="1" gridColumnEnd="3">
             <ProfileSection title="Assigned Roles" icon={PersonGearOutlineIcon}>
-              <Flex direction="row" justify="start" align="center" gap="2">
-                <Skeleton loading={!me}>
+              <Skeleton loading={!me}>
+                <Flex direction="row" justify="start" align="center" gap="2">
                   {me?.roles
                     .toSorted((a, b) => b.id - a.id)
                     .map((role) => (
@@ -125,8 +176,8 @@ const Profile = () => {
                         {role.name}
                       </Badge>
                     ))}
-                </Skeleton>
-              </Flex>
+                </Flex>
+              </Skeleton>
             </ProfileSection>
           </Box>
 

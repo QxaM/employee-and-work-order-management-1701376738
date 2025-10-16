@@ -39,7 +39,7 @@ class ProfileServiceTest {
   private WebTestClient webTestClient;
 
   protected static Stream<HttpMethod> allowedMethods() {
-    return RequestsUtils.buildAllowedMethods(HttpMethod.GET);
+    return RequestsUtils.buildAllowedMethods(HttpMethod.GET, HttpMethod.PUT);
   }
 
   protected static Stream<HttpMethod> disallowedMethods() {
@@ -63,7 +63,7 @@ class ProfileServiceTest {
 
   @ParameterizedTest
   @MethodSource("allowedMethods")
-  void shouldRouteToAuthorizationServiceHealthEndpoint(
+  void shouldRouteToAllowedMethods(
       HttpMethod method) {
     // Given
     String profileUri = "/api/profile";

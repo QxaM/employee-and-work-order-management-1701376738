@@ -1,5 +1,5 @@
 import { expect, test } from "../base/baseTest";
-import { Credentials, Token } from "../types/Authorization";
+import { Token } from "../types/Authorization";
 import { openHomePage, openProfilePage } from "../utils/navigation.utils";
 import {
   clickEditProfile,
@@ -8,7 +8,6 @@ import {
   navigateToProfile
 } from "./profiles.utils";
 
-import credentials from "../../test-data/credentials.json";
 import profiles from "../../test-data/profiles.json";
 import { ProfileData } from "../types/Profile";
 import { getMyProfile } from "../utils/profile.api.utils";
@@ -21,12 +20,11 @@ test("TC22 - should navigate and display user profile", async ({
 }) => {
   // Given
   const profileTitle = "Profile";
-  const userCredentials = credentials.admin as Credentials;
   const profile = profiles.admin as ProfileData;
   await openHomePage(adminPage);
 
   // When
-  await navigateToProfile(adminPage, userCredentials.login);
+  await navigateToProfile(adminPage);
 
   // Then
   await Promise.all([
@@ -53,6 +51,8 @@ test("TC23 - should show newly registered profile", async ({
   baseURL,
   browser,
 }) => {
+  let profileData: ProfileData;
+
   await test.step("TC23.1 - profile should already exits", async () => {
     await expect(async () => {
       // Given
@@ -60,11 +60,7 @@ test("TC23 - should show newly registered profile", async ({
       const roles = ["ROLE_OPERATOR"];
 
       // When
-      let profileData: ProfileData = await getMyProfile(
-        apiContext,
-        email,
-        roles,
-      );
+      profileData = await getMyProfile(apiContext, email, roles);
 
       // Then
       expect(profileData).toBeDefined();
@@ -96,6 +92,13 @@ test("TC23 - should show newly registered profile", async ({
         page.getByRole("link", { name: registeredUser.email }),
       ).toBeVisible(),
     ]);
+
+    const avatarFallback =
+      profileData.firstName.charAt(0).toUpperCase() +
+      profileData.lastName.charAt(0).toUpperCase();
+    await expect(
+      page.getByTestId("avatar-container").getByText(avatarFallback),
+    ).toBeVisible();
   });
 });
 

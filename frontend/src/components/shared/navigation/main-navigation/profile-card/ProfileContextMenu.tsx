@@ -4,8 +4,17 @@ import { logout } from '../../../../../store/authSlice.ts';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
 
-const ProfileContextMenu = () => {
+interface ProfileContextMenuProps {
+  clearImage: () => void;
+}
+
+const ProfileContextMenu = ({ clearImage }: ProfileContextMenuProps) => {
   const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    clearImage();
+  };
 
   return (
     <DropdownMenu.Content variant="soft" size="2">
@@ -21,7 +30,7 @@ const ProfileContextMenu = () => {
       <DropdownMenu.Item
         color="red"
         className="flex justify-center items-center"
-        onClick={() => dispatch(logout())}
+        onClick={handleLogout}
       >
         Logout
       </DropdownMenu.Item>

@@ -332,6 +332,7 @@ describe('Register Form', () => {
 
     it('Should navigate to home when success', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
         mockMutate,
         {

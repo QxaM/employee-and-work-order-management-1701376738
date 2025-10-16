@@ -14,7 +14,11 @@ public class UpdateProfileMessageReceiver implements MessageReceiver<ProfileDto>
 
   private final UpdateProfileHandler updateProfileHandler;
 
-  @RabbitListener(id = "updateProfileReceiver", queues = "${profile.queue.update}")
+  @RabbitListener(
+      id = "updateProfileReceiver",
+      queues = "${profile.queue.update}",
+      autoStartup = "${app.listeners.auto-startup}"
+  )
   public void receiveCreateMessage(ProfileDto profile) {
     receiveMessage(profile);
   }

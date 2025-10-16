@@ -5,9 +5,9 @@ import { ProfileType, UpdateProfileType, } from '../../types/api/ProfileTypes.ts
 import { readErrorMessage } from '../../utils/errorUtils.ts';
 import { registerModal } from '../modalSlice.ts';
 import { v4 as uuidv4 } from 'uuid';
-import { getStringOrDefault } from '../../utils/shared.ts';
+import { getValueOrDefault } from '../../utils/shared.ts';
 
-const PROFILES_API = '/profiles';
+export const PROFILES_API = '/profiles';
 const HEALTHCHECK_API = '/actuator/health';
 
 const defaultUpdateErrorMessage = 'Unknown error while updating profile data';
@@ -60,12 +60,24 @@ export const profileApi = api.injectEndpoints({
             registerModal({
               id: uuidv4(),
               content: {
-                message: getStringOrDefault(message, defaultUpdateErrorMessage),
+                message: getValueOrDefault(message, defaultUpdateErrorMessage),
                 type: 'error',
               },
             })
           );
         }
+      },
+    }),
+    updateMyProfileImage: builder.mutation<undefined, FormData>({
+      query: (formData) => {
+        return {
+          url: PROFILE_API + PROFILES_API + '/me/image',
+          method: 'POST',
+          headers: {
+            'Content-Type': undefined,
+          },
+          body: formData,
+        };
       },
     }),
   }),
@@ -75,4 +87,5 @@ export const {
   useProfileHealthcheckQuery,
   useMyProfileQuery,
   useUpdateMyProfileMutation,
+  useUpdateMyProfileImageMutation,
 } = profileApi;

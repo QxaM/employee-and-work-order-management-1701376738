@@ -1,5 +1,7 @@
 app:
   init: false
+  listeners:
+    auto-startup: false
 
 eureka:
   client:
@@ -12,10 +14,22 @@ profile:
   queue:
     create: "authorization-profile-create-queue"
     update: "authorization-profile-update-queue"
+    image:
+      upload: "authorization-profile-image-upload-queue"
   exchange: "authorization-profile-exchange"
   topic:
     create: "profile.create"
     update: "profile.update"
+    image:
+      upload: "profile.image.upload"
+
+aws:
+  s3:
+    profile-images:
+      bucket: "test-profile-pictures"
+      access-key: "test-key"
+      access-secret: "test-secret"
+      region: "eu-west-3"
 
 spring:
   datasource:

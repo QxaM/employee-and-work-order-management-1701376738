@@ -3,6 +3,7 @@ package org.maxq.profileservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ProfileImage;
 import org.maxq.profileservice.domain.exception.DataValidationException;
 import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
@@ -10,6 +11,8 @@ import org.maxq.profileservice.repository.ProfileRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,7 +43,11 @@ public class ProfileService {
     Profile profileToSave;
     try {
       Profile foundProfile = this.getProfileByEmail(profile.getEmail());
-      profileToSave = new Profile(foundProfile.getId(), profile.getEmail(), profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
+      profileToSave = new Profile(
+          foundProfile.getId(), profile.getEmail(),
+          profile.getFirstName(), profile.getMiddleName(), profile.getLastName(),
+          foundProfile.getProfileImage()
+      );
     } catch (ElementNotFoundException e) {
       log.warn("Profile not found when updating, creating new profile: {}", profile.getEmail(), e);
       profileToSave = new Profile(profile.getEmail(), profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
@@ -53,5 +60,20 @@ public class ProfileService {
     }
   }
 
+  public void updateProfileImage(Profile profile, ProfileImage profileImage) {
+    profile.setProfileImage(profileImage);
+    profileRepository.save(profile);
+  }
+
+  public ProfileImage getProfileImage(String email) throws ElementNotFoundException {
+    Profile profile = this.getProfileByEmail(email);
+    Optional<ProfileImage> optionalProfileImage = Optional.ofNullable(profile.getProfileImage());
+
+    if (optionalProfileImage.isEmpty()) {
+      throw new ElementNotFoundException("Image does not exist for a given user: " + email);
+    }
+
+    return optionalProfileImage.get();
+  }
 }
 

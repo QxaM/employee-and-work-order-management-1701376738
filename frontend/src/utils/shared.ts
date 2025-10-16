@@ -1,3 +1,5 @@
+import { MessageWithCause } from '../types/components/ModalTypes.tsx';
+
 /**
  * Compares two values deeply for equality.
  *
@@ -51,16 +53,20 @@ export const deepEquals = <T>(a: T, b: T): boolean => {
  * @param {string} defaultString - The string to return if the input value is invalid.
  * @returns {string} - The validated string or the default string if the value is invalid.
  */
-export const getStringOrDefault = (
-  value: string | undefined | null,
+export const getValueOrDefault = (
+  value: string | MessageWithCause | undefined | null,
   defaultString: string
-): string => {
+): string | MessageWithCause => {
   if (!value) {
     return defaultString;
   }
 
-  if (!value.trim()) {
-    return defaultString;
+  if (typeof value === 'string') {
+    if (!value.trim()) {
+      return defaultString;
+    }
+
+    return value;
   }
 
   return value;

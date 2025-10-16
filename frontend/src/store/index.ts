@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import modalReducer from './modalSlice';
-import authSlice, { authListenerMiddleware } from './authSlice';
+import authReducer, { authListenerMiddleware } from './authSlice';
+import profileImageReducer from './profileImageSlice';
 import { api } from './apiSlice.ts';
 
 const rootReducer = combineReducers({
   modal: modalReducer,
-  auth: authSlice,
+  auth: authReducer,
+  profileImage: profileImageReducer,
   [api.reducerPath]: api.reducer,
 });
 

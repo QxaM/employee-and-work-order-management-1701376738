@@ -39,8 +39,8 @@ public class ServiceLoadBalancerConfig {
     public ServiceInstanceListSupplier profileServiceInstanceListSupplier(Environment env) {
       return ServiceInstanceListSuppliers.from("test-load-balancer",
           new DefaultServiceInstance(
-              "authorization-service-1",
-              "authorization-service",
+              "profile-service-1",
+              "profile-service",
               "localhost", 8082, false
           )
       );

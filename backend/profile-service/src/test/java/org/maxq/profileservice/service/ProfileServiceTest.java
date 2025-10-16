@@ -1,7 +1,9 @@
 package org.maxq.profileservice.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.maxq.profileservice.domain.Profile;
+import org.maxq.profileservice.domain.ProfileImage;
 import org.maxq.profileservice.domain.exception.DataValidationException;
 import org.maxq.profileservice.domain.exception.DuplicateEmailException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
@@ -144,5 +146,82 @@ class ProfileServiceTest {
     assertThrows(DataValidationException.class,
         () -> profileService.updateProfile(profile)
     );
+  }
+
+  @Test
+  void shouldUpdateProfileImage() {
+    // Given
+    ProfileImage profileImage = new ProfileImage("file.jpeg", "image/jpeg", 10);
+    Profile profileWithImage = new Profile(
+        profile.getId(), profile.getEmail(),
+        profile.getFirstName(), profile.getMiddleName(), profile.getLastName()
+    );
+
+    // When
+    profileService.updateProfileImage(profileWithImage, profileImage);
+
+    // Then
+    verify(profileRepository, times(1))
+        .save(
+            argThat(argument -> profileImage.getName().equals(argument.getProfileImage().getName())
+                && profileImage.getContentType().equals(argument.getProfileImage().getContentType())
+                && profileImage.getSize() == argument.getProfileImage().getSize())
+        );
+  }
+
+  @Test
+  void shouldReturnProfileImage() throws ElementNotFoundException {
+    // Given
+    String email = "test@test.com";
+    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg", 10);
+    Profile profileWithImage = new Profile(1L, email, "Test", null, "User", profileImage);
+
+    ProfileService spyService = spy(profileService);
+    doReturn(profileWithImage).when(spyService).getProfileByEmail(anyString());
+
+    // When
+    ProfileImage returnedProfileImage = spyService.getProfileImage(email);
+
+    // Then
+    assertAll(
+        () -> assertEquals(profileImage.getName(), returnedProfileImage.getName(),
+            "Should return image with correct name"),
+        () -> assertEquals(profileImage.getContentType(), returnedProfileImage.getContentType(),
+            "Should return correct image content type"),
+        () -> assertEquals(profileImage.getSize(), returnedProfileImage.getSize(),
+            "Should return correct image size")
+    );
+  }
+
+  @Test
+  void shouldThrow_When_ReturnProfileImage_When_ProfileNotFound() throws ElementNotFoundException {
+    // Given
+    String email = "test@test.com";
+
+    ProfileService spyService = spy(profileService);
+    doThrow(ElementNotFoundException.class).when(spyService).getProfileByEmail(anyString());
+
+    // When
+    Executable executable = () -> spyService.getProfileImage(email);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable,
+        "Should throw exception when profile not found");
+  }
+
+  @Test
+  void shouldThrow_When_ReturnProfileImage_When_ProfileImageNull() throws ElementNotFoundException {
+    // Given
+    String email = "test@test.com";
+
+    ProfileService spyService = spy(profileService);
+    doReturn(profile).when(spyService).getProfileByEmail(anyString());
+
+    // When
+    Executable executable = () -> spyService.getProfileImage(email);
+
+    // Then
+    assertThrows(ElementNotFoundException.class, executable,
+        "Should throw exception when profile image not found");
   }
 }

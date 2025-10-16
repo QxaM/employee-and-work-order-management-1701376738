@@ -209,6 +209,7 @@ describe('Password Request Form', () => {
 
     it('Should navigate to home when success', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       vi.spyOn(
         passwordApiSlice,
         'useRequestPasswordResetMutation'
@@ -240,6 +241,7 @@ describe('Password Request Form', () => {
 
     it('Should register successfull modal when success', () => {
       // Given
+      vi.mocked(useRef).mockRestore();
       vi.spyOn(
         passwordApiSlice,
         'useRequestPasswordResetMutation'

@@ -1,5 +1,7 @@
 import * as profileApiModule from '../../../src/store/api/profile.ts';
 import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
+import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
+import * as useProfileImageModule from '../../../src/hooks/useProfileImage.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
@@ -30,6 +32,9 @@ const meData: MeType = {
 describe('Profile', () => {
   const editButton = 'Edit profile';
   const mockProfileUpdate = vi.fn();
+  const mockImageUpload = vi.fn();
+  const mockUploadCancel = vi.fn();
+  const mockClearImage = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,6 +61,33 @@ describe('Profile', () => {
         reset: vi.fn(),
       },
     ]);
+    vi.spyOn(
+      profileApiModule,
+      'useUpdateMyProfileImageMutation'
+    ).mockReturnValue([
+      mockImageUpload,
+      {
+        isLoading: false,
+        isError: false,
+        isSuccess: false,
+        error: undefined,
+        reset: vi.fn(),
+      },
+    ]);
+    vi.spyOn(useImageUploadModule, 'useImageUpload').mockReturnValue({
+      selectedFile: undefined,
+      dragActive: false,
+      validationErrors: [],
+      isValidationError: false,
+      handleChange: vi.fn(),
+      handleDrag: vi.fn(),
+      handleDrop: vi.fn(),
+      handleCancel: mockUploadCancel,
+    });
+    vi.spyOn(useProfileImageModule, 'useProfileImage').mockReturnValue({
+      imageSrc: undefined,
+      clearImage: mockClearImage,
+    });
   });
 
   afterEach(() => {
@@ -74,10 +106,22 @@ describe('Profile', () => {
     expect(titleElement).toBeInTheDocument();
   });
 
+  it('Should contain profile avatar component', () => {
+    // Given
+    const avatarTestId = 'avatar-container';
+    renderWithProviders(<Profile />);
+
+    // When
+    const avatarComponent = screen.getByTestId(avatarTestId);
+
+    // Then
+    expect(avatarComponent).toBeInTheDocument();
+  });
+
   it('Should contain personal information and email section', () => {
     // Given
     const personalInformationTitle = 'Personal Information';
-    const emailTitle = 'email address';
+    const emailTitle = 'Email Address';
     renderWithProviders(<Profile />);
 
     // When
@@ -206,6 +250,7 @@ describe('Profile', () => {
 
       // then
       expect(textboxElements).toHaveLength(0);
+      expect(mockUploadCancel).toHaveBeenCalledOnce();
     });
 
     it('Should stop editing profile, when save clicked', () => {
@@ -322,6 +367,210 @@ describe('Profile', () => {
       // Then
       expect(mockProfileUpdate).toHaveBeenCalledOnce();
       expect(mockProfileUpdate).toHaveBeenCalledWith(updatedProfile);
+    });
+
+    it('Should call update image when image selected', async () => {
+      // Given
+      const file = new File(['test-file'], 'test.png', { type: 'image/png' });
+      vi.spyOn(useImageUploadModule, 'useImageUpload').mockReturnValue({
+        selectedFile: {
+          file,
+          name: 'test.png',
+          size: 100000,
+          preview: 'test.png',
+        },
+        dragActive: false,
+        validationErrors: [],
+        isValidationError: false,
+        handleChange: vi.fn(),
+        handleDrag: vi.fn(),
+        handleDrop: vi.fn(),
+        handleCancel: mockUploadCancel,
+      });
+
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+      await user.click(editButtonElement);
+
+      // When
+      const saveButtonElement = screen.getByRole('button', {
+        name: saveButton,
+      });
+      await user.click(saveButtonElement);
+
+      // Then
+      expect(mockImageUpload).toHaveBeenCalledOnce();
+
+      const formData = new FormData();
+      formData.append('file', file);
+      expect(mockImageUpload).toHaveBeenCalledWith(formData);
+
+      expect(mockClearImage).toHaveBeenCalledOnce();
+    });
+
+    it('Should not call update image when image is not selected', async () => {
+      // Given
+      renderWithProviders(<Profile />);
+      const editButtonElement = screen.getByRole('button', {
+        name: editButton,
+      });
+      await user.click(editButtonElement);
+
+      // When
+      const saveButtonElement = screen.getByRole('button', {
+        name: saveButton,
+      });
+      await user.click(saveButtonElement);
+
+      // Then
+      expect(mockImageUpload).not.toHaveBeenCalled();
+      expect(mockClearImage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Dialog dispatch', () => {
+    beforeEach(() => {
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: true,
+          isError: false,
+          isPending: false,
+          error: undefined,
+          reset: vi.fn(),
+        },
+      ]);
+    });
+
+    it('Should dispatch success modal', () => {
+      // Given
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'success',
+          message: 'Profile image updated successfully',
+          hideTimeout: 15000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
+    it('Should dispatch error modal', () => {
+      // Given
+      const errorMessage = 'Error message';
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: errorMessage,
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
+    it('Should dispatch error modal when no cause undefined', () => {
+      // Given
+      const errorMessage = 'Error message';
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+            cause: undefined,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: errorMessage,
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
+    });
+
+    it('Should dispatch error modal with cause', () => {
+      // Given
+      const errorMessage = 'Error message';
+      const cause = ['Cause 1', 'Cause 2'];
+      vi.spyOn(
+        profileApiModule,
+        'useUpdateMyProfileImageMutation'
+      ).mockReturnValue([
+        mockImageUpload,
+        {
+          isSuccess: false,
+          isError: true,
+          isPending: false,
+          error: {
+            message: errorMessage,
+            cause,
+          },
+          reset: vi.fn(),
+        },
+      ]);
+
+      // When
+      const { store } = renderWithProviders(<Profile />);
+
+      // Then
+      const modalSlice = store.getState().modal;
+      expect(modalSlice.modals).toContainEqual({
+        content: {
+          type: 'error',
+          message: {
+            message: errorMessage,
+            cause,
+          },
+          hideTimeout: 30_000,
+        },
+        id: expect.any(String) as string,
+      });
     });
   });
 });
