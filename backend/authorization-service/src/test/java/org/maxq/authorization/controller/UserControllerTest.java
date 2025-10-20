@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
+import org.maxq.authorization.domain.dto.PageDto;
 import org.maxq.authorization.domain.dto.RoleDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
@@ -90,7 +91,17 @@ class UserControllerTest {
         new GetUserDto(user2.getId(), user2.getEmail(), user2.isEnabled(), List.of(roleDto))
     );
     Page<User> usersPage = new PageImpl<>(users, page, users.size());
-    Page<GetUserDto> usersDtoPage = new PageImpl<>(userDtos, page, userDtos.size());
+    PageDto<GetUserDto> usersDtoPage = PageDto.<GetUserDto>builder()
+        .content(userDtos)
+        .first(true)
+        .last(true)
+        .number(0)
+        .numberOfElements(2)
+        .size(10)
+        .totalElements(users.size())
+        .totalPages(1)
+        .empty(false)
+        .build();
     when(userService.getAllUsers(anyInt(), anyInt())).thenReturn(usersPage);
     when(userMapper.mapToGetUserDtoPage(any())).thenReturn(usersDtoPage);
 
