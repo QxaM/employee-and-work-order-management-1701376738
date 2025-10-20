@@ -79,4 +79,4 @@ jobs:
         uses: './.github/actions/health-check'
         with:
           timeout_minutes: 10
-          url: ${{ secrets.profile_API_URL }}/actuator/health
+          url: ${{ secrets.PROFILE_API_URL }}/actuator/health
