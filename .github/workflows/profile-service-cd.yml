@@ -73,7 +73,7 @@ jobs:
 
       - name: Deploy to Render
         run: |
-          curl ${{ secrets.profile_RENDER_HOOK }}
+          curl ${{ secrets.PROFILE_RENDER_HOOK }}
 
       - name: Wait for application to be ready
         uses: './.github/actions/health-check'
