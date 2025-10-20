@@ -5,6 +5,7 @@ import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.MeDto;
+import org.maxq.authorization.domain.dto.PageDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +53,7 @@ class UserMapperTest {
     Page<User> userPage = new PageImpl<>(users, page, users.size());
 
     // When
-    Page<GetUserDto> getUserDtoPage = userMapper.mapToGetUserDtoPage(userPage);
+    PageDto<GetUserDto> getUserDtoPage = userMapper.mapToGetUserDtoPage(userPage);
 
     // Then
     assertAll(

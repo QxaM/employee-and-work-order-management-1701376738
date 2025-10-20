@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
 import org.maxq.authorization.domain.dto.MeDto;
+import org.maxq.authorization.domain.dto.PageDto;
 import org.maxq.authorization.domain.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +19,7 @@ import java.util.List;
 public class UserMapper {
 
   private final PasswordEncoder passwordEncoder;
+  private final PageableMapper pageableMapper;
   private final RoleMapper roleMapper;
 
   public User mapToUser(UserDto userDto) {
@@ -27,7 +29,7 @@ public class UserMapper {
     );
   }
 
-  public Page<GetUserDto> mapToGetUserDtoPage(Page<User> users) {
+  public PageDto<GetUserDto> mapToGetUserDtoPage(Page<User> users) {
     Pageable page = users.getPageable();
     List<GetUserDto> userDtoList = users.stream().map(user ->
         new GetUserDto(
@@ -37,7 +39,8 @@ public class UserMapper {
             roleMapper.mapToRoleDtoList(user.getRoles())
         )
     ).toList();
-    return new PageImpl<>(userDtoList, page, users.getTotalElements());
+    Page<GetUserDto> mappedPage = new PageImpl<>(userDtoList, page, users.getTotalElements());
+    return pageableMapper.mapToPageDto(mappedPage);
   }
 
   public MeDto mapToMeDto(User user) {
