@@ -35,6 +35,7 @@ import java.util.Set;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -100,6 +101,7 @@ class UserControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", "test@test.com")
             .header("X-User-Roles", "ROLE_ADMIN"))
+        .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(2)))
         .andExpect(MockMvcResultMatchers.jsonPath(
@@ -107,9 +109,9 @@ class UserControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath(
             "$.content[1].id", Matchers.is(user2.getId().intValue())))
         .andExpect(MockMvcResultMatchers.jsonPath(
-            "$.totalElements", Matchers.is(users.size())))
+            "$.page.totalElements", Matchers.is(users.size())))
         .andExpect(MockMvcResultMatchers.jsonPath(
-            "$.totalPages", Matchers.is(1)));
+            "$.page.totalPages", Matchers.is(1)));
   }
 
   @Test
