@@ -3,17 +3,9 @@ import * as authApiModule from '../../src/store/api/auth.ts';
 import { LoginType } from '../../src/store/api/auth.ts';
 import * as storeModule from '../../src/hooks/useStore.tsx';
 import * as profileImageModule from '../../src/hooks/useProfileImage.tsx';
-import {
-  createHookDataRouter,
-  renderHookWithProviders,
-} from '../test-utils.tsx';
+import { createHookDataRouter, renderHookWithProviders, } from '../test-utils.tsx';
 import { useAuth } from '../../src/hooks/useAuth.tsx';
-import {
-  BrowserRouter,
-  Location,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { BrowserRouter, Location, useLocation, useNavigate, } from 'react-router-dom';
 import { waitFor } from '@testing-library/react';
 
 vi.mock('react-router-dom', async () => {
@@ -347,6 +339,35 @@ describe('useAuth', () => {
         rerender();
         const authState = store.getState().auth.token;
         expect(authState).toBeUndefined();
+      });
+    });
+
+    it('should dispatch notification message', async () => {
+      // Given
+      const logoutMessage = 'You have been logged out successfully.';
+      const preloadedState = {
+        auth: {
+          token,
+        },
+      };
+      const { result, store, rerender } = renderHookWithProviders(
+        () => useAuth(),
+        {
+          wrapper: BrowserRouter,
+          preloadedState,
+        }
+      );
+
+      // When
+      result.current.logout.trigger();
+
+      // Then
+      await waitFor(() => {
+        rerender();
+        const modalState = store.getState().modal;
+        expect(modalState.modals).toHaveLength(1);
+        expect(modalState.modals[0].content.type).toEqual('success');
+        expect(modalState.modals[0].content.message).toEqual(logoutMessage);
       });
     });
 

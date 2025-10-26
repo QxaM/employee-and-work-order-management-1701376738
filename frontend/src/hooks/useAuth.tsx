@@ -1,14 +1,15 @@
+import { v4 as uuidv4 } from 'uuid';
 import { useLoginMutation } from '../store/api/auth.ts';
 import { useAppDispatch, useAppSelector } from './useStore.tsx';
 import { useCallback, useEffect, useRef } from 'react';
-import {
-  login as loginAction,
-  logout as logoutAction,
-} from '../store/authSlice.ts';
+import { login as loginAction, logout as logoutAction, } from '../store/authSlice.ts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfileImage } from './useProfileImage.tsx';
+import { registerModal } from '../store/modalSlice.ts';
 
 export const useAuth = () => {
+  const successfulLogoutMessage = 'You have been logged out successfully.';
+
   const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
@@ -34,6 +35,15 @@ export const useAuth = () => {
   useEffect(() => {
     if (logoutTriggered.current && location.pathname === '/') {
       dispatch(logoutAction());
+      dispatch(
+        registerModal({
+          id: uuidv4(),
+          content: {
+            message: successfulLogoutMessage,
+            type: 'success',
+          },
+        })
+      );
       clearImage();
       logoutTriggered.current = false;
     }
