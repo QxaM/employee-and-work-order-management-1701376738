@@ -1,11 +1,10 @@
-import { FormEvent, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { login as loginAction } from '../store/authSlice.ts';
-import { useAppDispatch } from '../hooks/useStore.tsx';
-import { LoginType, useLoginMutation } from '../store/api/auth.ts';
+import { FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import { LoginType } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';
 import { EnvelopeClosedIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';
+import { useAuth } from '../hooks/useAuth.tsx';
 
 /**
  * A user login form component with API interaction, and Redux integration.
@@ -18,11 +17,7 @@ import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';
  *
  */
 const LoginForm = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-
-  const [login, { data, isSuccess, isLoading: isPending, isError }] =
-    useLoginMutation();
+  const { login } = useAuth();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,20 +30,8 @@ const LoginForm = () => {
       password: data.password as string,
     };
 
-    void login(loginData);
+    void login.trigger(loginData);
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(loginAction({ token: data.token }));
-    }
-  }, [isSuccess, data, dispatch]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      void navigate('/');
-    }
-  }, [isSuccess, navigate]);
 
   return (
     <Form handleSubmit={handleSubmit}>
@@ -58,7 +41,7 @@ const LoginForm = () => {
         icon={LockClosedIcon}
       />
       <Form.Content
-        isServerError={isError}
+        isServerError={login.isError}
         serverError="Login failed. Invalid email or password."
       >
         <Form.Input
@@ -87,7 +70,7 @@ const LoginForm = () => {
           </RadixLink>
         </Flex>
       </Form.Content>
-      <Form.Submit title="Sign in" isServerPending={isPending} />
+      <Form.Submit title="Sign in" isServerPending={login.isPending} />
       <Form.Footer>
         <Text as="div" size="1" align="center" className="w-full">
           Don&apos;t have an account?{' '}

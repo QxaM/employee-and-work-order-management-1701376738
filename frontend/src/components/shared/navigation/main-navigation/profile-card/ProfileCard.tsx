@@ -4,11 +4,11 @@ import ProfileContextMenu from './ProfileContextMenu.tsx';
 import { useProfileImage } from '../../../../../hooks/useProfileImage.tsx';
 
 const ProfileCard = () => {
-  const { imageSrc, clearImage } = useProfileImage();
+  const { imageSrc } = useProfileImage();
   return (
     <DropdownMenu.Root>
       <ProfileAvatar imageSrc={imageSrc} />
-      <ProfileContextMenu clearImage={clearImage} />
+      <ProfileContextMenu />
     </DropdownMenu.Root>
   );
 };
