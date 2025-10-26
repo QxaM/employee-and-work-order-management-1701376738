@@ -1,20 +1,10 @@
 import { DropdownMenu, Flex } from '@radix-ui/themes';
-import { useAppDispatch } from '../../../../../hooks/useStore.tsx';
-import { logout } from '../../../../../store/authSlice.ts';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../../../hooks/useAuth.tsx';
 
-interface ProfileContextMenuProps {
-  clearImage: () => void;
-}
-
-const ProfileContextMenu = ({ clearImage }: ProfileContextMenuProps) => {
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    clearImage();
-  };
+const ProfileContextMenu = () => {
+  const { logout } = useAuth();
 
   return (
     <DropdownMenu.Content variant="soft" size="2">
@@ -30,7 +20,7 @@ const ProfileContextMenu = ({ clearImage }: ProfileContextMenuProps) => {
       <DropdownMenu.Item
         color="red"
         className="flex justify-center items-center"
-        onClick={handleLogout}
+        onClick={logout.trigger}
       >
         Logout
       </DropdownMenu.Item>

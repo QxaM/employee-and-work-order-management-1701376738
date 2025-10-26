@@ -2,14 +2,10 @@ import { render, renderHook, RenderOptions } from '@testing-library/react';
 import { AppStore, RootState, setupStore } from '../src/store';
 import { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import {
-  createMemoryRouter,
-  LoaderFunction,
-  RouterProvider,
-} from 'react-router-dom';
+import { createMemoryRouter, LoaderFunction, RouterProvider, } from 'react-router-dom';
 import { ActionResponse } from '../src/types/store/ActionTypes.ts';
-import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
 import { Theme } from '@radix-ui/themes';
+import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>;
@@ -23,14 +19,22 @@ export const renderWithProviders = (
   const {
     preloadedState = {},
     store = setupStore(preloadedState),
+    wrapper: ExternalWrapper,
     ...renderOptions
   } = extendedRenderOptions;
 
-  const Wrapper = ({ children }: PropsWithChildren) => (
-    <Theme>
-      <Provider store={store}>{children}</Provider>
-    </Theme>
-  );
+  const Wrapper = ({ children }: PropsWithChildren) =>
+    ExternalWrapper ? (
+      <Theme>
+        <ExternalWrapper>
+          <Provider store={store}>{children}</Provider>
+        </ExternalWrapper>
+      </Theme>
+    ) : (
+      <Theme>
+        <Provider store={store}>{children}</Provider>
+      </Theme>
+    );
 
   return {
     ...render(ui, { wrapper: Wrapper, ...renderOptions }),
@@ -67,12 +71,22 @@ export const renderHookWithProviders = <R, P = unknown>(
   const {
     preloadedState = {},
     store = setupStore(preloadedState),
+    wrapper: ExternalWrapper,
     ...renderOptions
   } = extendedRenderOptions;
 
-  const Wrapper = ({ children }: PropsWithChildren) => (
-    <Provider store={store}>{children}</Provider>
-  );
+  const Wrapper = ({ children }: PropsWithChildren) =>
+    ExternalWrapper ? (
+      <Theme>
+        <ExternalWrapper>
+          <Provider store={store}>{children}</Provider>
+        </ExternalWrapper>
+      </Theme>
+    ) : (
+      <Theme>
+        <Provider store={store}>{children}</Provider>
+      </Theme>
+    );
 
   return {
     ...renderHook(render, { wrapper: Wrapper, ...renderOptions }),
