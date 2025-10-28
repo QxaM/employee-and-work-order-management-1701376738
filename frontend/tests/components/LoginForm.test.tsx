@@ -1,19 +1,11 @@
 import { PropsWithChildren } from 'react';
-import { BrowserRouter, useNavigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, it } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
 import LoginForm from '../../src/components/LoginForm.tsx';
-import * as authApiSlice from '../../src/store/api/auth.ts';
+import * as useAuthModule from '../../src/hooks/useAuth.tsx';
 import { TokenType } from '../../src/store/api/auth.ts';
 import { renderWithProviders } from '../test-utils.tsx';
-
-vi.mock('react-router-dom', async () => {
-  const reactRouter = await vi.importActual('react-router-dom');
-  return {
-    ...reactRouter,
-    useNavigate: vi.fn(),
-  };
-});
 
 const EMAIL_TITLE = 'email address';
 const PASSWORD_TITLE = 'password';
@@ -29,11 +21,23 @@ describe('Login Form', () => {
     type: 'Bearer',
     expiresIn: 3600,
   };
-
-  const mockMutate = vi.fn();
+  const mockLogin = vi.fn();
 
   beforeEach(() => {
-    vi.resetModules();
+    vi.resetAllMocks();
+
+    vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
+      login: {
+        trigger: mockLogin,
+        data: undefined,
+        isSuccess: false,
+        isPending: false,
+        isError: false,
+      },
+      logout: {
+        trigger: vi.fn(),
+      },
+    });
   });
 
   afterEach(() => {
@@ -84,18 +88,6 @@ describe('Login Form', () => {
 
   it('Should login correctly', () => {
     // Given
-    vi.spyOn(authApiSlice, 'useLoginMutation').mockReturnValue([
-      mockMutate,
-      {
-        data: mockReturnData,
-        isSuccess: false,
-        isLoading: false,
-        isError: false,
-        error: null,
-        reset: vi.fn(),
-      },
-    ]);
-
     renderWithProviders(
       <TestWrapper>
         <LoginForm />
@@ -111,8 +103,8 @@ describe('Login Form', () => {
     fireEvent.click(loginButton);
 
     // Then
-    expect(mockMutate).toHaveBeenCalledOnce();
-    expect(mockMutate).toHaveBeenCalledWith({
+    expect(mockLogin).toHaveBeenCalledOnce();
+    expect(mockLogin).toHaveBeenCalledWith({
       email: 'test@test.com',
       password: 'test12345',
     });
@@ -120,17 +112,18 @@ describe('Login Form', () => {
 
   it('Should render loading spinner when pending', () => {
     // Given
-    vi.spyOn(authApiSlice, 'useLoginMutation').mockReturnValue([
-      mockMutate,
-      {
+    vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
+      login: {
+        trigger: mockLogin,
         data: mockReturnData,
         isSuccess: false,
-        isLoading: true,
+        isPending: true,
         isError: false,
-        error: null,
-        reset: vi.fn(),
       },
-    ]);
+      logout: {
+        trigger: vi.fn(),
+      },
+    });
 
     // When
     renderWithProviders(
@@ -150,21 +143,18 @@ describe('Login Form', () => {
 
   it('Should error element when error', () => {
     // Given
-    const errorMessage = 'Test Error';
-    vi.spyOn(authApiSlice, 'useLoginMutation').mockReturnValue([
-      mockMutate,
-      {
+    vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
+      login: {
+        trigger: mockLogin,
         data: mockReturnData,
         isSuccess: false,
-        isLoading: false,
+        isPending: false,
         isError: true,
-        error: {
-          status: 500,
-          message: errorMessage,
-        },
-        reset: vi.fn(),
       },
-    ]);
+      logout: {
+        trigger: vi.fn(),
+      },
+    });
 
     // When
     renderWithProviders(
@@ -178,73 +168,6 @@ describe('Login Form', () => {
 
     // Then
     expect(errorElement).toBeInTheDocument();
-  });
-
-  it('Should navigate home when success', () => {
-    // Given
-    vi.spyOn(authApiSlice, 'useLoginMutation').mockReturnValue([
-      mockMutate,
-      {
-        data: mockReturnData,
-        isSuccess: true,
-        isLoading: false,
-        isError: false,
-        error: null,
-        reset: vi.fn(),
-      },
-    ]);
-
-    const mockNavigate = vi.fn();
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
-
-    // When
-    renderWithProviders(
-      <TestWrapper>
-        <LoginForm />
-      </TestWrapper>
-    );
-
-    // Then
-    expect(mockNavigate).toHaveBeenCalledOnce();
-    expect(mockNavigate).toHaveBeenCalledWith('/');
-  });
-
-  it('Should handle login action correctly', () => {
-    // Given
-    const localStorageMock = {
-      setItem: vi.fn(),
-    };
-    vi.stubGlobal('localStorage', localStorageMock);
-
-    vi.spyOn(authApiSlice, 'useLoginMutation').mockReturnValue([
-      mockMutate,
-      {
-        data: mockReturnData,
-        isSuccess: true,
-        isLoading: false,
-        isError: false,
-        error: null,
-        reset: vi.fn(),
-      },
-    ]);
-
-    const mockNavigate = vi.fn();
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
-
-    // When
-    const { store } = renderWithProviders(
-      <TestWrapper>
-        <LoginForm />
-      </TestWrapper>
-    );
-
-    // Then
-    expect(store.getState().auth.token).toEqual(mockReturnData.token);
-    expect(localStorageMock.setItem).toHaveBeenCalledOnce();
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'token',
-      mockReturnData.token
-    );
   });
 
   it('Should navigate to password reset', () => {

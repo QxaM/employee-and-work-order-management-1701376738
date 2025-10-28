@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.maxq.authorization.controller.api.UserApi;
 import org.maxq.authorization.domain.User;
 import org.maxq.authorization.domain.dto.GetUserDto;
+import org.maxq.authorization.domain.dto.PageDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
 import org.maxq.authorization.domain.exception.RoleDoesNotExistException;
@@ -23,7 +24,7 @@ public class UserController implements UserApi {
 
   @Override
   @GetMapping
-  public ResponseEntity<Page<GetUserDto>> getUsers(
+  public ResponseEntity<PageDto<GetUserDto>> getUsers(
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "10") Integer size) {
     Page<User> users = userService.getAllUsers(page, size);

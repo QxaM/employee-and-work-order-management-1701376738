@@ -9,10 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.authorization.domain.HttpErrorMessage;
 import org.maxq.authorization.domain.dto.GetUserDto;
+import org.maxq.authorization.domain.dto.PageDto;
 import org.maxq.authorization.domain.exception.ElementNotFoundException;
 import org.maxq.authorization.domain.exception.RoleAlreadyExistsException;
 import org.maxq.authorization.domain.exception.RoleDoesNotExistException;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +33,7 @@ public interface UserApi {
       content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = HttpErrorMessage.class))
       })
-  ResponseEntity<Page<GetUserDto>> getUsers(
+  ResponseEntity<PageDto<GetUserDto>> getUsers(
       @RequestParam(required = false, defaultValue = "0")
       @Parameter(
           description = "Page number of the user request",
