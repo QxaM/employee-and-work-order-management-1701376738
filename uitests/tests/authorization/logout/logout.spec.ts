@@ -1,6 +1,6 @@
 import { expect, test } from "../../base/baseTest";
 import { openAdminPage, openHomePage } from "../../utils/navigation.utils";
-import { clickLogout, logoutSuccessfulMessage } from "./logout.utils";
+import { logout, logoutSuccessfulMessage } from "./logout.utils";
 import { notAuthorizedMessage, notLoggedInMessage } from "../roles/roles.utils";
 
 test("TC30 - should logout correctly", async ({ adminPage, baseURL }) => {
@@ -8,7 +8,7 @@ test("TC30 - should logout correctly", async ({ adminPage, baseURL }) => {
   await openHomePage(adminPage);
 
   // When
-  await clickLogout(adminPage);
+  await logout(adminPage);
 
   // Then
   await Promise.all([
@@ -25,7 +25,7 @@ test("TC31 - should correctly redirect from protected route", async ({
   await openAdminPage(adminPage);
 
   // When
-  await clickLogout(adminPage);
+  await logout(adminPage);
 
   // Then
   await Promise.all([
@@ -41,7 +41,7 @@ test("TC32 - should block back button to protected route", async ({
 }) => {
   // Given
   await openAdminPage(adminPage);
-  await clickLogout(adminPage);
+  await logout(adminPage);
 
   await logoutSuccessfulMessage(adminPage).waitFor({ state: "visible" });
 
