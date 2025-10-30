@@ -1,40 +1,48 @@
-import { DropdownMenu, Flex } from '@radix-ui/themes';
-import { useAppDispatch } from '../../../../../hooks/useStore.tsx';
-import { logout } from '../../../../../store/authSlice.ts';
+import { AlertDialog, Button, DropdownMenu, Flex } from '@radix-ui/themes';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../../../hooks/useAuth.tsx';
 
-interface ProfileContextMenuProps {
-  clearImage: () => void;
-}
-
-const ProfileContextMenu = ({ clearImage }: ProfileContextMenuProps) => {
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    clearImage();
-  };
+const ProfileContextMenu = () => {
+  const { logout } = useAuth();
 
   return (
-    <DropdownMenu.Content variant="soft" size="2">
-      <DropdownMenu.Item asChild>
-        <Link to="/profile">
-          <Flex justify="center" align="center" gap="2">
-            Profile
-            <PersonIcon />
+    <AlertDialog.Root>
+      <DropdownMenu.Content variant="soft" size="2">
+        <DropdownMenu.Item asChild>
+          <Link to="/profile">
+            <Flex justify="center" align="center" gap="2">
+              Profile
+              <PersonIcon />
+            </Flex>
+          </Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <AlertDialog.Trigger>
+          <Flex direction="column" justify="center" align="center">
+            <DropdownMenu.Item color="red">Logout</DropdownMenu.Item>
           </Flex>
-        </Link>
-      </DropdownMenu.Item>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item
-        color="red"
-        className="flex justify-center items-center"
-        onClick={handleLogout}
-      >
-        Logout
-      </DropdownMenu.Item>
-    </DropdownMenu.Content>
+        </AlertDialog.Trigger>
+      </DropdownMenu.Content>
+      <AlertDialog.Content maxWidth="20rem">
+        <AlertDialog.Title>Logout</AlertDialog.Title>
+        <AlertDialog.Description>
+          Are you sure you want to log out?
+        </AlertDialog.Description>
+        <Flex gap="3" mt="4" justify="end">
+          <AlertDialog.Cancel>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </AlertDialog.Cancel>
+          <AlertDialog.Action>
+            <Button variant="solid" color="red" onClick={logout.trigger}>
+              Logout
+            </Button>
+          </AlertDialog.Action>
+        </Flex>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
   );
 };
 
