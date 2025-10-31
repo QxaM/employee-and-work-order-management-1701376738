@@ -5,6 +5,8 @@ services:
   api-gateway-service:
     environment:
       - EUREKA_URL=http://discovery-service:8761/eureka
+      - AUTHORIZATION_SERVICE_URL=http://authorization-service:8081
+      - PROFILE_SERVICE_URL=http://profile-service:8082
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
     depends_on:
       discovery-service:
