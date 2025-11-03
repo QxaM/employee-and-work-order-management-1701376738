@@ -3,6 +3,12 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 
+mailgun:
+  url: ${MAILGUN_URL}
+  username: ${MAILGUN_USERNAME}
+  api-key: ${MAILGUN_API_KEY}
+
+
 frontend:
   register:
     confirm:
@@ -57,6 +63,12 @@ spring:
           starttls:
             enable: true
     username: ${MAIL_USERNAME}
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            logger-level: full
 
 ---
 
@@ -73,6 +85,10 @@ management:
 eureka:
   client:
     enabled: false
+mailgun:
+  url: http://localhost:8079
+  username: api
+  api-key: token
 
 ---
 
@@ -84,3 +100,7 @@ management:
   health:
     mail:
       enabled: false
+mailgun:
+  url: http://localhost:8079
+  username: api
+  api-key: token
