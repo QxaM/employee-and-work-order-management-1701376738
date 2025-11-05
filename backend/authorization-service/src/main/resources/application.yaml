@@ -4,9 +4,9 @@ eureka:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 
 mailgun:
-  url: ${MAILGUN_URL}
-  username: ${MAILGUN_USERNAME}
-  api-key: ${MAILGUN_API_KEY}
+  url: ${MAILGUN_URL:http://localhost:8079}
+  username: ${MAILGUN_USERNAME:api}
+  api-key: ${MAILGUN_API_KEY:token}
 
 
 frontend:
