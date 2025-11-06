@@ -108,8 +108,10 @@ class MailgunClientTest {
 
     // Then
     assertAll(
-        () -> assertEquals(responseDto.getId(), actualResponse.getId()),
-        () -> assertEquals(responseDto.getMessage(), actualResponse.getMessage())
+        () -> assertEquals(responseDto.getId(), actualResponse.getId(),
+            "Id not returned correctly"),
+        () -> assertEquals(responseDto.getMessage(), actualResponse.getMessage(),
+            "Message not returned correctly")
     );
   }
 
