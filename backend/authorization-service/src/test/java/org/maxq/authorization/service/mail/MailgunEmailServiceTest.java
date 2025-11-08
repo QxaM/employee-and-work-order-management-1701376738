@@ -7,6 +7,7 @@ import org.maxq.authorization.domain.dto.MailgunDto;
 import org.maxq.authorization.mapper.MailgunMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("DEV")
 class MailgunEmailServiceTest {
 
   private static final String EMAIL = "test@test.com";

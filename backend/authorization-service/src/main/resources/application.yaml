@@ -85,10 +85,6 @@ management:
 eureka:
   client:
     enabled: false
-mailgun:
-  url: http://localhost:8079
-  username: api
-  api-key: token
 
 ---
 
@@ -100,7 +96,3 @@ management:
   health:
     mail:
       enabled: false
-mailgun:
-  url: http://localhost:8079
-  username: api
-  api-key: token
