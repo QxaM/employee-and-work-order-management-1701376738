@@ -5,6 +5,8 @@ services:
   api-gateway-service:
     environment:
       - EUREKA_URL=http://discovery-service:8761/eureka
+      - AUTHORIZATION_SERVICE_URL=http://authorization-service:8081
+      - PROFILE_SERVICE_URL=http://profile-service:8082
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
     depends_on:
       discovery-service:
@@ -18,6 +20,9 @@ services:
       - AUTHORIZATION_PROFILE_RABBITMQ_USERNAME=${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:-local_app}
       - AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD=${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:-password}
       - AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST=${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:-/}
+      - MAILGUN_URL=${MAILGUN_URL:-http://localhost:8079}
+      - MAILGUN_USERNAME=${MAILGUN_USERNAME:-api}
+      - MAILGUN_API_KEY=${MAILGUN_API_KEY:-token}
     depends_on:
       discovery-service:
         condition: service_healthy

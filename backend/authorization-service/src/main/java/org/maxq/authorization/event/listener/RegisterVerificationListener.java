@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RegisterVerificationListener implements ApplicationListener<OnRegisterVerificationFail> {
+public class RegisterVerificationListener
+    implements ApplicationListener<OnRegisterVerificationFail> {
 
   private final VerificationTokenService verificationTokenService;
   private final MailService emailService;
@@ -25,7 +26,7 @@ public class RegisterVerificationListener implements ApplicationListener<OnRegis
     VerificationToken savedToken = verificationTokenService.createToken(user);
 
     log.debug("Token created, sending verification email.");
-    emailService.sendVerificationEmail(savedToken.getToken(), user.getEmail());
+    emailService.sendVerificationEmail(user.getEmail(), savedToken.getToken());
   }
 
   @Override

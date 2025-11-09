@@ -15,17 +15,19 @@ jobs:
   authorization-changes:
     runs-on: ubuntu-latest
     outputs:
-      authorization: ${{ steps.filter.outputs.changes_detected }}
+      authorization: ${{ steps.filter.outputs.rerun_required }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Check changes in Authorization Service
-        uses: ./.github/actions/check-changes
+        uses: ./.github/actions/rerun-required
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/authorization-service/**'
+          artifact-name: authorization-service-jar
+          artifact-path: backend/authorization-service/build/libs
 
   authorization-service:
     needs: authorization-changes

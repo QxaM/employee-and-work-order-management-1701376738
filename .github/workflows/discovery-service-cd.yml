@@ -21,17 +21,19 @@ jobs:
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     outputs:
-      discovery: ${{ steps.filter.outputs.changes_detected }}
+      discovery: ${{ steps.filter.outputs.rerun_required }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Check changes in Discovery Service
-        uses: ./.github/actions/check-changes
+        uses: ./.github/actions/rerun-required
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/discovery-service/**'
+          artifact-name: discovery-service-jar
+          artifact-path: backend/discovery-service/build/libs
 
   discovery-service-deploy:
     needs: discovery-changes

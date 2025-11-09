@@ -8,6 +8,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
+/**
+ * @deprecated Unused since Render no longer allows SMTP traffic from free instances
+ */
+@Deprecated(forRemoval = true)
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,6 +35,7 @@ public class TemplateEmailService implements MailService {
 
   @Override
   public void sendPasswordReset(String email, String token) {
+
     String message = mailCreatorService.buildPasswordResetEmail(token, email);
     javaMailSender.send(
         createMimeMessage(message, email, PASSWORD_RESET_SUBJECT)
