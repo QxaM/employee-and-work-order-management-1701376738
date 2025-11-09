@@ -22,6 +22,10 @@ jobs:
           artifact-name: discovery-service-jar
           artifact-path: backend/discovery-service/build/libs
 
+      - name: Debug output
+        shell: bash
+        run: echo ${{ steps.filter.outputs.rerun_required }}
+
   discovery-service:
     needs: discovery-changes
     if: needs.discovery-changes.outputs.discovery == 'true'
