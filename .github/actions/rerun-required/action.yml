@@ -11,7 +11,7 @@ inputs:
     description: 'Name of the artifact to check for existence'
     required: true
   artifact-path:
-    description: 'Path to the artifacts to check for existence'
+    description: 'Path to the artifacts to check for existance'
     required: true
   token:
     description: 'GitHub token'
@@ -40,10 +40,6 @@ runs:
       shell: bash
       run: |
         echo ${{ steps.changes.outputs.changed_files  }}
-
-    - name: Print artifact path for debug
-      run: echo ${{ inputs.artifact-path }}
-      shell: bash
 
     - name: Download Service Artifact JAR
       if: ${{ steps.changes.outputs.changes_detected == 'false' }}
