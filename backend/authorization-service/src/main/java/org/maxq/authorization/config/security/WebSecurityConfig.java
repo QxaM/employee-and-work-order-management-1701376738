@@ -177,7 +177,8 @@ public class WebSecurityConfig {
     corsConfiguration.setAllowedOriginPatterns(
         List.of("http://localhost:[*]", frontendUrl)
     );
-    corsConfiguration.setAllowedMethods(List.of("GET"));
+    corsConfiguration.setAllowedMethods(
+        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
     corsConfiguration.setExposedHeaders(
         List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
