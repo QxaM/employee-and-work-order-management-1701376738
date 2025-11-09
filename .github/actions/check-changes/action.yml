@@ -22,7 +22,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Check changes in frontend
+    - name: Check changes
       uses: tj-actions/changed-files@v46.0.5
       id: filter
       with:
