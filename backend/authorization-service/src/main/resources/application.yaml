@@ -56,12 +56,6 @@ spring:
           default:
             logger-level: full
 
-management:
-  endpoints:
-    web:
-      cors:
-        allowed-origins: ${FRONTEND_URL:http://localhost:5173}
-        allowed-methods: GET
 ---
 
 spring:
