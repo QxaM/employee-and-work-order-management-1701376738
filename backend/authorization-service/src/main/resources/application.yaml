@@ -50,19 +50,6 @@ spring:
     username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
     password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
     virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
-  mail:
-    host: smtp.gmail.com
-    password: ${MAIL_PASSWORD}
-    port: 587
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            trust: smtp.gmail.com
-          starttls:
-            enable: true
-    username: ${MAIL_USERNAME}
   cloud:
     openfeign:
       client:
@@ -80,8 +67,6 @@ management:
   health:
     rabbit:
       enabled: false
-    mail:
-      enabled: false
 eureka:
   client:
     enabled: false
@@ -92,7 +77,3 @@ spring:
   config:
     activate:
       on-profile: SIT
-management:
-  health:
-    mail:
-      enabled: false

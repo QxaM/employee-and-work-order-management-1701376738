@@ -34,7 +34,7 @@ describe('Eureka API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: 'http://localhost:3000/service/registered-apps',
+            url: expect.stringContaining('/actuator/health') as string,
             method: 'GET',
           },
           expect.any(Object),

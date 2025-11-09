@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { profileApi as PROFILE_API } from './base.ts';
-import { api } from '../apiSlice.ts';
-import { ProfileType, UpdateProfileType, } from '../../types/api/ProfileTypes.ts';
-import { readErrorMessage } from '../../utils/errorUtils.ts';
-import { registerModal } from '../modalSlice.ts';
-import { v4 as uuidv4 } from 'uuid';
-import { getValueOrDefault } from '../../utils/shared.ts';
+import {profileApi as PROFILE_API} from './base.ts';
+import {api} from '../apiSlice.ts';
+import {ProfileType, UpdateProfileType,} from '../../types/api/ProfileTypes.ts';
+import {readErrorMessage} from '../../utils/errorUtils.ts';
+import {registerModal} from '../modalSlice.ts';
+import {v4 as uuidv4} from 'uuid';
+import {getValueOrDefault} from '../../utils/shared.ts';
+
+const PROFILE_URL = import.meta.env.VITE_PROFILE_URL as string;
 
 export const PROFILES_API = '/profiles';
 const HEALTHCHECK_API = '/actuator/health';
@@ -16,7 +18,7 @@ export const profileApi = api.injectEndpoints({
   endpoints: (builder) => ({
     profileHealthcheck: builder.query<undefined, void>({
       query: () => ({
-        url: PROFILE_API + HEALTHCHECK_API,
+        url: PROFILE_URL + HEALTHCHECK_API,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

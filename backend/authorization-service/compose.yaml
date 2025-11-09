@@ -19,8 +19,6 @@ services:
       - "8081:8081"
     environment:
       - POSTGRES_LINK=jdbc:postgresql://authorization-database:5432/authorization-db?sslmode=disable
-      - MAIL_USERNAME=$MAIL_USERNAME
-      - MAIL_PASSWORD=$MAIL_PASSWORD
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
       - MAILGUN_URL=${MAILGUN_URL:-http://localhost:8079}
       - MAILGUN_USERNAME=${MAILGUN_USERNAME:-api}
