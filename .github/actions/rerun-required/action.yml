@@ -48,7 +48,7 @@ runs:
       id: download
       with:
         artifact_name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.aritfact-path }}
+        path: ${{ inputs.artifact-path }}
         github_token: ${{ github.token }}
 
     - name: Print Rerun Outcome
