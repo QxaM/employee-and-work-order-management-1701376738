@@ -2,7 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { useLoginMutation } from '../store/api/auth.ts';
 import { useAppDispatch, useAppSelector } from './useStore.tsx';
 import { useCallback, useEffect, useRef } from 'react';
-import { login as loginAction, logout as logoutAction, } from '../store/authSlice.ts';
+import {
+  login as loginAction,
+  logout as logoutAction,
+} from '../store/authSlice.ts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfileImage } from './useProfileImage.tsx';
 import { registerModal } from '../store/modalSlice.ts';
@@ -24,13 +27,13 @@ export const useAuth = () => {
     if (isSuccess && !authState.token) {
       dispatch(loginAction({ token: data.token }));
     }
-  }, [isSuccess, data, dispatch]);
+  }, [isSuccess, data, dispatch, authState.token]);
 
   useEffect(() => {
     if (isSuccess && !authState.token) {
       void navigate('/');
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, navigate, authState.token]);
 
   useEffect(() => {
     if (logoutTriggered.current && location.pathname === '/') {
@@ -52,7 +55,7 @@ export const useAuth = () => {
   const logout = useCallback(() => {
     logoutTriggered.current = true;
     void navigate('/');
-  }, [dispatch, navigate]);
+  }, [navigate]);
 
   return {
     login: {

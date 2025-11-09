@@ -46,7 +46,7 @@ describe('Profiles API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: expect.stringContaining('/actuator/health'),
+            url: expect.stringContaining('/actuator/health') as string,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
