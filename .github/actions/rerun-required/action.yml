@@ -42,7 +42,7 @@ runs:
         echo ${{ steps.changes.outputs.changed_files  }}
 
     - name: Download Service Artifact JAR
-      if: ${{ !steps.changes.outputs.changes_detected }}
+      if: ${{ steps.changes.outputs.changes_detected == 'false' }}
       continue-on-error: true
       uses: ./.github/actions/download-artifact
       id: download
