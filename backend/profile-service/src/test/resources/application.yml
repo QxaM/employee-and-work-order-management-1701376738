@@ -7,6 +7,9 @@ eureka:
   client:
     enabled: false
 
+frontend:
+  url: http://localhost:5173
+
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
