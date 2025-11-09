@@ -1,6 +1,7 @@
 package org.maxq.authorization.config.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.maxq.authorization.config.controller.CustomAccessDeniedHandler;
 import org.maxq.authorization.config.controller.CustomAuthenticationFailureHandler;
 import org.maxq.authorization.security.UserDetailsDbService;
@@ -44,6 +45,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
   @Value("${frontend.url}")
@@ -117,7 +119,7 @@ public class WebSecurityConfig {
                         .decoder(nimbusJwtDecoder(publicKey))
                         .jwtAuthenticationConverter(jwtHeadersAuthenticationConverter))
                 .authenticationEntryPoint(authenticationFailureHandler()))
-        .cors(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(authenticationFailureHandler())
@@ -174,6 +176,8 @@ public class WebSecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+    log.info("Frontend url: {}", frontendUrl);
+
     corsConfiguration.setAllowedOriginPatterns(
         List.of("http://localhost:[*]", frontendUrl)
     );
@@ -185,7 +189,7 @@ public class WebSecurityConfig {
     corsConfiguration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration);
+    source.registerCorsConfiguration("/actuator/health", corsConfiguration);
 
     return source;
   }

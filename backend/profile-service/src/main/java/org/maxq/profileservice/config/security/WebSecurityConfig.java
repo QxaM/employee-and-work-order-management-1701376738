@@ -1,6 +1,7 @@
 package org.maxq.profileservice.config.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.maxq.profileservice.config.controller.CustomAccessDeniedHandler;
 import org.maxq.profileservice.config.controller.CustomAuthenticationFailureHandler;
 import org.maxq.profileservice.security.authentication.converter.JwtHeadersAuthenticationConverter;
@@ -34,6 +35,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
   @Value("${frontend.url}")
@@ -96,6 +98,8 @@ public class WebSecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+    log.info("Frontend url: {}", frontendUrl);
+
     corsConfiguration.setAllowedOriginPatterns(
         List.of("http://localhost:[*]", frontendUrl)
     );
@@ -107,7 +111,7 @@ public class WebSecurityConfig {
     corsConfiguration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration);
+    source.registerCorsConfiguration("/actuator/health", corsConfiguration);
 
     return source;
   }
