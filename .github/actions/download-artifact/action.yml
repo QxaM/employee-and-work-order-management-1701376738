@@ -30,6 +30,10 @@ runs:
         name: ${{ inputs.artifact_name }}
         path: ${{ inputs.path }}
 
+    - name: Print path
+      shell: bash
+      run: echo ${{ inputs.path }}
+
     - name: Download ${{ inputs.artifact_name }} from previous runs
       if: steps.download-current.outcome == 'failure'
       uses: dawidd6/action-download-artifact@v6
