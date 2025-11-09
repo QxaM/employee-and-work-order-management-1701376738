@@ -1,0 +1,62 @@
+name: 'Rerun Required'
+author: Piotr Gliszczyński
+description: 'Checks if rerun of an action is necessary - either by checking for changes in 
+service or JAR artifacts of service job is no longer available'
+
+inputs:
+  files:
+    description: 'Files to check for changes'
+    required: true
+  artifact-name:
+    description: 'Name of the artifact to check for existence'
+    required: true
+  artifact-path:
+    description: 'Path to the artifacts to check for existance'
+    required: true
+  token:
+    description: 'GitHub token'
+    required: true
+
+outputs:
+  rerun_required:
+    description: '`true` when rerun is required'
+    value: ${{ (steps.download.outcome != 'success') }}
+  changed_files:
+    description: 'List of changed files'
+    value: ${{ steps.changes.outputs.changed_files }}
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check changes in API Gateway Service
+      uses: ./.github/actions/check-changes
+      id: changes
+      with:
+        token: ${{ inputs.token }}
+        files: ${{ inputs.files }}
+
+    - name: Print changed files
+      shell: bash
+      run: |
+        echo ${{ steps.changes.outputs.changed_files  }}
+
+    - name: Download Service Artifact JAR
+      if: ${{ steps.changes.outputs.changes_detected == 'false' }}
+      continue-on-error: true
+      uses: ./.github/actions/download-artifact
+      id: download
+      with:
+        artifact_name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-path }}
+        github_token: ${{ github.token }}
+
+    - name: Print Rerun Outcome
+      if: always()
+      shell: bash
+      env:
+        FILE_CHANGES: ${{ steps.changes.outputs.changes_detected }}
+        ARTIFACT_STATUS: ${{ steps.download.outcome }}
+      run: |
+        echo "Changes were detected: $FILE_CHANGES"
+        echo "Artifact download status: $ARTIFACT_STATUS"

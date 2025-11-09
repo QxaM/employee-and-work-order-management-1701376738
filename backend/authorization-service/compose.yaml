@@ -20,6 +20,9 @@ services:
     environment:
       - POSTGRES_LINK=jdbc:postgresql://authorization-database:5432/authorization-db?sslmode=disable
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+      - MAILGUN_URL=${MAILGUN_URL:-http://localhost:8079}
+      - MAILGUN_USERNAME=${MAILGUN_USERNAME:-api}
+      - MAILGUN_API_KEY=${MAILGUN_API_KEY:-token}
     depends_on:
       authorization-database:
         condition: service_healthy

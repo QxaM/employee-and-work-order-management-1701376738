@@ -3,6 +3,12 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 
+mailgun:
+  url: ${MAILGUN_URL:http://localhost:8079}
+  username: ${MAILGUN_USERNAME:api}
+  api-key: ${MAILGUN_API_KEY:token}
+
+
 frontend:
   register:
     confirm:
@@ -26,7 +32,6 @@ profile:
   topic:
     create: "profile.create"
 
-
 spring:
   application:
     name: authorization-service
@@ -45,28 +50,12 @@ spring:
     username: ${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:local_app}
     password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
     virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
-<<<<<<< Updated upstream
-  mail:
-    host: smtp.gmail.com
-    password: ${MAIL_PASSWORD}
-    port: 587
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            trust: smtp.gmail.com
-          starttls:
-            enable: true
-    username: ${MAIL_USERNAME}
-=======
   cloud:
     openfeign:
       client:
         config:
           default:
             logger-level: full
->>>>>>> Stashed changes
 
 ---
 

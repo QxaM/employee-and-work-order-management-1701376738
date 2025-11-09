@@ -21,17 +21,19 @@ jobs:
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     outputs:
-      api-gateway: ${{ steps.filter.outputs.changes_detected }}
+      api-gateway: ${{ steps.filter.outputs.rerun_required }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Check changes in API Gateway
-        uses: ./.github/actions/check-changes
+        uses: ./.github/actions/rerun-required
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/api-gateway-service/**'
+          artifact-name: api-gateway-service-jar
+          artifact-path: backend/api-gateway-service/build/libs
 
   api-gateway-service-deploy:
     needs: api-gateway-changes
