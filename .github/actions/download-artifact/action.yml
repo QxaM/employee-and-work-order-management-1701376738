@@ -22,6 +22,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Print path
+      shell: bash
+      run: echo ${{ inputs.path }}
+
     - name: Try to download ${{ inputs.artifact_name }} from current run
       id: download-current
       uses: actions/download-artifact@v4
@@ -29,10 +33,6 @@ runs:
       with:
         name: ${{ inputs.artifact_name }}
         path: ${{ inputs.path }}
-
-    - name: Print path
-      shell: bash
-      run: echo ${{ inputs.path }}
 
     - name: Download ${{ inputs.artifact_name }} from previous runs
       if: steps.download-current.outcome == 'failure'
