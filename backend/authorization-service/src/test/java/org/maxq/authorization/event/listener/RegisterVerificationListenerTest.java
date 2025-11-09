@@ -47,6 +47,6 @@ class RegisterVerificationListenerTest {
 
     // Then
     verify(verificationTokenService, times(1)).createToken(any(User.class));
-    verify(mailService, times(1)).sendVerificationEmail(token.getToken(), user.getEmail());
+    verify(mailService, times(1)).sendVerificationEmail(user.getEmail(), token.getToken());
   }
 }

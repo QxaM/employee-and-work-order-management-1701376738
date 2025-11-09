@@ -5,7 +5,7 @@ Management.
 
 ## 🌐 Demo
 
-[Application Demo (Frontend)](http://employee-work-management.s3-website.eu-west-3.amazonaws.com/)
+[Application Demo (Frontend)](http://www.ewm.maxq.click/)
 
 **Demo Credentials:**
 
@@ -67,6 +67,7 @@ project and employees managing easier.
     * Vite + Vitest
     * React-Testing-Library
     * TypeDoc
+    * DNS - AWS Route 53
     * **Hosting** - Render
 * **Backend:**
     * Java
@@ -77,7 +78,8 @@ project and employees managing easier.
     * Eureka (discovery service)
     * Spring Cloud Gateway Webflux (API Gateway)
     * Profile images storage - AWS S3
-    * **Hosting** - Render, Docker
+    * Email service - Mailgun
+    * **Hosting** - Render + Docker
 * **API Testing:**
     * Postman
 * **UI Testing:**

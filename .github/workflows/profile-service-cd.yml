@@ -21,17 +21,20 @@ jobs:
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.event == 'push'
     outputs:
-      profile: ${{ steps.filter.outputs.changes_detected }}
+      profile: ${{ steps.filter.outputs.rerun_required }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Check changes in Profile Service
-        uses: ./.github/actions/check-changes
+        uses: ./.github/actions/rerun-required
         id: filter
         with:
           token: ${{ secrets.MAXQ_ACTION_PAT }}
           files: 'backend/profile-service/**'
+          artifact-name: profile-service-jar
+          artifact-path: backend/profile-service/build/libs
+
 
   profile-service-deploy:
     needs: profile-changes

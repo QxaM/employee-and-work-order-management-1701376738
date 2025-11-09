@@ -5,6 +5,11 @@ eureka:
   client:
     enabled: false
 
+mailgun:
+  url: http://localhost:8079
+  username: api
+  api-key: token
+
 frontend:
   register:
     confirm:
