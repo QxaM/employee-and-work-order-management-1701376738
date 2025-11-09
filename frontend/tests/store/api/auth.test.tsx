@@ -1,4 +1,7 @@
-import { customBaseQuery, CustomFetchBaseQueryError, } from '../../../src/store/api/base.ts';
+import {
+  customBaseQuery,
+  CustomFetchBaseQueryError,
+} from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { act, PropsWithChildren } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -42,7 +45,7 @@ describe('Authorization API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: '/auth/actuator/health',
+            url: expect.stringContaining('/actuator/health'),
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

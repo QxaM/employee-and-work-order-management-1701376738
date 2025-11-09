@@ -6,6 +6,8 @@ const defaultRegisterErrorMessage =
   'Unknown error during registration process!';
 const defaultLoginErrorMessage = 'Unknown error during login process!';
 
+const AUTH_URL = import.meta.env.VITE_AUTHORIZATION_URL as string;
+
 const REGISTER_API = '/register';
 const VERIFICATION_API = '/register/confirm';
 const LOGIN_API = '/login';
@@ -52,7 +54,7 @@ export const authApi = api.injectEndpoints({
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     authHealthcheck: builder.query<undefined, void>({
       query: () => ({
-        url: AUTH_API + HEALTHCHECK_API,
+        url: AUTH_URL + HEALTHCHECK_API,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
