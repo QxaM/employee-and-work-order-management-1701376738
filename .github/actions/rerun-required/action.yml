@@ -20,7 +20,7 @@ inputs:
 outputs:
   rerun_required:
     description: '`true` when rerun is required'
-    value: ${{ steps.changes.outputs.changes_detected || (steps.download.outcome != 'success') }}
+    value: ${{ (steps.download.outcome != 'success') }}
   changed_files:
     description: 'List of changed files'
     value: ${{ steps.changes.outputs.changed_files }}
