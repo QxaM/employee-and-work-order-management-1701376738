@@ -63,6 +63,12 @@ spring:
     password: ${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:password}
     virtual-host: ${AUTHORIZATION_PROFILE_RABBITMQ_VIRTUAL_HOST:/}
 
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+        allowed-methods: GET
 ---
 
 spring:

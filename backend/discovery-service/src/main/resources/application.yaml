@@ -9,3 +9,9 @@ server:
 spring:
   application:
     name: discovery-service
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+        allowed-methods: GET
