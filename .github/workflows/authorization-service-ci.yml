@@ -29,6 +29,9 @@ jobs:
           artifact-name: authorization-service-jar
           artifact-path: backend/authorization-service/build/libs
 
+      - name: Debug output of filter
+        run: echo ${{ steps.filter.outputs.rerun_required }}
+
   authorization-service:
     needs: authorization-changes
     if: needs.authorization-changes.outputs.authorization == 'true'
