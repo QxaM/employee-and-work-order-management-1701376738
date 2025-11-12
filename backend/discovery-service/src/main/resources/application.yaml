@@ -14,4 +14,6 @@ management:
     web:
       cors:
         allowed-origins: ${FRONTEND_URL:http://localhost:5173}
-        allowed-methods: GET
+        allowed-methods: "GET"
+        allowed-headers: "*"
+        exposed-headers: "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"

@@ -184,8 +184,13 @@ public class WebSecurityConfig {
     corsConfiguration.setAllowedMethods(
         List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
+    corsConfiguration.setAllowCredentials(true);
     corsConfiguration.setExposedHeaders(
-        List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+        List.of(
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
+        )
+    );
     corsConfiguration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

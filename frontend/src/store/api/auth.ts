@@ -58,6 +58,7 @@ export const authApi = api.injectEndpoints({
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: '',
         },
       }),
     }),

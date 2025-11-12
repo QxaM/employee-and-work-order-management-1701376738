@@ -17,8 +17,9 @@ import java.io.IOException;
 public class CustomAuthenticationFailureHandler implements AuthenticationEntryPoint {
 
   @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-                       AuthenticationException exception) throws IOException, ServletException {
+  public void commence(
+      HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException exception) throws IOException, ServletException {
     HttpErrorMessage message =
         new HttpErrorMessage("Unauthorized to access this resource, login please");
     log.error("Error during authentication {}", exception.getMessage(), exception);
