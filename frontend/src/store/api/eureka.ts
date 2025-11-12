@@ -11,6 +11,9 @@ const eurekaApi = api.injectEndpoints({
       query: () => ({
         url: EUREKA_URL + HEALTHCHECK_API,
         method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
     }),
   }),

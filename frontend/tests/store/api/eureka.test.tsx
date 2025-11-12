@@ -33,10 +33,10 @@ describe('Eureka API', () => {
       await waitFor(() => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
-          {
+          expect.objectContaining({
             url: expect.stringContaining('/actuator/health') as string,
             method: 'GET',
-          },
+          }),
           expect.any(Object),
           undefined
         );

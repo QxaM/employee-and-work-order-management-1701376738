@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import {profileApi as PROFILE_API} from './base.ts';
-import {api} from '../apiSlice.ts';
-import {ProfileType, UpdateProfileType,} from '../../types/api/ProfileTypes.ts';
-import {readErrorMessage} from '../../utils/errorUtils.ts';
-import {registerModal} from '../modalSlice.ts';
-import {v4 as uuidv4} from 'uuid';
-import {getValueOrDefault} from '../../utils/shared.ts';
+import { profileApi as PROFILE_API } from './base.ts';
+import { api } from '../apiSlice.ts';
+import { ProfileType, UpdateProfileType, } from '../../types/api/ProfileTypes.ts';
+import { readErrorMessage } from '../../utils/errorUtils.ts';
+import { registerModal } from '../modalSlice.ts';
+import { v4 as uuidv4 } from 'uuid';
+import { getValueOrDefault } from '../../utils/shared.ts';
 
 const PROFILE_URL = import.meta.env.VITE_PROFILE_URL as string;
 
@@ -22,6 +22,7 @@ export const profileApi = api.injectEndpoints({
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: '',
         },
       }),
     }),

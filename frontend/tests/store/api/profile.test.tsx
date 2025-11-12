@@ -50,6 +50,7 @@ describe('Profiles API', () => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: '',
             },
           },
           expect.any(Object),
