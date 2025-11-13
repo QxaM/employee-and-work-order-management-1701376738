@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { api } from '../apiSlice.ts';
 
 const TASK_URL = import.meta.env.VITE_TASK_URL as string;
