@@ -44,7 +44,7 @@ jobs:
     needs:
       - authorization-postman-tests
       - profile-postman-tests
-      - task-service-ci
+      - task-postman-tests
       - discovery-service-ci
       - api-gateway-service-ci
 
