@@ -1,0 +1,85 @@
+name: Task Service Deploy
+on:
+  workflow_run:
+    workflows:
+      - UI Tests Pipeline
+    types:
+      - completed
+    secrets: inherit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  task-changes:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push'
+    outputs:
+      tasks: ${{ steps.filter.outputs.rerun_required }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in Task Service
+        uses: ./.github/actions/rerun-required
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: 'backend/task-service/**'
+          artifact-name: task-service-jar
+          artifact-path: backend/task-service/build/libs
+
+
+  task-service-deploy:
+    needs: task-changes
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push' &&
+      needs.task-changes.outputs.tasks == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: task-service-jar
+          path: backend/task-service/build/libs
+          github_token: ${{ github.token }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend/task-service
+          file: ./backend/task-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/task-service:1.0.0
+            ${{ secrets.DOCKER_USERNAME }}/task-service:latest
+          labels: task-service
+
+      - name: Deploy to Render
+        run: |
+          curl ${{ secrets.TASK_RENDER_HOOK }}
+
+      - name: Wait for application to be ready
+        uses: './.github/actions/health-check'
+        with:
+          timeout_minutes: 10
+          url: ${{ secrets.TASK_API_URL }}/actuator/health
