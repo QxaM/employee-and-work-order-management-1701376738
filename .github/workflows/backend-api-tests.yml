@@ -27,8 +27,10 @@ jobs:
     uses: ./.github/workflows/postman-profile-service-ci.yml
     secrets:
       ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
-  task-service-ci:
-    uses: ./.github/workflows/task-service-ci.yml
+  task-postman-tests:
+    uses: ./.github/workflows/postman-task-service-ci.yml
+    secrets:
+      ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
