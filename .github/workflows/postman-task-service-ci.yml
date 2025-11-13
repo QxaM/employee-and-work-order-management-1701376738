@@ -1,0 +1,98 @@
+name: Postman API Tests for Task Service
+
+on:
+  workflow_call:
+    secrets:
+      ROBOT_TOKEN:
+        required: true
+  workflow_dispatch:
+
+jobs:
+  task-api-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      tasks: ${{ steps.filter.outputs.changes_detected }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in Task Service (sources and tests)
+        uses: ./.github/actions/check-changes
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: |
+            backend/task-service/**
+            postman-api-tests/task-service/**
+
+  task-service-ci:
+    uses: ./.github/workflows/task-service-ci.yml
+
+  postman-tests-task-service:
+    runs-on: ubuntu-latest
+
+    needs:
+      - task-api-changes
+      - task-service-ci
+
+    if: needs.task-api-changes.outputs.tasks == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.17.1'
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Download Task Service JAR
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: task-service-jar
+          path: backend/task-service/build/libs
+          github_token: ${{ github.token }}
+
+      - name: Run Compose Containers
+        run: docker compose up --build -d
+        working-directory: backend/task-service
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install HTMLExtra
+        run: npm install -g newman-reporter-htmlextra
+
+      - name: Wait for application to be ready
+        uses: ./.github/actions/health-check
+        with:
+          url: http://localhost:8083/actuator/health
+
+      - name: Run Postman Tests
+        run: |
+          newman run "./task-service/EWM - Task Service.postman_collection.json" \
+          --reporters='cli,htmlextra' \
+          --reporter-htmlextra-export ./task-service/results/report.html \
+          --global-var "robotToken=${{ secrets.ROBOT_TOKEN }}"
+        working-directory: postman-api-tests
+
+      - name: Upload Postman Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-report-task-service
+          path: postman-api-tests/task-service/results
+
+      - name: Dump container logs
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2.2.2
+        with:
+          images: 'task-service-task-service'
