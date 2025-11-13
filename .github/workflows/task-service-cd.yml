@@ -26,7 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check changes in Profile Service
+      - name: Check changes in Task Service
         uses: ./.github/actions/rerun-required
         id: filter
         with:
