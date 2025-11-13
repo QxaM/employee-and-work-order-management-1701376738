@@ -3,6 +3,7 @@ include:
   - api-gateway-service/compose.yaml
   - authorization-service/compose.yaml
   - profile-service/compose.yaml
+  - task-service/compose.yaml
 
 services:
   authorization-profile-rabbitmq:

@@ -1,0 +1,80 @@
+name: Task Service CI Pipeline
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  task-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      tasks: ${{ steps.filter.outputs.rerun_required }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check changes in Task Service
+        uses: ./.github/actions/rerun-required
+        id: filter
+        with:
+          token: ${{ secrets.MAXQ_ACTION_PAT }}
+          files: 'backend/task-service/**'
+          artifact-name: task-service-jar
+          artifact-path: backend/task-service/build/libs
+
+  task-service:
+    needs: task-changes
+    if: needs.task-changes.outputs.tasks == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./backend/gradlew
+
+      - name: Install dependencies
+        run: ./gradlew clean task-service:build -x test -x check -x assemble -x pmdMain -x pmdTest
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Lint Checks
+        run: ./gradlew task-service:check
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Run Unit Tests
+        run: ./gradlew task-service:test
+        env:
+          SPRING_PROFILES_ACTIVE: QA
+        working-directory: backend
+
+      - name: Build
+        run: ./gradlew task-service:assemble
+        env:
+          SPRING_PROFILES_ACTIVE: PROD
+        working-directory: backend
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-service-tests
+          path: backend/task-service/build/reports
+
+      - name: Upload JAR file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-service-jar
+          path: |
+            backend/task-service/build/libs/task-service-*.jar
+            !backend/task-service/build/libs/task-service-*-plain.jar
