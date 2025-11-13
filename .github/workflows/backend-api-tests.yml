@@ -62,7 +62,7 @@ jobs:
         if: ${{ needs.profile-postman-tests.result != 'success' }}
         run: exit 4
       - name: Fail if Task Service failed
-        if: ${{ needs.task-service-ci.result != 'success' }}
+        if: ${{ needs.task-postman-tests.result != 'success' }}
         run: exit 5
       - name: Check previous job status
         run: echo Backend Integration Successful
