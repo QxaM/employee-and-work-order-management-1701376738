@@ -27,6 +27,8 @@ jobs:
     uses: ./.github/workflows/postman-profile-service-ci.yml
     secrets:
       ROBOT_TOKEN: ${{ secrets.ROBOT_TOKEN }}
+  task-service-ci:
+    uses: ./.github/workflows/task-service-ci.yml
   discovery-service-ci:
     uses: ./.github/workflows/discovery-service-ci.yml
   api-gateway-service-ci:
@@ -40,6 +42,7 @@ jobs:
     needs:
       - authorization-postman-tests
       - profile-postman-tests
+      - task-service-ci
       - discovery-service-ci
       - api-gateway-service-ci
 
@@ -55,6 +58,9 @@ jobs:
         run: exit 3
       - name: Fail if Profile Service failed
         if: ${{ needs.profile-postman-tests.result != 'success' }}
-        run: exit 3
+        run: exit 4
+      - name: Fail if Task Service failed
+        if: ${{ needs.task-service-ci.result != 'success' }}
+        run: exit 5
       - name: Check previous job status
         run: echo Backend Integration Successful
