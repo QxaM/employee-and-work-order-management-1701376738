@@ -95,11 +95,18 @@ jobs:
           path: backend/authorization-service/build/libs
           github_token: ${{ github.token }}
 
-      - name: Download profile Service JAR
+      - name: Download Profile Service JAR
         uses: ./.github/actions/download-artifact
         with:
           artifact_name: profile-service-jar
           path: backend/profile-service/build/libs
+          github_token: ${{ github.token }}
+
+      - name: Download Task Service JAR
+        uses: ./.github/actions/download-artifact
+        with:
+          artifact_name: task-service-jar
+          path: backend/task-service/build/libs
           github_token: ${{ github.token }}
 
       - name: Run Compose Containers
