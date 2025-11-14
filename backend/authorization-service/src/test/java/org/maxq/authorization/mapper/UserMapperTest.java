@@ -3,10 +3,7 @@ package org.maxq.authorization.mapper;
 import org.junit.jupiter.api.Test;
 import org.maxq.authorization.domain.Role;
 import org.maxq.authorization.domain.User;
-import org.maxq.authorization.domain.dto.GetUserDto;
-import org.maxq.authorization.domain.dto.MeDto;
-import org.maxq.authorization.domain.dto.PageDto;
-import org.maxq.authorization.domain.dto.UserDto;
+import org.maxq.authorization.domain.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -39,7 +36,8 @@ class UserMapperTest {
 
     // Then
     assertEquals(userDto.getEmail(), user.getEmail(), "Mapper should map to same email!");
-    assertTrue(passwordEncoder.matches(userDto.getPassword(), user.getPassword()), "Mapper should map to same password!");
+    assertTrue(passwordEncoder.matches(userDto.getPassword(), user.getPassword()),
+        "Mapper should map to same password!");
   }
 
   @Test
@@ -57,7 +55,8 @@ class UserMapperTest {
 
     // Then
     assertAll(
-        () -> assertEquals(users.size(), getUserDtoPage.getNumberOfElements(), "Sizes should match after mapping"),
+        () -> assertEquals(users.size(), getUserDtoPage.getNumberOfElements(),
+            "Sizes should match after mapping"),
         () -> assertEquals(users.getFirst().getId(), getUserDtoPage.getContent().getFirst().getId(),
             "User IDs should match after mapping"),
         () -> assertEquals(
@@ -89,6 +88,34 @@ class UserMapperTest {
             "Role ID not match after mapping"),
         () -> assertEquals(role.getName(), me.getRoles().getFirst().getName(),
             "Role name not match after mapping")
+    );
+  }
+
+  @Test
+  void shouldMapToTaskUserDto() {
+    // Given
+    Role role = new Role(1L, "TEST", Collections.emptyList());
+    User user1 = new User(1L, "test1@test.com", "test1", false, Set.of(role));
+
+    // When
+    TaskUserDto userDto = userMapper.mapToTaskUserDto(user1);
+
+    // Then
+    assertAll(
+        () -> assertEquals(user1.getId(), userDto.getId(), "Id not mapped correctly"),
+        () -> assertEquals(user1.getEmail(), userDto.getEmail(), "Email not mapped correctly"),
+        () -> assertEquals(user1.getRoles().size(), userDto.getRoles().size(),
+            "Email not mapped correctly"),
+        () -> assertEquals(
+            user1.getRoles().stream().toList().getFirst().getId(),
+            userDto.getRoles().getFirst().getId(),
+            "Role id not mapped correctly"
+        ),
+        () -> assertEquals(
+            user1.getRoles().stream().toList().getFirst().getName(),
+            userDto.getRoles().getFirst().getName(),
+            "Role name not mapped correctly"
+        )
     );
   }
 }
