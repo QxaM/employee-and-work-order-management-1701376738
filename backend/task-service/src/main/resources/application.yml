@@ -14,6 +14,15 @@ jwt:
 spring:
   application:
     name: task-service
+  datasource:
+    password: ${TASK_POSTGRES_PASS:password}
+    url: ${TASK_POSTGRES_LINK:jdbc:postgresql://localhost:5434/task-db?sslmode=disable}
+    username: ${TASK_POSTGRES_USER:local_app}
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
