@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,9 +57,8 @@ class UserRepositoryTest {
   void shouldSaveUserWithRole() {
     // Given
     Long roleId = new Random().nextLong();
-    Role role = new Role(roleId, "ROLE_TEST", Collections.emptyList());
+    Role role = new Role(roleId, "ROLE_TEST");
     User userWithRole = new User(user.getId(), "test@test.com", Set.of(role));
-    role.setUsers(List.of(userWithRole));
 
     // When
     repository.save(userWithRole);
@@ -94,19 +96,17 @@ class UserRepositoryTest {
   void shouldThrowWhenDuplicateRoleName() {
     // Given
     Long roleId = new Random().nextLong();
-    Role role = new Role(roleId, "ROLE_TEST_DUPLICATE", Collections.emptyList());
+    Role role = new Role(roleId, "ROLE_TEST_DUPLICATE");
     User userWithRole = new User(user.getId(), "test@test.com", Set.of(role));
-    role.setUsers(List.of(userWithRole));
 
     repository.save(userWithRole);
 
-    Role duplicateNameRole = new Role(role.getId() + 1, role.getName(), Collections.emptyList());
+    Role duplicateNameRole = new Role(role.getId() + 1, role.getName());
     User userWithDuplicateNameRole = new User(
         user.getId() + 1,
         "test1@test.com",
         Set.of(duplicateNameRole)
     );
-    duplicateNameRole.setUsers(List.of(userWithDuplicateNameRole));
 
     // When
     Executable executable = () -> repository.save(userWithDuplicateNameRole);
@@ -142,15 +142,13 @@ class UserRepositoryTest {
   void shouldUpdateUserAndRole() {
     // Given
     Long roleId = new Random().nextLong();
-    Role role = new Role(roleId, "ROLE_TEST_UPDATE", Collections.emptyList());
+    Role role = new Role(roleId, "ROLE_TEST_UPDATE");
     User userWithRole = new User(user.getId(), "test@test.com", Set.of(role));
-    role.setUsers(List.of(userWithRole));
 
     repository.save(userWithRole);
 
-    Role updatedRole = new Role(roleId, "UPDATED_ROLE", Collections.emptyList());
+    Role updatedRole = new Role(roleId, "UPDATED_ROLE");
     User updatedUser = new User(userWithRole.getId(), userWithRole.getEmail(), Set.of(updatedRole));
-    updatedRole.setUsers(List.of(updatedUser));
 
     // When
     repository.save(updatedUser);

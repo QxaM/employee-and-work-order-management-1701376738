@@ -11,6 +11,10 @@ eureka:
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
+app:
+  listeners:
+    auto-startup: true
+
 task:
   user:
     queue:
@@ -52,3 +56,7 @@ spring:
 eureka:
   client:
     enabled: false
+
+app:
+  listeners:
+    auto-startup: false
