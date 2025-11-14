@@ -22,7 +22,7 @@ public class User {
   @Column(unique = true, nullable = false)
   private String email;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinTable(
       name = "USER_ROLE",
       joinColumns = @JoinColumn(name = "USER_ID"),
