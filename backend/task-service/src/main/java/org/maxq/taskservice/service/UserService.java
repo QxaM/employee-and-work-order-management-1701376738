@@ -20,4 +20,12 @@ public class UserService {
       throw new DuplicateDataException("Duplicate user email or role name during user creation", e);
     }
   }
+
+  public void updateUser(User user) throws DuplicateDataException {
+    try {
+      userRepository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      throw new DuplicateDataException("Duplicate user email or role name during user update", e);
+    }
+  }
 }
