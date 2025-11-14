@@ -23,6 +23,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_TASK_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_TASK_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_TASK_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_TASK_RABBITMQ_PASSWORD:password}
+    virtual-host: ${AUTHORIZATION_TASK_RABBITMQ_VIRTUAL_HOST:/}
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}

@@ -34,7 +34,7 @@ class RegistrationListenerTest {
   @MockitoBean
   private MailService templateEmailService;
   @MockitoBean
-  private MessageService<RabbitmqMessage<?>> messageService;
+  private MessageService<RabbitmqMessage<?>> profileMessageService;
 
   @Test
   void shouldHandleRegistrationEvent() {
@@ -53,9 +53,9 @@ class RegistrationListenerTest {
     // Then
     verify(verificationTokenService, times(1)).createToken(any(User.class));
     verify(templateEmailService, times(1)).sendVerificationEmail(user.getEmail(), token.getToken());
-    verify(messageService, times(1))
+    verify(profileMessageService, times(1))
         .sendMessage(argThat(message -> "profile.create".equals(message.getTopic())));
-    verify(messageService, times(1)).sendMessage(any(RabbitmqMessage.class));
+    verify(profileMessageService, times(1)).sendMessage(any(RabbitmqMessage.class));
   }
 }
 

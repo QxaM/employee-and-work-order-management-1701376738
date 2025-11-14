@@ -22,7 +22,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
   private final VerificationTokenService verificationTokenService;
   private final MailService emailService;
-  private final MessageService<RabbitmqMessage<?>> messageService;
+  private final MessageService<RabbitmqMessage<?>> profileMessageService;
 
   @Value("${profile.topic.create}")
   private String profileCreateTopic;
@@ -35,7 +35,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
     log.debug("Sending profile create message for {}", profile.getEmail());
     RabbitmqMessage<Profile> message = new RabbitmqMessage<>(profile, profileCreateTopic);
-    messageService.sendMessage(message);
+    profileMessageService.sendMessage(message);
 
     VerificationToken savedToken = verificationTokenService.createToken(user);
 

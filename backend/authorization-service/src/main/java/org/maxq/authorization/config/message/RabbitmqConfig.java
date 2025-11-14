@@ -11,11 +11,19 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitmqConfig {
 
   @Value("${profile.exchange}")
-  private String topicExchangeName;
+  private String profileTopicExchangeName;
+
+  @Value("${task.exchange}")
+  private String taskTopicExchangeName;
 
   @Bean
-  public TopicExchange topicExchange() {
-    return new TopicExchange(topicExchangeName);
+  public TopicExchange profileTopicExchange() {
+    return new TopicExchange(profileTopicExchangeName);
+  }
+
+  @Bean
+  public TopicExchange taskTopicExchange() {
+    return new TopicExchange(taskTopicExchangeName);
   }
 
   @Bean
