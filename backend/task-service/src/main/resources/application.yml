@@ -11,6 +11,16 @@ eureka:
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
+task:
+  user:
+    queue:
+      create: "authorization-task-create-queue"
+      update: "authorization-task-update-queue"
+    exchange: "authorization-task-exchange"
+    topic:
+      create: "user.create"
+      update: "user.update"
+
 spring:
   application:
     name: task-service

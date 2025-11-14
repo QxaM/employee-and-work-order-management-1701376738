@@ -1,4 +1,4 @@
-package org.maxq.profileservice.config.message;
+package org.maxq.taskservice.config.message;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -13,23 +13,18 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitmqConfig {
   private static final String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
 
-  @Value("${profile.exchange}")
+  @Value("${task.user.exchange}")
   private String topicExchangeName;
-  @Value("#{'${profile.exchange}' + '-dlq'}")
+  @Value("#{'${task.user.exchange}' + '-dlq'}")
   private String deadLetterExchangeName;
-  @Value("${profile.queue.create}")
+  @Value("${task.user.queue.create}")
   private String createQueueName;
-  @Value("${profile.queue.update}")
+  @Value("${task.user.queue.update}")
   private String updateQueueName;
-  @Value("${profile.queue.image.upload}")
-  private String imageUploadQueueName;
-  @Value("${profile.topic.create}")
+  @Value("${task.user.topic.create}")
   private String createTopicName;
-  @Value("${profile.topic.update}")
+  @Value("${task.user.topic.update}")
   private String updateTopicName;
-  @Value("${profile.topic.image.upload}")
-  private String imageUploadTopicName;
-
 
   @Bean
   public TopicExchange topicExchange() {
@@ -61,25 +56,13 @@ public class RabbitmqConfig {
   }
 
   @Bean
-  public Queue imageUploadQueue() {
-    return QueueBuilder.durable(imageUploadQueueName)
-        .withArgument(DEAD_LETTER_EXCHANGE_ARGUMENT, deadLetterExchangeName)
-        .build();
-  }
-
-  @Bean
-  public Binding createProfileBinding(Queue createQueue, TopicExchange topicExchange) {
+  public Binding createUserBinding(Queue createQueue, TopicExchange topicExchange) {
     return BindingBuilder.bind(createQueue).to(topicExchange).with(createTopicName);
   }
 
   @Bean
-  public Binding updateProfileBinding(Queue updateQueue, TopicExchange topicExchange) {
+  public Binding updateUserBinding(Queue updateQueue, TopicExchange topicExchange) {
     return BindingBuilder.bind(updateQueue).to(topicExchange).with(updateTopicName);
-  }
-
-  @Bean
-  public Binding profileImageUploadBinding(Queue imageUploadQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(imageUploadQueue).to(topicExchange).with(imageUploadTopicName);
   }
 
   @Bean
