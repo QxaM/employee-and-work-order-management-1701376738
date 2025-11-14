@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,7 +23,10 @@ public class User {
   @Column(unique = true, nullable = false)
   private String email;
 
-  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @ManyToMany(
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
+  )
   @JoinTable(
       name = "USER_ROLE",
       joinColumns = @JoinColumn(name = "USER_ID"),
@@ -30,4 +34,12 @@ public class User {
   )
   private Set<Role> roles;
 
+  @OneToMany(mappedBy = "user")
+  private List<Task> tasks;
+
+  public User(Long id, String email, Set<Role> roles) {
+    this.id = id;
+    this.email = email;
+    this.roles = roles;
+  }
 }
