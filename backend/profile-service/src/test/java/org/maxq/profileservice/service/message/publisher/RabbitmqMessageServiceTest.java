@@ -2,7 +2,7 @@ package org.maxq.profileservice.service.message.publisher;
 
 import org.junit.jupiter.api.Test;
 import org.maxq.profileservice.domain.dto.ProfileDto;
-import org.maxq.profileservice.event.message.RabbitmqMessage;
+import org.maxq.profileservice.service.message.RabbitmqMessage;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

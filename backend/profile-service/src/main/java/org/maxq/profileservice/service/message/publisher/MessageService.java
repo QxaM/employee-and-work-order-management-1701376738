@@ -1,6 +1,6 @@
 package org.maxq.profileservice.service.message.publisher;
 
-import org.maxq.profileservice.event.message.Message;
+import org.maxq.profileservice.service.message.Message;
 
 public interface MessageService<M extends Message<?>> {
 

@@ -10,11 +10,11 @@ import org.maxq.profileservice.domain.dto.ProfileDto;
 import org.maxq.profileservice.domain.exception.BucketOperationException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
-import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileImageService;
 import org.maxq.profileservice.service.ProfileService;
+import org.maxq.profileservice.service.message.RabbitmqMessage;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +61,8 @@ class ProfileControllerTest {
   private final Profile profile
       = new Profile(1L, EMAIL, "TestName", "testMiddleName", "TestLastName");
   private final ProfileDto profileDto
-      = new ProfileDto(1L, EMAIL, profile.getFirstName(), profile.getMiddleName(), profile.getLastName());
+      = new ProfileDto(1L, EMAIL, profile.getFirstName(), profile.getMiddleName(),
+      profile.getLastName());
   private final MockMultipartFile mockMultipartFile
       = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "test-content".getBytes());
 
@@ -129,7 +130,8 @@ class ProfileControllerTest {
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+            .jsonPath("$.message",
+                Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -188,7 +190,8 @@ class ProfileControllerTest {
     verify(messageService, times(1))
         .sendMessage(argThat(message -> "profile.update".equals(message.getTopic())));
     verify(messageService, times(1))
-        .sendMessage(argThat(message -> EMAIL.equals(((ProfileDto) message.getPayload()).getEmail())));
+        .sendMessage(
+            argThat(message -> EMAIL.equals(((ProfileDto) message.getPayload()).getEmail())));
   }
 
   @Test
@@ -208,7 +211,8 @@ class ProfileControllerTest {
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+            .jsonPath("$.message",
+                Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -227,13 +231,15 @@ class ProfileControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+            .jsonPath("$.message",
+                Matchers.is("Forbidden: You don't have permission to access this resource")));
   }
 
   @Test
   void shouldReturn200_When_CorrectImageUploaded() throws Exception {
     // Given
-    InMemoryFile newFile = InMemoryFile.create(mockMultipartFile.getBytes(), mockMultipartFile.getContentType());
+    InMemoryFile newFile = InMemoryFile.create(mockMultipartFile.getBytes(),
+        mockMultipartFile.getContentType());
     ImageDto imageDto = new ImageDto(
         EMAIL,
         newFile.getName(),
@@ -273,7 +279,8 @@ class ProfileControllerTest {
         ));
     verify(messageService, times(1))
         .sendMessage(argThat(message ->
-            !mockMultipartFile.getOriginalFilename().equals(((ImageDto) message.getPayload()).getName())
+            !mockMultipartFile.getOriginalFilename()
+                .equals(((ImageDto) message.getPayload()).getName())
         ));
   }
 
@@ -305,7 +312,8 @@ class ProfileControllerTest {
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+            .jsonPath("$.message",
+                Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -319,7 +327,8 @@ class ProfileControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+            .jsonPath("$.message",
+                Matchers.is("Forbidden: You don't have permission to access this resource")));
   }
 
   @Test
@@ -350,7 +359,8 @@ class ProfileControllerTest {
   @Test
   void shouldReturn200_When_CorrectImageReturned() throws Exception {
     // Given
-    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg", mockMultipartFile.getSize());
+    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg",
+        mockMultipartFile.getSize());
     Resource resource = new ByteArrayResource(mockMultipartFile.getBytes());
 
     when(profileService.getProfileImage(EMAIL)).thenReturn(profileImage);
@@ -378,7 +388,8 @@ class ProfileControllerTest {
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Unauthorized to access this resource, login please")));
+            .jsonPath("$.message",
+                Matchers.is("Unauthorized to access this resource, login please")));
   }
 
   @Test
@@ -391,7 +402,8 @@ class ProfileControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers
-            .jsonPath("$.message", Matchers.is("Forbidden: You don't have permission to access this resource")));
+            .jsonPath("$.message",
+                Matchers.is("Forbidden: You don't have permission to access this resource")));
   }
 
   @Test
@@ -416,10 +428,12 @@ class ProfileControllerTest {
   void shouldReturn404_When_BucketOperationFailed_GetImage() throws Exception {
     // Given
     String error = "Test error";
-    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg", mockMultipartFile.getSize());
+    ProfileImage profileImage = new ProfileImage("test.jpeg", "image/jpeg",
+        mockMultipartFile.getSize());
 
     when(profileService.getProfileImage(EMAIL)).thenReturn(profileImage);
-    when(profileImageService.getProfileImageFromStorage(profileImage)).thenThrow(new BucketOperationException(error));
+    when(profileImageService.getProfileImageFromStorage(profileImage)).thenThrow(
+        new BucketOperationException(error));
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
