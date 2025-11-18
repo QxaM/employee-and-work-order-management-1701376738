@@ -53,10 +53,13 @@ spring:
   config:
     activate:
       on-profile: QA
+management:
+  health:
+    rabbit:
+      enabled: false
 eureka:
   client:
     enabled: false
-
 app:
   listeners:
     auto-startup: false
