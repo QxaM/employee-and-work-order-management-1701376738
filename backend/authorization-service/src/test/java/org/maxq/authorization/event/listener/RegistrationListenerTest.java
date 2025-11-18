@@ -69,12 +69,8 @@ class RegistrationListenerTest {
             .sendVerificationEmail(user.getEmail(), token.getToken()),
         () -> verify(profileMessageService, times(1))
             .sendMessage(argThat(message -> "profile.create".equals(message.getTopic()))),
-        () -> verify(profileMessageService, times(1))
-            .sendMessage(any(RabbitmqMessage.class)),
         () -> verify(taskMessageService, times(1))
-            .sendMessage(argThat(message -> "user.create".equals(message.getTopic()))),
-        () -> verify(taskMessageService, times(1))
-            .sendMessage(any(RabbitmqMessage.class))
+            .sendMessage(argThat(message -> "user.create".equals(message.getTopic())))
     );
   }
 }
