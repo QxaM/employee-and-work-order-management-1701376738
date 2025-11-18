@@ -15,7 +15,7 @@ services:
     environment:
       - EUREKA_URL=http://discovery-service:8761/eureka
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
-      - AUTHORIZATION_PROFILE_RABBITMQ_HOST=${AUTHORIZATION_PROFILE_RABBITMQ_HOST:-authorization-profile-rabbitmq}
+      - AUTHORIZATION_PROFILE_RABBITMQ_HOST=${AUTHORIZATION_PROFILE_RABBITMQ_HOST:-authorization-rabbitmq}
       - AUTHORIZATION_PROFILE_RABBITMQ_PORT=${AUTHORIZATION_PROFILE_RABBITMQ_PORT:-5672}
       - AUTHORIZATION_PROFILE_RABBITMQ_USERNAME=${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:-local_app}
       - AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD=${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:-password}
@@ -26,7 +26,7 @@ services:
     depends_on:
       discovery-service:
         condition: service_healthy
-      authorization-profile-rabbitmq:
+      authorization-rabbitmq:
         condition: service_healthy
   profile-service:
     environment:
@@ -34,7 +34,7 @@ services:
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
       - PROFILE_IMAGES_ACCESS_KEY=${PROFILE_IMAGES_ACCESS_KEY:-local_app}
       - PROFILE_IMAGES_ACCESS_SECRET=${PROFILE_IMAGES_ACCESS_SECRET:-secret}
-      - AUTHORIZATION_PROFILE_RABBITMQ_HOST=${AUTHORIZATION_PROFILE_RABBITMQ_HOST:-authorization-profile-rabbitmq}
+      - AUTHORIZATION_PROFILE_RABBITMQ_HOST=${AUTHORIZATION_PROFILE_RABBITMQ_HOST:-authorization-rabbitmq}
       - AUTHORIZATION_PROFILE_RABBITMQ_PORT=${AUTHORIZATION_PROFILE_RABBITMQ_PORT:-5672}
       - AUTHORIZATION_PROFILE_RABBITMQ_USERNAME=${AUTHORIZATION_PROFILE_RABBITMQ_USERNAME:-local_app}
       - AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD=${AUTHORIZATION_PROFILE_RABBITMQ_PASSWORD:-password}
@@ -42,12 +42,19 @@ services:
     depends_on:
       discovery-service:
         condition: service_healthy
-      authorization-profile-rabbitmq:
+      authorization-rabbitmq:
         condition: service_healthy
   task-service:
     environment:
       - EUREKA_URL=http://discovery-service:8761/eureka
       - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+      - AUTHORIZATION_TASK_RABBITMQ_HOST=${AUTHORIZATION_TASK_RABBITMQ_HOST:-authorization-rabbitmq}
+      - AUTHORIZATION_TASK_RABBITMQ_PORT=${AUTHORIZATION_TASK_RABBITMQ_PORT:-5672}
+      - AUTHORIZATION_TASK_RABBITMQ_USERNAME=${AUTHORIZATION_TASK_RABBITMQ_USERNAME:-local_app}
+      - AUTHORIZATION_TASK_RABBITMQ_PASSWORD=${AUTHORIZATION_TASK_RABBITMQ_PASSWORD:-password}
+      - AUTHORIZATION_TASK_RABBITMQ_VIRTUAL_HOST=${AUTHORIZATION_TASK_RABBITMQ_VIRTUAL_HOST:-/}
     depends_on:
       discovery-service:
+        condition: service_healthy
+      authorization-rabbitmq:
         condition: service_healthy

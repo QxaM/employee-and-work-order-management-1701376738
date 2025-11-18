@@ -1,7 +1,7 @@
 package org.maxq.profileservice.service.message.publisher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.maxq.profileservice.event.message.RabbitmqMessage;
+import org.maxq.profileservice.service.message.RabbitmqMessage;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

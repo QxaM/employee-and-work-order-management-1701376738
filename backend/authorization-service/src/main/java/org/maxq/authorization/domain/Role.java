@@ -20,8 +20,10 @@ public class Role {
 
   @Id
   @GeneratedValue(generator = "role_seq")
-  @SequenceGenerator(name = "role_seq", sequenceName = "ROLE_SEQ",
-      allocationSize = 1)
+  @SequenceGenerator(
+      name = "role_seq", sequenceName = "ROLE_SEQ",
+      allocationSize = 1
+  )
   private Long id;
 
   @NotNull

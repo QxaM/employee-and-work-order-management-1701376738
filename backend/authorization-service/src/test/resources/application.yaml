@@ -31,10 +31,15 @@ management:
       enabled: false
 
 profile:
-  queue: "authorization-profile-queue"
   exchange: "authorization-profile-exchange"
   topic:
     create: "profile.create"
+
+task:
+  exchange: "authorization-task-exchange"
+  topic:
+    create: "user.create"
+    update: "user.update"
 
 spring:
   datasource:

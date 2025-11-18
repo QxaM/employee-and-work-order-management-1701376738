@@ -52,6 +52,1767 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Create User",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const createUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"createUserId\", createUserId);\r",
+											"\r",
+											"const createUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"createUserEmail\", createUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{createUserId}},\r\n    \"email\": \"{{createUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Created User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should contain valid resopnse\", () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Should contain correct id\", () => {\r",
+											"    const id = pm.variables.get('createUserId');\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(response.id).to.eql(parseInt(id));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"should contain correct email\", () => {\r",
+											"    const email = pm.variables.get('createUserEmail');\r",
+											"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+											"    pm.expect(response.email).to.eql(email);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Should contain correct roles\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+											"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+											"    \r",
+											"    const role = response.roles[0];\r",
+											"    const expectedId = pm.variables.get('roleId');\r",
+											"    const expectedName = pm.variables.get('roleName');\r",
+											"\r",
+											"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+											"\r",
+											"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+											"    pm.expect(role.name).to.eql(expectedName);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users/:userId",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{createUserId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "Duplicate email",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createUserId\", createUserId);\r",
+													"\r",
+													"const createUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createUserEmail\", createUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{createUserId}},\r\n    \"email\": \"{{createUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('createUserId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('createUserEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{createUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create User With Duplicate Name",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const duplicateEmailUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"duplicateEmailUserId\", duplicateEmailUserId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{duplicateEmailUserId}},\r\n    \"email\": \"{{createUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User Duplicate",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Response message is correct\", () => {\r",
+													"    const userId = pm.variables.get('duplicateEmailUserId');\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.equal(`User with id ${userId} does not exist`);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{duplicateEmailUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Duplicate role",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createUserId\", createUserId);\r",
+													"\r",
+													"const createUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createUserEmail\", createUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{createUserId}},\r\n    \"email\": \"{{createUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('createUserId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('createUserEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{createUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create User With Duplicate Role",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createUserId\", createUserId);\r",
+													"\r",
+													"const createUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createUserEmail\", createUserEmail);\r",
+													"\r",
+													"const duplicateRoleId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"duplicateRoleId\", duplicateRoleId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{createUserId}},\r\n    \"email\": \"{{createUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{duplicateRoleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User Duplicate Role",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Response message is correct\", () => {\r",
+													"    const userId = pm.variables.get('createUserId');\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"    pm.expect(response.message).to.equal(`User with id ${userId} does not exist`);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{createUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Update User",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const updateUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"updateUserId\", updateUserId);\r",
+											"\r",
+											"const updateUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"updateUserEmail\", updateUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{updateUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const updateUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"updateUserEmail\", updateUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{updateUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Updated User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should contain valid resopnse\", () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Should contain correct id\", () => {\r",
+											"    const id = pm.variables.get('updateUserId');\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(response.id).to.eql(parseInt(id));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"should contain correct email\", () => {\r",
+											"    const email = pm.variables.get('updateUserEmail');\r",
+											"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+											"    pm.expect(response.email).to.eql(email);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Should contain correct roles\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+											"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+											"    \r",
+											"    const role = response.roles[0];\r",
+											"    const expectedId = pm.variables.get('roleId');\r",
+											"    const expectedName = pm.variables.get('roleName');\r",
+											"\r",
+											"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+											"\r",
+											"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+											"    pm.expect(role.name).to.eql(expectedName);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users/:userId",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{updateUserId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "Duplicate email",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateUserId\", updateUserId);\r",
+													"\r",
+													"const updateUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateUserEmail\", updateUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('updateUserId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('updateUserEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{updateUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Another User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const duplicateEmailId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"duplicateEmailId\", duplicateEmailId);\r",
+													"\r",
+													"const duplicateEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"duplicateEmail\", duplicateEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{duplicateEmailId}},\r\n    \"email\": \"{{duplicateEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Another Created User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('duplicateEmailId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('duplicateEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{duplicateEmailId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{duplicateEmailUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Not Updated User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('duplicateEmailId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('duplicateEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{duplicateEmailId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Duplicate role name",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateUserId\", updateUserId);\r",
+													"\r",
+													"const updateUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateUserEmail\", updateUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Created User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('updateUserId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('updateUserEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{updateUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const duplicateNameRoleId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"duplicateNameRoleId\", duplicateNameRoleId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateUserId}},\r\n    \"email\": \"{{updateUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{duplicateNameRoleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Not Updated User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Should contain valid resopnse\", () => {\r",
+													"    pm.expect(response).to.be.an('object');\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct id\", () => {\r",
+													"    const id = pm.variables.get('updateUserId');\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(response.id).to.eql(parseInt(id));\r",
+													"});\r",
+													"\r",
+													"pm.test(\"should contain correct email\", () => {\r",
+													"    const email = pm.variables.get('updateUserEmail');\r",
+													"    pm.expect(response).to.haveOwnProperty('email').that.is.a('string');\r",
+													"    pm.expect(response.email).to.eql(email);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Should contain correct roles\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('roles').that.is.an('array');\r",
+													"    pm.expect(response.roles).to.have.lengthOf(1);\r",
+													"    \r",
+													"    const role = response.roles[0];\r",
+													"    const expectedId = pm.variables.get('roleId');\r",
+													"    const expectedName = pm.variables.get('roleName');\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('id').that.is.a('number');\r",
+													"    pm.expect(role.id).to.eql(parseInt(expectedId));\r",
+													"\r",
+													"    pm.expect(role).to.haveOwnProperty('name').that.is.a('string');\r",
+													"    pm.expect(role.name).to.eql(expectedName);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users/:userId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "{{updateUserId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
 		}
 	],
 	"auth": {
@@ -92,6 +1853,55 @@
 		{
 			"key": "taskServiceUrl",
 			"value": "http://localhost:8083"
+		},
+		{
+			"key": "roleName",
+			"value": "ROLE_DESIGNER"
+		},
+		{
+			"key": "createUserId",
+			"value": ""
+		},
+		{
+			"key": "createUserEmail",
+			"value": ""
+		},
+		{
+			"key": "roleId",
+			"value": "1",
+			"type": "default"
+		},
+		{
+			"key": "createRoleId",
+			"value": ""
+		},
+		{
+			"key": "duplicateEmailUserId",
+			"value": ""
+		},
+		{
+			"key": "updateUserId",
+			"value": ""
+		},
+		{
+			"key": "updateUserEmail",
+			"value": ""
+		},
+		{
+			"key": "duplicateEmailId",
+			"value": ""
+		},
+		{
+			"key": "duplicateEmail",
+			"value": ""
+		},
+		{
+			"key": "duplicateNameRoleId",
+			"value": ""
+		},
+		{
+			"key": "duplicateRoleId",
+			"value": ""
 		}
 	]
 }

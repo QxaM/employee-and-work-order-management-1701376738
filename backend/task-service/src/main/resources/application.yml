@@ -11,9 +11,38 @@ eureka:
 jwt:
   robot-public-key-path: classpath:/robot_public_key.pem
 
+app:
+  listeners:
+    auto-startup: true
+
+task:
+  user:
+    queue:
+      create: "authorization-task-create-queue"
+      update: "authorization-task-update-queue"
+    exchange: "authorization-task-exchange"
+    topic:
+      create: "user.create"
+      update: "user.update"
+
 spring:
   application:
     name: task-service
+  datasource:
+    password: ${TASK_POSTGRES_PASS:password}
+    url: ${TASK_POSTGRES_LINK:jdbc:postgresql://localhost:5434/task-db?sslmode=disable}
+    username: ${TASK_POSTGRES_USER:local_app}
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  rabbitmq:
+    host: ${AUTHORIZATION_TASK_RABBITMQ_HOST:localhost}
+    port: ${AUTHORIZATION_TASK_RABBITMQ_PORT:5672}
+    username: ${AUTHORIZATION_TASK_RABBITMQ_USERNAME:local_app}
+    password: ${AUTHORIZATION_TASK_RABBITMQ_PASSWORD:password}
+    virtual-host: ${AUTHORIZATION_TASK_RABBITMQ_VIRTUAL_HOST:/}
 
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
@@ -24,6 +53,13 @@ spring:
   config:
     activate:
       on-profile: QA
+management:
+  health:
+    rabbit:
+      enabled: false
 eureka:
   client:
     enabled: false
+app:
+  listeners:
+    auto-startup: false

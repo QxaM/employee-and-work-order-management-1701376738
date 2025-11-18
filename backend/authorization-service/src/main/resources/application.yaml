@@ -33,6 +33,12 @@ profile:
   topic:
     create: "profile.create"
 
+task:
+  exchange: "authorization-task-exchange"
+  topic:
+    create: "user.create"
+    update: "user.update"
+
 spring:
   application:
     name: authorization-service

@@ -13,11 +13,11 @@ import org.maxq.profileservice.domain.dto.UpdateProfileDto;
 import org.maxq.profileservice.domain.exception.BucketOperationException;
 import org.maxq.profileservice.domain.exception.ElementNotFoundException;
 import org.maxq.profileservice.domain.exception.FileValidationException;
-import org.maxq.profileservice.event.message.RabbitmqMessage;
 import org.maxq.profileservice.mapper.InMemoryFileMapper;
 import org.maxq.profileservice.mapper.ProfileMapper;
 import org.maxq.profileservice.service.ProfileImageService;
 import org.maxq.profileservice.service.ProfileService;
+import org.maxq.profileservice.service.message.RabbitmqMessage;
 import org.maxq.profileservice.service.message.publisher.MessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -51,7 +51,8 @@ public class ProfileController implements ProfileApi {
   @Override
   @GetMapping("/me")
   @PreAuthorize("authentication.principal != null")
-  public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication) throws ElementNotFoundException {
+  public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication)
+      throws ElementNotFoundException {
     String email = (String) authentication.getPrincipal();
     Profile foundProfile = profileService.getProfileByEmail(email);
     return ResponseEntity.ok(
@@ -62,11 +63,13 @@ public class ProfileController implements ProfileApi {
   @Override
   @PutMapping("/me")
   @PreAuthorize("authentication.principal != null")
-  public ResponseEntity<Void> updateProfile(Authentication authentication,
-                                            @RequestBody @Valid UpdateProfileDto profileDto) {
+  public ResponseEntity<Void> updateProfile(
+      Authentication authentication,
+      @RequestBody @Valid UpdateProfileDto profileDto) {
     ProfileDto profileDtoToSave = new ProfileDto((String) authentication.getPrincipal(),
         profileDto.getFirstName(), profileDto.getMiddleName(), profileDto.getLastName());
-    RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDtoToSave, updateProfileTopic);
+    RabbitmqMessage<ProfileDto> message = new RabbitmqMessage<>(profileDtoToSave,
+        updateProfileTopic);
     messageService.sendMessage(message);
     return ResponseEntity.ok().build();
   }
@@ -74,11 +77,13 @@ public class ProfileController implements ProfileApi {
   @Override
   @PostMapping("/me/image")
   @PreAuthorize("authentication.principal != null")
-  public ResponseEntity<Void> updateProfileImage(Authentication authentication,
-                                                 @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
+  public ResponseEntity<Void> updateProfileImage(
+      Authentication authentication,
+      @RequestParam("file") MultipartFile file) throws FileValidationException, IOException {
     log.info("Updating profile image for user: {}", authentication.getPrincipal());
     InMemoryFile newFile = profileImageService.validateAndReturnImage(file);
-    ImageDto image = inMemoryFileMapper.mapToImageDto(newFile, authentication.getPrincipal().toString());
+    ImageDto image = inMemoryFileMapper.mapToImageDto(newFile,
+        authentication.getPrincipal().toString());
 
     RabbitmqMessage<ImageDto> message = new RabbitmqMessage<>(image, imageUploadTopic);
     messageService.sendMessage(message);
@@ -88,7 +93,8 @@ public class ProfileController implements ProfileApi {
   @Override
   @GetMapping("/me/image")
   @PreAuthorize("authentication.principal != null")
-  public ResponseEntity<Resource> getMyProfileImage(Authentication authentication) throws ElementNotFoundException, BucketOperationException, IOException {
+  public ResponseEntity<Resource> getMyProfileImage(Authentication authentication)
+      throws ElementNotFoundException, BucketOperationException, IOException {
     String email = (String) authentication.getPrincipal();
     ProfileImage profileImage = profileService.getProfileImage(email);
 

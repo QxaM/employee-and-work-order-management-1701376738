@@ -6,7 +6,7 @@ include:
   - task-service/compose.yaml
 
 services:
-  authorization-profile-rabbitmq:
+  authorization-rabbitmq:
     image: "rabbitmq:management"
     ports:
       - "5672:5672"
@@ -20,7 +20,6 @@ services:
       retries: 10
       start_period: 20s
       timeout: 10s
-
 
 name:
   "EWM - Backend"

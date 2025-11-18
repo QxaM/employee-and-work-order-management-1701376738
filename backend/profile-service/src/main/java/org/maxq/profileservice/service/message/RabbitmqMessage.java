@@ -1,4 +1,4 @@
-package org.maxq.profileservice.event.message;
+package org.maxq.profileservice.service.message;
 
 import lombok.Getter;
 

@@ -12,18 +12,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Profile("!QA")
 @RequiredArgsConstructor
-public class RabbitmqMessageService implements MessageService<RabbitmqMessage<?>> {
+public class ProfileMessageService implements MessageService<RabbitmqMessage<?>> {
 
-  private final TopicExchange topicExchange;
+  private final TopicExchange profileTopicExchange;
   private final RabbitTemplate rabbitTemplate;
 
   @Override
   public void sendMessage(RabbitmqMessage<?> message) {
     log.info(
         "Sending message to exchange {} and topic {}",
-        topicExchange.getName(),
+        profileTopicExchange.getName(),
         message.getTopic()
     );
-    rabbitTemplate.convertAndSend(topicExchange.getName(), message.getTopic(), message.getPayload());
+    rabbitTemplate.convertAndSend(profileTopicExchange.getName(), message.getTopic(), message.getPayload());
   }
 }

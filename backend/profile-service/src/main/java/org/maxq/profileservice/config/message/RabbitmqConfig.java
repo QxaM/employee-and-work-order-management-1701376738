@@ -15,7 +15,8 @@ public class RabbitmqConfig {
 
   @Value("${profile.exchange}")
   private String topicExchangeName;
-  private final String deadLetterExchangeName = topicExchangeName + "-dlq";
+  @Value("#{'${profile.exchange}' + '-dlq'}")
+  private String deadLetterExchangeName;
   @Value("${profile.queue.create}")
   private String createQueueName;
   @Value("${profile.queue.update}")
@@ -28,6 +29,7 @@ public class RabbitmqConfig {
   private String updateTopicName;
   @Value("${profile.topic.image.upload}")
   private String imageUploadTopicName;
+
 
   @Bean
   public TopicExchange topicExchange() {

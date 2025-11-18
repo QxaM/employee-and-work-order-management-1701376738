@@ -8,6 +8,20 @@ jwt:
 frontend:
   url: ${FRONTEND_URL:http://localhost:5173}
 
+app:
+  listeners:
+    auto-startup: false
+
+task:
+  user:
+    queue:
+      create: "authorization-task-create-queue"
+      update: "authorization-task-update-queue"
+    exchange: "authorization-task-exchange"
+    topic:
+      create: "user.create"
+      update: "user.update"
+
 spring:
   datasource:
     driver-class-name: org.h2.Driver
