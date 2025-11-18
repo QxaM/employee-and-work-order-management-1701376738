@@ -2,6 +2,7 @@ package org.maxq.taskservice.config.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.maxq.taskservice.domain.HttpErrorMessage;
+import org.maxq.taskservice.domain.exception.ElementNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -75,6 +76,12 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
       WebRequest request) {
     log.error(ex.getMessage(), ex);
     return new ResponseEntity<>(new HttpErrorMessage(ex.getMessage()), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(ElementNotFoundException.class)
+  public ResponseEntity<HttpErrorMessage> handleElementNotFoundException(ElementNotFoundException e) {
+    log.error(e.getMessage(), e);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(Exception.class)
