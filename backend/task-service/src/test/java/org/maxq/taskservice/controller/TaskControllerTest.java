@@ -336,9 +336,7 @@ class TaskControllerTest {
             .get(URL)
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(taskDtos.size())));
     verify(taskService, times(1)).getAllTasks();
@@ -358,9 +356,7 @@ class TaskControllerTest {
             .get(URL)
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
   }
@@ -382,9 +378,7 @@ class TaskControllerTest {
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL)
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
     verify(taskService, times(0)).getAllTasks();
@@ -406,12 +400,100 @@ class TaskControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .get(URL)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
     verify(taskService, times(0)).getAllTasks();
+  }
+
+  @Test
+  void shouldGetTask() throws Exception {
+    // Given
+    when(taskService.getTask(taskDto.getId())).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(taskDto.getId().intValue())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(taskDto.getTitle())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.description",
+            Matchers.is(taskDto.getDescription()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.id",
+            Matchers.is(taskDto.getUser().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.email",
+            Matchers.is(taskDto.getUser().getEmail()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles",
+            Matchers.hasSize(taskDto.getUser().getRoles().size()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].id",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].name",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getName()))
+        );
+    verify(taskService, times(1)).getTask(task.getId());
+  }
+
+  @Test
+  void getTask_ShouldReturn401_When_NoRobotToken() throws Exception {
+    // Given
+    when(taskService.getTask(taskDto.getId())).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/" + taskDto.getId())
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
+    verify(taskService, times(0)).getTask(task.getId());
+  }
+
+  @Test
+  void getTask_ShouldReturn403_When_NoRobotToken() throws Exception {
+    // Given
+    when(taskService.getTask(taskDto.getId())).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
+    verify(taskService, times(0)).getTask(task.getId());
+  }
+
+  @Test
+  void getTask_ShouldReturn404_When_NoTaskFound() throws Exception {
+    // Given
+    String message = "Test message";
+    when(taskService.getTask(taskDto.getId())).thenThrow(new ElementNotFoundException(message));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+    verify(taskService, times(1)).getTask(task.getId());
   }
 
   @Test
@@ -424,9 +506,7 @@ class TaskControllerTest {
             .delete(URL + "/" + taskDto.getId())
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isNoContent());
     verify(taskService, times(1)).deleteTask(taskDto.getId());
   }
@@ -440,9 +520,7 @@ class TaskControllerTest {
     mockMvc.perform(MockMvcRequestBuilders
             .delete(URL + "/" + taskDto.getId())
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
     verify(taskService, times(0)).deleteTask(taskDto.getId());
@@ -456,9 +534,7 @@ class TaskControllerTest {
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
             .delete(URL + "/" + taskDto.getId())
-            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
     verify(taskService, times(0)).deleteTask(taskDto.getId());
@@ -475,9 +551,7 @@ class TaskControllerTest {
             .delete(URL + "/" + taskDto.getId())
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
             .header("X-User", EMAIL)
-            .header("X-User-Roles", ROLES)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(GSON.toJson(taskDto)))
+            .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
     verify(taskService, times(1)).deleteTask(taskDto.getId());

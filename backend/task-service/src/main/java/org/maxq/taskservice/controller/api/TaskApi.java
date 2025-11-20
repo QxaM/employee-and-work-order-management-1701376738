@@ -174,6 +174,57 @@ public interface TaskApi {
   ResponseEntity<List<TaskDto>> getAllTasks();
 
   @Operation(
+      summary = "Fetch specified task",
+      description = "Allows to Fetch a task with provided task ID. "
+          + "Provided task have to exist otherwise an error will be raised."
+  )
+  @ApiResponse(
+      responseCode = "200",
+      description = "Task retrieved successfully",
+      content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = TaskDto.class)
+      )
+  )
+  @ApiResponse(
+      responseCode = "401",
+      description = "Unauthenticated - only request with Robot Token are passed",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  @ApiResponse(
+      responseCode = "403",
+      description = "Unauthorized - only logged in users can access this resource",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  @ApiResponse(
+      responseCode = "404",
+      description = "Provided task does not exist - cannot fetch non existing task",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  ResponseEntity<TaskDto> getTask(
+      @Parameter(
+          name = "id",
+          description = "ID of a task to fetch",
+          example = "123"
+      ) Long taskId
+  ) throws ElementNotFoundException;
+
+  @Operation(
       summary = "Delete specified task",
       description = "Allows to delete a task with provided task ID. "
           + "Provided task have to exist otherwise an error will be raised."

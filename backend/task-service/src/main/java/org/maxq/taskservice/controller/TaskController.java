@@ -55,6 +55,15 @@ public class TaskController implements TaskApi {
   }
 
   @Override
+  @GetMapping("/{taskId}")
+  public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId)
+      throws ElementNotFoundException {
+    Task foundTask = taskService.getTask(taskId);
+    TaskDto mappedTask = taskMapper.mapToTaskDto(foundTask);
+    return ResponseEntity.ok(mappedTask);
+  }
+
+  @Override
   @DeleteMapping("/{taskId}")
   public ResponseEntity<Void> deleteTask(@PathVariable Long taskId)
       throws ElementNotFoundException {
