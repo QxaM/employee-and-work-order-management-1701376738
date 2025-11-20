@@ -13,9 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
+@PreAuthorize("authentication.principal != null")
 public class TaskController implements TaskApi {
 
   private final TaskService taskService;
@@ -23,7 +26,6 @@ public class TaskController implements TaskApi {
 
   @Override
   @PostMapping
-  @PreAuthorize("authentication.principal != null")
   public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto task)
       throws UserDoesNotExistException {
     Task mappedTask = taskMapper.mapToTask(task);
@@ -36,12 +38,19 @@ public class TaskController implements TaskApi {
 
   @Override
   @PutMapping
-  @PreAuthorize("authentication.principal != null")
   public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto task)
       throws UserDoesNotExistException, ElementNotFoundException {
     Task mappedTask = taskMapper.mapToTask(task);
     Task updatedTask = taskService.updateTask(mappedTask);
     TaskDto mappedUpdatedTask = taskMapper.mapToTaskDto(updatedTask);
     return ResponseEntity.ok(mappedUpdatedTask);
+  }
+
+  @Override
+  @GetMapping
+  public ResponseEntity<List<TaskDto>> getAllTasks() {
+    List<Task> tasks = taskService.getAllTasks();
+    List<TaskDto> mappedTasks = taskMapper.mapToTaskDtoList(tasks);
+    return ResponseEntity.ok(mappedTasks);
   }
 }

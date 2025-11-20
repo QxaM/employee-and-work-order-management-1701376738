@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +60,10 @@ class TaskControllerTest {
 
   private MockMvc mockMvc;
 
+  private UserDto userDto;
   private TaskDto taskDto;
+
+  private User user;
   private Task task;
 
   @Autowired
@@ -82,11 +86,11 @@ class TaskControllerTest {
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
     RoleDto roleDto = new RoleDto(1L, ROLES);
-    UserDto userDto = new UserDto(10L, EMAIL, List.of(roleDto));
+    userDto = new UserDto(10L, EMAIL, List.of(roleDto));
     taskDto = new TaskDto(100L, "Test", "Test description", userDto);
 
     Role role = new Role(roleDto.getId(), roleDto.getName());
-    User user = new User(userDto.getId(), userDto.getEmail(), Set.of(role));
+    user = new User(userDto.getId(), userDto.getEmail(), Set.of(role));
     task = new Task(taskDto.getId(), taskDto.getTitle(), taskDto.getDescription(), user);
   }
 
@@ -312,5 +316,101 @@ class TaskControllerTest {
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
     verify(taskService, times(1)).updateTask(task);
+  }
+
+  @Test
+  void shouldGetAllTasks() throws Exception {
+    // Given
+    Task task1 = new Task(101L, "Test 1", "Test description 1", user);
+    TaskDto taskDto1
+        = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
+
+    List<Task> tasks = List.of(task, task1);
+    List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
+
+    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(taskDtos.size())));
+    verify(taskService, times(1)).getAllTasks();
+  }
+
+  @Test
+  void shouldGetEmptyList_When_NoTasks() throws Exception {
+    // Given
+    List<Task> tasks = Collections.emptyList();
+    List<TaskDto> taskDtos = Collections.emptyList();
+
+    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+  }
+
+  @Test
+  void getAllTasks_ShouldReturn401_When_NoRobotToken() throws Exception {
+    // Given
+    Task task1 = new Task(101L, "Test 1", "Test description 1", user);
+    TaskDto taskDto1
+        = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
+
+    List<Task> tasks = List.of(task, task1);
+    List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
+
+    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL)
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
+    verify(taskService, times(0)).getAllTasks();
+  }
+
+  @Test
+  void getAllTasks_ShouldReturn403_When_NoUserHeaders() throws Exception {
+    // Given
+    Task task1 = new Task(101L, "Test 1", "Test description 1", user);
+    TaskDto taskDto1
+        = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
+
+    List<Task> tasks = List.of(task, task1);
+    List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
+
+    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
+    verify(taskService, times(0)).getAllTasks();
   }
 }

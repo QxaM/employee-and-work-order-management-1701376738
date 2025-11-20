@@ -13,8 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class TaskMapperTest {
@@ -87,6 +86,27 @@ class TaskMapperTest {
             "Role ID not mapped correctly"),
         () -> assertEquals(role.getName(), roleDtos.getFirst().getName(),
             "Role Name not mapped correctly")
+    );
+  }
+
+  @Test
+  void shouldMapToTaskDtoList() {
+    // Given
+    Role role = new Role(1L, "ROLE_TEST");
+    User user = new User(2L, "test@test.com", Set.of(role));
+    Task task1 = new Task(3L, "Title 1", "Test description 1", user);
+    Task task2 = new Task(4L, "Title 2", "Test description 2", user);
+
+    // When
+    List<TaskDto> taskDtoList = taskMapper.mapToTaskDtoList(List.of(task1, task2));
+
+    // Then
+    assertEquals(2, taskDtoList.size());
+    assertAll(
+        () -> assertTrue(
+            taskDtoList.stream().anyMatch(foundTask -> task1.getId().equals(foundTask.getId()))),
+        () -> assertTrue(
+            taskDtoList.stream().anyMatch(foundTask -> task2.getId().equals(foundTask.getId())))
     );
   }
 }
