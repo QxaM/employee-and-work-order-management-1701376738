@@ -2,14 +2,16 @@ package org.maxq.apigatewayservice.route.configuration;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.maxq.apigatewayservice.config.ServiceLoadBalancerConfig;
 import org.maxq.apigatewayservice.utils.RequestsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -20,14 +22,18 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WireMockTest(httpPort = 8081)
+@SpringBootTest(
+    classes = {ServiceLoadBalancerConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
+@WireMockTest(httpPort = 8083)
 @TestPropertySource(
     properties = {
-        "eureka.client.enabled=false"
+        "eureka.client.enabled=false",
+        "test.loadbalancer=task"
     }
 )
-class AuthorizationServiceHealthcheckTest {
+class TaskServiceTest {
 
   @LocalServerPort
   private int port;
@@ -36,7 +42,7 @@ class AuthorizationServiceHealthcheckTest {
 
   protected static Stream<HttpMethod> allowedMethods() {
     return RequestsUtils.buildAllowedMethods(
-        HttpMethod.GET
+        HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE
     );
   }
 
@@ -47,26 +53,26 @@ class AuthorizationServiceHealthcheckTest {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
+    webTestClient =
         WebTestClient.bindToServer()
             .responseTimeout(Duration.ofSeconds(10))
             .baseUrl(baseUri)
             .build();
 
-    allowedMethods().forEach(
-        method -> stubFor(WireMock.request(method.name(), WireMock.urlEqualTo("/actuator/health"))
+    allowedMethods().forEach(method ->
+        stubFor(WireMock.request(method.name(), WireMock.urlEqualTo("/test"))
             .willReturn(WireMock.ok())));
   }
 
   @ParameterizedTest
   @MethodSource("allowedMethods")
-  void shouldRouteToAuthorizationServiceHealthEndpoint(HttpMethod method) {
+  void shouldRouteToTaskService(HttpMethod method) {
     // Given
-    String authUri = "/api/auth/actuator/health";
+    String taskUri = "/api/task";
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri)
+        .uri(taskUri + "/test")
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .exchange()
         .expectStatus().isOk();
@@ -74,13 +80,42 @@ class AuthorizationServiceHealthcheckTest {
 
   @ParameterizedTest
   @MethodSource("disallowedMethods")
-  void shouldNotRouteWithoutContentType(HttpMethod method) {
+  void shouldNotRouteToDisallowedMethods(HttpMethod method) {
     // Given
-    String authUri = "/api/auth/actuator/health";
+    String taskUri = "/api/task";
 
     // When + Then
     webTestClient.method(method)
-        .uri(authUri)
+        .uri(taskUri + "/test")
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+
+  @Test
+  void shouldNotRouteWithoutContentType() {
+    // Given
+    String taskUri = "/api/task";
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(taskUri + "/test")
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+
+  @Test
+  void shouldNotRouteWithInvalidContentType() {
+    // Given
+    String taskUri = "/api/task";
+    HttpMethod method = allowedMethods().findFirst().orElse(HttpMethod.GET);
+    MediaType invalidContentType = MediaType.TEXT_PLAIN;
+
+    // When + Then
+    webTestClient.method(method)
+        .uri(taskUri + "/test")
+        .contentType(invalidContentType)
         .exchange()
         .expectStatus().isNotFound();
   }

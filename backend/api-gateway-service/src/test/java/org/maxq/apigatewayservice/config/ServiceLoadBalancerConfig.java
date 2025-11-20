@@ -45,6 +45,18 @@ public class ServiceLoadBalancerConfig {
           )
       );
     }
+
+    @Bean
+    @ConditionalOnProperty(value = "test.loadbalancer", havingValue = "task")
+    public ServiceInstanceListSupplier taskServiceInstanceListSupplier(Environment env) {
+      return ServiceInstanceListSuppliers.from("test-load-balancer",
+          new DefaultServiceInstance(
+              "task-service-1",
+              "task-service",
+              "localhost", 8083, false
+          )
+      );
+    }
   }
 }
 

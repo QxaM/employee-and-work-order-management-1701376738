@@ -68,7 +68,7 @@ class AuthorizationServiceTest {
 
   @ParameterizedTest
   @MethodSource("allowedMethods")
-  void shouldRouteToAuthorizationServiceHealthEndpoint(HttpMethod method) {
+  void shouldRouteToAuthorizationService(HttpMethod method) {
     // Given
     String authUri = "/api/auth";
 

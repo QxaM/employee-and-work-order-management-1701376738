@@ -37,15 +37,6 @@ spring:
       server:
         webflux:
           routes:
-            - id: authorization-service-healthcheck
-              uri: ${AUTHORIZATION_SERVICE_URL:http://localhost:8081}
-              predicates:
-                - Path=/api/auth/actuator/health
-                - Method=GET
-              filters:
-                - RemoveRequestHeader=Accept
-                - AddRequestHeader=Accept, application/json
-                - RewritePath=/api/auth/actuator/health, /actuator/health
             - id: authorization-service-login
               uri: lb://authorization-service
               predicates:
@@ -66,15 +57,6 @@ spring:
               filters:
                 - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/auth/?(?<segment>.*), /$\{segment}
-            - id: profile-service-healthcheck
-              uri: ${PROFILE_SERVICE_URL:http://localhost:8082}
-              predicates:
-                - Path=/api/profile/actuator/health
-                - Method=GET
-              filters:
-                - RemoveRequestHeader=Accept
-                - AddRequestHeader=Accept, application/json
-                - RewritePath=/api/profile/actuator/health, /actuator/health
             - id: profile-service
               uri: lb://profile-service
               predicates:
@@ -94,6 +76,15 @@ spring:
                 - AddRequestHeader=X-Gateway, api-gateway-service
                 - RewritePath=/api/profile/?(?<segment>.*), /$\{segment}
                 - RequestSize=11MB
+            - id: task-service
+              uri: lb://task-service
+              predicates:
+                - Path=/api/task/**
+                - Method=GET,PUT,POST,DELETE
+                - Header=Content-Type, application/json
+              filters:
+                - AddRequestHeader=X-Gateway, api-gateway-service
+                - RewritePath=/api/task/?(?<segment>.*), /$\{segment}
             - id: eureka-apps
               uri: ${EUREKA_URL:http://localhost:8761/eureka}
               predicates:
