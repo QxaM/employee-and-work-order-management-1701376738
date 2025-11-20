@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaskService {
 
-  private static final String TASK_NOT_FOUND_MESSAGE = "Task with give id does not exist! ID: %s";
+  private static final String TASK_NOT_FOUND_MESSAGE = "Task with given id does not exist! ID: %s";
 
   private final TaskRepository taskRepository;
 

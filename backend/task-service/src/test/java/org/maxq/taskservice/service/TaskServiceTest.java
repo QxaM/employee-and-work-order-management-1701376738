@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class TaskServiceTest {
 
-  private static final String TASK_NOT_FOUND_MESSAGE = "Task with give id does not exist! ID: %s";
+  private static final String TASK_NOT_FOUND_MESSAGE = "Task with given id does not exist! ID: %s";
 
   private User user;
   private Task task;
