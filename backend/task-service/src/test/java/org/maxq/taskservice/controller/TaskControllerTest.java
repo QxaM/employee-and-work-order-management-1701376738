@@ -413,4 +413,73 @@ class TaskControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
     verify(taskService, times(0)).getAllTasks();
   }
+
+  @Test
+  void shouldDeleteTask() throws Exception {
+    // Given
+    doNothing().when(taskService).deleteTask(taskDto.getId());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .delete(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isNoContent());
+    verify(taskService, times(1)).deleteTask(taskDto.getId());
+  }
+
+  @Test
+  void deleteTask_ShouldReturn401_When_NoRobotToken() throws Exception {
+    // Given
+    doNothing().when(taskService).deleteTask(taskDto.getId());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .delete(URL + "/" + taskDto.getId())
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
+    verify(taskService, times(0)).deleteTask(taskDto.getId());
+  }
+
+  @Test
+  void deleteTask_ShouldReturn403_When_NoUserHeaders() throws Exception {
+    // Given
+    doNothing().when(taskService).deleteTask(taskDto.getId());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .delete(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
+    verify(taskService, times(0)).deleteTask(taskDto.getId());
+  }
+
+  @Test
+  void deleteTask_ShouldReturn404_When_TaskDoesNotExist() throws Exception {
+    // Given
+    String message = "Test message";
+    doThrow(new ElementNotFoundException(message)).when(taskService).deleteTask(taskDto.getId());
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .delete(URL + "/" + taskDto.getId())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+    verify(taskService, times(1)).deleteTask(taskDto.getId());
+  }
 }

@@ -1,6 +1,7 @@
 package org.maxq.taskservice.controller.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -171,4 +172,51 @@ public interface TaskApi {
       }
   )
   ResponseEntity<List<TaskDto>> getAllTasks();
+
+  @Operation(
+      summary = "Delete specified task",
+      description = "Allows to delete a task with provided task ID. "
+          + "Provided task have to exist otherwise an error will be raised."
+  )
+  @ApiResponse(
+      responseCode = "204",
+      description = "Task deleted successfully"
+  )
+  @ApiResponse(
+      responseCode = "401",
+      description = "Unauthenticated - only request with Robot Token are passed",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  @ApiResponse(
+      responseCode = "403",
+      description = "Unauthorized - only logged in users can access this resource",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  @ApiResponse(
+      responseCode = "404",
+      description = "Provided task does not exist - cannot delete non existing task",
+      content = {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = HttpErrorMessage.class)
+          )
+      }
+  )
+  ResponseEntity<Void> deleteTask(
+      @Parameter(
+          name = "id",
+          description = "ID of a task to be deleted",
+          example = "123"
+      ) Long taskId
+  ) throws ElementNotFoundException;
 }
