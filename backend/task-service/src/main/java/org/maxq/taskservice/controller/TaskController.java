@@ -37,7 +37,7 @@ public class TaskController implements TaskApi {
   @Override
   @PutMapping
   @PreAuthorize("authentication.principal != null")
-  public ResponseEntity<TaskDto> updateTask(TaskDto task)
+  public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto task)
       throws UserDoesNotExistException, ElementNotFoundException {
     Task mappedTask = taskMapper.mapToTask(task);
     Task updatedTask = taskService.updateTask(mappedTask);
