@@ -42,15 +42,26 @@ class TaskServiceTest {
   }
 
   @Test
-  void shouldCreateTask() {
+  void shouldCreateTask() throws UserDoesNotExistException {
     // Given
     when(taskRepository.save(task)).thenReturn(task);
 
     // When
-    Executable executable = () -> taskService.createTask(task);
+    Task savedTask = taskService.createTask(task);
 
     // Then
-    assertDoesNotThrow(executable, "Service should not throw on correct save");
+    assertAll(
+        () -> assertEquals(task.getId(), savedTask.getId(),
+            "Wrong task saved - incorrect ID"),
+        () -> assertEquals(task.getTitle(), savedTask.getTitle(),
+            "Wrong task saved - incorrect title"),
+        () -> assertEquals(task.getDescription(), savedTask.getDescription(),
+            "Wrong task saved - incorrect description"),
+        () -> assertEquals(task.getUser().getId(), savedTask.getUser().getId(),
+            "Wrong task saved - incorrect user ID"),
+        () -> assertEquals(task.getUser().getEmail(), savedTask.getUser().getEmail(),
+            "Wrong task saved - incorrect user ID")
+    );
     verify(taskRepository, times(1)).save(task);
   }
 
@@ -155,7 +166,7 @@ class TaskServiceTest {
   }
 
   @Test
-  void updateTask() {
+  void updateTask() throws ElementNotFoundException, UserDoesNotExistException {
     // Given
     User newUser = new User(2L, "test1@test.com", Collections.emptySet());
     Task newTask = new Task(task.getId(), "Updated", "Test task updated", newUser);
@@ -163,10 +174,21 @@ class TaskServiceTest {
     when(taskRepository.save(any(Task.class))).thenReturn(newTask);
 
     // When
-    Executable executable = () -> taskService.updateTask(newTask);
+    Task updatedTask = taskService.updateTask(newTask);
 
     // Then
-    assertDoesNotThrow(executable, "Service should not throw on correct update");
+    assertAll(
+        () -> assertEquals(newTask.getId(), updatedTask.getId(),
+            "Wrong task saved - incorrect ID"),
+        () -> assertEquals(newTask.getTitle(), updatedTask.getTitle(),
+            "Wrong task saved - incorrect title"),
+        () -> assertEquals(newTask.getDescription(), updatedTask.getDescription(),
+            "Wrong task saved - incorrect description"),
+        () -> assertEquals(newTask.getUser().getId(), updatedTask.getUser().getId(),
+            "Wrong task saved - incorrect user ID"),
+        () -> assertEquals(newTask.getUser().getEmail(), updatedTask.getUser().getEmail(),
+            "Wrong task saved - incorrect user ID")
+    );
     assertAll(
         () -> verify(taskRepository, times(1)).save(
             argThat(savedTask -> newTask.getId().equals(savedTask.getId()))

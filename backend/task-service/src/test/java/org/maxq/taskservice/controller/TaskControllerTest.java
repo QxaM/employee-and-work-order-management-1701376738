@@ -10,6 +10,7 @@ import org.maxq.taskservice.domain.User;
 import org.maxq.taskservice.domain.dto.RoleDto;
 import org.maxq.taskservice.domain.dto.TaskDto;
 import org.maxq.taskservice.domain.dto.UserDto;
+import org.maxq.taskservice.domain.exception.ElementNotFoundException;
 import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.maxq.taskservice.mapper.TaskMapper;
 import org.maxq.taskservice.service.TaskService;
@@ -58,12 +59,7 @@ class TaskControllerTest {
 
   private MockMvc mockMvc;
 
-  private RoleDto roleDto;
-  private UserDto userDto;
   private TaskDto taskDto;
-
-  private Role role;
-  private User user;
   private Task task;
 
   @Autowired
@@ -85,12 +81,12 @@ class TaskControllerTest {
 
     when(jwtDecoder.decode("test-token")).thenReturn(jwt);
 
-    roleDto = new RoleDto(1L, ROLES);
-    userDto = new UserDto(10L, EMAIL, List.of(roleDto));
+    RoleDto roleDto = new RoleDto(1L, ROLES);
+    UserDto userDto = new UserDto(10L, EMAIL, List.of(roleDto));
     taskDto = new TaskDto(100L, "Test", "Test description", userDto);
 
-    role = new Role(roleDto.getId(), roleDto.getName());
-    user = new User(userDto.getId(), userDto.getEmail(), Set.of(role));
+    Role role = new Role(roleDto.getId(), roleDto.getName());
+    User user = new User(userDto.getId(), userDto.getEmail(), Set.of(role));
     task = new Task(taskDto.getId(), taskDto.getTitle(), taskDto.getDescription(), user);
   }
 
@@ -98,7 +94,8 @@ class TaskControllerTest {
   void shouldCreateTask() throws Exception {
     // Given
     when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
-    doNothing().when(taskService).createTask(task);
+    when(taskService.createTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -108,7 +105,33 @@ class TaskControllerTest {
             .header("X-User-Roles", ROLES)
             .contentType(MediaType.APPLICATION_JSON)
             .content(GSON.toJson(taskDto)))
-        .andExpect(MockMvcResultMatchers.status().isCreated());
+        .andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(taskDto.getId().intValue())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(taskDto.getTitle())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.description",
+            Matchers.is(taskDto.getDescription()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.id",
+            Matchers.is(taskDto.getUser().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.email",
+            Matchers.is(taskDto.getUser().getEmail()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles",
+            Matchers.hasSize(taskDto.getUser().getRoles().size()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].id",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].name",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getName()))
+        );
     verify(taskService, times(1)).createTask(task);
   }
 
@@ -117,7 +140,7 @@ class TaskControllerTest {
     // Given
     String message = "Test message";
     when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
-    doThrow(new UserDoesNotExistException(message)).when(taskService).createTask(task);
+    when(taskService.createTask(task)).thenThrow(new UserDoesNotExistException(message));
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -136,7 +159,8 @@ class TaskControllerTest {
   void createTask_ShouldReturn401_When_NoRobotToken() throws Exception {
     // Given
     when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
-    doNothing().when(taskService).createTask(task);
+    when(taskService.createTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -154,7 +178,8 @@ class TaskControllerTest {
   void createTask_ShouldReturn403_When_NoUserHeaders() throws Exception {
     // Given
     when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
-    doNothing().when(taskService).createTask(task);
+    when(taskService.createTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -165,5 +190,127 @@ class TaskControllerTest {
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
     verify(taskService, times(0)).createTask(any());
+  }
+
+  @Test
+  void shouldUpdateTask() throws Exception {
+    // Given
+    when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+    when(taskService.updateTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(taskDto.getId().intValue())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(taskDto.getTitle())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.description",
+            Matchers.is(taskDto.getDescription()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.id",
+            Matchers.is(taskDto.getUser().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.email",
+            Matchers.is(taskDto.getUser().getEmail()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles",
+            Matchers.hasSize(taskDto.getUser().getRoles().size()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].id",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getId().intValue()))
+        )
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.user.roles[0].name",
+            Matchers.is(taskDto.getUser().getRoles().getFirst().getName()))
+        );
+    verify(taskService, times(1)).updateTask(task);
+  }
+
+  @Test
+  void updateTask_ShouldReturn400_When_UserDoesNotExist() throws Exception {
+    // Given
+    String message = "Test message";
+    when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+    when(taskService.updateTask(task)).thenThrow(new UserDoesNotExistException(message));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+    verify(taskService, times(1)).updateTask(task);
+  }
+
+  @Test
+  void updateTask_ShouldReturn401_When_NoRobotToken() throws Exception {
+    // Given
+    when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+    when(taskService.updateTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL)
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
+    verify(taskService, times(0)).updateTask(any());
+  }
+
+  @Test
+  void updateTask_ShouldReturn403_When_NoUserHeaders() throws Exception {
+    // Given
+    when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+    when(taskService.updateTask(task)).thenReturn(task);
+    when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isForbidden())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
+    verify(taskService, times(0)).updateTask(any());
+  }
+
+  @Test
+  void updateTask_ShouldReturn404_When_TaskDoesNotExist() throws Exception {
+    // Given
+    String message = "Test message";
+    when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+    when(taskService.updateTask(task)).thenThrow(new ElementNotFoundException(message));
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .put(URL)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(GSON.toJson(taskDto)))
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(message)));
+    verify(taskService, times(1)).updateTask(task);
   }
 }

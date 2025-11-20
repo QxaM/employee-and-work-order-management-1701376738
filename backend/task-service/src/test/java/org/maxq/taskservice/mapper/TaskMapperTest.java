@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +52,40 @@ class TaskMapperTest {
         () -> assertEquals(roleDto.getId(), roles.getFirst().getId(),
             "Role ID not mapped correctly"),
         () -> assertEquals(roleDto.getName(), roles.getFirst().getName(),
+            "Role Name not mapped correctly")
+    );
+  }
+
+  @Test
+  void shouldMapToTaskDto() {
+    // Given
+    Role role = new Role(1L, "ROLE_TEST");
+    User user = new User(2L, "test@test.com", Set.of(role));
+    Task task = new Task(3L, "Title", "Test description", user);
+
+    // When
+    TaskDto taskDto = taskMapper.mapToTaskDto(task);
+
+    // Then
+    assertAll(
+        () -> assertEquals(task.getId(), taskDto.getId(), "ID not mapped correctly"),
+        () -> assertEquals(task.getTitle(), taskDto.getTitle(), "Title not mapped correctly"),
+        () -> assertEquals(task.getDescription(), taskDto.getDescription(),
+            "Description not mapped correctly")
+    );
+
+    UserDto userDto = taskDto.getUser();
+    assertAll(
+        () -> assertEquals(user.getId(), userDto.getId(), "User ID not mapped correctly"),
+        () -> assertEquals(user.getEmail(), userDto.getEmail(), "User email not mapped correctly")
+    );
+
+    List<RoleDto> roleDtos = userDto.getRoles();
+    assertEquals(1, roleDtos.size(), "Role size not match - not mapped correctly");
+    assertAll(
+        () -> assertEquals(role.getId(), roleDtos.getFirst().getId(),
+            "Role ID not mapped correctly"),
+        () -> assertEquals(role.getName(), roleDtos.getFirst().getName(),
             "Role Name not mapped correctly")
     );
   }

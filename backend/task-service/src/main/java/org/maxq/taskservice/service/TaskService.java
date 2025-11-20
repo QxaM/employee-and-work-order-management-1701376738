@@ -20,9 +20,9 @@ public class TaskService {
 
   private final TaskRepository taskRepository;
 
-  public void createTask(Task task) throws UserDoesNotExistException {
+  public Task createTask(Task task) throws UserDoesNotExistException {
     try {
-      taskRepository.save(task);
+      return taskRepository.save(task);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
       throw new UserDoesNotExistException(
           "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"
@@ -41,7 +41,7 @@ public class TaskService {
     return taskRepository.findAll();
   }
 
-  public void updateTask(Task task) throws ElementNotFoundException, UserDoesNotExistException {
+  public Task updateTask(Task task) throws ElementNotFoundException, UserDoesNotExistException {
     Optional<Task> optionalTask = taskRepository.findById(task.getId());
     Task foundTask = optionalTask.orElseThrow(
         () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(task.getId()))
@@ -54,7 +54,7 @@ public class TaskService {
     );
 
     try {
-      taskRepository.save(taskToUpdate);
+      return taskRepository.save(taskToUpdate);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
       throw new UserDoesNotExistException(
           "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"

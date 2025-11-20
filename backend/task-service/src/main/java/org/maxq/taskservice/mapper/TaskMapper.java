@@ -19,4 +19,13 @@ public class TaskMapper {
         userMapper.mapToUser(taskDto.getUser())
     );
   }
+
+  public TaskDto mapToTaskDto(Task task) {
+    return new TaskDto(
+        task.getId(),
+        task.getTitle(),
+        task.getDescription(),
+        userMapper.mapToUserDto(task.getUser())
+    );
+  }
 }
