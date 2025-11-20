@@ -3,6 +3,7 @@ package org.maxq.taskservice.service;
 import lombok.RequiredArgsConstructor;
 import org.maxq.taskservice.domain.Task;
 import org.maxq.taskservice.domain.exception.ElementNotFoundException;
+import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.maxq.taskservice.repository.TaskRepository;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
@@ -19,11 +20,11 @@ public class TaskService {
 
   private final TaskRepository taskRepository;
 
-  public void createTask(Task task) throws ElementNotFoundException {
+  public void createTask(Task task) throws UserDoesNotExistException {
     try {
       taskRepository.save(task);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
-      throw new ElementNotFoundException(
+      throw new UserDoesNotExistException(
           "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"
       );
     }
@@ -40,7 +41,7 @@ public class TaskService {
     return taskRepository.findAll();
   }
 
-  public void updateTask(Task task) throws ElementNotFoundException {
+  public void updateTask(Task task) throws ElementNotFoundException, UserDoesNotExistException {
     Optional<Task> optionalTask = taskRepository.findById(task.getId());
     Task foundTask = optionalTask.orElseThrow(
         () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(task.getId()))
@@ -55,7 +56,7 @@ public class TaskService {
     try {
       taskRepository.save(taskToUpdate);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
-      throw new ElementNotFoundException(
+      throw new UserDoesNotExistException(
           "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"
       );
     }

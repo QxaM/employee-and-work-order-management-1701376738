@@ -6,6 +6,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.maxq.taskservice.domain.Task;
 import org.maxq.taskservice.domain.User;
 import org.maxq.taskservice.domain.exception.ElementNotFoundException;
+import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.maxq.taskservice.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,8 +65,8 @@ class TaskServiceTest {
     Executable executable = () -> taskService.createTask(task);
 
     // Then
-    ElementNotFoundException exception
-        = assertThrows(ElementNotFoundException.class, executable,
+    UserDoesNotExistException exception
+        = assertThrows(UserDoesNotExistException.class, executable,
         "Service should not throw on correct save");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -81,8 +82,8 @@ class TaskServiceTest {
     Executable executable = () -> taskService.createTask(task);
 
     // Then
-    ElementNotFoundException exception
-        = assertThrows(ElementNotFoundException.class, executable,
+    UserDoesNotExistException exception
+        = assertThrows(UserDoesNotExistException.class, executable,
         "Service should not throw on correct save");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -198,7 +199,7 @@ class TaskServiceTest {
     Executable executable = () -> taskService.updateTask(newTask);
 
     // Then
-    Exception exception = assertThrows(ElementNotFoundException.class, executable,
+    ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, executable,
         "Service should throw when task does not exist");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -218,7 +219,7 @@ class TaskServiceTest {
     Executable executable = () -> taskService.updateTask(newTask);
 
     // Then
-    Exception exception = assertThrows(ElementNotFoundException.class, executable,
+    UserDoesNotExistException exception = assertThrows(UserDoesNotExistException.class, executable,
         "Service should throw when task does not exist");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -250,6 +251,5 @@ class TaskServiceTest {
     Exception exception = assertThrows(ElementNotFoundException.class, executable,
         "Service should throw when task does not exist");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
-
   }
 }
