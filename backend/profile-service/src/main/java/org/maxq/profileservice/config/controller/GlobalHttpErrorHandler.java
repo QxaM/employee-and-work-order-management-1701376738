@@ -37,7 +37,7 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({AuthorizationDeniedException.class, AccessDeniedException.class})
-  public ResponseEntity<HttpErrorMessage> handleAccessDeniedException(AccessDeniedException e) {
+  public ResponseEntity<HttpErrorMessage> handleAccessDeniedException(Exception e) {
     HttpErrorMessage message = new HttpErrorMessage(
         "Forbidden: You don't have permission to access this resource"
     );
@@ -63,13 +63,15 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(BucketOperationException.class)
   public ResponseEntity<HttpErrorMessage> handleBucketOperationException(BucketOperationException e) {
     log.error(e.getMessage(), e);
-    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(S3Exception.class)
   public ResponseEntity<HttpErrorMessage> handleS3Exception(S3Exception e) {
     log.error(e.getMessage(), e);
-    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(new HttpErrorMessage(e.getMessage()),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @Override
