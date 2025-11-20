@@ -1813,6 +1813,3006 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Create Task",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const createTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"createTaskUserId\", createTaskUserId);\r",
+											"\r",
+											"const createTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"createTaskUserEmail\", createTaskUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{createTaskUserId}},\r\n    \"email\": \"{{createTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{createTaskUserId}},\r\n            \"email\": \"{{createTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "No User",
+							"item": [
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserId\", createTaskUserId);\r",
+													"\r",
+													"const createTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserEmail\", createTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 400\", () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Correct response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const userId = pm.variables.get('createTaskUserId');\r",
+													"    const message = `Failed to create task. User with id: ${userId} does not exist!`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{createTaskUserId}},\r\n            \"email\": \"{{createTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No Robot Token",
+							"item": [
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserId\", createTaskUserId);\r",
+													"\r",
+													"const createTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserEmail\", createTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Correct response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Unauthorized to access this resource, login please`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{createTaskUserId}},\r\n            \"email\": \"{{createTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User Header",
+							"item": [
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const createTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserId\", createTaskUserId);\r",
+													"\r",
+													"const createTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"createTaskUserEmail\", createTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"\r",
+													"pm.test(\"Correct response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Forbidden: You don't have permission to access this resource`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{createTaskUserId}},\r\n            \"email\": \"{{createTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Update Task",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const updateTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"updateTaskUserId\", updateTaskUserId);\r",
+											"\r",
+											"const updateTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"updateTaskUserEmail\", updateTaskUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{updateTaskUserId}},\r\n    \"email\": \"{{updateTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Response should contain id\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"\r",
+											"    const updateTaskId = response.id;\r",
+											"    pm.collectionVariables.set(\"updateTaskId\", updateTaskId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{updateTaskId}},\r\n    \"title\": \"Updated title\",\r\n    \"description\": \"Updated description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "No task",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserId\", updateTaskUserId);\r",
+													"\r",
+													"const updateTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserEmail\", updateTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskUserId}},\r\n    \"email\": \"{{updateTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateTaskId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateTaskId\", updateTaskId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test('Should contain correct error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const taskIde = pm.variables.get('updateTaskId');\r",
+													"    const message = `Task with given id does not exist! ID: ${taskIde}`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskId}},\r\n    \"title\": \"Updated title\",\r\n    \"description\": \"Updated description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserId\", updateTaskUserId);\r",
+													"\r",
+													"const updateTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserEmail\", updateTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskUserId}},\r\n    \"email\": \"{{updateTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response should contain id\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"\r",
+													"    const updateTaskId = response.id;\r",
+													"    pm.collectionVariables.set(\"updateTaskId\", updateTaskId);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const updateTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserId\", updateTaskUserId);\r",
+													"\r",
+													"const updateTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"updateTaskUserEmail\", updateTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 400\", () => {\r",
+													"    pm.response.to.have.status(400);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test('Should contain correct error message', () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const userId = pm.variables.get('updateTaskUserId');\r",
+													"    const message = `Failed to create task. User with id: ${userId} does not exist!`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskId}},\r\n    \"title\": \"Updated title\",\r\n    \"description\": \"Updated description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No Robot Token",
+							"item": [
+								{
+									"name": "Update Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Correct error response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Unauthorized to access this resource, login please`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskId}},\r\n    \"title\": \"Updated title\",\r\n    \"description\": \"Updated description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User Header",
+							"item": [
+								{
+									"name": "Update Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Correct error response message\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Forbidden: You don't have permission to access this resource`;\r",
+													"    pm.expect(response.message).to.equal(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{updateTaskId}},\r\n    \"title\": \"Updated title\",\r\n    \"description\": \"Updated description\",\r\n    \"user\": {\r\n            \"id\": {{updateTaskUserId}},\r\n            \"email\": \"{{updateTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Get All Tasks",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const getAllTasksUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"getAllTasksUserId\", getAllTasksUserId);\r",
+											"\r",
+											"const getAllTasksUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"getAllTasksUserEmail\", getAllTasksUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{getAllTasksUserId}},\r\n    \"email\": \"{{getAllTasksUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create First Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Response should contain id\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"\r",
+											"    const getAllTasksFirstTaskId = response.id;\r",
+											"    pm.collectionVariables.set(\"getAllTasksFirstTaskId\", getAllTasksFirstTaskId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{getAllTasksUserId}},\r\n            \"email\": \"{{getAllTasksUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Second Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Response should contain id\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"\r",
+											"    const getAllTasksSecondTaskId = response.id;\r",
+											"    pm.collectionVariables.set(\"getAllTasksSecondTaskId\", getAllTasksSecondTaskId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{getAllTasksUserId}},\r\n            \"email\": \"{{getAllTasksUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Tasks",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Should contain correct response\", () => {\r",
+											"    pm.expect(response).to.be.an('array').with.length.gte(2);\r",
+											"\r",
+											"    const firstId = pm.variables.get('getAllTasksFirstTaskId');\r",
+											"    const secondId = pm.variables.get('getAllTasksSecondTaskId');\r",
+											"    \r",
+											"    const responseIds = response.map(e => e.id);\r",
+											"    pm.expect(responseIds).to.contain(firstId);\r",
+											"    pm.expect(responseIds).to.contain(secondId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "No Robot Token",
+							"item": [
+								{
+									"name": "Get All Tasks",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = \"Unauthorized to access this resource, login please\";\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User Headers",
+							"item": [
+								{
+									"name": "Get All Tasks",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = \"Forbidden: You don't have permission to access this resource\";\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Get Task",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const getTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"getTaskUserId\", getTaskUserId);\r",
+											"\r",
+											"const getTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"getTaskUserEmail\", getTaskUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{getTaskUserId}},\r\n    \"email\": \"{{getTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Response should contain id\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"\r",
+											"    const getTaskId = response.id;\r",
+											"    pm.collectionVariables.set(\"getTaskId\", getTaskId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{getTaskUserId}},\r\n            \"email\": \"{{getTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Should contain correct task response\", () => {\r",
+											"    pm.expect(response).to.be.an('object');\r",
+											"\r",
+											"    const taskId = pm.variables.get('getTaskId');\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(response.id).to.eql(taskId)\r",
+											"\r",
+											"    pm.expect(response).to.haveOwnProperty('title').that.is.a('string');\r",
+											"    pm.expect(response).to.haveOwnProperty('description').that.is.a('string');\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Should contain correct user response\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('user').that.is.an('object');\r",
+											"\r",
+											"    const userId = pm.variables.get('getTaskUserId');\r",
+											"    const userEmail = pm.variables.get('getTaskUserEmail');\r",
+											"    pm.expect(response.user).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(response.user.id).to.eql(parseInt(userId));\r",
+											"    pm.expect(response.user).to.haveOwnProperty('email').that.is.a('string');\r",
+											"    pm.expect(response.user.email).to.eql(userEmail);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Should contain correct roles response\", () => {\r",
+											"    pm.expect(response.user).to.haveOwnProperty('roles').that.is.an('array');\r",
+											"\r",
+											"    const roleId = pm.variables.get('roleId');\r",
+											"    const roleName = pm.variables.get('roleName');\r",
+											"    pm.expect(response.user.roles).to.have.length(1);\r",
+											"    pm.expect(response.user.roles[0]).to.haveOwnProperty('id').that.is.a('number');\r",
+											"    pm.expect(response.user.roles[0].id).to.eql(parseInt(roleId));\r",
+											"    pm.expect(response.user.roles[0]).to.haveOwnProperty('name').that.is.a('string');\r",
+											"    pm.expect(response.user.roles[0].name).to.eql(roleName);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks/:taskId",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks",
+										":taskId"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "{{getTaskId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "No Task",
+							"item": [
+								{
+									"name": "Get Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const getTaskId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"getTaskId\", getTaskId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const taskId = pm.variables.get('getTaskId');\r",
+													"    const message = `Task with given id does not exist! ID: ${taskId}`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{getTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No Robot Token",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const getTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"getTaskUserId\", getTaskUserId);\r",
+													"\r",
+													"const getTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"getTaskUserEmail\", getTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{getTaskUserId}},\r\n    \"email\": \"{{getTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response should contain id\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"\r",
+													"    const getTaskId = response.id;\r",
+													"    pm.collectionVariables.set(\"getTaskId\", getTaskId);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{getTaskUserId}},\r\n            \"email\": \"{{getTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Unauthorized to access this resource, login please`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{getTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User Headers",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const getTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"getTaskUserId\", getTaskUserId);\r",
+													"\r",
+													"const getTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"getTaskUserEmail\", getTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{getTaskUserId}},\r\n    \"email\": \"{{getTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response should contain id\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"\r",
+													"    const getTaskId = response.id;\r",
+													"    pm.collectionVariables.set(\"getTaskId\", getTaskId);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{getTaskUserId}},\r\n            \"email\": \"{{getTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Forbidden: You don't have permission to access this resource`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{getTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Delete Task",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "Create User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const deleteTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+											"pm.collectionVariables.set(\"deleteTaskUserId\", deleteTaskUserId);\r",
+											"\r",
+											"const deleteTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+											"pm.collectionVariables.set(\"deleteTaskUserEmail\", deleteTaskUserEmail);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{deleteTaskUserId}},\r\n    \"email\": \"{{deleteTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/qa/users",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"qa",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.test(\"Response should contain id\", () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+											"\r",
+											"    const deleteTaskId = response.id;\r",
+											"    pm.collectionVariables.set(\"deleteTaskId\", deleteTaskId);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{deleteTaskUserId}},\r\n            \"email\": \"{{deleteTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", () => {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks/:taskId",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks",
+										":taskId"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "{{deleteTaskId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "No task",
+							"item": [
+								{
+									"name": "Delete Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const deleteTaskId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"deleteTaskId\", deleteTaskId);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 404\", () => {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const taskId = pm.variables.get('deleteTaskId');\r",
+													"    const message = `Task with given id does not exist! ID: ${taskId}`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{deleteTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No Robot Token",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const deleteTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"deleteTaskUserId\", deleteTaskUserId);\r",
+													"\r",
+													"const deleteTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"deleteTaskUserEmail\", deleteTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{deleteTaskUserId}},\r\n    \"email\": \"{{deleteTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response should contain id\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"\r",
+													"    const deleteTaskId = response.id;\r",
+													"    pm.collectionVariables.set(\"deleteTaskId\", deleteTaskId);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{deleteTaskUserId}},\r\n            \"email\": \"{{deleteTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 401\", () => {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Unauthorized to access this resource, login please`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{deleteTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "No User Headers",
+							"item": [
+								{
+									"name": "Create User",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const deleteTaskUserId = pm.variables.replaceIn('{{$randomInt}}');\r",
+													"pm.collectionVariables.set(\"deleteTaskUserId\", deleteTaskUserId);\r",
+													"\r",
+													"const deleteTaskUserEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+													"pm.collectionVariables.set(\"deleteTaskUserEmail\", deleteTaskUserEmail);"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "",
+												"value": "",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": {{deleteTaskUserId}},\r\n    \"email\": \"{{deleteTaskUserEmail}}\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": {{roleId}},\r\n            \"name\": \"{{roleName}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/qa/users",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"qa",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 201\", () => {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Response should contain id\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('id').that.is.a('number');\r",
+													"\r",
+													"    const deleteTaskId = response.id;\r",
+													"    pm.collectionVariables.set(\"deleteTaskId\", deleteTaskId);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text"
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"title\": \"Test title\",\r\n    \"description\": \"Test description\",\r\n    \"user\": {\r\n            \"id\": {{deleteTaskUserId}},\r\n            \"email\": \"{{deleteTaskUserEmail}}\",\r\n            \"roles\": [\r\n                {\r\n                    \"id\": {{roleId}},\r\n                    \"name\": \"{{roleName}}\"\r\n                }\r\n            ]\r\n        }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Task",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 403\", () => {\r",
+													"    pm.response.to.have.status(403);\r",
+													"});\r",
+													"\r",
+													"const response = pm.response.json();\r",
+													"pm.test(\"Should contain correct error response\", () => {\r",
+													"    pm.expect(response).to.haveOwnProperty('message').that.is.a('string');\r",
+													"\r",
+													"    const message = `Forbidden: You don't have permission to access this resource`;\r",
+													"    pm.expect(response.message).to.eql(message);\r",
+													"})"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "X-User",
+												"value": "{{operatorEmail}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "X-User-Roles",
+												"value": "{{operatorRole}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"url": {
+											"raw": "{{taskServiceUrl}}/tasks/:taskId",
+											"host": [
+												"{{taskServiceUrl}}"
+											],
+											"path": [
+												"tasks",
+												":taskId"
+											],
+											"variable": [
+												{
+													"key": "taskId",
+													"value": "{{deleteTaskId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
 		}
 	],
 	"auth": {
@@ -1868,8 +4868,7 @@
 		},
 		{
 			"key": "roleId",
-			"value": "1",
-			"type": "default"
+			"value": "1"
 		},
 		{
 			"key": "createRoleId",
@@ -1901,6 +4900,74 @@
 		},
 		{
 			"key": "duplicateRoleId",
+			"value": ""
+		},
+		{
+			"key": "createTaskUserId",
+			"value": ""
+		},
+		{
+			"key": "createTaskUserEmail",
+			"value": ""
+		},
+		{
+			"key": "operatorEmail",
+			"value": "operator@maxq.com"
+		},
+		{
+			"key": "operatorRole",
+			"value": "ROLE_OPERATOR"
+		},
+		{
+			"key": "updateTaskUserId",
+			"value": ""
+		},
+		{
+			"key": "updateTaskUserEmail",
+			"value": ""
+		},
+		{
+			"key": "updateTaskId",
+			"value": ""
+		},
+		{
+			"key": "getAllTasksUserId",
+			"value": ""
+		},
+		{
+			"key": "getAllTasksUserEmail",
+			"value": ""
+		},
+		{
+			"key": "getAllTasksFirstTaskId",
+			"value": ""
+		},
+		{
+			"key": "getAllTasksSecondTaskId",
+			"value": ""
+		},
+		{
+			"key": "deleteTaskUserId",
+			"value": ""
+		},
+		{
+			"key": "deleteTaskUserEmail",
+			"value": ""
+		},
+		{
+			"key": "deleteTaskId",
+			"value": ""
+		},
+		{
+			"key": "getTaskUserId",
+			"value": ""
+		},
+		{
+			"key": "getTaskUserEmail",
+			"value": ""
+		},
+		{
+			"key": "getTaskId",
 			"value": ""
 		}
 	]
