@@ -23,7 +23,7 @@ import RolesUpdateContent from '../../components/admin/roles-update/RolesUpdateC
 const RolesUpdatePage = () => {
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page') ?? '0';
-  const { data: usersData } = useGetUsersQuery({ page: parseInt(page) });
+  const { data: usersData } = useGetUsersQuery({ page: Number.parseInt(page) });
 
   const users = useMemo(() => usersData?.content ?? [], [usersData]);
 

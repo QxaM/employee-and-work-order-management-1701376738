@@ -99,6 +99,11 @@ const MobileMainNavigation = () => {
             <NavigationMenu.Item className="w-full">
               <RadixNavLink to="/">Home</RadixNavLink>
             </NavigationMenu.Item>
+            {token && (
+              <NavigationMenu.Item className="w-full">
+                <RadixNavLink to={'/tasks'}>Tasks</RadixNavLink>
+              </NavigationMenu.Item>
+            )}
             {isAdmin && (
               <NavigationMenu.Item className="w-full">
                 <RadixNavLink to="/admin">Admin</RadixNavLink>

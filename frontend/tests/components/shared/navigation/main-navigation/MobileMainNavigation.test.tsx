@@ -2,11 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import MobileMainNavigation from '../../../../../src/components/shared/navigation/main-navigation/MobileMainNavigation.tsx';
+import MobileMainNavigation
+  from '../../../../../src/components/shared/navigation/main-navigation/MobileMainNavigation.tsx';
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import { MeType } from '../../../../../src/store/api/auth.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
+import { RootState } from '../../../../../src/store';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {
@@ -114,6 +116,54 @@ describe('Main Navigation Header', () => {
 
         // Then
         expect(window.location.pathname).toBe('/');
+      });
+    });
+
+    describe('Tasks navigation buttons', () => {
+      const navTasksText = 'Tasks';
+
+      beforeEach(() => {
+        const ariaLabel = 'Toggle navigation menu';
+        const preloadedState: Partial<RootState> = {
+          auth: {
+            token: 'test-token',
+          },
+        };
+
+        renderWithProviders(
+          <BrowserRouter>
+            <MobileMainNavigation />
+          </BrowserRouter>,
+          {
+            preloadedState,
+          }
+        );
+        const menuButton = screen.getByRole('button', {
+          name: new RegExp(ariaLabel, 'i'),
+        });
+
+        fireEvent.click(menuButton);
+      });
+
+      it('Should contain Tasks navigation link, when logged in as any user', () => {
+        // Given
+
+        // When
+        const tasksLink = screen.getByText(navTasksText, { exact: false });
+
+        // Then
+        expect(tasksLink).toBeInTheDocument();
+      });
+
+      it('Should navigate to Tasks navigation link, when logged in as any user', () => {
+        // Given
+        const tasksLink = screen.getByText(navTasksText, { exact: false });
+
+        // When
+        fireEvent.click(tasksLink);
+
+        // Then
+        expect(window.location.pathname).toBe('/tasks');
       });
     });
 

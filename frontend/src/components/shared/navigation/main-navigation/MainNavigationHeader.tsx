@@ -49,6 +49,12 @@ const MainNavigationHeader = () => {
             <RadixNavLink to={'/'}>Home</RadixNavLink>
           </NavigationMenu.Item>
 
+          {token && (
+            <NavigationMenu.Item>
+              <RadixNavLink to={'/tasks'}>Tasks</RadixNavLink>
+            </NavigationMenu.Item>
+          )}
+
           {isAdmin && (
             <NavigationMenu.Item>
               <RadixExpandableNavLink to={'/admin'}>

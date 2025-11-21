@@ -8,6 +8,7 @@ import { login } from '../../../../../src/store/authSlice.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
 import { MeType } from '../../../../../src/store/api/auth.ts';
 import { userEvent } from '@testing-library/user-event';
+import { RootState } from '../../../../../src/store';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {
@@ -54,6 +55,57 @@ describe('Main Navigation Header', () => {
 
       // Then
       expect(window.location.pathname).toBe('/');
+    });
+
+    it('Should contain Tasks navigation link, when logged in as any user', () => {
+      // Given
+      const navTasksText = 'Tasks';
+      const preloadedState: Partial<RootState> = {
+        auth: {
+          token: 'test-token',
+        },
+      };
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>,
+        {
+          preloadedState,
+        }
+      );
+
+      // When
+      const tasksLink = screen.getByText(navTasksText, { exact: false });
+
+      // Then
+      expect(tasksLink).toBeInTheDocument();
+    });
+
+    it('Should navigate to Tasks navigation link, when logged in as any user', () => {
+      // Given
+      const navTasksText = 'Tasks';
+      const preloadedState: Partial<RootState> = {
+        auth: {
+          token: 'test-token',
+        },
+      };
+
+      renderWithProviders(
+        <BrowserRouter>
+          <MainNavigationHeader />
+        </BrowserRouter>,
+        {
+          preloadedState,
+        }
+      );
+      const tasksLink = screen.getByText(navTasksText, { exact: false });
+
+      // When
+      fireEvent.click(tasksLink);
+
+      // Then
+      expect(window.location.pathname).toBe('/tasks');
     });
 
     it('Should contain Admin navigation link, when is logged as admin', () => {
