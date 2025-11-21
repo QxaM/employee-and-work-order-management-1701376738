@@ -17,6 +17,7 @@ import ErrorElement from './components/shared/router/ErrorElement.tsx';
 import ModalProvider from './components/shared/modal/ModalProvider.tsx';
 import HomePage from './pages/HomePage.tsx';
 import ProfilePage from './pages/ProfilePage.tsx';
+import TasksPage from './pages/TasksPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: '/password/request', element: <PasswordRequestPage /> },
       { path: '/password/confirm', element: <PasswordUpdatePage /> },
       { path: '/profile', element: <ProfilePage /> },
+      { path: '/tasks', element: <TasksPage /> },
       {
         path: '/admin',
         element: (
