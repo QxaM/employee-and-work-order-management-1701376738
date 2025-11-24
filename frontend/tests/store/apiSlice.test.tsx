@@ -46,4 +46,24 @@ describe('API Slice', () => {
       api.util.invalidateTags([roleTag]);
     }).not.toThrow();
   });
+
+  it('Should have MyProfile in tagTypes', () => {
+    // Given
+    const roleTag = 'MyProfile';
+
+    // When + Then
+    expect(() => {
+      api.util.invalidateTags([roleTag]);
+    }).not.toThrow();
+  });
+
+  it('Should have Tasks in tagTypes', () => {
+    // Given
+    const roleTag = 'Tasks';
+
+    // When + Then
+    expect(() => {
+      api.util.invalidateTags([roleTag]);
+    }).not.toThrow();
+  });
 });

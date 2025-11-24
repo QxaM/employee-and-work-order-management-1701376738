@@ -32,7 +32,14 @@ const router = createBrowserRouter([
       { path: '/password/request', element: <PasswordRequestPage /> },
       { path: '/password/confirm', element: <PasswordUpdatePage /> },
       { path: '/profile', element: <ProfilePage /> },
-      { path: '/tasks', element: <TasksPage /> },
+      {
+        path: '/tasks',
+        element: (
+          <ProtectedRoute>
+            <TasksPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: '/admin',
         element: (

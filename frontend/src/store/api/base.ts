@@ -17,6 +17,7 @@ export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
 
 export const authApi = '/auth';
 export const profileApi = '/profile';
+export const tasksApi = '/task';
 
 /**
  * A default error message used to indicate an unknown error occurred
