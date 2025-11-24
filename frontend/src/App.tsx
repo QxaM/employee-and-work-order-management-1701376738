@@ -18,6 +18,7 @@ import ModalProvider from './components/shared/modal/ModalProvider.tsx';
 import HomePage from './pages/HomePage.tsx';
 import ProfilePage from './pages/ProfilePage.tsx';
 import TasksPage from './pages/TasksPage.tsx';
+import { loadTasks } from './api/loaders/task.loader.ts';
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
             <TasksPage />
           </ProtectedRoute>
         ),
+        loader: () => loadTasks(store),
       },
       {
         path: '/admin',

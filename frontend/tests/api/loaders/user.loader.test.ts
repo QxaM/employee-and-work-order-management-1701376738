@@ -2,10 +2,9 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 
 import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
 import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
-import { setupStore } from '../../../src/store';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
-import { UnknownAction } from '@reduxjs/toolkit';
 import { LoaderFunctionArgs } from 'react-router-dom';
+import { setupStoreDispatchMock } from '../../test-utils.tsx';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');
@@ -14,11 +13,6 @@ vi.mock('../../../src/store/api/base.ts', async () => {
     customBaseQuery: vi.fn(),
   };
 });
-
-interface QueryResult {
-  unwrap: () => Promise<GetUsersType>;
-  unsubscribe: () => void;
-}
 
 const PAGE_SIZE = 6;
 
@@ -113,32 +107,10 @@ const testUserLoader = async (
 ) => {
   const defaultError = 'Unknown error while fetching user data';
 
-  const store = setupStore();
-
-  const originalDispatch = store.dispatch;
-  const spyDispatch = vi
-    .spyOn(store, 'dispatch')
-    .mockImplementation((action: UnknownAction) => {
-      const result = originalDispatch(action);
-
-      const hasQueryMethods = (obj: unknown): obj is QueryResult => {
-        return (
-          obj !== null &&
-          typeof obj === 'object' &&
-          'unwrap' in obj &&
-          'unsubscribe' in obj &&
-          typeof (obj as QueryResult).unwrap === 'function' &&
-          typeof (obj as QueryResult).unsubscribe === 'function'
-        );
-      };
-
-      if (hasQueryMethods(result)) {
-        result.unwrap = mockUnwrap;
-        result.unsubscribe = mockUnsubscribe;
-      }
-
-      return result;
-    });
+  const { store, dispatch: spyDispatch } = setupStoreDispatchMock(
+    mockUnwrap,
+    mockUnsubscribe
+  );
 
   const usersData: GetUsersType = await loadUsers(store, {
     params: {},

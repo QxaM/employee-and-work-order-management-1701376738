@@ -19,7 +19,7 @@ vi.mock('../../../src/store/api/base.ts', async () => {
 const TASKS_CONTENT = [
   {
     id: 1,
-    name: 'Task 1',
+    title: 'Task 1',
     description: 'Task 1 description',
     user: {
       id: 1,

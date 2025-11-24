@@ -2,10 +2,17 @@ import { render, renderHook, RenderOptions } from '@testing-library/react';
 import { AppStore, RootState, setupStore } from '../src/store';
 import { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import { createMemoryRouter, LoaderFunction, RouterProvider, } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  LoaderFunction,
+  RouterProvider,
+} from 'react-router-dom';
 import { ActionResponse } from '../src/types/store/ActionTypes.ts';
 import { Theme } from '@radix-ui/themes';
 import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
+import { UnknownAction } from '@reduxjs/toolkit';
+import { GetUsersType } from '../src/types/api/UserTypes.ts';
+import { Mock } from 'vitest';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>;
@@ -133,4 +140,43 @@ export function createHookDataRouter<T>(actionData?: ActionResponse<T>) {
 
   TestWrapper.displayName = 'TestWrapper';
   return TestWrapper;
+}
+
+interface QueryResult {
+  unwrap: () => Promise<GetUsersType>;
+  unsubscribe: () => void;
+}
+
+export function setupStoreDispatchMock(
+  mockUnwrap: Mock,
+  mockUnsubscribe: Mock
+) {
+  const store = setupStore();
+
+  const originalDispatch = store.dispatch;
+  const spyDispatch = vi
+    .spyOn(store, 'dispatch')
+    .mockImplementation((action: UnknownAction) => {
+      const result = originalDispatch(action);
+
+      const hasQueryMethods = (obj: unknown): obj is QueryResult => {
+        return (
+          obj !== null &&
+          typeof obj === 'object' &&
+          'unwrap' in obj &&
+          'unsubscribe' in obj &&
+          typeof (obj as QueryResult).unwrap === 'function' &&
+          typeof (obj as QueryResult).unsubscribe === 'function'
+        );
+      };
+
+      if (hasQueryMethods(result)) {
+        result.unwrap = mockUnwrap;
+        result.unsubscribe = mockUnsubscribe;
+      }
+
+      return result;
+    });
+
+  return { store, dispatch: spyDispatch };
 }
