@@ -9,6 +9,9 @@ import org.maxq.taskservice.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 import java.util.Collections;
@@ -125,13 +128,23 @@ class TaskRepositoryTest {
     userRepository.save(user);
 
     Task task1 = new Task("Task 1", "Test task description", user);
+    Pageable pageable = PageRequest.of(0, 10);
     taskRepository.saveAll(List.of(task, task1));
 
     // When
-    List<Task> foundTasks = taskRepository.findAll();
+    Page<Task> foundTasks = taskRepository.findAll(pageable);
 
     // Then
-    assertEquals(2, foundTasks.size(), "Wrong task count saved and fetched");
+    assertAll(
+        () -> assertEquals(pageable.getPageNumber(), foundTasks.getNumber(), "Wrong page mapped"),
+        () -> assertEquals(pageable.getPageSize(), foundTasks.getSize(), "Wrong page size"),
+        () -> assertEquals(2, foundTasks.getTotalElements(), "Wrong total elements"),
+        () -> assertEquals(2, foundTasks.getNumberOfElements(), "Wrong number of elements"),
+        () -> assertTrue(foundTasks.isFirst(), "Wrong is first"),
+        () -> assertTrue(foundTasks.isLast(), "Wrong is last"),
+        () -> assertFalse(foundTasks.isEmpty(), "Wrong is empty")
+    );
+    assertEquals(2, foundTasks.getContent().size(), "Wrong task count saved and fetched");
     assertAll(
         () -> assertTrue(
             foundTasks.stream().anyMatch(foundTask -> task.getId().equals(foundTask.getId())),

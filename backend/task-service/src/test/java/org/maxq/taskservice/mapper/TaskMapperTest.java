@@ -4,11 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.maxq.taskservice.domain.Role;
 import org.maxq.taskservice.domain.Task;
 import org.maxq.taskservice.domain.User;
+import org.maxq.taskservice.domain.dto.PageDto;
 import org.maxq.taskservice.domain.dto.RoleDto;
 import org.maxq.taskservice.domain.dto.TaskDto;
 import org.maxq.taskservice.domain.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Set;
@@ -86,6 +90,43 @@ class TaskMapperTest {
             "Role ID not mapped correctly"),
         () -> assertEquals(role.getName(), roleDtos.getFirst().getName(),
             "Role Name not mapped correctly")
+    );
+  }
+
+  @Test
+  void shouldMapToTaskDtoPage() {
+    // Given
+    Role role = new Role(1L, "ROLE_TEST");
+    User user = new User(2L, "test@test.com", Set.of(role));
+    Task task1 = new Task(3L, "Title 1", "Test description 1", user);
+    Task task2 = new Task(4L, "Title 2", "Test description 2", user);
+
+    Pageable pageable = Pageable.ofSize(10).withPage(0);
+    Page<Task> taskPage = new PageImpl<>(List.of(task1, task2), pageable, 2);
+
+    // When
+    PageDto<TaskDto> mappedTaskPage = taskMapper.mapToTaskDtoPage(taskPage);
+
+    // Then
+    assertEquals(
+        2,
+        mappedTaskPage.getContent().size(),
+        "Mapped tasks do not match - wrong size"
+    );
+    assertAll(
+        () -> assertTrue(mappedTaskPage.isFirst(), "First mapped incorrectly"),
+        () -> assertTrue(mappedTaskPage.isLast(), "Last mapped incorrectly"),
+        () -> assertFalse(mappedTaskPage.isEmpty(), "Empty mapped incorrectly"),
+        () -> assertEquals(1, mappedTaskPage.getTotalPages(),
+            "Total pages mapped incorrectly"),
+        () -> assertEquals(0, mappedTaskPage.getNumber(),
+            "Number mapped incorrectly"),
+        () -> assertEquals(10, mappedTaskPage.getSize(),
+            "Size mapped incorrectly"),
+        () -> assertEquals(2, mappedTaskPage.getTotalElements(),
+            "Total elements mapped incorrectly"),
+        () -> assertEquals(2, mappedTaskPage.getNumberOfElements(),
+            "Number of elements elements mapped incorrectly")
     );
   }
 

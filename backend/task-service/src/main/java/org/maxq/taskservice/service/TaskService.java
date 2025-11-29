@@ -6,10 +6,11 @@ import org.maxq.taskservice.domain.exception.ElementNotFoundException;
 import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.maxq.taskservice.repository.TaskRepository;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,8 +38,9 @@ public class TaskService {
     );
   }
 
-  public List<Task> getAllTasks() {
-    return taskRepository.findAll();
+  public Page<Task> getAllTasks(int page, int size) {
+    Pageable pageable = Pageable.ofSize(size).withPage(page);
+    return taskRepository.findAll(pageable);
   }
 
   public Task updateTask(Task task) throws ElementNotFoundException, UserDoesNotExistException {

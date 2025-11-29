@@ -9,12 +9,11 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.maxq.taskservice.domain.HttpErrorMessage;
+import org.maxq.taskservice.domain.dto.PageDto;
 import org.maxq.taskservice.domain.dto.TaskDto;
 import org.maxq.taskservice.domain.exception.ElementNotFoundException;
 import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @Tag(name = "Tasks API")
 public interface TaskApi {
@@ -171,7 +170,17 @@ public interface TaskApi {
           )
       }
   )
-  ResponseEntity<List<TaskDto>> getAllTasks();
+  ResponseEntity<PageDto<TaskDto>> getAllTasks(
+      @Parameter(
+          description = "Page number of the user request",
+          schema = @Schema(type = "integer", defaultValue = "0")
+      )
+      Integer page,
+      @Parameter(
+          description = "Number of element to return on the page",
+          schema = @Schema(type = "integer", defaultValue = "10")
+      )
+      Integer size);
 
   @Operation(
       summary = "Fetch specified task",

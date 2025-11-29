@@ -3,17 +3,17 @@ package org.maxq.taskservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.maxq.taskservice.controller.api.TaskApi;
 import org.maxq.taskservice.domain.Task;
+import org.maxq.taskservice.domain.dto.PageDto;
 import org.maxq.taskservice.domain.dto.TaskDto;
 import org.maxq.taskservice.domain.exception.ElementNotFoundException;
 import org.maxq.taskservice.domain.exception.UserDoesNotExistException;
 import org.maxq.taskservice.mapper.TaskMapper;
 import org.maxq.taskservice.service.TaskService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
@@ -48,9 +48,12 @@ public class TaskController implements TaskApi {
 
   @Override
   @GetMapping
-  public ResponseEntity<List<TaskDto>> getAllTasks() {
-    List<Task> tasks = taskService.getAllTasks();
-    List<TaskDto> mappedTasks = taskMapper.mapToTaskDtoList(tasks);
+  public ResponseEntity<PageDto<TaskDto>> getAllTasks(
+      @RequestParam(required = false, defaultValue = "0") Integer page,
+      @RequestParam(required = false, defaultValue = "10") Integer size
+  ) {
+    Page<Task> tasks = taskService.getAllTasks(page, size);
+    PageDto<TaskDto> mappedTasks = taskMapper.mapToTaskDtoPage(tasks);
     return ResponseEntity.ok(mappedTasks);
   }
 

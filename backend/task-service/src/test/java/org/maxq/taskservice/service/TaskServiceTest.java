@@ -11,6 +11,9 @@ import org.maxq.taskservice.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -137,14 +140,29 @@ class TaskServiceTest {
   void getAllTasks() {
     // Given
     Task task1 = new Task(2L, "Test", "Test task description", user);
+    Pageable pageable = Pageable.ofSize(10).withPage(0);
+    Page<Task> taskPage = new PageImpl<>(List.of(task, task1), pageable, 2);
 
-    when(taskRepository.findAll()).thenReturn(List.of(task, task1));
+    when(taskRepository.findAll(pageable)).thenReturn(taskPage);
 
     // When
-    List<Task> foundTasks = taskService.getAllTasks();
+    Page<Task> foundTasks = taskService.getAllTasks(
+        pageable.getPageNumber(),
+        pageable.getPageSize()
+    );
 
     // Then
-    assertEquals(2, foundTasks.size(), "Wrong number of tasks found");
+    assertAll(
+        () -> assertEquals(pageable.getPageSize(), foundTasks.getSize(), "Wrong page size"),
+        () -> assertEquals(pageable.getPageNumber(), foundTasks.getNumber(), "Wrong page number"),
+        () -> assertEquals(2, foundTasks.getNumberOfElements(), "Wrong number of elements"),
+        () -> assertEquals(2, foundTasks.getTotalElements(), "Wrong total elements"),
+        () -> assertTrue(foundTasks.isFirst(), "Wrong first page"),
+        () -> assertTrue(foundTasks.isLast(), "Wrong last page"),
+        () -> assertFalse(foundTasks.isEmpty(), "Wrong is empty"),
+        () -> assertEquals(1, foundTasks.getTotalPages(), "Wrong total pages")
+    );
+    assertEquals(2, foundTasks.getContent().size(), "Wrong number of tasks found");
     assertAll(
         () -> assertTrue(
             foundTasks.stream().anyMatch(foundTask -> task.getId().equals(foundTask.getId()))),
@@ -156,13 +174,30 @@ class TaskServiceTest {
   @Test
   void getAllTasksEmpty_When_ReturnedEmpty() {
     // Given
-    when(taskRepository.findAll()).thenReturn(Collections.emptyList());
+    Pageable pageable = Pageable.ofSize(10).withPage(0);
+    when(taskRepository.findAll(pageable)).thenReturn(
+        new PageImpl<>(Collections.emptyList(), pageable, 0)
+    );
 
     // When
-    List<Task> foundTasks = taskService.getAllTasks();
+    Page<Task> foundTasks = taskService.getAllTasks(
+        pageable.getPageNumber(),
+        pageable.getPageSize()
+    );
 
     // Then
-    assertTrue(foundTasks.isEmpty(), "Wrong number of tasks found - tasks should be empty");
+    assertAll(
+        () -> assertEquals(pageable.getPageSize(), foundTasks.getSize(), "Wrong page size"),
+        () -> assertEquals(pageable.getPageNumber(), foundTasks.getNumber(), "Wrong page number"),
+        () -> assertEquals(0, foundTasks.getNumberOfElements(), "Wrong number of elements"),
+        () -> assertEquals(0, foundTasks.getTotalElements(), "Wrong total elements"),
+        () -> assertTrue(foundTasks.isFirst(), "Wrong first page"),
+        () -> assertTrue(foundTasks.isLast(), "Wrong last page"),
+        () -> assertTrue(foundTasks.isEmpty(), "Wrong is empty"),
+        () -> assertEquals(0, foundTasks.getTotalPages(), "Wrong total pages")
+    );
+    assertTrue(foundTasks.getContent().isEmpty(),
+        "Wrong number of tasks found - tasks should be empty");
   }
 
   @Test

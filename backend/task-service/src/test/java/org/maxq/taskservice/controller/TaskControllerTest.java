@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.maxq.taskservice.domain.Role;
 import org.maxq.taskservice.domain.Task;
 import org.maxq.taskservice.domain.User;
+import org.maxq.taskservice.domain.dto.PageDto;
 import org.maxq.taskservice.domain.dto.RoleDto;
 import org.maxq.taskservice.domain.dto.TaskDto;
 import org.maxq.taskservice.domain.dto.UserDto;
@@ -16,6 +17,9 @@ import org.maxq.taskservice.mapper.TaskMapper;
 import org.maxq.taskservice.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -325,11 +329,24 @@ class TaskControllerTest {
     TaskDto taskDto1
         = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
 
+    Pageable pageable = Pageable.ofSize(10).withPage(0);
     List<Task> tasks = List.of(task, task1);
+    Page<Task> pageTask = new PageImpl<>(tasks, pageable, tasks.size());
     List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
+    PageDto<TaskDto> taskDtoPage = PageDto.<TaskDto>builder()
+        .content(taskDtos)
+        .first(true)
+        .last(true)
+        .number(0)
+        .numberOfElements(2)
+        .size(10)
+        .totalElements(taskDtos.size())
+        .totalPages(1)
+        .empty(false)
+        .build();
 
-    when(taskService.getAllTasks()).thenReturn(tasks);
-    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+    when(taskService.getAllTasks(anyInt(), anyInt())).thenReturn(pageTask);
+    when(taskMapper.mapToTaskDtoPage(pageTask)).thenReturn(taskDtoPage);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -338,18 +355,112 @@ class TaskControllerTest {
             .header("X-User", EMAIL)
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(taskDtos.size())));
-    verify(taskService, times(1)).getAllTasks();
+        .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(taskDtos.size())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.first", Matchers.is(taskDtoPage.isFirst())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.last", Matchers.is(taskDtoPage.isLast())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.empty", Matchers.is(taskDtoPage.isEmpty())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalPages",
+            Matchers.is(taskDtoPage.getTotalPages())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.number",
+            Matchers.is(taskDtoPage.getNumber())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.size",
+            Matchers.is(taskDtoPage.getSize())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalElements",
+            Matchers.is((int) taskDtoPage.getTotalElements())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.numberOfElements",
+            Matchers.is(taskDtoPage.getNumberOfElements())
+        ));
+    verify(taskService, times(1)).getAllTasks(anyInt(), anyInt());
+  }
+
+  @Test
+  void shouldGetAllTasks_When_CustomPagination() throws Exception {
+    // Given
+    Task task1 = new Task(101L, "Test 1", "Test description 1", user);
+    TaskDto taskDto1
+        = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
+
+    Pageable pageable = Pageable.ofSize(15).withPage(1);
+    List<Task> tasks = List.of(task, task1);
+    Page<Task> pageTask = new PageImpl<>(tasks, pageable, tasks.size());
+    List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
+    PageDto<TaskDto> taskDtoPage = PageDto.<TaskDto>builder()
+        .content(taskDtos)
+        .first(false)
+        .last(true)
+        .number(1)
+        .numberOfElements(taskDtos.size())
+        .size(pageable.getPageSize())
+        .totalElements(taskDtos.size() + pageable.getPageSize())
+        .totalPages(2)
+        .empty(false)
+        .build();
+
+    when(taskService.getAllTasks(pageable.getPageNumber(), pageable.getPageSize())).thenReturn(
+        pageTask);
+    when(taskMapper.mapToTaskDtoPage(pageTask)).thenReturn(taskDtoPage);
+
+    // When + Then
+    mockMvc.perform(MockMvcRequestBuilders
+            .get(URL + "?page=" + pageable.getPageNumber() + "&size=" + pageable.getPageSize())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+            .header("X-User", EMAIL)
+            .header("X-User-Roles", ROLES))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(taskDtos.size())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.first", Matchers.is(taskDtoPage.isFirst())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.last", Matchers.is(taskDtoPage.isLast())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.empty", Matchers.is(taskDtoPage.isEmpty())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalPages",
+            Matchers.is(taskDtoPage.getTotalPages())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.number",
+            Matchers.is(taskDtoPage.getNumber())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.size",
+            Matchers.is(taskDtoPage.getSize())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalElements",
+            Matchers.is((int) taskDtoPage.getTotalElements())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.numberOfElements",
+            Matchers.is(taskDtoPage.getNumberOfElements())
+        ));
+    verify(taskService, times(1))
+        .getAllTasks(pageable.getPageNumber(), pageTask.getSize());
   }
 
   @Test
   void shouldGetEmptyList_When_NoTasks() throws Exception {
     // Given
-    List<Task> tasks = Collections.emptyList();
-    List<TaskDto> taskDtos = Collections.emptyList();
+    PageDto<TaskDto> taskDtoPage = PageDto.<TaskDto>builder()
+        .content(Collections.emptyList())
+        .first(true)
+        .last(true)
+        .number(0)
+        .numberOfElements(0)
+        .size(10)
+        .totalElements(0)
+        .totalPages(1)
+        .empty(true)
+        .build();
 
-    when(taskService.getAllTasks()).thenReturn(tasks);
-    when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
+    when(taskService.getAllTasks(anyInt(), anyInt())).thenReturn(Page.empty());
+    when(taskMapper.mapToTaskDtoPage(any())).thenReturn(taskDtoPage);
 
     // When + Then
     mockMvc.perform(MockMvcRequestBuilders
@@ -358,7 +469,31 @@ class TaskControllerTest {
             .header("X-User", EMAIL)
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(0)))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.first", Matchers.is(taskDtoPage.isFirst())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.last", Matchers.is(taskDtoPage.isLast())))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.empty", Matchers.is(taskDtoPage.isEmpty())))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalPages",
+            Matchers.is(taskDtoPage.getTotalPages())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.number",
+            Matchers.is(taskDtoPage.getNumber())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.size",
+            Matchers.is(taskDtoPage.getSize())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.totalElements",
+            Matchers.is((int) taskDtoPage.getTotalElements())
+        ))
+        .andExpect(MockMvcResultMatchers.jsonPath(
+            "$.numberOfElements",
+            Matchers.is(taskDtoPage.getNumberOfElements())
+        ));
+    verify(taskService, times(1)).getAllTasks(anyInt(), anyInt());
   }
 
   @Test
@@ -369,9 +504,10 @@ class TaskControllerTest {
         = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
 
     List<Task> tasks = List.of(task, task1);
+    Page<Task> taskPage = new PageImpl<>(tasks, Pageable.ofSize(10).withPage(0), tasks.size());
     List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
 
-    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskService.getAllTasks(anyInt(), anyInt())).thenReturn(taskPage);
     when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
 
     // When + Then
@@ -381,7 +517,7 @@ class TaskControllerTest {
             .header("X-User-Roles", ROLES))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(UNAUTHORIZED_MESSAGE)));
-    verify(taskService, times(0)).getAllTasks();
+    verify(taskService, times(0)).getAllTasks(anyInt(), anyInt());
   }
 
   @Test
@@ -392,9 +528,10 @@ class TaskControllerTest {
         = new TaskDto(task1.getId(), task1.getTitle(), task1.getDescription(), userDto);
 
     List<Task> tasks = List.of(task, task1);
+    Page<Task> taskPage = new PageImpl<>(tasks, Pageable.ofSize(10).withPage(0), tasks.size());
     List<TaskDto> taskDtos = List.of(taskDto, taskDto1);
 
-    when(taskService.getAllTasks()).thenReturn(tasks);
+    when(taskService.getAllTasks(anyInt(), anyInt())).thenReturn(taskPage);
     when(taskMapper.mapToTaskDtoList(tasks)).thenReturn(taskDtos);
 
     // When + Then
@@ -403,7 +540,7 @@ class TaskControllerTest {
             .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(FORBIDDEN_MESSAGE)));
-    verify(taskService, times(0)).getAllTasks();
+    verify(taskService, times(0)).getAllTasks(anyInt(), anyInt());
   }
 
   @Test
