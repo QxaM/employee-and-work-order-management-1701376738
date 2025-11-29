@@ -37,6 +37,7 @@ interface IconWithBackgroundProps {
   className?: string;
   iconClassName?: string;
   color?: AvatarProps['color'];
+  'data-testid'?: string;
 }
 
 const IconWithBackground = ({
@@ -44,11 +45,17 @@ const IconWithBackground = ({
   className,
   iconClassName,
   color = 'violet',
+  'data-testid': dataTestId,
 }: IconWithBackgroundProps) => {
   const iconWrapperStyles = clsx(className, cardColors[color]);
 
   return (
-    <Flex justify="center" align="center" className={iconWrapperStyles}>
+    <Flex
+      data-testid={dataTestId}
+      justify="center"
+      align="center"
+      className={iconWrapperStyles}
+    >
       <Icon className={iconClassName} />
     </Flex>
   );

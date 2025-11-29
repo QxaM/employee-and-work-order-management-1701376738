@@ -20,6 +20,12 @@ describe('TaskContent', () => {
       description: 'Test description',
       user: user,
     },
+    {
+      id: 101,
+      title: 'Test task 2',
+      description: 'Test description 2',
+      user: user,
+    },
   ];
 
   it('should render task content', () => {
@@ -27,9 +33,11 @@ describe('TaskContent', () => {
     render(<TasksContent tasks={tasks} />);
 
     // When
-    const taskId = screen.getByText(tasks[0].id, { exact: true });
+    const task1Id = screen.getByText(`#${tasks[0].id}`, { exact: true });
+    const task2Id = screen.getByText(`#${tasks[1].id}`, { exact: true });
 
     // Then
-    expect(taskId).toBeInTheDocument();
+    expect(task1Id).toBeInTheDocument();
+    expect(task2Id).toBeInTheDocument();
   });
 });
