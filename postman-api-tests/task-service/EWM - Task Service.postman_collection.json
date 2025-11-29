@@ -3223,6 +3223,92 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Get All Tasks With Custom Page",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"pm.test('should contain correct pageable', () => {\r",
+											"    pm.expect(response).to.haveOwnProperty('first').that.is.a('boolean');\r",
+											"    pm.expect(response).to.haveOwnProperty('last').that.is.a('boolean');\r",
+											"    pm.expect(response).to.haveOwnProperty('empty').that.is.a('boolean');\r",
+											"    pm.expect(response).to.haveOwnProperty('totalPages').that.is.a('number');\r",
+											"    pm.expect(response).to.haveOwnProperty('number').that.is.a('number');\r",
+											"    pm.expect(response).to.haveOwnProperty('size').that.is.a('number');\r",
+											"    pm.expect(response).to.haveOwnProperty('totalElements').that.is.a('number');\r",
+											"    pm.expect(response).to.haveOwnProperty('numberOfElements').that.is.a('number');\r",
+											"})\r",
+											"\r",
+											"pm.test('should contain correct custom page data', () => {\r",
+											"    pm.expect(response.first).to.eql(false);\r",
+											"    pm.expect(response.empty).to.eql(false);\r",
+											"    pm.expect(response.totalPages).not.to.eql(1);\r",
+											"    pm.expect(response.number).to.eql(1);\r",
+											"    pm.expect(response.size).to.eql(1);\r",
+											"    pm.expect(response.numberOfElements).to.eql(1);\r",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-User",
+										"value": "{{operatorEmail}}",
+										"type": "text"
+									},
+									{
+										"key": "X-User-Roles",
+										"value": "{{operatorRole}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{taskServiceUrl}}/tasks?page=1&size=1",
+									"host": [
+										"{{taskServiceUrl}}"
+									],
+									"path": [
+										"tasks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "size",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
