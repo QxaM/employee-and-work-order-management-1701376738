@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { api } from '../apiSlice.ts';
-import { TaskType } from '../../types/api/TaskTypes.ts';
-import { tasksApi } from './base.ts';
+import {api} from '../apiSlice.ts';
+import {PagedTasksType} from '../../types/api/TaskTypes.ts';
+import {tasksApi} from './base.ts';
+import {PageableRequest} from '../../types/api/BaseTypes.ts';
 
 const TASK_URL = import.meta.env.VITE_TASK_URL as string;
+const DEFAULT_TASKS_PER_PAGE = 5;
 
 const HEALTHCHECK_API = '/actuator/health';
 const TASKS_API = '/tasks';
@@ -22,15 +24,20 @@ export const taskApi = api.injectEndpoints({
         },
       }),
     }),
-    getTasks: builder.query<TaskType[], void>({
-      query: () => ({
-        url: tasksApi + TASKS_API,
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        defaultError: defaultGetTasksErrorMessage,
-      }),
+    getTasks: builder.query<PagedTasksType, PageableRequest | void>({
+      query: (params) => {
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        const { page = 0, size = DEFAULT_TASKS_PER_PAGE } = params || {};
+
+        return {
+          url: tasksApi + TASKS_API + `?page=${page}&size=${size}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          defaultError: defaultGetTasksErrorMessage,
+        };
+      },
       providesTags: ['Tasks'],
     }),
   }),

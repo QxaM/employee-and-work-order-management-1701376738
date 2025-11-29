@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import TasksPage from '../../src/pages/TasksPage.tsx';
-import { RoleType } from '../../src/types/api/RoleTypes.ts';
-import { TaskType } from '../../src/types/api/TaskTypes.ts';
+import {RoleType} from '../../src/types/api/RoleTypes.ts';
+import {PagedTasksType, TaskType} from '../../src/types/api/TaskTypes.ts';
 import * as tasksApiModule from '../../src/store/api/task.ts';
-import { beforeEach } from 'vitest';
+import {beforeEach} from 'vitest';
+import {BrowserRouter} from 'react-router-dom';
 
 describe('TasksPage', () => {
   const role: RoleType = {
@@ -23,10 +24,20 @@ describe('TasksPage', () => {
       user: user,
     },
   ];
+  const pagedTasks: PagedTasksType = {
+    content: tasks,
+    first: true,
+    last: true,
+    number: 0,
+    numberOfElements: 1,
+    size: 5,
+    totalElements: 1,
+    totalPages: 1,
+  };
 
   beforeEach(() => {
     vi.spyOn(tasksApiModule, 'useGetTasksQuery').mockReturnValue({
-      data: tasks,
+      data: pagedTasks,
       refetch: vi.fn(),
     });
   });
@@ -36,7 +47,7 @@ describe('TasksPage', () => {
     const headingTitle = 'Tasks';
 
     // When
-    render(<TasksPage />);
+    render(<TasksPage />, { wrapper: BrowserRouter });
 
     const headingElement = screen.getByRole('heading', { name: headingTitle });
 
@@ -46,10 +57,10 @@ describe('TasksPage', () => {
 
   it('should render TasksContent', () => {
     // Given
-    render(<TasksPage />);
+    render(<TasksPage />, { wrapper: BrowserRouter });
 
     // When
-    const idElement = screen.getByText(tasks[0].id, { exact: true });
+    const idElement = screen.getByText(`#${tasks[0].id}`, { exact: true });
 
     // Then
     expect(idElement).toBeInTheDocument();

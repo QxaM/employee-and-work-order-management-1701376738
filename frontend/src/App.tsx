@@ -40,7 +40,8 @@ const router = createBrowserRouter([
             <TasksPage />
           </ProtectedRoute>
         ),
-        loader: () => loadTasks(store),
+        errorElement: <ErrorElement />,
+        loader: (loaderFunctionArgs) => loadTasks(store, loaderFunctionArgs),
       },
       {
         path: '/admin',

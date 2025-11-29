@@ -1,12 +1,12 @@
-import { customBaseQuery, CustomFetchBaseQueryError, } from '../../../src/store/api/base.ts';
-import { renderHookWithProviders } from '../../test-utils.tsx';
-import { renderHook, waitFor } from '@testing-library/react';
-import { act, PropsWithChildren } from 'react';
-import { beforeEach, expect } from 'vitest';
-import { useGetTasksQuery, useTaskHealthcheckQuery, } from '../../../src/store/api/task.ts';
-import { usersApi } from '../../../src/store/api/user.ts';
-import { setupStore } from '../../../src/store';
-import { Provider } from 'react-redux';
+import {customBaseQuery, CustomFetchBaseQueryError,} from '../../../src/store/api/base.ts';
+import {renderHookWithProviders} from '../../test-utils.tsx';
+import {renderHook, waitFor} from '@testing-library/react';
+import {act, PropsWithChildren} from 'react';
+import {beforeEach, expect} from 'vitest';
+import {useGetTasksQuery, useTaskHealthcheckQuery,} from '../../../src/store/api/task.ts';
+import {usersApi} from '../../../src/store/api/user.ts';
+import {setupStore} from '../../../src/store';
+import {Provider} from 'react-redux';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');
@@ -164,7 +164,36 @@ describe('Task API', () => {
         expect(customBaseQuery).toHaveBeenCalledOnce();
         expect(customBaseQuery).toHaveBeenCalledWith(
           {
-            url: `/task/tasks`,
+            url: `/task/tasks?page=0&size=5`,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            defaultError,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('should make API call with custom parameters', async () => {
+      // Given
+      const page = 1;
+      const size = 10;
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: MOCK_DEFAULT_TASKS_DATA,
+      });
+
+      // When
+      renderHookWithProviders(() => useGetTasksQuery({ page, size }));
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: `/task/tasks?page=${page}&size=${size}`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

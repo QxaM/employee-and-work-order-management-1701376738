@@ -1,17 +1,14 @@
-import { api } from '../apiSlice.ts';
-import { authApi } from './base.ts';
-import { GetUsersType } from '../../types/api/UserTypes.ts';
-import { PageableRequest } from '../../types/api/BaseTypes.ts';
-import { RoleType } from '../../types/api/RoleTypes.ts';
-import { store } from '../index.ts';
-import { registerModal } from '../modalSlice.ts';
-import { v4 as uuidv4 } from 'uuid';
-import { getValueOrDefault } from '../../utils/shared.ts';
-import { readErrorMessage } from '../../utils/errorUtils.ts';
-import {
-  addRoleToDraftUser,
-  removeRoleFromDraftUser,
-} from '../../utils/api/cache.ts';
+import {api} from '../apiSlice.ts';
+import {authApi} from './base.ts';
+import {GetUsersType} from '../../types/api/UserTypes.ts';
+import {PageableRequest} from '../../types/api/BaseTypes.ts';
+import {RoleType} from '../../types/api/RoleTypes.ts';
+import {store} from '../index.ts';
+import {registerModal} from '../modalSlice.ts';
+import {v4 as uuidv4} from 'uuid';
+import {getValueOrDefault} from '../../utils/shared.ts';
+import {readErrorMessage} from '../../utils/errorUtils.ts';
+import {addRoleToDraftUser, removeRoleFromDraftUser,} from '../../utils/api/cache.ts';
 
 const USERS_API = '/users';
 export const DEFAULT_USERS_PER_PAGE = 6;
@@ -74,9 +71,9 @@ export const usersApi = api.injectEndpoints({
         try {
           await queryFulfilled;
         } catch (error) {
-          patchResults.forEach((p) => {
+          for (const p of patchResults) {
             p.undo();
-          });
+          }
 
           const message = readErrorMessage(error);
           store.dispatch(
@@ -125,9 +122,9 @@ export const usersApi = api.injectEndpoints({
         try {
           await queryFulfilled;
         } catch (error) {
-          patchResults.forEach((patch) => {
+          for (const patch of patchResults) {
             patch.undo();
-          });
+          }
 
           const message = readErrorMessage(error);
           store.dispatch(
