@@ -1,10 +1,11 @@
-import {render, screen} from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import TasksPage from '../../src/pages/TasksPage.tsx';
-import {RoleType} from '../../src/types/api/RoleTypes.ts';
-import {PagedTasksType, TaskType} from '../../src/types/api/TaskTypes.ts';
+import { RoleType } from '../../src/types/api/RoleTypes.ts';
+import { PagedTasksType, TaskType } from '../../src/types/api/TaskTypes.ts';
 import * as tasksApiModule from '../../src/store/api/task.ts';
-import {beforeEach} from 'vitest';
-import {BrowserRouter} from 'react-router-dom';
+import { beforeEach } from 'vitest';
+import { BrowserRouter, RouterProvider } from 'react-router-dom';
+import { createDataRouter, renderWithProviders } from '../test-utils.tsx';
 
 describe('TasksPage', () => {
   const role: RoleType = {
@@ -42,6 +43,10 @@ describe('TasksPage', () => {
     });
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should render TasksListTitle', () => {
     // Given
     const headingTitle = 'Tasks';
@@ -64,5 +69,68 @@ describe('TasksPage', () => {
 
     // Then
     expect(idElement).toBeInTheDocument();
+  });
+
+  describe('Page management', () => {
+    const path = '/tasks';
+
+    const mockPageData: PagedTasksType = {
+      content: tasks,
+      first: false,
+      last: true,
+      number: 1,
+      totalPages: 2,
+      size: 1,
+      numberOfElements: 1,
+      totalElements: 2,
+    };
+
+    it('should render Pageable', async () => {
+      // Given
+      const pageableLabel = 'pagination control';
+      const mockLoader = vi.fn().mockReturnValue(mockPageData);
+
+      const router = createDataRouter(path, <TasksPage />, mockLoader);
+      renderWithProviders(<RouterProvider router={router} />);
+
+      // When
+      const pageable = await screen.findByLabelText(pageableLabel);
+
+      // Then
+      expect(pageable).toBeInTheDocument();
+    });
+
+    it('should reload data when page changes', async () => {
+      // Given
+      const nextPageLabel = 'next page';
+      const mockLoader = vi.fn().mockReturnValue(mockPageData);
+      vi.spyOn(tasksApiModule, 'useGetTasksQuery').mockReturnValue({
+        data: mockPageData,
+        isSuccess: true,
+        isError: false,
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      });
+
+      const router = createDataRouter(path, <TasksPage />, mockLoader);
+      renderWithProviders(<RouterProvider router={router} />);
+
+      const nextPage = await screen.findByLabelText(nextPageLabel);
+      const nextPageNumber = mockPageData.number + 1;
+
+      // When
+      fireEvent.click(nextPage);
+
+      // Then
+      expect(mockLoader).toHaveBeenCalledTimes(2);
+      expect(mockLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          request: expect.objectContaining({
+            url: expect.stringContaining(`page=${nextPageNumber}`) as string,
+          }) as Partial<Request>,
+        })
+      );
+    });
   });
 });
