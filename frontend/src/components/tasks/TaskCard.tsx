@@ -1,7 +1,7 @@
-import { TaskType } from '../../types/api/TaskTypes.ts';
-import { Badge, Button, Card, Code, Flex, Text } from '@radix-ui/themes';
+import {TaskType} from '../../types/api/TaskTypes.ts';
+import {Badge, Button, Card, Code, Flex, Inset, Progress, Text,} from '@radix-ui/themes';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
-import { ClockIcon } from '@radix-ui/react-icons';
+import {ClockIcon} from '@radix-ui/react-icons';
 
 interface TaskCardProps {
   task: TaskType;
@@ -11,6 +11,9 @@ const TaskCard = ({ task }: TaskCardProps) => {
   return (
     <Card size="2" className="h-auto! px-(--space-6)!" asChild>
       <Button variant="surface">
+        <Inset clip="padding-box" side="top" pb="current" mx="-4">
+          <Progress variant="soft" value={50} color="orange" size="1" />
+        </Inset>
         <Flex direction="row" justify="between" align="center" gap="6">
           <Flex direction="row" justify="center" align="center" gap="6">
             <IconWithBackground
