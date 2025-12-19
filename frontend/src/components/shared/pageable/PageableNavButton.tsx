@@ -2,13 +2,12 @@ import { Link } from 'react-router-dom';
 import { CaretLeftIcon, CaretRightIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx/lite';
 import { PageableColor } from '../../../types/components/PageableTypes.ts';
-import { Color } from '../../../types/TailwindTypes.ts';
 
 interface PageableNavButtonProps {
   direction: 'previous' | 'next';
   currentPage: number;
   isDisabled: boolean;
-  color: Color;
+  color: keyof typeof PageableColor;
 }
 
 const PageableNavButton = ({

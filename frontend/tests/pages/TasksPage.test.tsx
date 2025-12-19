@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import {act, fireEvent, screen} from '@testing-library/react';
 import TasksPage from '../../src/pages/TasksPage.tsx';
-import { RoleType } from '../../src/types/api/RoleTypes.ts';
-import { PagedTasksType, TaskType } from '../../src/types/api/TaskTypes.ts';
+import {RoleType} from '../../src/types/api/RoleTypes.ts';
+import {PagedTasksType, TaskType} from '../../src/types/api/TaskTypes.ts';
 import * as tasksApiModule from '../../src/store/api/task.ts';
-import { beforeEach } from 'vitest';
-import { BrowserRouter, RouterProvider } from 'react-router-dom';
-import { createDataRouter, renderWithProviders } from '../test-utils.tsx';
+import {beforeEach} from 'vitest';
+import {BrowserRouter, RouterProvider} from 'react-router-dom';
+import {createDataRouter, renderWithProviders} from '../test-utils.tsx';
 
 describe('TasksPage', () => {
   const role: RoleType = {
@@ -52,7 +52,7 @@ describe('TasksPage', () => {
     const headingTitle = 'Tasks';
 
     // When
-    render(<TasksPage />, { wrapper: BrowserRouter });
+    renderWithProviders(<TasksPage />, { wrapper: BrowserRouter });
 
     const headingElement = screen.getByRole('heading', { name: headingTitle });
 
@@ -62,13 +62,32 @@ describe('TasksPage', () => {
 
   it('should render TasksContent', () => {
     // Given
-    render(<TasksPage />, { wrapper: BrowserRouter });
+    renderWithProviders(<TasksPage />, { wrapper: BrowserRouter });
 
     // When
     const idElement = screen.getByText(`#${tasks[0].id}`, { exact: true });
 
     // Then
     expect(idElement).toBeInTheDocument();
+  });
+
+  it('should open New Task modal', async () => {
+    // Given
+    const newTask = 'New Task';
+    const newTaskDialogTitle = 'Create New Task';
+    renderWithProviders(<TasksPage />, { wrapper: BrowserRouter });
+    const newTaskButton = screen.getByRole('button', { name: newTask });
+
+    // When
+    act(() => {
+      fireEvent.click(newTaskButton);
+    });
+    const newTaskModal = await screen.findByRole('heading', {
+      name: newTaskDialogTitle,
+    });
+
+    // Then
+    expect(newTaskModal).toBeInTheDocument();
   });
 
   describe('Page management', () => {

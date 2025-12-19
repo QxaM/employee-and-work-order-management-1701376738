@@ -6,14 +6,16 @@ import FormContent from './sub/FormContent.tsx';
 import FormInput from './sub/FormInput.tsx';
 import FormSubmit from './sub/FormSubmit.tsx';
 import FormFooter from './sub/FormFooter.tsx';
+import { PaddingProps } from '@radix-ui/themes/props';
+import FormSelect from './sub/FormSelect.tsx';
 
-interface FormProps {
+interface FormProps extends PaddingProps {
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   className?: string;
 }
 
 const Form = (props: PropsWithChildren<FormProps>) => {
-  const { handleSubmit, className, children } = props;
+  const { handleSubmit, className, children, ...paddingProps } = props;
 
   return (
     <RadixForm.Root onSubmit={handleSubmit} className={className}>
@@ -23,6 +25,7 @@ const Form = (props: PropsWithChildren<FormProps>) => {
         align="center"
         width="100%"
         p="5"
+        {...paddingProps}
       >
         {children}
       </Flex>
@@ -33,6 +36,7 @@ const Form = (props: PropsWithChildren<FormProps>) => {
 Form.Header = FormHeader;
 Form.Content = FormContent;
 Form.Input = FormInput;
+Form.Select = FormSelect;
 Form.Submit = FormSubmit;
 Form.Footer = FormFooter;
 

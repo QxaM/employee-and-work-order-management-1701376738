@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import FormInput from '../../../../../src/components/shared/form/sub/FormInput.tsx';
-import { Form } from 'radix-ui';
-import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
-import { afterEach, beforeEach } from 'vitest';
+import {Form} from 'radix-ui';
+import {EnvelopeClosedIcon} from '@radix-ui/react-icons';
+import {afterEach, beforeEach} from 'vitest';
 
 describe('FormInput', () => {
   const label = 'Test label';
@@ -10,15 +10,18 @@ describe('FormInput', () => {
   describe('Label', () => {
     it('Should render label', () => {
       // Given
+      const dataTestId = 'form-input';
 
       // When
       render(<FormInput name={label} />, { wrapper: Form.Root });
       const labelElement = screen.getByText(label);
       const textboxElement = screen.getByRole('textbox');
+      const formInputElement = screen.getByTestId(dataTestId);
 
       // Then
       expect(labelElement).toBeInTheDocument();
       expect(textboxElement).toHaveAttribute('name', label);
+      expect(formInputElement).toBeInTheDocument();
     });
 
     it('Should not render label and name as id', () => {
@@ -123,11 +126,47 @@ describe('FormInput', () => {
       expect(textInput).toHaveAttribute('type', 'password');
     });
 
+    it('Should render text area element', () => {
+      // Given
+      const dataTestId = 'form-textarea';
+
+      // When
+      render(<FormInput name={label} type="textarea" />, {
+        wrapper: Form.Root,
+      });
+      const labelElement = screen.getByText(label);
+      const textboxElement = screen.getByRole('textbox');
+      const textareaElement = screen.getByTestId(dataTestId);
+
+      // Then
+      expect(labelElement).toBeInTheDocument();
+      expect(textboxElement).toHaveAttribute('name', label);
+      expect(textareaElement).toBeInTheDocument();
+    });
+
     it('Should render error element', () => {
       // Given
       const errorMessage = `${label} is required`;
 
       render(<FormInput name={label} type="text" required />, {
+        wrapper: Form.Root,
+      });
+      const inputElement = screen.getByRole('textbox');
+
+      // When
+      fireEvent.change(inputElement, { target: { value: '' } });
+      fireEvent.blur(inputElement);
+      const errorElement = screen.getByText(errorMessage);
+
+      // Then
+      expect(errorElement).toBeInTheDocument();
+    });
+
+    it('Should render error element for textarea', () => {
+      // Given
+      const errorMessage = `${label} is required`;
+
+      render(<FormInput name={label} type="textarea" required />, {
         wrapper: Form.Root,
       });
       const inputElement = screen.getByRole('textbox');
@@ -172,6 +211,40 @@ describe('FormInput', () => {
       render(<FormInput name={label} type="text" onInput={mock} required />, {
         wrapper: Form.Root,
       });
+      const inputElement = screen.getByRole('textbox');
+
+      // When
+      fireEvent.input(inputElement, { target: { value: 'test' } });
+
+      // Then
+      expect(mock).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should call provided onChange function for textarea', () => {
+      // Given
+      render(
+        <FormInput name={label} type="textarea" onChange={mock} required />,
+        {
+          wrapper: Form.Root,
+        }
+      );
+      const inputElement = screen.getByRole('textbox');
+
+      // When
+      fireEvent.change(inputElement, { target: { value: 'test' } });
+
+      // Then
+      expect(mock).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should call provided onInput function for textarea', () => {
+      // Given
+      render(
+        <FormInput name={label} type="textarea" onInput={mock} required />,
+        {
+          wrapper: Form.Root,
+        }
+      );
       const inputElement = screen.getByRole('textbox');
 
       // When

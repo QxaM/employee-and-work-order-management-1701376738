@@ -1,4 +1,4 @@
-import { Color } from '../TailwindTypes.ts';
+import {Color} from '../TailwindTypes.ts';
 
 /**
  * Represents pagination information for a collection or dataset.
@@ -31,7 +31,10 @@ export interface ElementColor {
   activePageButton: string;
 }
 
-export const PageableColor: Record<Color, ElementColor> = {
+export const PageableColor: Record<
+  Extract<Color, 'violet' | 'gray'>,
+  ElementColor
+> = {
   violet: {
     text: 'text-(--accent-a11)',
     navButton: 'border-(--accent-3) hover:bg-(--accent-3)',

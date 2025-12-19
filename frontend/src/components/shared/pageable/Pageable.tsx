@@ -1,4 +1,3 @@
-import { Color } from '../../../types/TailwindTypes.ts';
 import {
   Pageable as PageableData,
   PageableColor,
@@ -11,7 +10,7 @@ import PageContent from './PageContent.tsx';
 
 interface PageableProps {
   pageable: PageableData;
-  color?: Exclude<Color, 'gray'>;
+  color?: Exclude<keyof typeof PageableColor, 'gray'>;
   maxPages?: number;
 }
 

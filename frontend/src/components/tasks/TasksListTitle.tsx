@@ -1,12 +1,13 @@
-import { Card, Flex, Heading, Text } from '@radix-ui/themes';
+import { Button, Card, Flex, Heading, Text } from '@radix-ui/themes';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
-import { Pencil2Icon } from '@radix-ui/react-icons';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 
 interface TasksListTitleProps {
   totalTasks: number;
+  openNewTask: () => void;
 }
 
-const TasksListTitle = ({ totalTasks }: TasksListTitleProps) => {
+const TasksListTitle = ({ totalTasks, openNewTask }: TasksListTitleProps) => {
   return (
     <Card size="4" variant="classic">
       <Flex direction="row" justify="between" align="center">
@@ -25,9 +26,15 @@ const TasksListTitle = ({ totalTasks }: TasksListTitleProps) => {
             </Text>
           </Flex>
         </Flex>
-        <Text size="2" color="gray">
-          Total Tasks: {totalTasks}
-        </Text>
+        <Flex direction="row" justify="end" align="center" gap="2">
+          <Text size="2" color="gray">
+            Total Tasks: {totalTasks}
+          </Text>
+          <Button size="3" variant="soft" onClick={openNewTask}>
+            <PlusIcon />
+            New Task
+          </Button>
+        </Flex>
       </Flex>
     </Card>
   );

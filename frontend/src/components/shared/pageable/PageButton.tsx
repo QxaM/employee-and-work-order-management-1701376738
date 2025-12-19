@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
-import { PageableColor } from '../../../types/components/PageableTypes.ts';
-import { Color } from '../../../types/TailwindTypes.ts';
+import {Link} from 'react-router-dom';
+import {PageableColor} from '../../../types/components/PageableTypes.ts';
 import clsx from 'clsx/lite';
-import { Flex, Text } from '@radix-ui/themes';
+import {Flex, Text} from '@radix-ui/themes';
 
 interface PageButtonProps {
   toPage: number;
   currentPage: number;
-  color: Color;
+  color: keyof typeof PageableColor;
 }
 
 const PageButton = ({ toPage, currentPage, color }: PageButtonProps) => {

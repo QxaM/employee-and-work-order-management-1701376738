@@ -8,14 +8,14 @@ const SpinnerSize: Record<Size, string> = {
   large: 'size-(--space-9) border-[7px]',
 };
 
-const SpinnerColor: Record<Color, string> = {
+const SpinnerColor: Record<Extract<Color, 'violet' | 'gray'>, string> = {
   violet: 'border-violet-5 border-t-violet-9',
   gray: 'border-gray-5 border-t-gray-9',
 };
 
 interface SpinnerType {
   size?: Size;
-  color?: Color;
+  color?: Extract<Color, 'violet' | 'gray'>;
   isLoading?: boolean;
 }
 

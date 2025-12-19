@@ -1,5 +1,12 @@
 import { Form } from 'radix-ui';
-import { Button, Flex, Text, TextField } from '@radix-ui/themes';
+import {
+  Button,
+  Flex,
+  Text,
+  TextArea,
+  TextAreaProps,
+  TextField,
+} from '@radix-ui/themes';
 import clsx from 'clsx/lite';
 import FormInputMessage from './FormInputMessage.tsx';
 import {
@@ -15,7 +22,11 @@ import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ValidatorType } from '../../../../types/ValidatorTypes.ts';
 import { IconType } from '../../../../types/components/BaseTypes.ts';
 
-export interface RadixFormInputProps extends TextField.RootProps {
+export interface RadixFormInputProps
+  extends Omit<TextField.RootProps, 'type' | 'onInput' | 'onChange'> {
+  type?: TextField.RootProps['type'] | 'textarea';
+  onInput?: TextField.RootProps['onInput'] & TextAreaProps['onInput'];
+  onChange?: TextField.RootProps['onChange'] & TextAreaProps['onChange'];
   icon?: IconType;
   validators?: ValidatorType[];
   onValueChange?: (value: string) => void;
@@ -45,13 +56,23 @@ const FormInput = (props: RadixFormInputProps) => {
 
   const EyeIcon = typeState === 'password' ? EyeClosed : EyeOpen;
 
+  const defaultValidityClasses = clsx('!outline-(--red-8) !bg-(--red-a1)');
   const getFieldClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
         !validity.valid &&
         clsx(
           '!shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-a7)]',
-          '!outline-(--red-8) !bg-(--red-a1)'
+          defaultValidityClasses
+        )
+    );
+  const getAreaClasses = (validity: ValidityState | undefined) =>
+    clsx(
+      validity &&
+        !validity.valid &&
+        clsx(
+          '!shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-a7)]',
+          defaultValidityClasses
         )
     );
 
@@ -77,47 +98,68 @@ const FormInput = (props: RadixFormInputProps) => {
           {(validity) => {
             return (
               <Form.Control asChild>
-                <TextField.Root
-                  onInput={(event: FormEvent<HTMLInputElement>) => {
-                    onInput?.(event);
-                    onValueChange?.(event.currentTarget.value);
-                  }}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                    onChange?.(event);
-                    onValueChange?.(event.currentTarget.value);
-                  }}
-                  type={typeState}
-                  name={fieldName}
-                  max={max}
-                  min={min}
-                  maxLength={maxLength}
-                  minLength={minLength}
-                  {...rest}
-                  size="3"
-                  mb="1"
-                  className={getFieldClasses(validity)}
-                >
-                  {Icon && (
-                    <TextField.Slot>
-                      <Icon
-                        strokeWidth={0.75}
-                        stroke="currentColor"
-                        className="size-(--font-size-5) text-(--gray-a8)"
-                      />
-                    </TextField.Slot>
-                  )}
-                  {type === 'password' && (
-                    <TextField.Slot side="right">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={togglePassword}
-                      >
-                        <EyeIcon strokeWidth={0.5} stroke="currentColor" />
-                      </Button>
-                    </TextField.Slot>
-                  )}
-                </TextField.Root>
+                {typeState === 'textarea' ? (
+                  <TextArea
+                    onInput={(event: FormEvent<HTMLTextAreaElement>) => {
+                      onInput?.(event);
+                      onValueChange?.(event.currentTarget.value);
+                    }}
+                    onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                      onChange?.(event);
+                      onValueChange?.(event.currentTarget.value);
+                    }}
+                    data-testid="form-textarea"
+                    name={fieldName}
+                    placeholder={rest.placeholder}
+                    className={getAreaClasses(validity)}
+                    size="3"
+                    mb="1"
+                    required={rest.required}
+                  />
+                ) : (
+                  <TextField.Root
+                    onInput={(event: FormEvent<HTMLInputElement>) => {
+                      onInput?.(event);
+                      onValueChange?.(event.currentTarget.value);
+                    }}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      onChange?.(event);
+                      onValueChange?.(event.currentTarget.value);
+                    }}
+                    data-testid="form-input"
+                    type={typeState}
+                    name={fieldName}
+                    max={max}
+                    min={min}
+                    maxLength={maxLength}
+                    minLength={minLength}
+                    {...rest}
+                    size="3"
+                    mb="1"
+                    className={getFieldClasses(validity)}
+                  >
+                    {Icon && (
+                      <TextField.Slot>
+                        <Icon
+                          strokeWidth={0.75}
+                          stroke="currentColor"
+                          className="size-(--font-size-5) text-(--gray-a8)"
+                        />
+                      </TextField.Slot>
+                    )}
+                    {type === 'password' && (
+                      <TextField.Slot side="right">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={togglePassword}
+                        >
+                          <EyeIcon strokeWidth={0.5} stroke="currentColor" />
+                        </Button>
+                      </TextField.Slot>
+                    )}
+                  </TextField.Root>
+                )}
               </Form.Control>
             );
           }}
