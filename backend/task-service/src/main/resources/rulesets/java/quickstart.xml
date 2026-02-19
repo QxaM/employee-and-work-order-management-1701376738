@@ -21,8 +21,8 @@
     <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach"/>
     <rule ref="category/java/bestpractices.xml/ForLoopVariableCount"/>
     <rule ref="category/java/bestpractices.xml/JUnit5TestShouldBePackagePrivate"/>
-    <rule ref="category/java/bestpractices.xml/JUnitAssertionsShouldIncludeMessage"/>
-    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+    <rule ref="category/java/bestpractices.xml/UnitTestAssertionsShouldIncludeMessage"/>
+    <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
         <properties>
             <property name="maximumAsserts" value="5"/>
         </properties>
@@ -70,7 +70,11 @@
     <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions"/>
     <rule ref="category/java/codestyle.xml/GenericsNaming"/>
     <rule ref="category/java/codestyle.xml/IdenticalCatchBranches"/>
-    <rule ref="category/java/codestyle.xml/LinguisticNaming"/>
+    <rule ref="category/java/codestyle.xml/LinguisticNaming">
+      <properties>
+        <property name="ignoredAnnotations" value="org.junit.jupiter.api.Test"></property>
+      </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions"/>
     <rule ref="category/java/codestyle.xml/NoPackage"/>
     <rule ref="category/java/codestyle.xml/MethodNamingConventions">

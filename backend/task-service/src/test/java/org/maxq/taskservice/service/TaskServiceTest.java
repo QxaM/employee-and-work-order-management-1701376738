@@ -63,24 +63,21 @@ class TaskServiceTest {
         () -> assertEquals(task.getUser().getId(), savedTask.getUser().getId(),
             "Wrong task saved - incorrect user ID"),
         () -> assertEquals(task.getUser().getEmail(), savedTask.getUser().getEmail(),
-            "Wrong task saved - incorrect user ID")
-    );
+            "Wrong task saved - incorrect user ID"));
     verify(taskRepository, times(1)).save(task);
   }
 
   @Test
   void createTaskShouldThrow_When_InvalidDataAccessApiUsageException() {
     // Given
-    String expectedMessage
-        = "Failed to create task. User with id: " + user.getId() + " does not exist!";
+    String expectedMessage = "Failed to create task. User with id: " + user.getId() + " does not exist!";
     when(taskRepository.save(task)).thenThrow(InvalidDataAccessApiUsageException.class);
 
     // When
     Executable executable = () -> taskService.createTask(task);
 
     // Then
-    UserDoesNotExistException exception
-        = assertThrows(UserDoesNotExistException.class, executable,
+    UserDoesNotExistException exception = assertThrows(UserDoesNotExistException.class, executable,
         "Service should not throw on correct save");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -88,16 +85,14 @@ class TaskServiceTest {
   @Test
   void createTaskShouldThrow_When_JpaObjectRetrievalFailureException() {
     // Given
-    String expectedMessage
-        = "Failed to create task. User with id: " + user.getId() + " does not exist!";
+    String expectedMessage = "Failed to create task. User with id: " + user.getId() + " does not exist!";
     when(taskRepository.save(task)).thenThrow(JpaObjectRetrievalFailureException.class);
 
     // When
     Executable executable = () -> taskService.createTask(task);
 
     // Then
-    UserDoesNotExistException exception
-        = assertThrows(UserDoesNotExistException.class, executable,
+    UserDoesNotExistException exception = assertThrows(UserDoesNotExistException.class, executable,
         "Service should not throw on correct save");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
@@ -117,8 +112,7 @@ class TaskServiceTest {
         () -> assertEquals(task.getDescription(), foundTask.getDescription(),
             "Found description should match"),
         () -> assertEquals(task.getUser().getId(), foundTask.getUser().getId(),
-            "Found user should match")
-    );
+            "Found user should match"));
   }
 
   @Test
@@ -131,8 +125,8 @@ class TaskServiceTest {
     Executable executable = () -> taskService.getTask(task.getId());
 
     // Then
-    ElementNotFoundException exception
-        = assertThrows(ElementNotFoundException.class, executable, "Service should throw on empty");
+    ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, executable,
+        "Service should throw on empty");
     assertEquals(expectedMessage, exception.getMessage(), "Wrong message was throw from service");
   }
 
@@ -148,8 +142,7 @@ class TaskServiceTest {
     // When
     Page<Task> foundTasks = taskService.getAllTasks(
         pageable.getPageNumber(),
-        pageable.getPageSize()
-    );
+        pageable.getPageSize());
 
     // Then
     assertAll(
@@ -160,15 +153,13 @@ class TaskServiceTest {
         () -> assertTrue(foundTasks.isFirst(), "Wrong first page"),
         () -> assertTrue(foundTasks.isLast(), "Wrong last page"),
         () -> assertFalse(foundTasks.isEmpty(), "Wrong is empty"),
-        () -> assertEquals(1, foundTasks.getTotalPages(), "Wrong total pages")
-    );
+        () -> assertEquals(1, foundTasks.getTotalPages(), "Wrong total pages"));
     assertEquals(2, foundTasks.getContent().size(), "Wrong number of tasks found");
     assertAll(
         () -> assertTrue(
-            foundTasks.stream().anyMatch(foundTask -> task.getId().equals(foundTask.getId()))),
+            foundTasks.stream().anyMatch(foundTask -> task.getId().equals(foundTask.getId())), "Wrong id returned"),
         () -> assertTrue(
-            foundTasks.stream().anyMatch(foundTask -> task1.getId().equals(foundTask.getId())))
-    );
+            foundTasks.stream().anyMatch(foundTask -> task1.getId().equals(foundTask.getId())), "Wrong id returned"));
   }
 
   @Test
@@ -176,14 +167,12 @@ class TaskServiceTest {
     // Given
     Pageable pageable = Pageable.ofSize(10).withPage(0);
     when(taskRepository.findAll(pageable)).thenReturn(
-        new PageImpl<>(Collections.emptyList(), pageable, 0)
-    );
+        new PageImpl<>(Collections.emptyList(), pageable, 0));
 
     // When
     Page<Task> foundTasks = taskService.getAllTasks(
         pageable.getPageNumber(),
-        pageable.getPageSize()
-    );
+        pageable.getPageSize());
 
     // Then
     assertAll(
@@ -194,8 +183,7 @@ class TaskServiceTest {
         () -> assertTrue(foundTasks.isFirst(), "Wrong first page"),
         () -> assertTrue(foundTasks.isLast(), "Wrong last page"),
         () -> assertTrue(foundTasks.isEmpty(), "Wrong is empty"),
-        () -> assertEquals(0, foundTasks.getTotalPages(), "Wrong total pages")
-    );
+        () -> assertEquals(0, foundTasks.getTotalPages(), "Wrong total pages"));
     assertTrue(foundTasks.getContent().isEmpty(),
         "Wrong number of tasks found - tasks should be empty");
   }
@@ -222,26 +210,19 @@ class TaskServiceTest {
         () -> assertEquals(newTask.getUser().getId(), updatedTask.getUser().getId(),
             "Wrong task saved - incorrect user ID"),
         () -> assertEquals(newTask.getUser().getEmail(), updatedTask.getUser().getEmail(),
-            "Wrong task saved - incorrect user ID")
-    );
+            "Wrong task saved - incorrect user ID"));
     assertAll(
         () -> verify(taskRepository, times(1)).save(
-            argThat(savedTask -> newTask.getId().equals(savedTask.getId()))
-        ),
+            argThat(savedTask -> newTask.getId().equals(savedTask.getId()))),
         () -> verify(taskRepository, times(1)).save(
-            argThat(savedTask -> newTask.getTitle().equals(savedTask.getTitle()))
-        ),
+            argThat(savedTask -> newTask.getTitle().equals(savedTask.getTitle()))),
         () -> verify(taskRepository, times(1)).save(
-            argThat(savedTask -> newTask.getDescription().equals(savedTask.getDescription()))
-        ),
+            argThat(savedTask -> newTask.getDescription().equals(savedTask.getDescription()))),
         () -> verify(taskRepository, times(1)).save(
-            argThat(savedTask -> newTask.getUser().getId().equals(savedTask.getUser().getId()))
-        ),
+            argThat(savedTask -> newTask.getUser().getId().equals(savedTask.getUser().getId()))),
         () -> verify(taskRepository, times(1)).save(
             argThat(
-                savedTask -> newTask.getUser().getEmail().equals(savedTask.getUser().getEmail()))
-        )
-    );
+                savedTask -> newTask.getUser().getEmail().equals(savedTask.getUser().getEmail()))));
   }
 
   @Test
@@ -266,8 +247,7 @@ class TaskServiceTest {
     // Given
     User newUser = new User(2L, "test1@test.com", Collections.emptySet());
     Task newTask = new Task(task.getId(), "Updated", "Test task updated", newUser);
-    String expectedMessage
-        = "Failed to create task. User with id: " + newUser.getId() + " does not exist!";
+    String expectedMessage = "Failed to create task. User with id: " + newUser.getId() + " does not exist!";
 
     when(taskRepository.findById(newTask.getId())).thenReturn(Optional.of(task));
     when(taskRepository.save(any(Task.class))).thenThrow(JpaObjectRetrievalFailureException.class);

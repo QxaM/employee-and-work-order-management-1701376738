@@ -40,14 +40,12 @@ class TaskMapperTest {
         () -> assertEquals(taskDto.getId(), task.getId(), "ID not mapped correctly"),
         () -> assertEquals(taskDto.getTitle(), task.getTitle(), "Title not mapped correctly"),
         () -> assertEquals(taskDto.getDescription(), task.getDescription(),
-            "Description not mapped correctly")
-    );
+            "Description not mapped correctly"));
 
     User user = task.getUser();
     assertAll(
         () -> assertEquals(userDto.getId(), user.getId(), "User ID not mapped correctly"),
-        () -> assertEquals(userDto.getEmail(), user.getEmail(), "User email not mapped correctly")
-    );
+        () -> assertEquals(userDto.getEmail(), user.getEmail(), "User email not mapped correctly"));
 
     List<Role> roles = user.getRoles().stream().toList();
     assertEquals(1, roles.size(), "Role size not match - not mapped correctly");
@@ -55,8 +53,7 @@ class TaskMapperTest {
         () -> assertEquals(roleDto.getId(), roles.getFirst().getId(),
             "Role ID not mapped correctly"),
         () -> assertEquals(roleDto.getName(), roles.getFirst().getName(),
-            "Role Name not mapped correctly")
-    );
+            "Role Name not mapped correctly"));
   }
 
   @Test
@@ -74,14 +71,12 @@ class TaskMapperTest {
         () -> assertEquals(task.getId(), taskDto.getId(), "ID not mapped correctly"),
         () -> assertEquals(task.getTitle(), taskDto.getTitle(), "Title not mapped correctly"),
         () -> assertEquals(task.getDescription(), taskDto.getDescription(),
-            "Description not mapped correctly")
-    );
+            "Description not mapped correctly"));
 
     UserDto userDto = taskDto.getUser();
     assertAll(
         () -> assertEquals(user.getId(), userDto.getId(), "User ID not mapped correctly"),
-        () -> assertEquals(user.getEmail(), userDto.getEmail(), "User email not mapped correctly")
-    );
+        () -> assertEquals(user.getEmail(), userDto.getEmail(), "User email not mapped correctly"));
 
     List<RoleDto> roleDtos = userDto.getRoles();
     assertEquals(1, roleDtos.size(), "Role size not match - not mapped correctly");
@@ -89,8 +84,7 @@ class TaskMapperTest {
         () -> assertEquals(role.getId(), roleDtos.getFirst().getId(),
             "Role ID not mapped correctly"),
         () -> assertEquals(role.getName(), roleDtos.getFirst().getName(),
-            "Role Name not mapped correctly")
-    );
+            "Role Name not mapped correctly"));
   }
 
   @Test
@@ -111,8 +105,7 @@ class TaskMapperTest {
     assertEquals(
         2,
         mappedTaskPage.getContent().size(),
-        "Mapped tasks do not match - wrong size"
-    );
+        "Mapped tasks do not match - wrong size");
     assertAll(
         () -> assertTrue(mappedTaskPage.isFirst(), "First mapped incorrectly"),
         () -> assertTrue(mappedTaskPage.isLast(), "Last mapped incorrectly"),
@@ -126,8 +119,7 @@ class TaskMapperTest {
         () -> assertEquals(2, mappedTaskPage.getTotalElements(),
             "Total elements mapped incorrectly"),
         () -> assertEquals(2, mappedTaskPage.getNumberOfElements(),
-            "Number of elements elements mapped incorrectly")
-    );
+            "Number of elements elements mapped incorrectly"));
   }
 
   @Test
@@ -142,12 +134,13 @@ class TaskMapperTest {
     List<TaskDto> taskDtoList = taskMapper.mapToTaskDtoList(List.of(task1, task2));
 
     // Then
-    assertEquals(2, taskDtoList.size());
+    assertEquals(2, taskDtoList.size(), "Mapped size is incorrect");
     assertAll(
         () -> assertTrue(
-            taskDtoList.stream().anyMatch(foundTask -> task1.getId().equals(foundTask.getId()))),
+            taskDtoList.stream().anyMatch(foundTask -> task1.getId().equals(foundTask.getId())),
+            "Mapped id should equal"),
         () -> assertTrue(
-            taskDtoList.stream().anyMatch(foundTask -> task2.getId().equals(foundTask.getId())))
-    );
+            taskDtoList.stream().anyMatch(foundTask -> task2.getId().equals(foundTask.getId())),
+            "Mapped id should equal"));
   }
 }

@@ -59,3 +59,10 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+pmd {
+    consoleOutput = true
+    toolVersion = "7.16.0"
+    rulesMinimumPriority = 5
+    ruleSetFiles = files("$projectDir/build/resources/main/rulesets/java/quickstart.xml")
+}

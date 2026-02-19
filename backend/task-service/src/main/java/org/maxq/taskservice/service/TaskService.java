@@ -26,16 +26,14 @@ public class TaskService {
       return taskRepository.save(task);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
       throw new UserDoesNotExistException(
-          "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"
-      );
+          "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!", e);
     }
   }
 
   public Task getTask(Long taskId) throws ElementNotFoundException {
     Optional<Task> task = taskRepository.findById(taskId);
     return task.orElseThrow(
-        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(taskId))
-    );
+        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(taskId)));
   }
 
   public Page<Task> getAllTasks(int page, int size) {
@@ -46,29 +44,25 @@ public class TaskService {
   public Task updateTask(Task task) throws ElementNotFoundException, UserDoesNotExistException {
     Optional<Task> optionalTask = taskRepository.findById(task.getId());
     Task foundTask = optionalTask.orElseThrow(
-        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(task.getId()))
-    );
+        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(task.getId())));
     Task taskToUpdate = new Task(
         foundTask.getId(),
         task.getTitle(),
         task.getDescription(),
-        task.getUser()
-    );
+        task.getUser());
 
     try {
       return taskRepository.save(taskToUpdate);
     } catch (InvalidDataAccessApiUsageException | JpaObjectRetrievalFailureException e) {
       throw new UserDoesNotExistException(
-          "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!"
-      );
+          "Failed to create task. User with id: " + task.getUser().getId() + " does not exist!", e);
     }
   }
 
   public void deleteTask(Long taskId) throws ElementNotFoundException {
     Optional<Task> optionalTask = taskRepository.findById(taskId);
     Task foundTask = optionalTask.orElseThrow(
-        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(taskId))
-    );
+        () -> new ElementNotFoundException(TASK_NOT_FOUND_MESSAGE.formatted(taskId)));
     taskRepository.deleteById(foundTask.getId());
   }
 }
