@@ -11,6 +11,7 @@ import org.maxq.apigatewayservice.utils.RequestsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -22,18 +23,14 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
-
-@SpringBootTest(
-    classes = {ServiceLoadBalancerConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = {
+    ServiceLoadBalancerConfig.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 8081)
-@TestPropertySource(
-    properties = {
-        "eureka.client.enabled=false",
-        "test.loadbalancer=authorization"
-    }
-)
+@TestPropertySource(properties = {
+    "eureka.client.enabled=false",
+    "test.loadbalancer=authorization"
+})
+@AutoConfigureWebTestClient
 class AuthorizationServiceTest {
 
   @LocalServerPort
@@ -43,8 +40,7 @@ class AuthorizationServiceTest {
 
   protected static Stream<HttpMethod> allowedMethods() {
     return RequestsUtils.buildAllowedMethods(
-        HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH
-    );
+        HttpMethod.GET, HttpMethod.POST, HttpMethod.PATCH);
   }
 
   protected static Stream<HttpMethod> disallowedMethods() {
@@ -54,16 +50,13 @@ class AuthorizationServiceTest {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
-        WebTestClient.bindToServer()
-            .responseTimeout(Duration.ofSeconds(10))
-            .baseUrl(baseUri)
-            .build();
+    this.webTestClient = WebTestClient.bindToServer()
+        .responseTimeout(Duration.ofSeconds(10))
+        .baseUrl(baseUri)
+        .build();
 
-    allowedMethods().forEach(method ->
-        stubFor(WireMock.request(method.name(), WireMock.urlEqualTo("/test"))
-            .willReturn(WireMock.ok()))
-    );
+    allowedMethods().forEach(method -> stubFor(WireMock.request(method.name(), WireMock.urlEqualTo("/test"))
+        .willReturn(WireMock.ok())));
   }
 
   @ParameterizedTest

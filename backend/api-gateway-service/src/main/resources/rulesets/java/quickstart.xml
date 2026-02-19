@@ -22,8 +22,8 @@
     <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach"/>
     <rule ref="category/java/bestpractices.xml/ForLoopVariableCount"/>
     <rule ref="category/java/bestpractices.xml/JUnit5TestShouldBePackagePrivate"/>
-    <rule ref="category/java/bestpractices.xml/JUnitAssertionsShouldIncludeMessage"/>
-    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+    <rule ref="category/java/bestpractices.xml/UnitTestAssertionsShouldIncludeMessage"/>
+    <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
         <properties>
             <property name="maximumAsserts" value="5"/>
         </properties>

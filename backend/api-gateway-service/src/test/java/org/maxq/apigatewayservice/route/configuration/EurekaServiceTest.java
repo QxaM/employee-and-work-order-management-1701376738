@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -14,13 +15,12 @@ import java.time.Duration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 8761)
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
+@AutoConfigureWebTestClient
 class EurekaServiceTest {
 
   @LocalServerPort
@@ -31,11 +31,10 @@ class EurekaServiceTest {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
-        WebTestClient.bindToServer()
-            .responseTimeout(Duration.ofSeconds(10))
-            .baseUrl(baseUri)
-            .build();
+    this.webTestClient = WebTestClient.bindToServer()
+        .responseTimeout(Duration.ofSeconds(10))
+        .baseUrl(baseUri)
+        .build();
 
     stubFor(WireMock.get("/eureka/apps").willReturn(WireMock.ok()));
   }

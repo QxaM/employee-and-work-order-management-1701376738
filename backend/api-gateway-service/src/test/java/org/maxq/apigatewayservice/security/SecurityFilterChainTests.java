@@ -10,6 +10,7 @@ import org.maxq.apigatewayservice.security.config.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
@@ -25,15 +26,14 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(
-    classes = {ServiceLoadBalancerConfig.class, WebSecurityConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = { ServiceLoadBalancerConfig.class,
+    WebSecurityConfig.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
     "eureka.client.enabled=false",
     "test.loadbalancer=authorization"
 })
+@AutoConfigureWebTestClient
 class SecurityFilterChainTests {
 
   String userEmail = "test@test.com";
@@ -57,11 +57,10 @@ class SecurityFilterChainTests {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
-        WebTestClient.bindToServer()
-            .responseTimeout(Duration.ofSeconds(10))
-            .baseUrl(baseUri)
-            .build();
+    this.webTestClient = WebTestClient.bindToServer()
+        .responseTimeout(Duration.ofSeconds(10))
+        .baseUrl(baseUri)
+        .build();
 
     when(jwtDecoder.decode("test-token")).thenReturn(Mono.just(jwt));
   }

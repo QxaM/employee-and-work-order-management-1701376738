@@ -15,11 +15,7 @@ public final class RequestsUtils {
 
   public static Stream<HttpMethod> buildDisallowedMethods(HttpMethod... allowedMethods) {
     return Stream.of(HttpMethod.values())
-        .filter(method ->
-            Stream.of(allowedMethods).noneMatch(allowedMethod ->
-                allowedMethod.equals(method)
-            )
-        )
+        .filter(method -> Stream.of(allowedMethods).noneMatch(allowedMethod -> allowedMethod.equals(method)))
         .filter(method -> !method.equals(HttpMethod.TRACE));
   }
 }

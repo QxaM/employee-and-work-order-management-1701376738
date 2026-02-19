@@ -5,19 +5,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
     "eureka.client.enabled=false"
 })
-@ActiveProfiles({"DEV"})
+@ActiveProfiles({ "DEV" })
+@AutoConfigureWebTestClient
 class TokenControllerDevTest {
 
   @LocalServerPort
@@ -28,11 +28,10 @@ class TokenControllerDevTest {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
-        WebTestClient.bindToServer()
-            .responseTimeout(Duration.ofSeconds(10))
-            .baseUrl(baseUri)
-            .build();
+    this.webTestClient = WebTestClient.bindToServer()
+        .responseTimeout(Duration.ofSeconds(10))
+        .baseUrl(baseUri)
+        .build();
   }
 
   @Test

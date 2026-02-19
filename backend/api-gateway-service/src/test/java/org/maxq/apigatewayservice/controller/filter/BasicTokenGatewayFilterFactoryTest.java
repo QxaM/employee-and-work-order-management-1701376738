@@ -8,6 +8,7 @@ import org.maxq.apigatewayservice.config.ServiceLoadBalancerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -19,15 +20,14 @@ import java.util.Base64;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
-@SpringBootTest(
-    classes = {ServiceLoadBalancerConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = {
+    ServiceLoadBalancerConfig.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 8081)
 @TestPropertySource(properties = {
     "eureka.client.enabled=false",
     "test.loadbalancer=authorization"
 })
+@AutoConfigureWebTestClient
 class BasicTokenGatewayFilterFactoryTest {
 
   @LocalServerPort
@@ -38,11 +38,10 @@ class BasicTokenGatewayFilterFactoryTest {
   @BeforeEach
   void setUp() {
     String baseUri = "http://localhost:" + port;
-    this.webTestClient =
-        WebTestClient.bindToServer()
-            .responseTimeout(Duration.ofSeconds(10))
-            .baseUrl(baseUri)
-            .build();
+    this.webTestClient = WebTestClient.bindToServer()
+        .responseTimeout(Duration.ofSeconds(10))
+        .baseUrl(baseUri)
+        .build();
 
     stubFor(WireMock.post("/login")
         .willReturn(WireMock.ok()));
