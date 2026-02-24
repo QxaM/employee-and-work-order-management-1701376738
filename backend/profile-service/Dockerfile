@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 gradle:8.10-jdk21
+FROM --platform=linux/amd64 gradle:9.3.1-jdk25
 WORKDIR /workspace/profile-service
 
 COPY build ./build
