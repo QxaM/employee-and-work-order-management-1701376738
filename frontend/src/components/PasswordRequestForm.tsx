@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { SubmitEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { useRequestPasswordResetMutation } from '../store/api/passwordReset.ts';
@@ -33,7 +33,7 @@ const PasswordRequestForm = () => {
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fd = new FormData(event.currentTarget);

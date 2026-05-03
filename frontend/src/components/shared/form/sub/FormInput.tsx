@@ -17,7 +17,7 @@ import {
   createTooShortMessage,
   createValueMissingMessage,
 } from '../../../../utils/validators.ts';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, InputEvent, useState } from 'react';
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ValidatorType } from '../../../../types/ValidatorTypes.ts';
 import { IconType } from '../../../../types/components/BaseTypes.ts';
@@ -60,20 +60,20 @@ const FormInput = (props: RadixFormInputProps) => {
   const getFieldClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
-        !validity.valid &&
-        clsx(
-          '!shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-a7)]',
-          defaultValidityClasses
-        )
+      !validity.valid &&
+      clsx(
+        '!shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-a7)]',
+        defaultValidityClasses
+      )
     );
   const getAreaClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
-        !validity.valid &&
-        clsx(
-          '!shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-a7)]',
-          defaultValidityClasses
-        )
+      !validity.valid &&
+      clsx(
+        '!shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-a7)]',
+        defaultValidityClasses
+      )
     );
 
   const togglePassword = () => {
@@ -100,7 +100,7 @@ const FormInput = (props: RadixFormInputProps) => {
               <Form.Control asChild>
                 {typeState === 'textarea' ? (
                   <TextArea
-                    onInput={(event: FormEvent<HTMLTextAreaElement>) => {
+                    onInput={(event: InputEvent<HTMLTextAreaElement>) => {
                       onInput?.(event);
                       onValueChange?.(event.currentTarget.value);
                     }}
@@ -118,7 +118,7 @@ const FormInput = (props: RadixFormInputProps) => {
                   />
                 ) : (
                   <TextField.Root
-                    onInput={(event: FormEvent<HTMLInputElement>) => {
+                    onInput={(event: InputEvent<HTMLInputElement>) => {
                       onInput?.(event);
                       onValueChange?.(event.currentTarget.value);
                     }}

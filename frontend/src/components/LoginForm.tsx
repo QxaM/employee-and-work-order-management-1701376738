@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { LoginType } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';
@@ -19,7 +19,7 @@ import { useAuth } from '../hooks/useAuth.tsx';
 const LoginForm = () => {
   const { login } = useAuth();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fd = new FormData(event.currentTarget);

@@ -52,9 +52,6 @@ export const useFormNotifications = ({
   const successRef = useRef<StatusProps>(success);
   const errorRef = useRef<StatusProps | undefined>(error);
 
-  successRef.current = success;
-  errorRef.current = error;
-
   const dispatchSuccessModal = useCallback(() => {
     const currentSuccess = successRef.current;
 

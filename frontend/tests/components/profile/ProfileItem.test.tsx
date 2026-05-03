@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import ProfileItem from '../../../src/components/profile/ProfileItem.tsx';
 import { DataList } from '@radix-ui/themes';
-import { FormEvent, PropsWithChildren } from 'react';
+import { SubmitEvent, PropsWithChildren } from 'react';
 import { Form } from 'radix-ui';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
@@ -9,7 +9,7 @@ const TestWrapper = ({ children }: PropsWithChildren) => {
     <Form.Root
       onSubmit={vi
         .fn()
-        .mockImplementation((event: FormEvent<HTMLFormElement>) => {
+        .mockImplementation((event: SubmitEvent<HTMLFormElement>) => {
           event.preventDefault();
         })}
     >

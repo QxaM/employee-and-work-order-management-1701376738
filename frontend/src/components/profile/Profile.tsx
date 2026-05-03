@@ -15,7 +15,7 @@ import {
 } from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
 import ProfileItem from './ProfileItem.tsx';
-import { FormEvent, useMemo, useState } from 'react';
+import { SubmitEvent, useMemo, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
 import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
@@ -26,7 +26,6 @@ import PersonGearOutlineIcon from '../icons/PersonGearOutlineIcon.tsx';
 import ProfileAvatar from './ProfileAvatar.tsx';
 import { useImageUpload } from '../../hooks/useImageUpload.tsx';
 import { useFormNotifications } from '../../hooks/useFormNotifications.tsx';
-import { MessageWithCause } from '../../types/components/ModalTypes.tsx';
 import { useProfileImage } from '../../hooks/useProfileImage.tsx';
 
 const Profile = () => {
@@ -52,9 +51,9 @@ const Profile = () => {
     }
     return 'cause' in imageUploadErrorData && imageUploadErrorData.cause
       ? ({
-          message: imageUploadErrorData.message,
-          cause: imageUploadErrorData.cause,
-        } as MessageWithCause)
+        message: imageUploadErrorData.message,
+        cause: imageUploadErrorData.cause,
+      })
       : imageUploadErrorData.message;
   }, [imageUploadErrorData]);
 
@@ -78,7 +77,7 @@ const Profile = () => {
     imageUpload.handleCancel();
     setIsEdited(false);
   };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fd = new FormData(event.currentTarget);
@@ -170,7 +169,7 @@ const Profile = () => {
               <Skeleton loading={!me}>
                 <Flex direction="row" justify="start" align="center" gap="2">
                   {me?.roles
-                    .toSorted((a, b) => b.id - a.id)
+                    .sort((a, b) => b.id - a.id)
                     .map((role) => (
                       <Badge key={role.name} size="3" color={getColor(role)}>
                         {role.name}

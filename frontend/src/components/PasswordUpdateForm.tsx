@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react';
+import { SubmitEvent, useMemo, useState } from 'react';
 
 import {
   confirmPasswordValidators,
@@ -61,7 +61,7 @@ const PasswordUpdateForm = ({ token }: { token: string }) => {
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fd = new FormData(event.currentTarget);

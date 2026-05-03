@@ -32,7 +32,7 @@ const TasksPage = () => {
       <Flex direction="column" flexGrow="1" p="4" gap="6">
         <TasksListTitle
           totalTasks={tasks.length}
-          openNewTask={() => setIsNewTaskOpened(true)}
+          openNewTask={() => { setIsNewTaskOpened(true); }}
         />
         <TasksContent tasks={tasks} />
         <Pageable pageable={pageable} />

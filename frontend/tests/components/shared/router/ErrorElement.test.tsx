@@ -1,7 +1,6 @@
 import { afterEach, beforeEach } from 'vitest';
 import {
   createMemoryRouter,
-  ErrorResponse,
   RouterProvider,
   useRouteError,
 } from 'react-router-dom';
@@ -55,7 +54,7 @@ describe('Error Element', () => {
         statusText: 'Test error',
         internal: false,
         data: 'Test data',
-      } as ErrorResponse);
+      });
 
       // When
       render(<ErrorElement />);

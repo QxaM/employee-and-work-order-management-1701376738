@@ -276,7 +276,7 @@ describe('Validators', () => {
 
         // Then
         expect(result).toBe(false);
-        expect(fileTypeFromBlob).not.toBeCalled();
+        expect(fileTypeFromBlob).not.toHaveBeenCalled();
       });
 
       it('Should return false when invalid real mime type', async () => {

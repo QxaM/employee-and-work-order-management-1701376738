@@ -151,7 +151,7 @@ describe('Error Utils', () => {
       const error = { message: 'Error happened' } as unknown;
 
       // When
-      const result = readErrorMessage(error as QueryError);
+      const result = readErrorMessage(error);
 
       // Then
       expect(result).toBe(defaultError);

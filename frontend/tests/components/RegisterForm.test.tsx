@@ -7,7 +7,6 @@ import RegisterForm from '../../src/components/RegisterForm.tsx';
 import * as authApiSlice from '../../src/store/api/auth.ts';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
-import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
 import { userEvent } from '@testing-library/user-event';
 
 vi.mock('react', async () => {
@@ -317,7 +316,7 @@ describe('Register Form', () => {
           error: {
             status: 400,
             message: errorMessage,
-          } as CustomFetchBaseQueryError,
+          },
           reset: vi.fn(),
         },
       ]);

@@ -61,7 +61,7 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
       eslintPrettier,
     ],
-    files: ['tests/**/*.{ts,tsx}', 'vitest.config.js'],
+    files: ['tests/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: { ...globals.browser, ...globals.node },

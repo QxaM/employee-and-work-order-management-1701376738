@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useLoginMutation } from '../store/api/auth.ts';
 import { useAppDispatch, useAppSelector } from './useStore.tsx';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   login as loginAction,
   logout as logoutAction,
@@ -9,6 +9,10 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProfileImage } from './useProfileImage.tsx';
 import { registerModal } from '../store/modalSlice.ts';
+
+interface LocationState {
+  logoutSuccess?: boolean;
+}
 
 export const useAuth = () => {
   const successfulLogoutMessage = 'You have been logged out successfully.';
@@ -20,8 +24,6 @@ export const useAuth = () => {
   const location = useLocation();
   const [login, { data, isSuccess, isLoading, isError }] = useLoginMutation();
   const { clearImage } = useProfileImage();
-
-  const logoutTriggered = useRef(false);
 
   useEffect(() => {
     if (isSuccess && !authState.token) {
@@ -36,7 +38,7 @@ export const useAuth = () => {
   }, [isSuccess, navigate, authState.token]);
 
   useEffect(() => {
-    if (logoutTriggered.current && location.pathname === '/') {
+    if ((location.state as LocationState).logoutSuccess) {
       dispatch(logoutAction());
       dispatch(
         registerModal({
@@ -48,13 +50,11 @@ export const useAuth = () => {
         })
       );
       clearImage();
-      logoutTriggered.current = false;
     }
-  }, [location.pathname, dispatch, clearImage, logoutTriggered.current]);
+  }, [location.state, dispatch, clearImage]);
 
   const logout = useCallback(() => {
-    logoutTriggered.current = true;
-    void navigate('/');
+    void navigate('/', { state: { logoutSuccess: true } });
   }, [navigate]);
 
   return {

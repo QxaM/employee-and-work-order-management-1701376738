@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react';
+import { SubmitEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import {
@@ -47,7 +47,7 @@ const RegisterForm = () => {
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fd = new FormData(event.currentTarget);

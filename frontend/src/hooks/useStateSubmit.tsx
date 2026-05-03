@@ -5,7 +5,7 @@ import {
   useNavigation,
   useSubmit,
 } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActionResponse } from '../types/store/ActionTypes.ts';
 import { NonUndefined } from '../types/BaseTypes.ts';
 import { deepEquals } from '../utils/shared.ts';
@@ -61,6 +61,25 @@ export function useStateSubmit<T>(
     actionError = actionCast.error;
   }
 
+  if (
+    !deepEquals(actionData, correctedInitialData) &&
+    success &&
+    !isPending
+  ) {
+    setData(actionData);
+    setIsSuccess(true);
+    setIsError(false);
+    setError(undefined);
+    setWasSubmitted(false);
+  }
+
+  if (actionError) {
+    setIsSuccess(false);
+    setIsError(true);
+    setError(actionError);
+    setWasSubmitted(false);
+  }
+
   const customSubmit = (data: SubmitTarget, options?: SubmitOptions) => {
     setIsSuccess(false);
     setIsError(false);
@@ -69,29 +88,6 @@ export function useStateSubmit<T>(
     setWasSubmitted(true);
     void submit(data, options);
   };
-
-  useEffect(() => {
-    if (
-      !deepEquals(actionData, correctedInitialData) &&
-      success &&
-      !isPending
-    ) {
-      setData(actionData);
-      setIsSuccess(true);
-      setIsError(false);
-      setError(undefined);
-      setWasSubmitted(false);
-    }
-  }, [actionData, success, isPending, correctedInitialData]);
-
-  useEffect(() => {
-    if (actionError) {
-      setIsSuccess(false);
-      setIsError(true);
-      setError(actionError);
-      setWasSubmitted(false);
-    }
-  }, [actionError]);
 
   return {
     submit: customSubmit,

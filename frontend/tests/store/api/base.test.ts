@@ -36,7 +36,7 @@ describe('customBaseQuery', () => {
 
     const fetchCall = vi.mocked(fetch).mock.calls[0];
     const request = fetchCall[0] as Request;
-    expect(request.url.toString().includes('/test')).toBe(true);
+    expect(request.url.includes('/test')).toBe(true);
     expect(request.headers.get('Authorization')).toStrictEqual(
       'Bearer test-token'
     );
@@ -58,7 +58,7 @@ describe('customBaseQuery', () => {
 
     const fetchCall = vi.mocked(fetch).mock.calls[0];
     const request = fetchCall[0] as Request;
-    expect(request.url.toString().includes('/test')).toBe(true);
+    expect(request.url.includes('/test')).toBe(true);
     expect(request.headers.get('Authorization')).toBeNull();
   });
 

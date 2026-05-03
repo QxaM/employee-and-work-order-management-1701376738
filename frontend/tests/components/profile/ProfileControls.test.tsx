@@ -2,14 +2,14 @@ import ProfileControls from '../../../src/components/profile/ProfileControls.tsx
 import { Form } from 'radix-ui';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach } from 'vitest';
-import { FormEvent, PropsWithChildren } from 'react';
+import { SubmitEvent, PropsWithChildren } from 'react';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (
     <Form.Root
       onSubmit={vi
         .fn()
-        .mockImplementation((event: FormEvent<HTMLFormElement>) => {
+        .mockImplementation((event: SubmitEvent<HTMLFormElement>) => {
           event.preventDefault();
         })}
     >

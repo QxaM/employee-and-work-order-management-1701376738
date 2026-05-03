@@ -5,7 +5,6 @@ import { PropsWithChildren, useRef } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import PasswordUpdateForm from '../../src/components/PasswordUpdateForm.tsx';
 import { renderWithProviders } from '../test-utils.tsx';
-import { CustomFetchBaseQueryError } from '../../src/store/api/base.ts';
 import { userEvent } from '@testing-library/user-event';
 
 vi.mock('react', async () => {
@@ -346,7 +345,7 @@ describe('Password Update Form', () => {
           error: {
             status: 'CUSTOM_ERROR',
             message: 'Test error',
-          } as CustomFetchBaseQueryError,
+          },
           reset: vi.fn(),
         },
       ]);

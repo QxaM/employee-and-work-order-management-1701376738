@@ -1,7 +1,7 @@
 import Form from '../../../../src/components/shared/form/Form.tsx';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, Mock } from 'vitest';
-import { FormEvent } from 'react';
+import { SubmitEvent } from 'react';
 
 describe('Form', () => {
   let mockSubmit: Mock<(...args: unknown[]) => unknown>;
@@ -10,7 +10,7 @@ describe('Form', () => {
     vi.clearAllMocks();
     mockSubmit = vi
       .fn()
-      .mockImplementation((event: FormEvent<HTMLFormElement>) => {
+      .mockImplementation((event: SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
       });
   });
