@@ -1,9 +1,9 @@
 import ModalPage from '../../pages/ModalPage.tsx';
-import {Button, Flex} from '@radix-ui/themes';
+import { Button, Flex } from '@radix-ui/themes';
 import Form from '../shared/form/Form.tsx';
-import {useGetUsersQuery} from '../../store/api/user.ts';
-import {useMemo} from 'react';
-import {Pencil2Icon} from '@radix-ui/react-icons';
+import { useGetUsersQuery } from '../../store/api/user.ts';
+import { FormEvent, useMemo } from 'react';
+import { Pencil2Icon } from '@radix-ui/react-icons';
 
 interface NewTaskProps {
   open: boolean;
@@ -15,6 +15,11 @@ const NewTask = ({ open, onOpenChange }: NewTaskProps) => {
 
   const users = useMemo(() => usersData?.content ?? [], [usersData]);
 
+  const submitNewTask = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log('Submit new task');
+  }
+
   return (
     <ModalPage
       title="Create New Task"
@@ -24,7 +29,7 @@ const NewTask = ({ open, onOpenChange }: NewTaskProps) => {
       open={open}
       onOpenChange={onOpenChange}
     >
-      <Form px="2" handleSubmit={() => console.log('Submit new task')}>
+      <Form px="2" handleSubmit={submitNewTask}>
         <Form.Content>
           <Form.Input
             name="task title"
