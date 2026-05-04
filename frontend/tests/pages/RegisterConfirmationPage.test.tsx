@@ -32,7 +32,7 @@ describe('RegisterConfirmationPage', () => {
   const mockDispatch = vi.fn();
 
   beforeEach(() => {
-    vi.resetModules();
+    vi.resetAllMocks();
 
     vi.spyOn(authApiSlice, 'useConfirmRegistrationMutation').mockReturnValue([
       mockMutate,

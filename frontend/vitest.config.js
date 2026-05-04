@@ -28,6 +28,9 @@ export default defineConfig({
         './docs',
       ],
     },
+    execArgv: [
+      '--localstorage-file=./tmp_file',
+    ],
     env: {
       VITE_API_BASE_URL: 'http://localhost:3000',
     },

@@ -47,7 +47,7 @@ describe('Register Form', () => {
   const mockMutate = vi.fn();
 
   beforeEach(() => {
-    vi.resetModules();
+    vi.resetAllMocks();
 
     vi.spyOn(authApiSlice, 'useRegisterMutation').mockReturnValue([
       mockMutate,

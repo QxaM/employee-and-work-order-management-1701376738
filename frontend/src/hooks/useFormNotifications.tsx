@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { registerModal } from '../store/modalSlice.ts';
@@ -49,11 +49,8 @@ export const useFormNotifications = ({
 }: FormNotificationsProps) => {
   const dispatch = useAppDispatch();
 
-  const successRef = useRef<StatusProps>(success);
-  const errorRef = useRef<StatusProps | undefined>(error);
-
   const dispatchSuccessModal = useCallback(() => {
-    const currentSuccess = successRef.current;
+    const currentSuccess = success;
 
     dispatch(
       registerModal({
@@ -71,7 +68,7 @@ export const useFormNotifications = ({
   }, [dispatch]);
 
   const dispatchErrorModal = useCallback(() => {
-    const currentError = errorRef.current;
+    const currentError = error;
 
     dispatch(
       registerModal({

@@ -35,7 +35,7 @@ describe('Password Request Form', () => {
   const mockMutate = vi.fn();
 
   beforeEach(() => {
-    vi.resetModules();
+    vi.resetAllMocks();
 
     vi.spyOn(
       passwordApiSlice,

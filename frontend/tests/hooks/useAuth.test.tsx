@@ -259,7 +259,7 @@ describe('useAuth', () => {
         // Then
         await waitFor(() => {
           expect(mockNavigate).toHaveBeenCalledOnce();
-          expect(mockNavigate).toHaveBeenCalledWith('/');
+          expect(mockNavigate).toHaveBeenCalledWith('/', { state: {} });
         });
       });
 
@@ -312,7 +312,7 @@ describe('useAuth', () => {
       // Then
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledOnce();
-        expect(mockNavigate).toHaveBeenCalledWith('/');
+        expect(mockNavigate).toHaveBeenCalledWith('/', { state: { logoutSuccess: true } });
       });
     });
 
@@ -333,6 +333,10 @@ describe('useAuth', () => {
 
       // When
       result.current.logout.trigger();
+      vi.mocked(useLocation).mockReturnValue({
+        pathname: '/',
+        state: { logoutSuccess: true }
+      } as Location);
 
       // Then
       await waitFor(() => {
@@ -360,6 +364,10 @@ describe('useAuth', () => {
 
       // When
       result.current.logout.trigger();
+      vi.mocked(useLocation).mockReturnValue({
+        pathname: '/',
+        state: { logoutSuccess: true }
+      } as Location);
 
       // Then
       await waitFor(() => {
@@ -379,6 +387,10 @@ describe('useAuth', () => {
 
       // When
       result.current.logout.trigger();
+      vi.mocked(useLocation).mockReturnValue({
+        pathname: '/',
+        state: { logoutSuccess: true }
+      } as Location);
 
       // Then
       await waitFor(() => {
@@ -426,12 +438,14 @@ describe('useAuth', () => {
       // When
       vi.mocked(useLocation).mockReturnValue({
         pathname: '/',
+        state: { logoutSuccess: true }
       } as Location);
 
       // Then
       await waitFor(() => {
         rerender();
-        expect(mockNavigate).toHaveBeenCalledOnce();
+        expect(mockNavigate).toHaveBeenCalledTimes(2);
+        expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true, state: {} })
         expect(mockClearImage).toHaveBeenCalledOnce();
       });
     });

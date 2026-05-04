@@ -33,12 +33,12 @@ export const useAuth = () => {
 
   useEffect(() => {
     if (isSuccess && !authState.token) {
-      void navigate('/');
+      void navigate('/', { state: {} });
     }
   }, [isSuccess, navigate, authState.token]);
 
   useEffect(() => {
-    if ((location.state as LocationState).logoutSuccess) {
+    if (location.state && (location.state as LocationState).logoutSuccess) {
       dispatch(logoutAction());
       dispatch(
         registerModal({
@@ -50,8 +50,9 @@ export const useAuth = () => {
         })
       );
       clearImage();
+      void navigate('/', { replace: true, state: {} })
     }
-  }, [location.state, dispatch, clearImage]);
+  }, [location.state, dispatch, clearImage, navigate]);
 
   const logout = useCallback(() => {
     void navigate('/', { state: { logoutSuccess: true } });

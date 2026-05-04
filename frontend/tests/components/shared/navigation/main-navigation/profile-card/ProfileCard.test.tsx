@@ -14,7 +14,7 @@ describe('ProfileCard', () => {
   const mockClearImage = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 
     vi.spyOn(authApiModule, 'useMeQuery').mockReturnValue({
       data: {
@@ -31,6 +31,10 @@ describe('ProfileCard', () => {
       clearImage: mockClearImage,
     });
   });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  })
 
   it('Should contain avatar', async () => {
     // Given
