@@ -29,7 +29,7 @@ const meData: MeType = {
 
 describe('ProfilePage', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 
     vi.spyOn(profileApiModule, 'useMyProfileQuery').mockReturnValue({
       isSuccess: true,

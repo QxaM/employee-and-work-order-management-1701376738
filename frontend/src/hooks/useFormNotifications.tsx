@@ -65,7 +65,7 @@ export const useFormNotifications = ({
     if (currentSuccess.onEvent) {
       currentSuccess.onEvent();
     }
-  }, [dispatch]);
+  }, [dispatch, success]);
 
   const dispatchErrorModal = useCallback(() => {
     const currentError = error;
@@ -83,7 +83,7 @@ export const useFormNotifications = ({
     if (currentError?.onEvent) {
       currentError.onEvent();
     }
-  }, [dispatch]);
+  }, [dispatch, error]);
 
   useEffect(() => {
     if (success.status) {

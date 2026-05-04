@@ -1,5 +1,5 @@
 import { afterEach, beforeEach } from 'vitest';
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import RolesUpdatePage from '../../../src/pages/admin/RolesUpdatePage.tsx';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
@@ -149,7 +149,9 @@ describe('RolesUpdatePage', () => {
       const nextPageNumber = mockPageData.number + 1;
 
       // When
-      fireEvent.click(nextPage);
+      act(() => {
+        fireEvent.click(nextPage);
+      });
 
       // Then
       expect(mockLoader).toHaveBeenCalledTimes(2);
