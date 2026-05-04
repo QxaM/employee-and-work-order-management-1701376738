@@ -25,3 +25,6 @@ dist-ssr
 
 # Vitest
 coverage
+
+# nvim-vitest
+*tmp_file*
