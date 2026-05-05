@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,6 +44,22 @@ public class WebSecurityConfig {
   private String frontendUrl;
 
   @Bean
+  @Order(0)
+  @Profile("!PROD")
+  public SecurityFilterChain filterChainOpenApi(
+      HttpSecurity http) throws Exception {
+    http.securityMatcher("/swagger-ui/*", "*/api-docs*/**")
+        .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().permitAll())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint(authenticationFailureHandler())
+            .accessDeniedHandler(accessDeniedHandler()));
+    return http.build();
+  }
+
+  @Bean
+  @Order(1)
   public SecurityFilterChain filterChainHeaders(
       HttpSecurity http,
       @Qualifier("robot") RSAPublicKey publicKey,
@@ -51,12 +69,10 @@ public class WebSecurityConfig {
             authorizeRequests -> authorizeRequests
                 .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated())
-        .oauth2ResourceServer(oauth2 ->
-            oauth2.jwt(jwtConfigurer ->
-                    jwtConfigurer
-                        .decoder(nimbusJwtDecoder(publicKey))
-                        .jwtAuthenticationConverter(jwtHeadersAuthenticationConverter))
-                .authenticationEntryPoint(authenticationFailureHandler()))
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+            .decoder(nimbusJwtDecoder(publicKey))
+            .jwtAuthenticationConverter(jwtHeadersAuthenticationConverter))
+            .authenticationEntryPoint(authenticationFailureHandler()))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
         .exceptionHandling(exceptions -> exceptions
@@ -70,11 +86,9 @@ public class WebSecurityConfig {
     return new RequestContextListener();
   }
 
-
   @Bean
   public JwtDecoder nimbusJwtDecoder(@Qualifier("robot") RSAPublicKey publicKey) {
-    OAuth2TokenValidator<Jwt> withIssuer
-        = JwtValidators.createDefaultWithIssuer("api-gateway-service");
+    OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer("api-gateway-service");
     OAuth2TokenValidator<Jwt> customValidator = new RobotJwtValidator();
     OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(withIssuer,
         customValidator);
@@ -101,8 +115,7 @@ public class WebSecurityConfig {
     log.info("Frontend url: {}", frontendUrl);
 
     corsConfiguration.setAllowedOriginPatterns(
-        List.of("http://localhost:[*]", frontendUrl)
-    );
+        List.of("http://localhost:[*]", frontendUrl));
     corsConfiguration.setAllowedMethods(
         List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     corsConfiguration.setAllowedHeaders(List.of("*"));
@@ -112,6 +125,8 @@ public class WebSecurityConfig {
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/actuator/health", corsConfiguration);
+    source.registerCorsConfiguration("/swagger-ui/**", corsConfiguration);
+    source.registerCorsConfiguration("*/api-docs*/**", corsConfiguration);
 
     return source;
   }

@@ -12,7 +12,7 @@ local:
     port: ${PORT:8080}
 
 jwt:
-  issuer: 'api-gateway-service'
+  issuer: "api-gateway-service"
   user-public-key-path: classpath:/user_public_key.pem
   robot-public-key-path: classpath:/robot_public_key.pem
   robot-private-key-path: classpath:/robot_private_key.pem
@@ -116,3 +116,4 @@ spring:
 eureka:
   client:
     enabled: false
+
