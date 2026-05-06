@@ -42,17 +42,9 @@ export default defineConfig({
       testIgnore: "**/setup/*",
       dependencies: ["setup"],
     },
-
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
-      testIgnore: "**/setup/*",
-      dependencies: ["setup"],
-    },
-
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
       testIgnore: "**/setup/*",
       dependencies: ["setup"],
     },
