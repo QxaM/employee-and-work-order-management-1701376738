@@ -1,18 +1,18 @@
-import * as profileApiModule from '../../../src/store/api/profile.ts';
-import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
-import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
-import * as useProfileImageModule from '../../../src/hooks/useProfileImage.tsx';
+import { fireEvent, screen } from '@testing-library/react';
+import { type UserEvent, userEvent } from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
+import Profile from '../../../src/components/profile/Profile.tsx';
+import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
+import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
+import * as useProfileImageModule from '../../../src/hooks/useProfileImage.tsx';
+import type { MeType } from '../../../src/store/api/auth.ts';
+import * as profileApiModule from '../../../src/store/api/profile.ts';
 import type {
   ProfileType,
   UpdateProfileType,
 } from '../../../src/types/api/ProfileTypes.ts';
-import { renderWithProviders } from '../../test-utils.tsx';
-import { fireEvent, screen } from '@testing-library/react';
-import Profile from '../../../src/components/profile/Profile.tsx';
-import { type UserEvent, userEvent } from '@testing-library/user-event';
-import type { MeType } from '../../../src/store/api/auth.ts';
 import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import { renderWithProviders } from '../../test-utils.tsx';
 
 const email = 'test@test.com';
 const profileData: ProfileType = {
@@ -225,7 +225,7 @@ describe('Profile', () => {
       // When
       fireEvent.click(editButtonElement);
       const updateButtonElement = screen.getByRole('button', {
-        name: 'Save changes',
+        name: 'Save changessave icon',
       });
       const cancelButtonElement = screen.getByRole('button', {
         name: 'Cancel',
@@ -266,7 +266,7 @@ describe('Profile', () => {
 
       // When
       const saveButtonElement = screen.getByRole('button', {
-        name: 'Save changes',
+        name: 'Save changessave icon',
       });
       fireEvent.click(saveButtonElement);
       const textboxElements = screen.queryAllByRole('textbox');
@@ -277,7 +277,7 @@ describe('Profile', () => {
   });
 
   describe('Validation', () => {
-    const saveButton = 'Save changes';
+    const saveButton = 'Save changessave icon';
     let user: UserEvent;
 
     beforeEach(() => {
@@ -333,7 +333,7 @@ describe('Profile', () => {
 
   describe('Form submission', () => {
     let user: UserEvent;
-    const saveButton = 'Save changes';
+    const saveButton = 'Save changessave icon';
     const updatedProfile: UpdateProfileType = {
       firstName: 'UpdatedName',
       middleName: 'UpdatedMiddleName',

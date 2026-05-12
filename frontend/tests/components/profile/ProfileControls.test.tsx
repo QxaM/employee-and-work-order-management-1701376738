@@ -1,8 +1,8 @@
-import ProfileControls from '../../../src/components/profile/ProfileControls.tsx';
-import { Form } from 'radix-ui';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { Form } from 'radix-ui';
+import type { PropsWithChildren, SubmitEvent } from 'react';
 import { beforeEach } from 'vitest';
-import type { SubmitEvent, PropsWithChildren } from 'react';
+import ProfileControls from '../../../src/components/profile/ProfileControls.tsx';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (
@@ -23,7 +23,7 @@ describe('ProfileControls', () => {
   const mockHandleCancel = vi.fn();
 
   const editTitle = 'Edit profile';
-  const saveChangesTitle = 'Save changes';
+  const saveChangesTitle = 'Save changessave icon';
   const cancelTitle = 'Cancel';
 
   beforeEach(() => {
