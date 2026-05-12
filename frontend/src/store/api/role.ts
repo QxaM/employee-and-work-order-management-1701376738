@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
+import type { RoleType } from '../../types/api/RoleTypes.ts';
 import { api } from '../apiSlice.ts';
 import { authApi } from './base.ts';
-import type { RoleType } from '../../types/api/RoleTypes.ts';
 
 const ROLES_API = '/roles';
 

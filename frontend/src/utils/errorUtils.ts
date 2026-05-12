@@ -24,7 +24,6 @@ const extractQueryErrorMessage = (
  */
 export const readErrorMessage = (
   error: unknown,
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   defaultError = 'Unknown error, please try again!'
 ): string => {
   if (!error) {

@@ -60,7 +60,6 @@ export const usersApi = api.injectEndpoints({
           dispatch(
             usersApi.util.updateQueryData(
               'getUsers',
-              // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
               cache.originalArgs as PageableRequest | undefined,
               (draft) => {
                 addRoleToDraftUser(draft, userId, role);
@@ -111,7 +110,6 @@ export const usersApi = api.injectEndpoints({
           dispatch(
             usersApi.util.updateQueryData(
               'getUsers',
-              // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
               cache.originalArgs as PageableRequest | undefined,
               (draft) => {
                 removeRoleFromDraftUser(draft, userId, role);

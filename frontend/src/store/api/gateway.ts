@@ -5,7 +5,6 @@ const HEALTHCHECK_API = '/actuator/health';
 
 const gatewayApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     gatewayHealthcheck: builder.query<undefined, void>({
       query: () => ({
         url: apiBaseUrl + HEALTHCHECK_API,

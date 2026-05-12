@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
-
 import type { PageableRequest } from '../../types/api/BaseTypes.ts';
 import type { PagedTasksType, TaskType } from '../../types/api/TaskTypes.ts';
 import { api } from '../apiSlice.ts';
@@ -28,7 +26,6 @@ export const taskApi = api.injectEndpoints({
     }),
     getTasks: builder.query<PagedTasksType, PageableRequest | undefined>({
       query: (params) => {
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         const { page = 0, size = DEFAULT_TASKS_PER_PAGE } = params || {};
 
         return {

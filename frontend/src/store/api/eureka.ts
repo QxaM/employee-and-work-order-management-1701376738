@@ -6,7 +6,6 @@ const HEALTHCHECK_API = '/actuator/health';
 
 const eurekaApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     eurekaHealthcheck: builder.query<undefined, void>({
       query: () => ({
         url: EUREKA_URL + HEALTHCHECK_API,
