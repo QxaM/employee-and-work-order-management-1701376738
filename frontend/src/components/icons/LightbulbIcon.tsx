@@ -1,10 +1,12 @@
-import { IconProps } from '../../types/components/BaseTypes.ts';
+import type { IconProps } from '../../types/components/BaseTypes.ts';
 import BaseIcon from './base/BaseIcon.tsx';
 
 const LightbulbIcon = ({ className }: IconProps) => {
   return (
     <BaseIcon className={className}>
       <svg
+        role="img"
+        aria-label="lightbulb"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"

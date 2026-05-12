@@ -1,5 +1,9 @@
-import { NavLink, NavLinkProps, NavLinkRenderProps } from 'react-router-dom';
-import { PropsWithChildren } from 'react';
+import {
+  NavLink,
+  type NavLinkProps,
+  type NavLinkRenderProps,
+} from 'react-router-dom';
+import type { PropsWithChildren } from 'react';
 import clsx from 'clsx';
 
 const RadixNavLink = ({ to, children }: PropsWithChildren<NavLinkProps>) => {

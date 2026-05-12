@@ -1,5 +1,5 @@
-import { MeType } from '../../../../store/api/auth.ts';
 import { Text } from '@radix-ui/themes';
+import type { MeType } from '../../../../store/api/auth.ts';
 
 interface WelcomeMessageProps {
   me?: MeType;
@@ -16,7 +16,7 @@ interface WelcomeMessageProps {
  * @param {Object} props.me - An optional object representing the user.
  */
 const WelcomeMessage = ({ me }: WelcomeMessageProps) => {
-  const welcomeMessage = 'Welcome back' + (me ? `, ${me.email}` : '') + '!';
+  const welcomeMessage = `Welcome back${me ? `, ${me.email}` : ''}!`;
 
   return (
     <Text as="p" id="welcome-message" size="3">

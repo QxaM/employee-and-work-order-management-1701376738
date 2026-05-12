@@ -1,4 +1,4 @@
-import { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
+import type { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
 import * as gatewayApiModule from '../../../src/store/api/gateway.ts';
 import { afterEach, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';

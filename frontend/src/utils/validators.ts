@@ -1,4 +1,4 @@
-import { ValidatorType } from '../types/ValidatorTypes.ts';
+import type { ValidatorType } from '../types/ValidatorTypes.ts';
 import { formatFileSize } from './file.ts';
 import { fileTypeFromBlob } from 'file-type';
 

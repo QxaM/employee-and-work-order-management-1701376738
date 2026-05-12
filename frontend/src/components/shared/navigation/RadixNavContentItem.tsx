@@ -1,6 +1,6 @@
-import { ForwardedRef, forwardRef, PropsWithChildren } from 'react';
+import { type ForwardedRef, forwardRef, type PropsWithChildren } from 'react';
 import { NavigationMenu } from 'radix-ui';
-import { NavLink, NavLinkProps } from 'react-router-dom';
+import { NavLink, type NavLinkProps } from 'react-router-dom';
 import clsx from 'clsx/lite';
 
 interface RadixNavContentItemProps extends NavLinkProps {

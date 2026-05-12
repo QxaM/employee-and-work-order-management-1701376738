@@ -24,7 +24,7 @@ export const passwordResetApi = api.injectEndpoints({
   endpoints: (builder) => ({
     requestPasswordReset: builder.mutation<undefined, string>({
       query: (email) => ({
-        url: authApi + PASSWORD_RESET_API + `?email=${email}`,
+        url: `${authApi + PASSWORD_RESET_API}?email=${email}`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

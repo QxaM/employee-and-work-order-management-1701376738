@@ -1,10 +1,10 @@
 import {
-  BaseQueryFn,
-  FetchArgs,
+  type BaseQueryFn,
+  type FetchArgs,
+  type FetchBaseQueryError,
   fetchBaseQuery,
-  FetchBaseQueryError,
 } from '@reduxjs/toolkit/query';
-import { ApiErrorType } from '../../types/api/BaseTypes.ts';
+import type { ApiErrorType } from '../../types/api/BaseTypes.ts';
 
 /**
  * Base URL for API calls, sourced from .env variables. Different for different environments
@@ -37,7 +37,7 @@ export interface CustomFetchBaseQueryError {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: apiBaseUrl + '/api',
+  baseUrl: `${apiBaseUrl}/api`,
   prepareHeaders: (headers) => {
     const token = localStorage.getItem('token');
     if (!headers.has('Authorization') && token) {

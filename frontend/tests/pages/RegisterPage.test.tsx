@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import RegisterPage from '../../src/pages/RegisterPage.tsx';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
 

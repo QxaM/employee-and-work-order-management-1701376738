@@ -1,12 +1,20 @@
-import {customBaseQuery, CustomFetchBaseQueryError,} from '../../../src/store/api/base.ts';
-import {renderHookWithProviders} from '../../test-utils.tsx';
-import {renderHook, waitFor} from '@testing-library/react';
-import {act, PropsWithChildren} from 'react';
-import {beforeEach, expect} from 'vitest';
-import {useGetTasksQuery, useTaskHealthcheckQuery,} from '../../../src/store/api/task.ts';
-import {usersApi} from '../../../src/store/api/user.ts';
-import {setupStore} from '../../../src/store';
-import {Provider} from 'react-redux';
+import { renderHook, waitFor } from '@testing-library/react';
+import { act, type PropsWithChildren } from 'react';
+import { Provider } from 'react-redux';
+import { beforeEach, expect } from 'vitest';
+import { setupStore } from '../../../src/store';
+import {
+  type CustomFetchBaseQueryError,
+  customBaseQuery,
+} from '../../../src/store/api/base.ts';
+import {
+  useCreateTaskMutation,
+  useGetTasksQuery,
+  useTaskHealthcheckQuery,
+} from '../../../src/store/api/task.ts';
+import { usersApi } from '../../../src/store/api/user.ts';
+import type { TaskType } from '../../../src/types/api/TaskTypes.ts';
+import { renderHookWithProviders } from '../../test-utils.tsx';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');
@@ -16,7 +24,7 @@ vi.mock('../../../src/store/api/base.ts', async () => {
   };
 });
 
-const TASKS_CONTENT = [
+const TASKS_CONTENT: TaskType[] = [
   {
     id: 1,
     title: 'Task 1',
@@ -39,6 +47,10 @@ const MOCK_DEFAULT_TASKS_DATA = TASKS_CONTENT;
 describe('Task API', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('useTaskHealthcheckQuery', () => {
@@ -366,5 +378,78 @@ describe('Task API', () => {
         store.dispatch(usersApi.util.invalidateTags(['Users']));
       }).not.toThrow();
     });
+  });
+
+  describe('useCreateTaskMutation', () => {
+    const createdTask: TaskType = TASKS_CONTENT[0];
+    const defaultCreateTaskErrorMessage =
+      'Unknown error while creating new task';
+
+    it('Should make API call with correct parameters', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({
+        data: undefined,
+      });
+
+      const { result } = renderHookWithProviders(() => useCreateTaskMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useCreateTaskMutation
+      >;
+      const [createTask] = currentResult;
+      act(() => {
+        void createTask(createdTask);
+      });
+
+      // Then
+      await waitFor(() => {
+        expect(customBaseQuery).toHaveBeenCalledOnce();
+        expect(customBaseQuery).toHaveBeenCalledWith(
+          {
+            url: '/task/tasks',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(createdTask),
+            defaultError: defaultCreateTaskErrorMessage,
+          },
+          expect.any(Object),
+          undefined
+        );
+      });
+    });
+
+    it('Should return success state', async () => {
+      // Given
+      vi.mocked(customBaseQuery).mockResolvedValue({ data: undefined });
+
+      const { result } = renderHookWithProviders(() => useCreateTaskMutation());
+
+      // When
+      const currentResult = result.current as ReturnType<
+        typeof useCreateTaskMutation
+      >;
+      const [createTask] = currentResult;
+      act(() => {
+        void createTask(createdTask);
+      });
+
+      // Then
+      await waitFor(() => {
+        const currentResult = result.current as ReturnType<
+          typeof useCreateTaskMutation
+        >;
+        const [, { isSuccess, isLoading, isError, error }] = currentResult;
+        expect(isSuccess).toBe(true);
+        expect(isLoading).toBe(false);
+        expect(isError).toBe(false);
+        expect(error).toBeUndefined();
+      });
+    });
+
+    it('Should handle loading state', async () => {});
+    it('Should handle error state', async () => {});
   });
 });

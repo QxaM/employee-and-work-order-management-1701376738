@@ -1,4 +1,4 @@
-import { colorPropDef } from '@radix-ui/themes/props';
+import type { colorPropDef } from '@radix-ui/themes/props';
 
 export type Color = (typeof colorPropDef.color.values)[number];
 

@@ -1,7 +1,14 @@
-import { Avatar, AvatarProps, Box, Card, Flex, Text } from '@radix-ui/themes';
+import {
+  Avatar,
+  type AvatarProps,
+  Box,
+  Card,
+  Flex,
+  Text,
+} from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
 import { CaretRightIcon } from '@radix-ui/react-icons';
-import { IconType } from '../../types/components/BaseTypes.ts';
+import type { IconType } from '../../types/components/BaseTypes.ts';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
 
 interface NavCardProps {

@@ -2,8 +2,8 @@ import { beforeEach, describe } from 'vitest';
 import { screen, within } from '@testing-library/react';
 
 import RolesListSection from '../../../../src/components/admin/roles-update/RolesListSection.tsx';
-import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
-import { UserType } from '../../../../src/types/api/UserTypes.ts';
+import type { RoleType } from '../../../../src/types/api/RoleTypes.ts';
+import type { UserType } from '../../../../src/types/api/UserTypes.ts';
 import * as roleDataModule from '../../../../src/store/api/role.ts';
 import { renderWithProviders } from '../../../test-utils.tsx';
 

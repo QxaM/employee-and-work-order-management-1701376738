@@ -1,13 +1,13 @@
 import {
-  SubmitOptions,
-  SubmitTarget,
+  type SubmitOptions,
+  type SubmitTarget,
   useActionData,
   useNavigation,
   useSubmit,
 } from 'react-router-dom';
 import { useState } from 'react';
-import { ActionResponse } from '../types/store/ActionTypes.ts';
-import { NonUndefined } from '../types/BaseTypes.ts';
+import type { ActionResponse } from '../types/store/ActionTypes.ts';
+import type { NonUndefined } from '../types/BaseTypes.ts';
 import { deepEquals } from '../utils/shared.ts';
 
 interface SubmitReturnType<T> {
@@ -61,11 +61,7 @@ export function useStateSubmit<T>(
     actionError = actionCast.error;
   }
 
-  if (
-    !deepEquals(actionData, correctedInitialData) &&
-    success &&
-    !isPending
-  ) {
+  if (!deepEquals(actionData, correctedInitialData) && success && !isPending) {
     setData(actionData);
     setIsSuccess(true);
     setIsError(false);

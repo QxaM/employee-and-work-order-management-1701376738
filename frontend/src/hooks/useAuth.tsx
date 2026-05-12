@@ -50,7 +50,7 @@ export const useAuth = () => {
         })
       );
       clearImage();
-      void navigate('/', { replace: true, state: {} })
+      void navigate('/', { replace: true, state: {} });
     }
   }, [location.state, dispatch, clearImage, navigate]);
 

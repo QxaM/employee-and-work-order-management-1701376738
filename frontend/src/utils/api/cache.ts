@@ -1,5 +1,5 @@
-import { GetUsersType } from '../../types/api/UserTypes.ts';
-import { RoleType } from '../../types/api/RoleTypes.ts';
+import type { GetUsersType } from '../../types/api/UserTypes.ts';
+import type { RoleType } from '../../types/api/RoleTypes.ts';
 
 export const addRoleToDraftUser = (
   draft: GetUsersType,

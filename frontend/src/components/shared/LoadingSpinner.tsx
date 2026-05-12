@@ -1,5 +1,5 @@
-import { Color, Size } from '../../types/TailwindTypes.ts';
-import { PropsWithChildren } from 'react';
+import type { Color, Size } from '../../types/TailwindTypes.ts';
+import type { PropsWithChildren } from 'react';
 import clsx from 'clsx/lite';
 
 const SpinnerSize: Record<Size, string> = {

@@ -1,13 +1,13 @@
 import {
   customBaseQuery,
-  CustomFetchBaseQueryError,
+  type CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
-import { act, PropsWithChildren } from 'react';
+import { act, type PropsWithChildren } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import {
-  MeType,
-  RegisterType,
+  type MeType,
+  type RegisterType,
   useAuthHealthcheckQuery,
   useConfirmRegistrationMutation,
   useLoginMutation,

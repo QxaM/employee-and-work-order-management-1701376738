@@ -1,4 +1,4 @@
-import { SubmitEvent, useMemo, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 
 import {
   confirmPasswordValidators,

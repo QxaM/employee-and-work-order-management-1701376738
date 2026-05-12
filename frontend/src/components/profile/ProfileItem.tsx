@@ -1,8 +1,8 @@
 import { DataList, Skeleton } from '@radix-ui/themes';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { textContent } from '../../utils/reactChildren.ts';
 import FormInput, {
-  RadixFormInputProps,
+  type RadixFormInputProps,
 } from '../shared/form/sub/FormInput.tsx';
 import clsx from 'clsx/lite';
 

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   AccessibleIcon,
   Dialog,
@@ -7,10 +7,10 @@ import {
   Inset,
 } from '@radix-ui/themes';
 import { Cross1Icon } from '@radix-ui/react-icons';
-import { Color } from '../types/TailwindTypes.ts';
+import type { Color } from '../types/TailwindTypes.ts';
 import clsx from 'clsx';
 import BaseIcon from '../components/icons/base/BaseIcon.tsx';
-import { IconType } from '../types/components/BaseTypes.ts';
+import type { IconType } from '../types/components/BaseTypes.ts';
 
 const ModalBackgroundColorMap: Record<Color, string> = {
   violet: `bg-(--violet-a11)`,

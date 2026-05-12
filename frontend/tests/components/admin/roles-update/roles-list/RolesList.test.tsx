@@ -1,4 +1,4 @@
-import { RoleType } from '../../../../../src/types/api/RoleTypes.ts';
+import type { RoleType } from '../../../../../src/types/api/RoleTypes.ts';
 import RolesList from '../../../../../src/components/admin/roles-update/roles-list/RolesList.tsx';
 import { render, screen } from '@testing-library/react';
 

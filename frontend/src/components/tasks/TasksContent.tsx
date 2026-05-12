@@ -1,4 +1,4 @@
-import { TaskType } from '../../types/api/TaskTypes.ts';
+import type { TaskType } from '../../types/api/TaskTypes.ts';
 import { Flex } from '@radix-ui/themes';
 import TaskCard from './TaskCard.tsx';
 

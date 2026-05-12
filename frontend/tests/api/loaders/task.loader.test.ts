@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, expect } from 'vitest';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
-import { PagedTasksType } from '../../../src/types/api/TaskTypes.ts';
+import type { PagedTasksType } from '../../../src/types/api/TaskTypes.ts';
 import { loadTasks } from '../../../src/api/loaders/task.loader.ts';
 import { setupStoreDispatchMock } from '../../test-utils.tsx';
-import { LoaderFunctionArgs } from 'react-router-dom';
+import type { LoaderFunctionArgs } from 'react-router-dom';
 
 const PAGE_SIZE = 5;
 

@@ -2,7 +2,7 @@ import ProfileControls from '../../../src/components/profile/ProfileControls.tsx
 import { Form } from 'radix-ui';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach } from 'vitest';
-import { SubmitEvent, PropsWithChildren } from 'react';
+import type { SubmitEvent, PropsWithChildren } from 'react';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (

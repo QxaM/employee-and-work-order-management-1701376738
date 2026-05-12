@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 
-import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
+import type { GetUsersType } from '../../../src/types/api/UserTypes.ts';
 import { loadUsers } from '../../../src/api/loaders/user.loader.ts';
 import { customBaseQuery } from '../../../src/store/api/base.ts';
-import { LoaderFunctionArgs } from 'react-router-dom';
+import type { LoaderFunctionArgs } from 'react-router-dom';
 import { setupStoreDispatchMock } from '../../test-utils.tsx';
 
 vi.mock('../../../src/store/api/base.ts', async () => {

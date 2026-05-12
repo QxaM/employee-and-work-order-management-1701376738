@@ -1,11 +1,11 @@
 import { beforeEach } from 'vitest';
 import {
   customBaseQuery,
-  CustomFetchBaseQueryError,
+  type CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { renderHook, waitFor } from '@testing-library/react';
-import { act, PropsWithChildren } from 'react';
+import { act, type PropsWithChildren } from 'react';
 import {
   useMyProfileQuery,
   useProfileHealthcheckQuery,
@@ -15,7 +15,7 @@ import {
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 import { rolesApi } from '../../../src/store/api/role.ts';
-import {
+import type {
   ProfileType,
   UpdateProfileType,
 } from '../../../src/types/api/ProfileTypes.ts';

@@ -1,6 +1,6 @@
 import { describe } from 'vitest';
 import { isAdmin } from '../../src/utils/authUtils.ts';
-import { MeType } from '../../src/store/api/auth.ts';
+import type { MeType } from '../../src/store/api/auth.ts';
 
 describe('Auth Utils', () => {
   describe('isAdmin', () => {

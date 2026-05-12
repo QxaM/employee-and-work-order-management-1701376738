@@ -3,13 +3,16 @@ import * as useMeDataModule from '../../../src/hooks/useMeData.tsx';
 import * as useImageUploadModule from '../../../src/hooks/useImageUpload.tsx';
 import * as useProfileImageModule from '../../../src/hooks/useProfileImage.tsx';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { ProfileType, UpdateProfileType, } from '../../../src/types/api/ProfileTypes.ts';
+import type {
+  ProfileType,
+  UpdateProfileType,
+} from '../../../src/types/api/ProfileTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import { fireEvent, screen } from '@testing-library/react';
 import Profile from '../../../src/components/profile/Profile.tsx';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { MeType } from '../../../src/store/api/auth.ts';
-import { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import { type UserEvent, userEvent } from '@testing-library/user-event';
+import type { MeType } from '../../../src/store/api/auth.ts';
+import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
 
 const email = 'test@test.com';
 const profileData: ProfileType = {

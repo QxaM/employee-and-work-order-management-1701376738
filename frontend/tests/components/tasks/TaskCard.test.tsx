@@ -1,5 +1,5 @@
-import { TaskType } from '../../../src/types/api/TaskTypes.ts';
-import { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import type { TaskType } from '../../../src/types/api/TaskTypes.ts';
+import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
 import { render, screen } from '@testing-library/react';
 import TaskCard from '../../../src/components/tasks/TaskCard.tsx';
 

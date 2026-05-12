@@ -1,7 +1,7 @@
 import FormInputMessage from '../../../../../src/components/shared/form/sub/FormInputMessage.tsx';
 import { Form } from 'radix-ui';
 import { render, screen } from '@testing-library/react';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (

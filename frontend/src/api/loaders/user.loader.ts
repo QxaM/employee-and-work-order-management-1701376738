@@ -1,7 +1,7 @@
-import { LoaderFunctionArgs } from 'react-router-dom';
+import type { LoaderFunctionArgs } from 'react-router-dom';
+import type { AppStore } from '../../store';
 import { usersApi } from '../../store/api/user.ts';
-import { AppStore } from '../../store';
-import { GetUsersType } from '../../types/api/UserTypes.ts';
+import type { GetUsersType } from '../../types/api/UserTypes.ts';
 import { rtkDispatch } from '../baseRtk.ts';
 
 /**
@@ -17,7 +17,7 @@ export const loadUsers = async (
   { request }: LoaderFunctionArgs
 ) => {
   const url = new URL(request.url);
-  const page = Number.parseInt(url.searchParams.get('page') ?? '0');
+  const page = Number.parseInt(url.searchParams.get('page') ?? '0', 10);
 
   return await rtkDispatch<GetUsersType>(
     store,

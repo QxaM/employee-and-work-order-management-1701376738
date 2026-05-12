@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, useNavigate, useSearchParams } from 'react-router-dom';
 

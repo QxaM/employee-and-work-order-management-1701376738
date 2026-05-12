@@ -1,6 +1,6 @@
 import {
-  Navigation,
-  SubmitOptions,
+  type Navigation,
+  type SubmitOptions,
   useActionData,
   useNavigation,
   useSubmit,
@@ -8,7 +8,7 @@ import {
 import { useStateSubmit } from '../../src/hooks/useStateSubmit.tsx';
 import { renderHook } from '@testing-library/react';
 import { act } from 'react';
-import { ActionResponse } from '../../src/types/store/ActionTypes.ts';
+import type { ActionResponse } from '../../src/types/store/ActionTypes.ts';
 import { afterEach, beforeEach } from 'vitest';
 import { createHookDataRouter } from '../test-utils.tsx';
 

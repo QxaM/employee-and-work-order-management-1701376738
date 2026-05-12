@@ -1,6 +1,6 @@
 import { describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 
 import { setupStore } from '../../src/store';

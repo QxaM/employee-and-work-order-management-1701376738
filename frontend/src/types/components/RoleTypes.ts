@@ -1,5 +1,5 @@
-import { BadgeProps } from '@radix-ui/themes';
-import { RoleType } from '../api/RoleTypes.ts';
+import type { BadgeProps } from '@radix-ui/themes';
+import type { RoleType } from '../api/RoleTypes.ts';
 
 export const colorMap: Record<string, BadgeProps['color']> = {
   OPERATOR: 'gray',

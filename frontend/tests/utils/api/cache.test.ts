@@ -1,5 +1,5 @@
-import { RoleType } from '../../../src/types/api/RoleTypes.ts';
-import { GetUsersType } from '../../../src/types/api/UserTypes.ts';
+import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import type { GetUsersType } from '../../../src/types/api/UserTypes.ts';
 import {
   addRoleToDraftUser,
   removeRoleFromDraftUser,

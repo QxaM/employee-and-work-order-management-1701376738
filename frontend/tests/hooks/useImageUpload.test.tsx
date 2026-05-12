@@ -1,8 +1,8 @@
-import { beforeEach, describe, MockInstance } from 'vitest';
+import { beforeEach, describe, type MockInstance } from 'vitest';
 import * as validationModule from '../../src/utils/validators.ts';
 import { useImageUpload } from '../../src/hooks/useImageUpload.tsx';
 import { act, renderHook } from '@testing-library/react';
-import { ChangeEvent, DragEvent } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
 
 describe('useImageUpload', () => {
   const mockRevokeObjectURL = vi.fn();

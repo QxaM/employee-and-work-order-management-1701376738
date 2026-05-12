@@ -1,10 +1,10 @@
-import { PropsWithChildren, useRef } from 'react';
+import { fireEvent, screen } from '@testing-library/react';
+import { type PropsWithChildren, useRef } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, vi } from 'vitest';
-import { fireEvent, screen } from '@testing-library/react';
 import PasswordRequestForm from '../../src/components/PasswordRequestForm.tsx';
-import { renderWithProviders } from '../test-utils.tsx';
 import * as passwordApiSlice from '../../src/store/api/passwordReset.ts';
+import { renderWithProviders } from '../test-utils.tsx';
 
 vi.mock('react', async () => {
   const react = await vi.importActual('react');

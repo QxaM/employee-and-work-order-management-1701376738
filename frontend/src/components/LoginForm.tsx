@@ -1,6 +1,6 @@
-import { SubmitEvent } from 'react';
+import type { SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { LoginType } from '../store/api/auth.ts';
+import type { LoginType } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';
 import { EnvelopeClosedIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';

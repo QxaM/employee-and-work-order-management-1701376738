@@ -1,8 +1,8 @@
-import {fireEvent, render, screen} from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import FormInput from '../../../../../src/components/shared/form/sub/FormInput.tsx';
-import {Form} from 'radix-ui';
-import {EnvelopeClosedIcon} from '@radix-ui/react-icons';
-import {afterEach, beforeEach} from 'vitest';
+import { Form } from 'radix-ui';
+import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
+import { afterEach, beforeEach } from 'vitest';
 
 describe('FormInput', () => {
   const label = 'Test label';

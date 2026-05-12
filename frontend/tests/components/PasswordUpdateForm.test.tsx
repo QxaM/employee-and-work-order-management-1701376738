@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import * as passwordApiSlice from '../../src/store/api/passwordReset.ts';
-import { PropsWithChildren, useRef } from 'react';
+import { type PropsWithChildren, useRef } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import PasswordUpdateForm from '../../src/components/PasswordUpdateForm.tsx';
 import { renderWithProviders } from '../test-utils.tsx';

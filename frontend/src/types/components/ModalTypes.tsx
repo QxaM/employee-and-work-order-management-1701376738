@@ -3,8 +3,8 @@ import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
 } from '@radix-ui/react-icons';
-import { Toast } from 'radix-ui';
-import { NonUndefined } from '../BaseTypes.ts';
+import type { Toast } from 'radix-ui';
+import type { NonUndefined } from '../BaseTypes.ts';
 
 export interface MessageWithCause {
   message: string;

@@ -1,5 +1,5 @@
 import { NavigationMenu } from 'radix-ui';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import clsx from 'clsx/lite';
 
 const sizeClasses = {

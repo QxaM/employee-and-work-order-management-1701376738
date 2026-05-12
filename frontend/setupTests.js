@@ -1,8 +1,8 @@
 import * as React from 'react';
 import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/vitest';
-import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
 
 globalThis.React = React;
 
@@ -12,7 +12,7 @@ class ResizeObserver {
   constructor(cb) {
     this.cb = cb;
   }
-  observe(cb) {
+  observe(_cb) {
     this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }]);
   }
   unobserve() {

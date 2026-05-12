@@ -1,5 +1,5 @@
-import { setupStore } from '../store';
-import { Action, ThunkAction } from '@reduxjs/toolkit';
+import type { setupStore } from '../store';
+import type { Action, ThunkAction } from '@reduxjs/toolkit';
 
 interface RTKQueryThunk<T> {
   unwrap: () => Promise<T>;

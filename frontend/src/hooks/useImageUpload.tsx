@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, useEffect, useState } from 'react';
+import { type ChangeEvent, type DragEvent, useEffect, useState } from 'react';
 import { validateFile } from '../utils/validators.ts';
 
 interface UploadType {

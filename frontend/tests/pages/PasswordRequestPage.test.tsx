@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { setupStore } from '../../src/store';
 import { BrowserRouter } from 'react-router-dom';

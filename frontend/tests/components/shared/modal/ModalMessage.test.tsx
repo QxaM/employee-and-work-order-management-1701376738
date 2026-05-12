@@ -9,7 +9,7 @@ import {
 import ModalMessage from '../../../../src/components/shared/modal/ModalMessage.tsx';
 import ModalProvider from '../../../../src/components/shared/modal/ModalProvider.tsx';
 import {
-  MessageWithCause,
+  type MessageWithCause,
   MODAL_TYPE,
 } from '../../../../src/types/components/ModalTypes.tsx';
 

@@ -1,4 +1,4 @@
-import { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
+import type { Service } from '../../../src/types/components/ServiceStatusTypes.ts';
 import { renderWithProviders } from '../../test-utils.tsx';
 import ServiceStatusCard from '../../../src/components/service-status/ServiceStatusCard.tsx';
 import { screen } from '@testing-library/react';

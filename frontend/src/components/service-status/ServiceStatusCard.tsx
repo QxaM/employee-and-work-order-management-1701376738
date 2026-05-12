@@ -1,7 +1,7 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
-import { IconType } from '../../types/components/BaseTypes.ts';
+import type { IconType } from '../../types/components/BaseTypes.ts';
 import StatusBadge from './StatusBadge.tsx';
-import { Service } from '../../types/components/ServiceStatusTypes.ts';
+import type { Service } from '../../types/components/ServiceStatusTypes.ts';
 
 interface ServiceStatusCardProps {
   name: string;

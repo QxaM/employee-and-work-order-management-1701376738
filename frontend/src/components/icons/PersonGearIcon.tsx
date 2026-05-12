@@ -1,10 +1,12 @@
+import type { IconProps } from '../../types/components/BaseTypes.ts';
 import BaseIcon from './base/BaseIcon.tsx';
-import { IconProps } from '../../types/components/BaseTypes.ts';
 
 const PersonGearIcon = ({ className }: IconProps) => {
   return (
     <BaseIcon className={className}>
       <svg
+        role="img"
+        aria-label="person with gear"
         xmlns="http://www.w3.org/2000/svg"
         width="100%"
         height="100%"

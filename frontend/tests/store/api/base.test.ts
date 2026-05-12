@@ -1,5 +1,5 @@
 import { customBaseQuery } from '../../../src/store/api/base';
-import { BaseQueryApi } from '@reduxjs/toolkit/query';
+import type { BaseQueryApi } from '@reduxjs/toolkit/query';
 
 describe('customBaseQuery', () => {
   const mockApi: BaseQueryApi = {

@@ -1,7 +1,7 @@
-import { AvatarProps, Flex } from '@radix-ui/themes';
-import { IconType } from '../../../types/components/BaseTypes.ts';
+import { type AvatarProps, Flex } from '@radix-ui/themes';
+import type { IconType } from '../../../types/components/BaseTypes.ts';
 import clsx from 'clsx';
-import { NonUndefined } from '../../../types/BaseTypes.ts';
+import type { NonUndefined } from '../../../types/BaseTypes.ts';
 
 const cardColors: Record<NonUndefined<AvatarProps['color']>, string> = {
   ruby: 'bg-(--ruby-a3) text-(--ruby-a11)',

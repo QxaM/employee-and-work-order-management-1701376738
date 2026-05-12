@@ -1,6 +1,6 @@
 import { Badge, Button, Flex, Heading } from '@radix-ui/themes';
-import { RoleType } from '../../../../types/api/RoleTypes.ts';
-import { ReactNode } from 'react';
+import type { RoleType } from '../../../../types/api/RoleTypes.ts';
+import type { ReactNode } from 'react';
 import { getColor } from '../../../../types/components/RoleTypes.ts';
 
 interface RolesListProps {

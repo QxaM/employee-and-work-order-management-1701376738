@@ -1,8 +1,8 @@
 import { Flex } from '@radix-ui/themes';
 import ErrorComponent from '../../ErrorComponent.tsx';
-import { QueryError } from '../../../../types/api/BaseTypes.ts';
+import type { QueryError } from '../../../../types/api/BaseTypes.ts';
 import { readErrorMessage } from '../../../../utils/errorUtils.ts';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 interface FormContentProps {
   isServerError?: boolean;

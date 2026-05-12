@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Size } from '../types/WindowTypes.ts';
+import type { Size } from '../types/WindowTypes.ts';
 
 /**
  * Hook to track the current window size.

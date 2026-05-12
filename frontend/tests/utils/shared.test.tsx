@@ -1,7 +1,7 @@
 // shared.test.ts
 import { describe, expect, it } from 'vitest';
 import { deepEquals, getValueOrDefault } from '../../src/utils/shared.ts';
-import { MessageWithCause } from '../../src/types/components/ModalTypes.tsx';
+import type { MessageWithCause } from '../../src/types/components/ModalTypes.tsx';
 
 describe('shared utils', () => {
   describe('deepEquals', () => {

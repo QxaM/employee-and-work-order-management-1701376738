@@ -1,4 +1,4 @@
-import { UserType } from '../../../types/api/UserTypes.ts';
+import type { UserType } from '../../../types/api/UserTypes.ts';
 import { Flex } from '@radix-ui/themes';
 import RoleUpdateCard from './RoleUpdateCard.tsx';
 

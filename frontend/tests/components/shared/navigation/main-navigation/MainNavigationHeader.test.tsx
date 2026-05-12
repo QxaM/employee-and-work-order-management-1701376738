@@ -6,9 +6,9 @@ import MainNavigationHeader from '../../../../../src/components/shared/navigatio
 import { renderWithProviders } from '../../../../test-utils.tsx';
 import { login } from '../../../../../src/store/authSlice.ts';
 import * as useMeDataModule from '../../../../../src/hooks/useMeData.tsx';
-import { MeType } from '../../../../../src/store/api/auth.ts';
+import type { MeType } from '../../../../../src/store/api/auth.ts';
 import { userEvent } from '@testing-library/user-event';
-import { RootState } from '../../../../../src/store';
+import type { RootState } from '../../../../../src/store';
 
 describe('Main Navigation Header', () => {
   beforeEach(() => {

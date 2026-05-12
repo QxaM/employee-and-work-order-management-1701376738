@@ -1,14 +1,17 @@
-import { Form } from 'radix-ui';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import {
   Button,
   Flex,
   Text,
   TextArea,
-  TextAreaProps,
+  type TextAreaProps,
   TextField,
 } from '@radix-ui/themes';
 import clsx from 'clsx/lite';
-import FormInputMessage from './FormInputMessage.tsx';
+import { Form } from 'radix-ui';
+import { type ChangeEvent, type InputEvent, useState } from 'react';
+import type { IconType } from '../../../../types/components/BaseTypes.ts';
+import type { ValidatorType } from '../../../../types/ValidatorTypes.ts';
 import {
   createInvalidMessage,
   createTooHighMessage,
@@ -17,10 +20,7 @@ import {
   createTooShortMessage,
   createValueMissingMessage,
 } from '../../../../utils/validators.ts';
-import { ChangeEvent, InputEvent, useState } from 'react';
-import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { ValidatorType } from '../../../../types/ValidatorTypes.ts';
-import { IconType } from '../../../../types/components/BaseTypes.ts';
+import FormInputMessage from './FormInputMessage.tsx';
 
 export interface RadixFormInputProps
   extends Omit<TextField.RootProps, 'type' | 'onInput' | 'onChange'> {
@@ -60,20 +60,20 @@ const FormInput = (props: RadixFormInputProps) => {
   const getFieldClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
-      !validity.valid &&
-      clsx(
-        '!shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-a7)]',
-        defaultValidityClasses
-      )
+        !validity.valid &&
+        clsx(
+          '!shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-a7)]',
+          defaultValidityClasses
+        )
     );
   const getAreaClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
-      !validity.valid &&
-      clsx(
-        '!shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-a7)]',
-        defaultValidityClasses
-      )
+        !validity.valid &&
+        clsx(
+          '!shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-a7)]',
+          defaultValidityClasses
+        )
     );
 
   const togglePassword = () => {
@@ -200,9 +200,9 @@ const FormInput = (props: RadixFormInputProps) => {
           title={createTooShortMessage(fieldName, minLength)}
           match="tooShort"
         />
-        {validators.map((validator, index) => (
+        {validators.map((validator) => (
           <FormInputMessage
-            key={`${validator.message}-${index}`}
+            key={validator.message}
             title={validator.message}
             match={(value) => validator.validation(value)}
           />

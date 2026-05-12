@@ -1,6 +1,6 @@
 import {
   customBaseQuery,
-  CustomFetchBaseQueryError,
+  type CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import {
@@ -11,10 +11,10 @@ import {
 } from '../../../src/store/api/user.ts';
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, expect } from 'vitest';
-import { act, PropsWithChildren } from 'react';
+import { act, type PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
-import { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
 
 vi.mock('../../../src/store/api/base.ts', async () => {
   const baseApi = await vi.importActual('../../../src/store/api/base.ts');

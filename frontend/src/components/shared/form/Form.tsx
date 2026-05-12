@@ -1,12 +1,12 @@
 import { Flex } from '@radix-ui/themes';
 import { Form as RadixForm } from 'radix-ui';
-import { SubmitEvent, PropsWithChildren } from 'react';
+import type { SubmitEvent, PropsWithChildren } from 'react';
 import FormHeader from './sub/FormHeader.tsx';
 import FormContent from './sub/FormContent.tsx';
 import FormInput from './sub/FormInput.tsx';
 import FormSubmit from './sub/FormSubmit.tsx';
 import FormFooter from './sub/FormFooter.tsx';
-import { PaddingProps } from '@radix-ui/themes/props';
+import type { PaddingProps } from '@radix-ui/themes/props';
 import FormSelect from './sub/FormSelect.tsx';
 
 interface FormProps extends PaddingProps {

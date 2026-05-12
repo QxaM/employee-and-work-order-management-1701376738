@@ -1,4 +1,4 @@
-import {Color} from '../TailwindTypes.ts';
+import type { Color } from '../TailwindTypes.ts';
 
 /**
  * Represents pagination information for a collection or dataset.

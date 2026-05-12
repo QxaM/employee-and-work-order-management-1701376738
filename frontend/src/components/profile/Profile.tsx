@@ -15,10 +15,10 @@ import {
 } from '../../store/api/profile.ts';
 import ProfileSection from './ProfileSection.tsx';
 import ProfileItem from './ProfileItem.tsx';
-import { SubmitEvent, useMemo, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import Form from '../shared/form/Form.tsx';
 import ProfileControls from './ProfileControls.tsx';
-import { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
+import type { UpdateProfileType } from '../../types/api/ProfileTypes.ts';
 import { useMeData } from '../../hooks/useMeData.tsx';
 import { getColor } from '../../types/components/RoleTypes.ts';
 import { EnvelopeClosedIcon, PersonIcon } from '@radix-ui/react-icons';
@@ -50,10 +50,10 @@ const Profile = () => {
       return undefined;
     }
     return 'cause' in imageUploadErrorData && imageUploadErrorData.cause
-      ? ({
-        message: imageUploadErrorData.message,
-        cause: imageUploadErrorData.cause,
-      })
+      ? {
+          message: imageUploadErrorData.message,
+          cause: imageUploadErrorData.cause,
+        }
       : imageUploadErrorData.message;
   }, [imageUploadErrorData]);
 

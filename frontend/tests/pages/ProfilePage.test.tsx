@@ -1,13 +1,13 @@
-import { renderWithProviders } from '../test-utils.tsx';
-import ProfilePage from '../../src/pages/ProfilePage.tsx';
 import { screen } from '@testing-library/react';
-import * as profileApiModule from '../../src/store/api/profile.ts';
-import * as useMeDataModule from '../../src/hooks/useMeData.tsx';
-import * as useImageUploadModule from '../../src/hooks/useImageUpload.tsx';
 import { afterEach, beforeEach } from 'vitest';
-import { ProfileType } from '../../src/types/api/ProfileTypes.ts';
-import { RoleType } from '../../src/types/api/RoleTypes.ts';
-import { MeType } from '../../src/store/api/auth.ts';
+import * as useImageUploadModule from '../../src/hooks/useImageUpload.tsx';
+import * as useMeDataModule from '../../src/hooks/useMeData.tsx';
+import ProfilePage from '../../src/pages/ProfilePage.tsx';
+import type { MeType } from '../../src/store/api/auth.ts';
+import * as profileApiModule from '../../src/store/api/profile.ts';
+import type { ProfileType } from '../../src/types/api/ProfileTypes.ts';
+import type { RoleType } from '../../src/types/api/RoleTypes.ts';
+import { renderWithProviders } from '../test-utils.tsx';
 
 const email = 'test@test.com';
 const profileData: ProfileType = {

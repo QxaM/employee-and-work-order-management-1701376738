@@ -1,9 +1,8 @@
 import { DropdownMenu } from '@radix-ui/themes';
-import ProfileAvatar
-  from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileAvatar.tsx';
+import ProfileAvatar from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileAvatar.tsx';
 import { renderWithProviders } from '../../../../../test-utils.tsx';
 import * as authApiModule from '../../../../../../src/store/api/auth.ts';
-import { MeType } from '../../../../../../src/store/api/auth.ts';
+import type { MeType } from '../../../../../../src/store/api/auth.ts';
 import { beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
 

@@ -4,7 +4,7 @@ import AvailableRoles from './roles-list/AvailableRoles.tsx';
 import { useGetRolesQuery } from '../../../store/api/role.ts';
 import LoadingSpinner from '../../shared/LoadingSpinner.tsx';
 import ErrorComponent from '../../shared/ErrorComponent.tsx';
-import { UserType } from '../../../types/api/UserTypes.ts';
+import type { UserType } from '../../../types/api/UserTypes.ts';
 
 interface RolesListSectionProps {
   user: UserType;

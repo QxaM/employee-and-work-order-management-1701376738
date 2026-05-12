@@ -1,7 +1,7 @@
 import Form from '../../../../src/components/shared/form/Form.tsx';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, Mock } from 'vitest';
-import { SubmitEvent } from 'react';
+import { beforeEach, type Mock } from 'vitest';
+import type { SubmitEvent } from 'react';
 
 describe('Form', () => {
   let mockSubmit: Mock<(...args: unknown[]) => unknown>;

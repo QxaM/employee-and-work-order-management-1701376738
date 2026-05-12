@@ -1,5 +1,5 @@
-import { CustomFetchBaseQueryError } from '../../store/api/base.ts';
-import { SerializedError } from '@reduxjs/toolkit';
+import type { CustomFetchBaseQueryError } from '../../store/api/base.ts';
+import type { SerializedError } from '@reduxjs/toolkit';
 
 /**
  * Represents the structure of an API error response.

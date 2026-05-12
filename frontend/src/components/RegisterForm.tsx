@@ -1,4 +1,4 @@
-import { SubmitEvent, useMemo, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import {
@@ -7,10 +7,14 @@ import {
   passwordValidators,
 } from '../utils/validators.ts';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
-import { RegisterType, useRegisterMutation } from '../store/api/auth.ts';
+import { type RegisterType, useRegisterMutation } from '../store/api/auth.ts';
 import Form from './shared/form/Form.tsx';
 import PersonPlusIcon from './icons/PersonPlusIcon.tsx';
-import { EnvelopeClosedIcon, LockClosedIcon, PersonIcon, } from '@radix-ui/react-icons';
+import {
+  EnvelopeClosedIcon,
+  LockClosedIcon,
+  PersonIcon,
+} from '@radix-ui/react-icons';
 import { Flex, Link as RadixLink, Text } from '@radix-ui/themes';
 import PasswordRequirements from './shared/form/PasswordRequirements.tsx';
 

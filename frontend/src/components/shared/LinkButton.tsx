@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@radix-ui/themes';
+import { Button, type ButtonProps } from '@radix-ui/themes';
 import { Link } from 'react-router-dom';
 
 interface RadixLinkProps extends ButtonProps {

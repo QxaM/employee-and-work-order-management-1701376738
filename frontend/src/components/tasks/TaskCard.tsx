@@ -1,7 +1,16 @@
-import {TaskType} from '../../types/api/TaskTypes.ts';
-import {Badge, Button, Card, Code, Flex, Inset, Progress, Text,} from '@radix-ui/themes';
+import type { TaskType } from '../../types/api/TaskTypes.ts';
+import {
+  Badge,
+  Button,
+  Card,
+  Code,
+  Flex,
+  Inset,
+  Progress,
+  Text,
+} from '@radix-ui/themes';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
-import {ClockIcon} from '@radix-ui/react-icons';
+import { ClockIcon } from '@radix-ui/react-icons';
 
 interface TaskCardProps {
   task: TaskType;

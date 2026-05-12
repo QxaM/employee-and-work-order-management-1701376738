@@ -1,8 +1,8 @@
 import { useEurekaHealthcheckQuery } from '../../store/api/eureka.ts';
 import { useGatewayHealthcheckQuery } from '../../store/api/gateway.ts';
 import { useAuthHealthcheckQuery } from '../../store/api/auth.ts';
-import { BadgeProps } from '@radix-ui/themes';
-import { IconType } from './BaseTypes.ts';
+import type { BadgeProps } from '@radix-ui/themes';
+import type { IconType } from './BaseTypes.ts';
 import {
   CheckCircledIcon,
   ClockIcon,

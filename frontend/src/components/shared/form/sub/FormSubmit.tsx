@@ -1,8 +1,8 @@
-import { Button, ButtonProps, Flex } from '@radix-ui/themes';
+import { Button, type ButtonProps, Flex } from '@radix-ui/themes';
 import { Form as RadixForm } from 'radix-ui';
 import LoadingSpinner from '../../LoadingSpinner.tsx';
-import { MarginProps } from '@radix-ui/themes/props';
-import { IconType } from '../../../../types/components/BaseTypes.ts';
+import type { MarginProps } from '@radix-ui/themes/props';
+import type { IconType } from '../../../../types/components/BaseTypes.ts';
 
 interface FormSubmitProps extends MarginProps {
   title: string;

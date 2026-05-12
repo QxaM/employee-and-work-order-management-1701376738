@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
-import { ReactNode, useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import RegisterForm from '../../src/components/RegisterForm.tsx';

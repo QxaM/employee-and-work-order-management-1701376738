@@ -1,7 +1,7 @@
 import {
   createListenerMiddleware,
   createSlice,
-  PayloadAction,
+  type PayloadAction,
 } from '@reduxjs/toolkit';
 import { api } from './apiSlice.ts';
 

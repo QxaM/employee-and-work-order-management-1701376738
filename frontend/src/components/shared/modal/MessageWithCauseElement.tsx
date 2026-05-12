@@ -1,5 +1,5 @@
 import { Flex, Text } from '@radix-ui/themes';
-import { MessageWithCause } from '../../../types/components/ModalTypes.tsx';
+import type { MessageWithCause } from '../../../types/components/ModalTypes.tsx';
 
 interface ImageUploadErrorProps {
   errorData: MessageWithCause;

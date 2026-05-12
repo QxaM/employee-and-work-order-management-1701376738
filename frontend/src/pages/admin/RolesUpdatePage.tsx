@@ -1,11 +1,11 @@
-import Pageable from '../../components/shared/pageable/Pageable.tsx';
-import { Pageable as PageableData } from '../../types/components/PageableTypes.ts';
-import { useMemo } from 'react';
-import { useGetUsersQuery } from '../../store/api/user.ts';
-import { useSearchParams } from 'react-router-dom';
 import { Flex } from '@radix-ui/themes';
-import RolesUpdateTitle from '../../components/admin/roles-update/RolesUpdateTitle.tsx';
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import RolesUpdateContent from '../../components/admin/roles-update/RolesUpdateContent.tsx';
+import RolesUpdateTitle from '../../components/admin/roles-update/RolesUpdateTitle.tsx';
+import Pageable from '../../components/shared/pageable/Pageable.tsx';
+import { useGetUsersQuery } from '../../store/api/user.ts';
+import type { Pageable as PageableData } from '../../types/components/PageableTypes.ts';
 
 /**
  * The `RolesUpdatePage` component is responsible for managing and displaying user role updates.
@@ -23,7 +23,9 @@ import RolesUpdateContent from '../../components/admin/roles-update/RolesUpdateC
 const RolesUpdatePage = () => {
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page') ?? '0';
-  const { data: usersData } = useGetUsersQuery({ page: Number.parseInt(page) });
+  const { data: usersData } = useGetUsersQuery({
+    page: Number.parseInt(page, 10),
+  });
 
   const users = useMemo(() => usersData?.content ?? [], [usersData]);
 

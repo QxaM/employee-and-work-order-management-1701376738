@@ -1,3 +1,5 @@
+import { fileTypeFromBlob } from 'file-type';
+import { afterEach, beforeEach } from 'vitest';
 import {
   isValidImageExtension,
   isValidImageName,
@@ -9,8 +11,6 @@ import {
   missingUppercaseLetter,
   validateFile,
 } from '../../src/utils/validators.ts';
-import { afterEach, beforeEach } from 'vitest';
-import { fileTypeFromBlob } from 'file-type';
 
 vi.mock('file-type', async () => {
   const fileType = await vi.importActual('file-type');
@@ -178,7 +178,7 @@ describe('Validators', () => {
 
     describe('isValidImageName', () => {
       validFileNames.forEach((fileName) => {
-        it('Should return true for valid file name: ' + fileName, () => {
+        it(`Should return true for valid file name: ${fileName}`, () => {
           // Given
 
           // When
@@ -190,7 +190,7 @@ describe('Validators', () => {
       });
 
       invalidFileNames.forEach((fileName) => {
-        it('Should return false for invalid file name: ' + fileName, () => {
+        it(`Should return false for invalid file name: ${fileName}`, () => {
           // Given
 
           // When
@@ -204,7 +204,7 @@ describe('Validators', () => {
 
     describe('isValidImageExtension', () => {
       validFileNames.forEach((fileName) => {
-        it('Should return true for valid file name: ' + fileName, () => {
+        it(`Should return true for valid file name: ${fileName}`, () => {
           // Given
 
           // When
@@ -216,7 +216,7 @@ describe('Validators', () => {
       });
 
       invalidFileExtensions.forEach((fileName) => {
-        it('Should return false for invalid extension: ' + fileName, () => {
+        it(`Should return false for invalid extension: ${fileName}`, () => {
           // Given
 
           // When
@@ -344,8 +344,8 @@ describe('Validators', () => {
         });
       });
 
-      validFileNames.map((fileName) => {
-        it('Should return valid for valid names: ' + fileName, async () => {
+      validFileNames.forEach((fileName) => {
+        it(`Should return valid for valid names: ${fileName}`, async () => {
           // Given
           const file = {
             name: fileName,
@@ -362,27 +362,24 @@ describe('Validators', () => {
         });
       });
 
-      invalidFileNames.map((fileName) => {
-        it(
-          'Should return invalid for invalid file names: ' + fileName,
-          async () => {
-            // Given
-            const error =
-              'Invalid file name. Only numbers and characters are allowed.';
-            const file = {
-              name: fileName,
-              size: 10 * 1024 * 1024,
-              type: 'image/jpeg',
-            } as File;
+      invalidFileNames.forEach((fileName) => {
+        it(`Should return invalid for invalid file names: ${fileName}`, async () => {
+          // Given
+          const error =
+            'Invalid file name. Only numbers and characters are allowed.';
+          const file = {
+            name: fileName,
+            size: 10 * 1024 * 1024,
+            type: 'image/jpeg',
+          } as File;
 
-            // When
-            const isValid = await validateFile(file);
+          // When
+          const isValid = await validateFile(file);
 
-            // Then
-            expect(isValid.result).toBe(false);
-            expect(isValid.errors).toContain(error);
-          }
-        );
+          // Then
+          expect(isValid.result).toBe(false);
+          expect(isValid.errors).toContain(error);
+        });
       });
 
       it('Should return invalid for invalid file extension', async () => {

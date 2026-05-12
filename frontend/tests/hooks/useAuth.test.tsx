@@ -1,11 +1,19 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import * as authApiModule from '../../src/store/api/auth.ts';
-import { LoginType } from '../../src/store/api/auth.ts';
+import type { LoginType } from '../../src/store/api/auth.ts';
 import * as storeModule from '../../src/hooks/useStore.tsx';
 import * as profileImageModule from '../../src/hooks/useProfileImage.tsx';
-import { createHookDataRouter, renderHookWithProviders, } from '../test-utils.tsx';
+import {
+  createHookDataRouter,
+  renderHookWithProviders,
+} from '../test-utils.tsx';
 import { useAuth } from '../../src/hooks/useAuth.tsx';
-import { BrowserRouter, Location, useLocation, useNavigate, } from 'react-router-dom';
+import {
+  BrowserRouter,
+  type Location,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { waitFor } from '@testing-library/react';
 
 vi.mock('react-router-dom', async () => {
@@ -312,7 +320,9 @@ describe('useAuth', () => {
       // Then
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledOnce();
-        expect(mockNavigate).toHaveBeenCalledWith('/', { state: { logoutSuccess: true } });
+        expect(mockNavigate).toHaveBeenCalledWith('/', {
+          state: { logoutSuccess: true },
+        });
       });
     });
 
@@ -335,7 +345,7 @@ describe('useAuth', () => {
       result.current.logout.trigger();
       vi.mocked(useLocation).mockReturnValue({
         pathname: '/',
-        state: { logoutSuccess: true }
+        state: { logoutSuccess: true },
       } as Location);
 
       // Then
@@ -366,7 +376,7 @@ describe('useAuth', () => {
       result.current.logout.trigger();
       vi.mocked(useLocation).mockReturnValue({
         pathname: '/',
-        state: { logoutSuccess: true }
+        state: { logoutSuccess: true },
       } as Location);
 
       // Then
@@ -389,7 +399,7 @@ describe('useAuth', () => {
       result.current.logout.trigger();
       vi.mocked(useLocation).mockReturnValue({
         pathname: '/',
-        state: { logoutSuccess: true }
+        state: { logoutSuccess: true },
       } as Location);
 
       // Then
@@ -438,14 +448,17 @@ describe('useAuth', () => {
       // When
       vi.mocked(useLocation).mockReturnValue({
         pathname: '/',
-        state: { logoutSuccess: true }
+        state: { logoutSuccess: true },
       } as Location);
 
       // Then
       await waitFor(() => {
         rerender();
         expect(mockNavigate).toHaveBeenCalledTimes(2);
-        expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true, state: {} })
+        expect(mockNavigate).toHaveBeenCalledWith('/', {
+          replace: true,
+          state: {},
+        });
         expect(mockClearImage).toHaveBeenCalledOnce();
       });
     });

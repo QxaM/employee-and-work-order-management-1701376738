@@ -1,5 +1,5 @@
+import type { RoleType } from '../../types/api/RoleTypes.ts';
 import { api } from '../apiSlice.ts';
-import { RoleType } from '../../types/api/RoleTypes.ts';
 import { authApi as AUTH_API } from './base.ts';
 
 const defaultRegisterErrorMessage =
@@ -51,7 +51,6 @@ export interface MeType {
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     authHealthcheck: builder.query<undefined, void>({
       query: () => ({
         url: AUTH_URL + HEALTHCHECK_API,
@@ -75,7 +74,7 @@ export const authApi = api.injectEndpoints({
     }),
     confirmRegistration: builder.mutation<undefined, string>({
       query: (token) => ({
-        url: AUTH_API + VERIFICATION_API + `?token=${token}`,
+        url: `${AUTH_API + VERIFICATION_API}?token=${token}`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,16 +87,15 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Basic ${btoa(data.email + ':' + data.password)}`,
+          Authorization: `Basic ${btoa(`${data.email}:${data.password}`)}`,
         },
         defaultError: defaultLoginErrorMessage,
         invalidatesTags: ['Me'],
       }),
     }),
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     me: builder.query<MeType, void>({
       query: () => ({
-        url: AUTH_API + LOGIN_API + '/me',
+        url: `${AUTH_API + LOGIN_API}/me`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

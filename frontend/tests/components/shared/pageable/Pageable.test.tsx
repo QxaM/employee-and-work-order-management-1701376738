@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import Pageable from '../../../../src/components/shared/pageable/Pageable.tsx';
-import { Pageable as PageableData } from '../../../../src/types/components/PageableTypes.ts';
+import type { Pageable as PageableData } from '../../../../src/types/components/PageableTypes.ts';
 import { BrowserRouter } from 'react-router-dom';
 import { describe } from 'vitest';
 

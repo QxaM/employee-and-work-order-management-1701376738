@@ -1,4 +1,4 @@
-import { SubmitEvent } from 'react';
+import type { SubmitEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormNotifications } from '../hooks/useFormNotifications.tsx';
 import { useRequestPasswordResetMutation } from '../store/api/passwordReset.ts';

@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import UserDataSection from '../../../../src/components/admin/roles-update/UserDataSection.tsx';
-import { UserType } from '../../../../src/types/api/UserTypes.ts';
-import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
+import type { UserType } from '../../../../src/types/api/UserTypes.ts';
+import type { RoleType } from '../../../../src/types/api/RoleTypes.ts';
 
 const roles: RoleType[] = [
   {

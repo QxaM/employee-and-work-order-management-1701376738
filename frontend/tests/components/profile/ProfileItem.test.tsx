@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import ProfileItem from '../../../src/components/profile/ProfileItem.tsx';
 import { DataList } from '@radix-ui/themes';
-import { SubmitEvent, PropsWithChildren } from 'react';
+import { render, screen } from '@testing-library/react';
 import { Form } from 'radix-ui';
+import type { PropsWithChildren, SubmitEvent } from 'react';
+import ProfileItem from '../../../src/components/profile/ProfileItem.tsx';
 
 const TestWrapper = ({ children }: PropsWithChildren) => {
   return (

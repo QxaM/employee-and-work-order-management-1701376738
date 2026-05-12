@@ -1,4 +1,4 @@
-import { MessageWithCause } from '../../../../src/types/components/ModalTypes.tsx';
+import type { MessageWithCause } from '../../../../src/types/components/ModalTypes.tsx';
 import { render, screen } from '@testing-library/react';
 import MessageWithCauseElement from '../../../../src/components/shared/modal/MessageWithCauseElement.tsx';
 

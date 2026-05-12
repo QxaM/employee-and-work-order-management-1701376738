@@ -1,5 +1,5 @@
-import { MeType } from '../store/api/auth.ts';
-import { Role } from '../types/api/AuthorizationTypes.ts';
+import type { MeType } from '../store/api/auth.ts';
+import type { Role } from '../types/api/AuthorizationTypes.ts';
 
 const ADMIN_ROLE: Role = 'ADMIN';
 

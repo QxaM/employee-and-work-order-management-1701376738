@@ -1,5 +1,5 @@
-import { QueryError } from '../types/api/BaseTypes.ts';
-import { NonUndefined } from '../types/BaseTypes.ts';
+import type { QueryError } from '../types/api/BaseTypes.ts';
+import type { NonUndefined } from '../types/BaseTypes.ts';
 
 const extractQueryErrorMessage = (
   error: NonNullable<unknown>,
@@ -25,7 +25,7 @@ const extractQueryErrorMessage = (
 export const readErrorMessage = (
   error: unknown,
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  defaultError: string = 'Unknown error, please try again!'
+  defaultError = 'Unknown error, please try again!'
 ): string => {
   if (!error) {
     return defaultError;

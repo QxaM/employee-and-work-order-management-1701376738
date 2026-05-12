@@ -1,5 +1,5 @@
 import RolesList from './RolesList.tsx';
-import { RoleType } from '../../../../types/api/RoleTypes.ts';
+import type { RoleType } from '../../../../types/api/RoleTypes.ts';
 import { Button } from '@radix-ui/themes';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { useRemoveRoleMutation } from '../../../../store/api/user.ts';

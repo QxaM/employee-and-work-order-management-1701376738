@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ProfileAvatar from '../../../src/components/profile/ProfileAvatar.tsx';
 import { afterEach, beforeEach } from 'vitest';
-import { userEvent, UserEvent } from '@testing-library/user-event';
-import { useImageUpload } from '../../../src/hooks/useImageUpload.tsx';
+import { userEvent, type UserEvent } from '@testing-library/user-event';
+import type { useImageUpload } from '../../../src/hooks/useImageUpload.tsx';
 
 describe('ProfileAvatar', () => {
   const firstName = 'John';

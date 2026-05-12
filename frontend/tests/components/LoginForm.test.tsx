@@ -1,10 +1,10 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, it } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
 import LoginForm from '../../src/components/LoginForm.tsx';
 import * as useAuthModule from '../../src/hooks/useAuth.tsx';
-import { TokenType } from '../../src/store/api/auth.ts';
+import type { TokenType } from '../../src/store/api/auth.ts';
 import { renderWithProviders } from '../test-utils.tsx';
 
 const EMAIL_TITLE = 'email address';

@@ -1,6 +1,6 @@
 import {
   customBaseQuery,
-  CustomFetchBaseQueryError,
+  type CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { waitFor } from '@testing-library/react';

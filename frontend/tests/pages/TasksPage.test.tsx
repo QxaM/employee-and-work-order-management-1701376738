@@ -1,11 +1,14 @@
-import {act, fireEvent, screen} from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import TasksPage from '../../src/pages/TasksPage.tsx';
-import {RoleType} from '../../src/types/api/RoleTypes.ts';
-import {PagedTasksType, TaskType} from '../../src/types/api/TaskTypes.ts';
+import type { RoleType } from '../../src/types/api/RoleTypes.ts';
+import type {
+  PagedTasksType,
+  TaskType,
+} from '../../src/types/api/TaskTypes.ts';
 import * as tasksApiModule from '../../src/store/api/task.ts';
-import {beforeEach} from 'vitest';
-import {BrowserRouter, RouterProvider} from 'react-router-dom';
-import {createDataRouter, renderWithProviders} from '../test-utils.tsx';
+import { beforeEach } from 'vitest';
+import { BrowserRouter, RouterProvider } from 'react-router-dom';
+import { createDataRouter, renderWithProviders } from '../test-utils.tsx';
 
 describe('TasksPage', () => {
   const role: RoleType = {

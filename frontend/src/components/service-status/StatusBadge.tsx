@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import {
   getBadgeStatus,
   HEALTH_CHECK_MAP,
-  Service,
+  type Service,
 } from '../../types/components/ServiceStatusTypes.ts';
 
 interface StatusBadgeProps {

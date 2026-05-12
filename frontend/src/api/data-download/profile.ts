@@ -1,11 +1,11 @@
 import {
   apiBaseUrl,
-  CustomFetchBaseQueryError,
-  defaultApiError,
   profileApi as baseProfileApi,
+  type CustomFetchBaseQueryError,
+  defaultApiError,
 } from '../../store/api/base.ts';
 import { PROFILES_API } from '../../store/api/profile.ts';
-import { ApiErrorType } from '../../types/api/BaseTypes.ts';
+import type { ApiErrorType } from '../../types/api/BaseTypes.ts';
 
 export interface FetchSuccess {
   data: string;
@@ -20,7 +20,7 @@ export interface FetchError {
 export const fetchMyProfileImage = async (): Promise<
   FetchSuccess | FetchError
 > => {
-  const url = apiBaseUrl + '/api' + baseProfileApi + PROFILES_API + '/me/image';
+  const url = `${apiBaseUrl}/api${baseProfileApi}${PROFILES_API}/me/image`;
   const token = localStorage.getItem('token');
 
   const headers = new Headers();

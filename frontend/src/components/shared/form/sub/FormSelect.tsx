@@ -30,11 +30,11 @@ const FormSelect = (props: RadixFormSelectProps) => {
   const getFieldClasses = (validity: ValidityState | undefined) =>
     clsx(
       validity &&
-      !validity.valid &&
-      clsx(
-        '!shadow-[inset_0_0_0_1px_var(--red-a7)]',
-        '!outline-(--red-8) !bg-(--red-a1)'
-      ),
+        !validity.valid &&
+        clsx(
+          '!shadow-[inset_0_0_0_1px_var(--red-a7)]',
+          '!outline-(--red-8) !bg-(--red-a1)'
+        ),
       '!w-full'
     );
 

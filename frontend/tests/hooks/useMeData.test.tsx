@@ -1,4 +1,4 @@
-import { MeType } from '../../src/store/api/auth.ts';
+import type { MeType } from '../../src/store/api/auth.ts';
 import { afterEach, beforeEach } from 'vitest';
 import { customBaseQuery } from '../../src/store/api/base.ts';
 import {

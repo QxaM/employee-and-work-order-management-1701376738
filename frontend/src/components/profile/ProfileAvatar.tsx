@@ -2,7 +2,7 @@ import { Avatar, Flex, Text } from '@radix-ui/themes';
 import IconWithBackground from '../icons/base/IconWithBackground.tsx';
 import { UploadIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx/lite';
-import { useImageUpload } from '../../hooks/useImageUpload.tsx';
+import type { useImageUpload } from '../../hooks/useImageUpload.tsx';
 import ErrorComponent from '../shared/ErrorComponent.tsx';
 import { formatFileSize } from '../../utils/file.ts';
 

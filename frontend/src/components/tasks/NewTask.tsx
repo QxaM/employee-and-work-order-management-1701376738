@@ -2,7 +2,7 @@ import ModalPage from '../../pages/ModalPage.tsx';
 import { Button, Flex } from '@radix-ui/themes';
 import Form from '../shared/form/Form.tsx';
 import { useGetUsersQuery } from '../../store/api/user.ts';
-import { SubmitEvent, useMemo } from 'react';
+import { type SubmitEvent, useMemo } from 'react';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 
 interface NewTaskProps {
@@ -18,7 +18,7 @@ const NewTask = ({ open, onOpenChange }: NewTaskProps) => {
   const submitNewTask = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Submit new task');
-  }
+  };
 
   return (
     <ModalPage
@@ -64,7 +64,9 @@ const NewTask = ({ open, onOpenChange }: NewTaskProps) => {
           <Form.Submit title="Create" color="green" />
           <Button
             type="reset"
-            onClick={() => { onOpenChange(false); }}
+            onClick={() => {
+              onOpenChange(false);
+            }}
             variant="soft"
             color="gray"
             size="4"

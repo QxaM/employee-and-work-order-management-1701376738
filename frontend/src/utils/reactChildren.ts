@@ -1,4 +1,9 @@
-import { Children, isValidElement, ReactElement, ReactNode } from 'react';
+import {
+  Children,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 
 export const hasChildren = (
   element: ReactNode
@@ -19,13 +24,11 @@ export const childToString = (child: ReactNode): string => {
     return '';
   }
 
-  // Disabled eslint since we know we can expect string representation of the child
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return child.toString();
 };
 
 export const textContent = (children: ReactNode | ReactNode[]): string => {
-  if (!(children instanceof Array) && !isValidElement(children)) {
+  if (!Array.isArray(children) && !isValidElement(children)) {
     return childToString(children);
   }
 

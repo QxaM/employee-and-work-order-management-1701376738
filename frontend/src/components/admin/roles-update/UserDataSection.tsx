@@ -1,8 +1,15 @@
-import { Code, Flex, IconButton, Link, Separator, Text, } from '@radix-ui/themes';
+import {
+  Code,
+  Flex,
+  IconButton,
+  Link,
+  Separator,
+  Text,
+} from '@radix-ui/themes';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { copyToClipboard } from '../../../utils/clipboard.ts';
 import { Label } from 'radix-ui';
-import { UserType } from '../../../types/api/UserTypes.ts';
+import type { UserType } from '../../../types/api/UserTypes.ts';
 import ShieldIcon from '../../icons/ShieldIcon.tsx';
 
 interface UserSectionProps {

@@ -1,7 +1,7 @@
-import {afterEach, beforeEach, describe, expect} from 'vitest';
-import {act, waitFor} from '@testing-library/react';
-import {useProfileImage} from '../../src/hooks/useProfileImage.tsx';
-import {renderHookWithProviders} from '../test-utils.tsx';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
+import { act, waitFor } from '@testing-library/react';
+import { useProfileImage } from '../../src/hooks/useProfileImage.tsx';
+import { renderHookWithProviders } from '../test-utils.tsx';
 import * as profileApi from '../../src/api/data-download/profile.ts';
 
 describe('useProfileImage', () => {

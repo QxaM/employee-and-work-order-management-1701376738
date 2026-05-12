@@ -1,8 +1,8 @@
+import { fireEvent, screen } from '@testing-library/react';
+import { Form } from 'radix-ui';
+import { describe } from 'vitest';
 import FormSelect from '../../../../../src/components/shared/form/sub/FormSelect.tsx';
-import {fireEvent, screen} from '@testing-library/react';
-import {Form} from 'radix-ui';
-import {renderWithProviders} from '../../../../test-utils.tsx';
-import {describe} from 'vitest';
+import { renderWithProviders } from '../../../../test-utils.tsx';
 
 describe('FormSelect', () => {
   const label = 'Test label';
@@ -90,7 +90,7 @@ describe('FormSelect', () => {
       >
         <FormSelect name={label} options={options} required />
         <Form.Submit asChild>
-          <button>Submit</button>
+          <button type="submit">Submit</button>
         </Form.Submit>
       </Form.Root>
     );

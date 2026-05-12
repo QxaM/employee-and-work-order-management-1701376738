@@ -1,5 +1,5 @@
 import { Card, Container, Flex, Section } from '@radix-ui/themes';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import clsx from 'clsx/lite';
 
 interface BasePageProps {

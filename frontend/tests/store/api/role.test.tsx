@@ -1,12 +1,12 @@
-import { RoleType } from '../../../src/types/api/RoleTypes.ts';
+import type { RoleType } from '../../../src/types/api/RoleTypes.ts';
 import { renderHookWithProviders } from '../../test-utils.tsx';
 import { rolesApi, useGetRolesQuery } from '../../../src/store/api/role.ts';
 import { renderHook, waitFor } from '@testing-library/react';
 import {
   customBaseQuery,
-  CustomFetchBaseQueryError,
+  type CustomFetchBaseQueryError,
 } from '../../../src/store/api/base.ts';
-import { act, PropsWithChildren } from 'react';
+import { act, type PropsWithChildren } from 'react';
 import { setupStore } from '../../../src/store';
 import { Provider } from 'react-redux';
 

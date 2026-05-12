@@ -1,5 +1,5 @@
 import { Separator } from '@radix-ui/themes';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 const FormFooter = ({ children }: PropsWithChildren) => {
   return (

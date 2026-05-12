@@ -1,19 +1,21 @@
 import { Flex } from '@radix-ui/themes';
-import TasksListTitle from '../components/tasks/TasksListTitle.tsx';
-import TasksContent from '../components/tasks/TasksContent.tsx';
-import { useGetTasksQuery } from '../store/api/task.ts';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Pageable as PageableData } from '../types/components/PageableTypes.ts';
 import Pageable from '../components/shared/pageable/Pageable.tsx';
 import NewTask from '../components/tasks/NewTask.tsx';
+import TasksContent from '../components/tasks/TasksContent.tsx';
+import TasksListTitle from '../components/tasks/TasksListTitle.tsx';
+import { useGetTasksQuery } from '../store/api/task.ts';
+import type { Pageable as PageableData } from '../types/components/PageableTypes.ts';
 
 const TasksPage = () => {
   const [isNewTaskOpened, setIsNewTaskOpened] = useState(false);
 
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page') ?? '0';
-  const { data: taskData } = useGetTasksQuery({ page: Number.parseInt(page) });
+  const { data: taskData } = useGetTasksQuery({
+    page: Number.parseInt(page, 10),
+  });
 
   const tasks = useMemo(() => taskData?.content ?? [], [taskData]);
 
@@ -32,7 +34,9 @@ const TasksPage = () => {
       <Flex direction="column" flexGrow="1" p="4" gap="6">
         <TasksListTitle
           totalTasks={tasks.length}
-          openNewTask={() => { setIsNewTaskOpened(true); }}
+          openNewTask={() => {
+            setIsNewTaskOpened(true);
+          }}
         />
         <TasksContent tasks={tasks} />
         <Pageable pageable={pageable} />

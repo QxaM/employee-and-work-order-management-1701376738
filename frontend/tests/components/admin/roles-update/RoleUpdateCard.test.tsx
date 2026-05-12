@@ -1,7 +1,7 @@
 import { afterEach, beforeEach } from 'vitest';
 import * as roleDataModule from '../../../../src/store/api/role.ts';
-import { RoleType } from '../../../../src/types/api/RoleTypes.ts';
-import { UserType } from '../../../../src/types/api/UserTypes.ts';
+import type { RoleType } from '../../../../src/types/api/RoleTypes.ts';
+import type { UserType } from '../../../../src/types/api/UserTypes.ts';
 import { renderWithProviders } from '../../../test-utils.tsx';
 import RoleUpdateCard from '../../../../src/components/admin/roles-update/RoleUpdateCard.tsx';
 import { screen } from '@testing-library/react';

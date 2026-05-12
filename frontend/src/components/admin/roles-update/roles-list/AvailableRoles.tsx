@@ -1,4 +1,4 @@
-import { RoleType } from '../../../../types/api/RoleTypes.ts';
+import type { RoleType } from '../../../../types/api/RoleTypes.ts';
 import RolesList from './RolesList.tsx';
 import { Button } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';

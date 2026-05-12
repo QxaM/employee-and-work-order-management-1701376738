@@ -1,12 +1,11 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { afterEach, beforeEach, describe } from 'vitest';
 import * as useAuthModule from '../../../../../../src/hooks/useAuth.tsx';
 import { renderWithProviders } from '../../../../../test-utils.tsx';
-import ProfileContextMenu
-  from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileContextMenu.tsx';
+import ProfileContextMenu from '../../../../../../src/components/shared/navigation/main-navigation/profile-card/ProfileContextMenu.tsx';
 import { screen } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
+import { type UserEvent, userEvent } from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 const openContext = 'Open context';

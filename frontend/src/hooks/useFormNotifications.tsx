@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { registerModal } from '../store/modalSlice.ts';
 import { useAppDispatch } from './useStore.tsx';
 import { getValueOrDefault } from '../utils/shared.ts';
-import { MessageWithCause } from '../types/components/ModalTypes.tsx';
+import type { MessageWithCause } from '../types/components/ModalTypes.tsx';
 
 const defaultSuccess = 'Data have been submitted successfully!';
 const defaultError = 'Error while submitting data!';

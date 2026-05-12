@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, MockInstance } from 'vitest';
+import { afterEach, beforeEach, describe, type MockInstance } from 'vitest';
 
 import authReducer, { login, logout } from '../../src/store/authSlice';
 import { api } from '../../src/store/apiSlice.ts';
 import { setupStore } from '../../src/store';
 import { waitFor } from '@testing-library/react';
-import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit';
+import type { ActionCreatorWithoutPayload } from '@reduxjs/toolkit';
 
 const localStorageMock = {
   getItem: vi.fn(),

@@ -1,9 +1,9 @@
+import type { ReactNode } from 'react';
 import {
   childToString,
   hasChildren,
   textContent,
 } from '../../src/utils/reactChildren.ts';
-import { ReactNode } from 'react';
 
 describe('reactChildren', () => {
   describe('hasChildren', () => {
@@ -304,7 +304,7 @@ describe('reactChildren', () => {
       const result = textContent(element);
 
       // Then
-      expect(result).toEqual(valueString + valueNumber.toString() + 'Nested');
+      expect(result).toEqual(`${valueString + valueNumber.toString()}Nested`);
     });
 
     it('Should return correctly on empty', () => {

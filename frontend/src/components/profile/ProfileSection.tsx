@@ -1,6 +1,6 @@
 import { Box, Card, DataList, Flex, Heading } from '@radix-ui/themes';
-import { PropsWithChildren } from 'react';
-import { IconType } from '../../types/components/BaseTypes.ts';
+import type { PropsWithChildren } from 'react';
+import type { IconType } from '../../types/components/BaseTypes.ts';
 
 interface ProfileSectionProps {
   title: string;

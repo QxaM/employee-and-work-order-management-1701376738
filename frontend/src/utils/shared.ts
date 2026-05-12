@@ -1,4 +1,4 @@
-import { MessageWithCause } from '../types/components/ModalTypes.tsx';
+import type { MessageWithCause } from '../types/components/ModalTypes.tsx';
 
 /**
  * Compares two values deeply for equality.

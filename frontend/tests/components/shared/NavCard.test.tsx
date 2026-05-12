@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import NavCard from '../../../src/components/shared/NavCard.tsx';
 import { BrowserRouter } from 'react-router-dom';
+import NavCard from '../../../src/components/shared/NavCard.tsx';
 
 describe('NavCard', () => {
   const to = '/test';
@@ -32,6 +32,7 @@ describe('NavCard', () => {
     const Icon = () => (
       <svg
         role="img"
+        aria-label="test icon"
         xmlns="http://www.w3.org/2000/svg"
         width="100%"
         height="100%"

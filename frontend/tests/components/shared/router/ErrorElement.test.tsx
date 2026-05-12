@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import ErrorElement from '../../../../src/components/shared/router/ErrorElement.tsx';
-import { CustomFetchBaseQueryError } from '../../../../src/store/api/base.ts';
-import { SerializedError } from '@reduxjs/toolkit';
+import type { CustomFetchBaseQueryError } from '../../../../src/store/api/base.ts';
+import type { SerializedError } from '@reduxjs/toolkit';
 import RolesUpdatePage from '../../../../src/pages/admin/RolesUpdatePage.tsx';
 import { renderWithProviders } from '../../../test-utils.tsx';
 

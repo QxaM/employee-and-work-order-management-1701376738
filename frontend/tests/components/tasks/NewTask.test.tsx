@@ -3,7 +3,10 @@ import NewTask from '../../../src/components/tasks/NewTask.tsx';
 import { afterEach, beforeEach } from 'vitest';
 import { renderWithProviders } from '../../test-utils.tsx';
 import * as usersModule from '../../../src/store/api/user.ts';
-import { GetUsersType, UserType } from '../../../src/types/api/UserTypes.ts';
+import type {
+  GetUsersType,
+  UserType,
+} from '../../../src/types/api/UserTypes.ts';
 
 describe('NewTask', () => {
   const onOpenChangeMock = vi.fn();

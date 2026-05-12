@@ -1,6 +1,6 @@
-import { IconProps } from '../../../../src/types/components/BaseTypes.ts';
-import BaseIcon from '../../../../src/components/icons/base/BaseIcon.tsx';
 import { render, screen } from '@testing-library/react';
+import BaseIcon from '../../../../src/components/icons/base/BaseIcon.tsx';
+import type { IconProps } from '../../../../src/types/components/BaseTypes.ts';
 
 const testId = 'test-icon';
 

@@ -1,18 +1,18 @@
-import { render, renderHook, RenderOptions } from '@testing-library/react';
-import { AppStore, RootState, setupStore } from '../src/store';
-import { PropsWithChildren, ReactElement, ReactNode } from 'react';
+import { render, renderHook, type RenderOptions } from '@testing-library/react';
+import { type AppStore, type RootState, setupStore } from '../src/store';
+import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import {
   createMemoryRouter,
-  LoaderFunction,
+  type LoaderFunction,
   RouterProvider,
 } from 'react-router-dom';
-import { ActionResponse } from '../src/types/store/ActionTypes.ts';
+import type { ActionResponse } from '../src/types/store/ActionTypes.ts';
 import { Theme } from '@radix-ui/themes';
 import ModalProvider from '../src/components/shared/modal/ModalProvider.tsx';
-import { UnknownAction } from '@reduxjs/toolkit';
-import { GetUsersType } from '../src/types/api/UserTypes.ts';
-import { Mock } from 'vitest';
+import type { UnknownAction } from '@reduxjs/toolkit';
+import type { GetUsersType } from '../src/types/api/UserTypes.ts';
+import type { Mock } from 'vitest';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>;

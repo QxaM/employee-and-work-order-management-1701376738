@@ -1,9 +1,9 @@
-import {
-  Pageable as PageableData,
-  PageableColor,
-} from '../../../types/components/PageableTypes.ts';
 import { Flex } from '@radix-ui/themes';
 import clsx from 'clsx/lite';
+import {
+  PageableColor,
+  type Pageable as PageableData,
+} from '../../../types/components/PageableTypes.ts';
 import PageableNavButton from './PageableNavButton.tsx';
 import PageButton from './PageButton.tsx';
 import PageContent from './PageContent.tsx';
@@ -43,7 +43,7 @@ const Pageable = ({
   const startingElement = currentPage * pageSize;
 
   return (
-    <nav aria-label="pagination control" role="navigation">
+    <nav aria-label="pagination control">
       <Flex gap="2" justify="between" align="center" className="w-full">
         <div className="flex-1" />
         <Flex

@@ -1,14 +1,17 @@
-import {api} from '../apiSlice.ts';
-import {authApi} from './base.ts';
-import {GetUsersType} from '../../types/api/UserTypes.ts';
-import {PageableRequest} from '../../types/api/BaseTypes.ts';
-import {RoleType} from '../../types/api/RoleTypes.ts';
-import {store} from '../index.ts';
-import {registerModal} from '../modalSlice.ts';
-import {v4 as uuidv4} from 'uuid';
-import {getValueOrDefault} from '../../utils/shared.ts';
-import {readErrorMessage} from '../../utils/errorUtils.ts';
-import {addRoleToDraftUser, removeRoleFromDraftUser,} from '../../utils/api/cache.ts';
+import { v4 as uuidv4 } from 'uuid';
+import type { PageableRequest } from '../../types/api/BaseTypes.ts';
+import type { RoleType } from '../../types/api/RoleTypes.ts';
+import type { GetUsersType } from '../../types/api/UserTypes.ts';
+import {
+  addRoleToDraftUser,
+  removeRoleFromDraftUser,
+} from '../../utils/api/cache.ts';
+import { readErrorMessage } from '../../utils/errorUtils.ts';
+import { getValueOrDefault } from '../../utils/shared.ts';
+import { api } from '../apiSlice.ts';
+import { store } from '../index.ts';
+import { registerModal } from '../modalSlice.ts';
+import { authApi } from './base.ts';
 
 const USERS_API = '/users';
 export const DEFAULT_USERS_PER_PAGE = 6;
@@ -23,14 +26,12 @@ interface ModifyRoleRequest {
 
 export const usersApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    getUsers: builder.query<GetUsersType, PageableRequest | void>({
+    getUsers: builder.query<GetUsersType, PageableRequest | undefined>({
       query: (params) => {
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         const { page = 0, size = DEFAULT_USERS_PER_PAGE } = params || {};
 
         return {
-          url: authApi + USERS_API + `?page=${page}&size=${size}`,
+          url: `${authApi + USERS_API}?page=${page}&size=${size}`,
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ export const usersApi = api.injectEndpoints({
     }),
     addRole: builder.mutation<undefined, ModifyRoleRequest>({
       query: ({ userId, role }) => ({
-        url: authApi + USERS_API + `/${userId}/addRole?role=${role.id}`,
+        url: `${authApi + USERS_API}/${userId}/addRole?role=${role.id}`,
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export const usersApi = api.injectEndpoints({
             usersApi.util.updateQueryData(
               'getUsers',
               // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-              cache.originalArgs as PageableRequest | void,
+              cache.originalArgs as PageableRequest | undefined,
               (draft) => {
                 addRoleToDraftUser(draft, userId, role);
               }
@@ -93,7 +94,7 @@ export const usersApi = api.injectEndpoints({
     }),
     removeRole: builder.mutation<undefined, ModifyRoleRequest>({
       query: ({ userId, role }) => ({
-        url: authApi + USERS_API + `/${userId}/removeRole?role=${role.id}`,
+        url: `${authApi + USERS_API}/${userId}/removeRole?role=${role.id}`,
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export const usersApi = api.injectEndpoints({
             usersApi.util.updateQueryData(
               'getUsers',
               // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-              cache.originalArgs as PageableRequest | void,
+              cache.originalArgs as PageableRequest | undefined,
               (draft) => {
                 removeRoleFromDraftUser(draft, userId, role);
               }
